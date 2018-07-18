@@ -8,6 +8,7 @@
 import requests
 from collections import OrderedDict
 import subprocess
+import json
 
 # Verifying User
 def verifyingUser():
@@ -54,7 +55,7 @@ def postToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.post(url, data = json_data, headers=headers)
+    req = requests.post(url, data = json.dumps(json_data), headers=headers)
 
     # Log
     print(req)
@@ -88,4 +89,5 @@ if __name__ == "__main__":
     print("CHATBOT Client Start!")
     getUserEmail()
     commandGitLsFiles()
+    postToServer('/gitLsFiles',commandGitLsFiles())
 

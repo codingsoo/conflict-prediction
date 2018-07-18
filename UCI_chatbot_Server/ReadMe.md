@@ -6,7 +6,7 @@ Framework : Flask
 =======================================
 
 1. Install Python (3.6)
-
+test
 2. Install Flask
 Win10 : pip install Flask
 

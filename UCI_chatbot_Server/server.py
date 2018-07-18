@@ -14,6 +14,7 @@ app = Flask(__name__)
 
 # User List
 user_list = list()
+working_file = dict()
 
 @app.route("/test", methods = ["POST"])
 def test():
@@ -32,11 +33,31 @@ def cmd1():
 # Request for Command2
 @app.route("/gitLsFiles", methods = ["POST", "GET"])
 def cmd2():
+    # for test
+    working_file['test'] = ['client.py','server.py']
 
     # Get command2 content
-    content = request.get_json()
+    content = request.get_json(silent=True)
+    key = str(content[0]).strip()
+    for keys in working_file.keys():
+        if keys == key:
+            continue
+        for working_files in working_file[keys]:
+            for new_working_files in content:
+                if new_working_files in working_files:
+                    token = ''
+                    slack = Slacker(token)
 
-    print(content)
+                    attachments_dict = dict()
+                    attachments_dict['text'] = "Conflict Detected!"
+                    attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                    attachments = [attachments_dict]
+
+                    slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+
+    print working_file
+
+    working_file[key] = content[1:]
 
     return "test"
 

@@ -44,7 +44,6 @@ def getUserEmail():
 
     return json_data
 
-
 # Post To Server
 def postToServer(uri, json_data):
 
@@ -95,11 +94,18 @@ def commandGitDiff():
 
 # Command : git ls-files -m
 def commandGitLsFiles():
+    email = str(subprocess.check_output('git config user.email', shell=True))
     raw = str(subprocess.check_output('git ls-files -m', shell=True))
-    print raw
-    json_data = OrderedDict()
-    json_data["gitLsFiles"] = raw
-    print json_data
+    json_data = []
+    json_data.append(email)
+    order_num = 0
+
+    while ('\n' in raw):
+        order_num = order_num + 1
+        check_point = raw.find('\n')
+        json_data.append(raw[:check_point])
+        raw = raw[check_point + 1:]
+
     return json_data
 
 
@@ -111,6 +117,3 @@ if __name__ == "__main__":
 
     # User Verifying Process
     verifyingUser()
-
-    while(1):
-        postToServer(commandGitLsFiles())
