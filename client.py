@@ -8,7 +8,6 @@
 import requests
 from collections import OrderedDict
 import subprocess
-import json
 
 # Verifying User
 def verifyingUser():
@@ -16,16 +15,13 @@ def verifyingUser():
     # Get User email
     json_email = getUserEmail()
 
-    # User Search
-    user_flag = str(postToServer(uri="/userSearch", json_data=getUserEmail()))
+    # Get Random Number
+    rand_num = int(postToServer(uri="/createRandom", json_data="create"))
 
-    if(user_flag.isdigit()):
-
-        # Print Input Random Number to Slack
-        print("Enter Random Number to Slack : " + user_flag)
+    # Print Input Random Number to Slack
+    print("Enter Random Number to Slack: " + rand_num)
 
     return
-
 
 # Get User Email():
 def getUserEmail():
@@ -40,12 +36,10 @@ def getUserEmail():
     temp_list = temp_list.replace('\'', '')
 
     # Create JSON
-    json_data = dict()
+    json_data = OrderedDict()
     json_data["email"] = temp_list
 
-    print(json_data)
-
-    return str(json_data).replace('\'', '"', 4)
+    return json_data
 
 # Post To Server
 def postToServer(uri, json_data):
@@ -60,35 +54,13 @@ def postToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.post(url, headers=headers, data = json_data)
+    req = requests.post(url, data = json_data, headers=headers)
 
     # Log
     print(req)
     print(req.status_code)
 
-    return req
-
-
-# Get To Server
-def getToServer(uri, json_data):
-
-    # IP Address
-    ip_addr = "127.0.0.1"
-
-    # Create URL
-    url = "http://" + ip_addr + ":5009" + uri
-
-    # Headers
-    headers = {'Content-Type': 'application/json; charset=utf-8'}
-
-    # Post To Server
-    req = requests.get(url, data = json.dump(json_data), headers=headers)
-
-    # Log
-    print(req)
-    print(req.status_code)
-
-    return req
+    return
 
 
 # Command : git diff
@@ -98,10 +70,15 @@ def commandGitDiff():
 # Command : git ls-files -m
 def commandGitLsFiles():
     raw = str(subprocess.check_output('git ls-files -m', shell=True))
-    print raw
     json_data = OrderedDict()
-    json_data["gitLsFiles"] = raw
-    print json_data
+    order_num = 0
+
+    while('\n' in raw):
+        order_num = order_num + 1
+        check_point = raw.find('\n')
+        json_data[order_num] = raw[:check_point]
+        raw = raw[check_point+1:]
+
     return json_data
 
 # MAIN
@@ -112,7 +89,3 @@ if __name__ == "__main__":
     getUserEmail()
     commandGitLsFiles()
 
-    postToServer(uri="/test", json_data=getUserEmail())
-
-    # Verifying User
-    # verifyingUser()

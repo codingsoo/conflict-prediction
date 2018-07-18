@@ -7,7 +7,7 @@ import json
 channel = '#code-conflict-chatbot'
 CMDCHAR='?'
 
-CMD_LIST=['work','home','cal']
+CMD_LIST=['work','home']
 
 token = 'xoxb-151102038320-397292596885-Gp3mK7Pi3XKaG770dKIThLXi'
 
