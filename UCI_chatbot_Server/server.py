@@ -120,6 +120,17 @@ def userSearch():
     return sign_in_flag
 
 
+# Synchronize User Data
+@app.route("/syncUserData", methods = ["POST"])
+def syncUserData():
+    # Import User Data
+    with open('./user_data/user.json', 'r') as f:
+        user_list = json.load(f)['user']
+        print(user_list)
+
+    return "test"
+
+
 # Verifying User
 @app.route("/verifyUser", methods = ["POST"])
 def verifyUser():

@@ -27,7 +27,12 @@ def verifyingUser():
         print("Enter Random Number to Slack : " + user_flag)
 
         # Delay
-        input("Input Any Key (If you entered random number to Slack): ")
+        raw_input("Input Any Key (If you entered random number to Slack): ")
+
+        # Synchronize User Data
+        postToServer("/syncUserData", "sync")
+
+        print("Success")
 
     return
 
