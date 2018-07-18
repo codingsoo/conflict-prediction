@@ -1,13 +1,11 @@
 ########################################################################
 # Import Library
 import random
-import websocket
-import time
 import json
 from flask import Flask, request
 from slacker import Slacker
-import thread
 ########################################################################
+
 
 # Create app
 app = Flask(__name__)
@@ -16,10 +14,13 @@ app = Flask(__name__)
 user_list = list()
 working_file = dict()
 
+
 @app.route("/test", methods = ["POST"])
 def test():
 
     return "test"
+
+
 # Request for Command1
 @app.route("/gitDiff", methods = ["POST", "GET"])
 def cmd1():
@@ -131,13 +132,6 @@ def syncUserData():
     return "test"
 
 
-# Verifying User
-@app.route("/verifyUser", methods = ["POST"])
-def verifyUser():
-
-    return "test"
-
-
 def createRandomTemp():
 
     # Create Random Number
@@ -148,36 +142,12 @@ def createRandomTemp():
 
     return rand_num
 
-# Create Random Number
-@app.route("/createRandom", methods = ["GET"])
-def createRandom():
-
-    # Get Git ID
-    content = request.get_json()
-    git_id = content['email']
-
-    # Create Random Number
-    rand_num = random.randint(10000, 99999)
-
-    # log
-    print("random Number: " + str(rand_num))
-
-    # Add Random Number
-    rand_set.add({ 'rand_num':rand_num, 'git_id':git_id})
-
-    return str(rand_num)
-
-
-# Observe Random Number
-@app.route("/observeRandom", methods = ["GET"])
-def observeRandomNumber():
-
-    return
 
 # Observing Direct
 def observeDirect():
 
     return
+
 
 # MAIN
 if __name__ == "__main__":

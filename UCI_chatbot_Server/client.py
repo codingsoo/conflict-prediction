@@ -3,7 +3,7 @@ import requests
 from collections import OrderedDict
 import subprocess
 import json
-import time
+
 
 # Verifying User
 def verifyingUser():
@@ -48,6 +48,7 @@ def getUserEmail():
     json_data["email"] = raw.strip()
 
     return json_data
+
 
 # Post To Server
 def postToServer(uri, json_data):

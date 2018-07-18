@@ -1,25 +1,28 @@
+# Import Library
 from slacker import Slacker
 import websocket
 import thread
 import time
 import json
 
-rand_set = set()
-
+# Slack Definition
 channel = '#code-conflict-chatbot'
-CMDCHAR = '?'
-
-CMD_LIST = ['work', 'home', 'cal']
-
 token = ''
-
 slack = Slacker(token)
+CMDCHAR = '?'
+CMD_LIST = ['work', 'home', 'cal']
 
 # User List Data
 user_list = list()
 
+
+# Message Entered on Slack
 def on_message(ws, message):
+
+    # JSON Data To Message
     msg = json.loads(message)
+
+    # log
     print(msg)
 
     # Import User Data
@@ -27,16 +30,25 @@ def on_message(ws, message):
         user_list = json.load(f)['user']
         print(user_list)
 
+    # Message Type is message
     if msg['type'] == 'message':
 
+        # Message Content Convert
         rand_text = str(msg['text'])
 
+        # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
 
+            # List Index
             count = 0
 
+            # Search User Register
             for user in user_list:
+
+                # Slack id == RandomNumber
                 if(str(user['slack_id']) == rand_text):
+
+                    # random number convert user id
                     user_list[count]['slack_id'] = msg['user']
 
                     json_dict = dict()
@@ -46,6 +58,7 @@ def on_message(ws, message):
                     with open('../user_data/user.json', 'w') as make_file:
                         json.dump(json_dict, make_file)
 
+                # Next user
                 count += 1
 
 def on_error(ws, error):
