@@ -1,14 +1,9 @@
-# 1. Generate Random Number
-# 2. Print Random Number
-# 3. Enter Random Number on Slack
-# 4. User
-
-
 # Import Library
 import requests
 from collections import OrderedDict
 import subprocess
 import json
+import time
 
 # Verifying User
 def verifyingUser():
@@ -19,12 +14,20 @@ def verifyingUser():
     # User Search
     res = postToServer(uri="/userSearch", json_data=json_email)
 
-    # print(res.json())
-    #
-    # if(user_flag.isdigit()):
-    #
-    #     # Print Input Random Number to Slack
-    #     print("Enter Random Number to Slack : " + user_flag)
+    # Response Data Parsing
+    user_flag = res.text
+
+    # log
+    print(user_flag)
+
+    # User Verifying Process
+    if(user_flag.isdigit()):
+
+        # Print Input Random Number to Slack
+        print("Enter Random Number to Slack : " + user_flag)
+
+        # Delay
+        t = input("Input Any Key (If you entered random number to Slack): ")
 
     return
 
@@ -39,9 +42,8 @@ def getUserEmail():
     json_data = OrderedDict()
     json_data["email"] = raw.strip()
 
-    print(json_data)
+    return json_data
 
-    return json.dumps(json_data)
 
 # Post To Server
 def postToServer(uri, json_data):
@@ -56,11 +58,10 @@ def postToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.post(url, headers=headers, data = json_data)
+    req = requests.post(url, headers=headers, data = json.dumps(json_data))
 
     # Log
     print(req)
-    print(req.status_code)
 
     return req
 
@@ -78,7 +79,7 @@ def getToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.get(url, data = json.dump(json_data), headers=headers)
+    req = requests.get(url, data = json.dumps(json_data), headers=headers)
 
     # Log
     print(req)
@@ -91,6 +92,7 @@ def getToServer(uri, json_data):
 def commandGitDiff():
     return
 
+
 # Command : git ls-files -m
 def commandGitLsFiles():
     raw = str(subprocess.check_output('git ls-files -m', shell=True))
@@ -100,9 +102,15 @@ def commandGitLsFiles():
     print json_data
     return json_data
 
+
 # MAIN
 if __name__ == "__main__":
 
     # Start
     print("CHATBOT Client Start!")
+
+    # User Verifying Process
     verifyingUser()
+
+    while(1):
+        postToServer(commandGitLsFiles())

@@ -52,40 +52,48 @@ def userSearch():
     content = request.get_json(silent=True)
     git_id = str(content['email'])
 
+    print(git_id)
+
     # User Search
     for temp in user_list:
 
         # log
         print (str(temp['git_id']))
 
-        # User Already sign in
-        if(str(temp['git_id']) == git_id):
+        compare_temp = str(temp['git_id'])
 
-            # flag => True
+        # Already Sign In
+        if(compare_temp == git_id):
             sign_in_flag = "True"
             break
 
-        # User have to sign in
-        else:
+    # User have to sign in
+    if(sign_in_flag != "True"):
 
-            # Generate Random Number
-            rand_num = createRandomTemp()
+        # Generate Random Number
+        rand_num = createRandomTemp()
 
-            # Create User Data
-            temp_dict = dict()
-            temp_dict['slack_id'] = str(rand_num)
-            temp_dict['git_id'] = git_id
+        # Create User Data
+        temp_dict = dict()
+        temp_dict['slack_id'] = str(rand_num)
+        temp_dict['git_id'] = git_id
 
-            # Add User Data
-            user_list.append(temp_dict)
-            print(user_list)
+        # Add User Data
+        user_list.append(temp_dict)
+        print(user_list)
 
-            # Return Random Number
-            sign_in_flag = str(rand_num)
+        # Create JSON User Data
+        json_dict = dict()
+        json_dict['user'] = user_list
 
+        print(json_dict)
 
+        # Save User Data Json file
+        with open('./user_data/user.json', 'w') as make_file:
+            json.dump(json_dict, make_file)
 
-            break
+        # Return Random Number
+        sign_in_flag = str(rand_num)
 
     # Return Ture or Random Number
     return sign_in_flag
