@@ -13,7 +13,7 @@ System Architecture
 ---------------------
 ![Imgur](https://i.imgur.com/zYqaF2m.png)
 
-We have two parts in our system - Client and Server.
+There are two parts in our system - Client and Server.
 ## Client
   * Slackbot
   * Git listener : It monitors repositories of developers every other minutes.
@@ -22,7 +22,7 @@ We have two parts in our system - Client and Server.
 
 We have four parts in Server - Analysis of user's working status, Sentence boundary detection, Catch needs, and Give answers.
 
-* Sentence boundary detection : The system tokenizes each sentence to analyze it. Most of sentence boundary detection projects are about articles, so we put "Chatting word translation" to convert chatting words to normal words, and also put "[Punctuator](https://github.com/ottokart/punctuator2)" to add missing punctuations. We use [Punkt](https://www.nltk.org/_modules/nltk/tokenize/punkt.html) algorithm to detect the sentence boundary.
+* Sentence boundary detection : The system tokenizes each sentence to analyze it. Most of sentence boundary detection projects are about articles, so we put "Chatting word translation" to convert chatting words to normal words and also put "[Punctuator](https://github.com/ottokart/punctuator2)" to add missing punctuations. We use [Punkt](https://www.nltk.org/_modules/nltk/tokenize/punkt.html) algorithm to detect the sentence boundary.
 
 * Catch needs :The chatbot basically uses [Stanford parser](https://nlp.stanford.edu/software/lex-parser.html) and [nltk](https://www.nltk.org) to interpret sentences from a developer.
 If the chatbot doesn’t understand the needs of a developer, it goes to RNN(Recurrent Neural Network) reaction. While it proceeds to the rule-based answer when it gets the needs of a developer.  
@@ -33,6 +33,6 @@ We find user's needs for four cases following :
   4. Desire expression : make desire verb list and check with synonym
 
 
-* Give answers : The chatbot responds to a developer with RNN reaction and rule-based answer. RNN reaction is a human-like response, however, rule-based answer presents the exact answer for the claims of a developer.
+* Give answers : The chatbot responds to a developer with RNN reaction or rule-based answer. RNN reaction is a human-like response, however, rule-based answer presents the exact answer for the claims of a developer.
 
-* Analysis of user's working status : It gets what files developers are working on, and where the files are located at. Then, it compares and analyzes a working status of developers based on the information. After all, it is linked  to rule-based answer component if conflict is detected.
+* Analysis of user's working status : It gets which files developers are working on, and where the files are located at. Then, it compares and analyzes a working status of developers based on the information. After all, it is linked to rule-based answer component if conflict is detected.
