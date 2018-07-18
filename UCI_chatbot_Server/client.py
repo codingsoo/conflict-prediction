@@ -27,7 +27,7 @@ def verifyingUser():
         print("Enter Random Number to Slack : " + user_flag)
 
         # Delay
-        t = input("Input Any Key (If you entered random number to Slack): ")
+        input("Input Any Key (If you entered random number to Slack): ")
 
     return
 

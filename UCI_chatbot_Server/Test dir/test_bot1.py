@@ -11,24 +11,42 @@ CMDCHAR = '?'
 
 CMD_LIST = ['work', 'home', 'cal']
 
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 slack = Slacker(token)
 
+# User List Data
+user_list = list()
 
 def on_message(ws, message):
     msg = json.loads(message)
     print(msg)
 
+    # Import User Data
+    with open('../user_data/user.json', 'r') as f:
+        user_list = json.load(f)['user']
+        print(user_list)
+
     if msg['type'] == 'message':
 
-        text_data = str(msg['text'])
+        rand_text = str(msg['text'])
 
-        if(text_data.isdigit() and (len(text_data) == 5)):
-            rand_num = int(text_data)
+        if(rand_text.isdigit() and (len(rand_text) == 5)):
 
-            rand_set.get()
+            count = 0
 
+            for user in user_list:
+                if(str(user['slack_id']) == rand_text):
+                    user_list[count]['slack_id'] = msg['user']
+
+                    json_dict = dict()
+                    json_dict['user'] = user_list
+
+                    # Save User Data Json file
+                    with open('../user_data/user.json', 'w') as make_file:
+                        json.dump(json_dict, make_file)
+
+                count += 1
 
 def on_error(ws, error):
     print error
@@ -43,6 +61,10 @@ def on_open(ws):
         time.sleep(1)
 
     thread.start_new_thread(run, ())
+
+
+#### MAIN ####
+
 
 
 res = slack.auth.test().body
