@@ -39,6 +39,8 @@ def getUserEmail():
     temp_list = temp_list.replace('\\', '')
     temp_list = temp_list.replace('\'', '')
 
+    print(temp_list)
+
     # Create JSON
     json_data = dict()
     json_data["email"] = temp_list
