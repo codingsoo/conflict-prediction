@@ -70,10 +70,15 @@ def commandGitDiff():
 # Command : git ls-files -m
 def commandGitLsFiles():
     raw = str(subprocess.check_output('git ls-files -m', shell=True))
-    print raw
     json_data = OrderedDict()
-    json_data["gitLsFiles"] = raw
-    print json_data
+    order_num = 0
+
+    while('\n' in raw):
+        order_num = order_num + 1
+        check_point = raw.find('\n')
+        json_data[order_num] = raw[:check_point]
+        raw = raw[check_point+1:]
+
     return json_data
 
 # MAIN
