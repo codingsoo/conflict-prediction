@@ -17,12 +17,14 @@ def verifyingUser():
     json_email = getUserEmail()
 
     # User Search
-    user_flag = str(postToServer(uri="/userSearch", json_data=getUserEmail()))
+    res = postToServer(uri="/userSearch", json_data=json_email)
 
-    if(user_flag.isdigit()):
-
-        # Print Input Random Number to Slack
-        print("Enter Random Number to Slack : " + user_flag)
+    # print(res.json())
+    #
+    # if(user_flag.isdigit()):
+    #
+    #     # Print Input Random Number to Slack
+    #     print("Enter Random Number to Slack : " + user_flag)
 
     return
 
@@ -33,21 +35,13 @@ def getUserEmail():
     # Get User git Email Using subprocess
     raw = str(subprocess.check_output('git config user.email', shell=True))
 
-    # String processing
-    temp_list = raw.replace('b\'', '')
-    temp_list = temp_list.replace('\\n', '')
-    temp_list = temp_list.replace('\\', '')
-    temp_list = temp_list.replace('\'', '')
-
-    print(temp_list)
-
     # Create JSON
-    json_data = dict()
-    json_data["email"] = temp_list
+    json_data = OrderedDict()
+    json_data["email"] = raw.strip()
 
     print(json_data)
 
-    return str(json_data).replace('\'', '"', 4)
+    return json.dumps(json_data)
 
 # Post To Server
 def postToServer(uri, json_data):
@@ -111,10 +105,4 @@ if __name__ == "__main__":
 
     # Start
     print("CHATBOT Client Start!")
-    getUserEmail()
-    commandGitLsFiles()
-
-    postToServer(uri="/test", json_data=getUserEmail())
-
-    # Verifying User
-    # verifyingUser()
+    verifyingUser()

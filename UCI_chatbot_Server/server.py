@@ -18,12 +18,7 @@ user_list = list()
 @app.route("/test", methods = ["POST"])
 def test():
 
-    if request.method == "POST":
-        content = request.get_json()
-        print(content)
-
     return "test"
-
 # Request for Command1
 @app.route("/gitDiff", methods = ["POST", "GET"])
 def cmd1():
@@ -43,7 +38,7 @@ def cmd2():
 
     print(content)
 
-    return
+    return "test"
 
 
 # User Search
@@ -54,26 +49,45 @@ def userSearch():
     sign_in_flag = "False"
 
     # Get User Git ID
-    content = request.get_json()
+    content = request.get_json(silent=True)
     git_id = str(content['email'])
 
     # User Search
     for temp in user_list:
 
+        # log
         print (str(temp['git_id']))
 
+        # User Already sign in
         if(str(temp['git_id']) == git_id):
+
+            # flag => True
             sign_in_flag = "True"
             break
+
+        # User have to sign in
         else:
+
+            # Generate Random Number
             rand_num = createRandomTemp()
+
+            # Create User Data
             temp_dict = dict()
             temp_dict['slack_id'] = str(rand_num)
             temp_dict['git_id'] = git_id
+
+            # Add User Data
             user_list.append(temp_dict)
             print(user_list)
-            sign_in_flag = rand_num
 
+            # Return Random Number
+            sign_in_flag = str(rand_num)
+
+
+
+            break
+
+    # Return Ture or Random Number
     return sign_in_flag
 
 
