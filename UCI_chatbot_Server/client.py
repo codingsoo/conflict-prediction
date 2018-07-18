@@ -15,13 +15,19 @@ def verifyingUser():
     # Get User email
     json_email = getUserEmail()
 
-    # Get Random Number
-    rand_num = int(postToServer(uri="/createRandom", json_data="create"))
+    # User Search
+    user_flag = postToServer(uri="/userSearch", json_data=getUserEmail())
 
-    # Print Input Random Number to Slack
-    print("Enter Random Number to Slack: " + rand_num)
+    if(user_flag):
+
+        # Register User
+        rand_num = int(getToServer(uri="/createRandom", json_data=json_email))
+
+        # Print Input Random Number to Slack
+        print("Enter Random Number to Slack : " + rand_num)
 
     return
+
 
 # Get User Email():
 def getUserEmail():
@@ -60,7 +66,29 @@ def postToServer(uri, json_data):
     print(req)
     print(req.status_code)
 
-    return
+    return req
+
+
+# Get To Server
+def getToServer(uri, json_data):
+
+    # IP Address
+    ip_addr = "127.0.0.1"
+
+    # Create URL
+    url = "http://" + ip_addr + ":5009" + uri
+
+    # Headers
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+
+    # Post To Server
+    req = requests.get(url, data = json_data, headers=headers)
+
+    # Log
+    print(req)
+    print(req.status_code)
+
+    return req
 
 
 # Command : git diff
@@ -77,3 +105,5 @@ if __name__ == "__main__":
     # Start
     print("CHATBOT Client Start!")
 
+    # Verifying User
+    verifyingUser()

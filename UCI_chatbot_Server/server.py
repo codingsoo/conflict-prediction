@@ -38,6 +38,8 @@ def cmd2():
 @app.route("/userSearch", methods = ["POST"])
 def userSearch():
 
+
+
     return
 
 
@@ -52,6 +54,10 @@ def verifyUser():
 @app.route("/createRandom", methods = ["GET"])
 def createRandom():
 
+    # Get Git ID
+    content = request.get_json()
+    git_id = content['email']
+
     # Create Random Number
     rand_num = random.randint(10000, 99999)
 
@@ -59,7 +65,7 @@ def createRandom():
     print("random Number: " + str(rand_num))
 
     # Add Random Number
-    rand_set.add(rand_num)
+    rand_set.add({ 'rand_num':rand_num, 'git_id':git_id})
 
     return str(rand_num)
 

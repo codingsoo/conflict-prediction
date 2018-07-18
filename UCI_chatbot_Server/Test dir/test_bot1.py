@@ -4,6 +4,8 @@ import thread
 import time
 import json
 
+rand_set = set()
+
 channel = '#code-conflict-chatbot'
 CMDCHAR = '?'
 
@@ -19,6 +21,13 @@ def on_message(ws, message):
     print(msg)
 
     if msg['type'] == 'message':
+
+        text_data = str(msg['text'])
+
+        if(text_data.isdigit() and (len(text_data) == 5)):
+            rand_num = int(text_data)
+
+            rand_set.get()
 
 
     if msg['type'] == 'message':
