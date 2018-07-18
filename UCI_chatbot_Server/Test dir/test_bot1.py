@@ -11,7 +11,7 @@ CMDCHAR = '?'
 
 CMD_LIST = ['work', 'home', 'cal']
 
-token = 'xoxb-151102038320-397292596885-Gp3mK7Pi3XKaG770dKIThLXi'
+token = ''
 
 slack = Slacker(token)
 
@@ -28,32 +28,6 @@ def on_message(ws, message):
             rand_num = int(text_data)
 
             rand_set.get()
-
-
-    if msg['type'] == 'message':
-
-        cmd = msg['text'].split(CMDCHAR)
-
-        if msg['text'][0:1] == CMDCHAR:
-
-            if cmd[1] == "help":
-
-                msg = [{
-                    'fallback': 'HELP U',
-                    'pretext': 'HELP U',
-                    'text': 'Adahnbot Usage : ' + CMDCHAR + '{' + ','.join(
-                        CMD_LIST) + '}\nAdahnbot Help : ' + CMDCHAR + 'help\n',
-                    'color': '#36a64f'
-                }]
-                slack.chat.post_message(channel, '', attachments=msg, as_user=True)
-
-
-            # something else..
-            # elif cmd[1] =="..":
-            # pass
-
-            else:
-                pass
 
 
 def on_error(ws, error):

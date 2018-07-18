@@ -1,3 +1,4 @@
+########################################################################
 # Import Library
 import random
 import websocket
@@ -5,12 +6,23 @@ import time
 import json
 from flask import Flask, request
 from slacker import Slacker
+import thread
+########################################################################
 
 # Create app
 app = Flask(__name__)
 
-# Random Number
-rand_set = set()
+# User List
+user_list = list()
+
+@app.route("/test", methods = ["POST"])
+def test():
+
+    if request.method == "POST":
+        content = request.get_json()
+        print(content)
+
+    return "test"
 
 # Request for Command1
 @app.route("/gitDiff", methods = ["POST", "GET"])
@@ -38,9 +50,31 @@ def cmd2():
 @app.route("/userSearch", methods = ["POST"])
 def userSearch():
 
+    # Initialize sign_in_flag
+    sign_in_flag = "False"
 
+    # Get User Git ID
+    content = request.get_json()
+    git_id = str(content['email'])
 
-    return
+    # User Search
+    for temp in user_list:
+
+        print (str(temp['git_id']))
+
+        if(str(temp['git_id']) == git_id):
+            sign_in_flag = "True"
+            break
+        else:
+            rand_num = createRandomTemp()
+            temp_dict = dict()
+            temp_dict['slack_id'] = str(rand_num)
+            temp_dict['git_id'] = git_id
+            user_list.append(temp_dict)
+            print(user_list)
+            sign_in_flag = rand_num
+
+    return sign_in_flag
 
 
 # Verifying User
@@ -49,6 +83,16 @@ def verifyUser():
 
     return "test"
 
+
+def createRandomTemp():
+
+    # Create Random Number
+    rand_num = random.randint(10000, 99999)
+
+    # log
+    print("random Number: " + str(rand_num))
+
+    return rand_num
 
 # Create Random Number
 @app.route("/createRandom", methods = ["GET"])
@@ -83,4 +127,11 @@ def observeDirect():
 
 # MAIN
 if __name__ == "__main__":
-    app.run(debug = True, host = "0.0.0.0", port = 5009)
+
+    # Import User Data
+    with open('./user_data/user.json', 'r') as f:
+        user_list = json.load(f)['user']
+        print(user_list)
+
+    # Run App
+    app.run(debug=True, host="0.0.0.0", port=5009)

@@ -8,6 +8,7 @@
 import requests
 from collections import OrderedDict
 import subprocess
+import json
 
 # Verifying User
 def verifyingUser():
@@ -16,15 +17,12 @@ def verifyingUser():
     json_email = getUserEmail()
 
     # User Search
-    user_flag = postToServer(uri="/userSearch", json_data=getUserEmail())
+    user_flag = str(postToServer(uri="/userSearch", json_data=getUserEmail()))
 
-    if(user_flag):
-
-        # Register User
-        rand_num = int(getToServer(uri="/createRandom", json_data=json_email))
+    if(user_flag.isdigit()):
 
         # Print Input Random Number to Slack
-        print("Enter Random Number to Slack : " + rand_num)
+        print("Enter Random Number to Slack : " + user_flag)
 
     return
 
@@ -42,10 +40,12 @@ def getUserEmail():
     temp_list = temp_list.replace('\'', '')
 
     # Create JSON
-    json_data = OrderedDict()
+    json_data = dict()
     json_data["email"] = temp_list
 
-    return json_data
+    print(json_data)
+
+    return str(json_data).replace('\'', '"', 4)
 
 # Post To Server
 def postToServer(uri, json_data):
@@ -60,7 +60,7 @@ def postToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.post(url, data = json_data, headers=headers)
+    req = requests.post(url, headers=headers, data = json_data)
 
     # Log
     print(req)
@@ -82,7 +82,7 @@ def getToServer(uri, json_data):
     headers = {'Content-Type': 'application/json; charset=utf-8'}
 
     # Post To Server
-    req = requests.get(url, data = json_data, headers=headers)
+    req = requests.get(url, data = json.dump(json_data), headers=headers)
 
     # Log
     print(req)
@@ -105,5 +105,7 @@ if __name__ == "__main__":
     # Start
     print("CHATBOT Client Start!")
 
+    postToServer(uri="/test", json_data=getUserEmail())
+
     # Verifying User
-    verifyingUser()
+    # verifyingUser()
