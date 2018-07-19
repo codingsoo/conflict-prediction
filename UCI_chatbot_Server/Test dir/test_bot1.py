@@ -15,6 +15,20 @@ CMD_LIST = ['work', 'home', 'cal']
 # User List Data
 user_list = list()
 
+# find slack user's name
+def list_slack(id):
+    try:
+        slack = Slacker(token)
+
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if not user['deleted'] and user['id'] == id:
+                # print(user['id'], user['name'], user['is_admin'], user['is_owner'])
+                return user['name']
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
 
 # Message Entered on Slack
 def on_message(ws, message):
@@ -50,6 +64,7 @@ def on_message(ws, message):
 
                     # random number convert user id
                     user_list[count]['slack_id'] = msg['user']
+                    user_list[count]['slack_name'] = list_slack(msg['user'])
 
                     json_dict = dict()
                     json_dict['user'] = user_list

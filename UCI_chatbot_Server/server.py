@@ -14,6 +14,7 @@ app = Flask(__name__)
 # User List
 user_list = list()
 working_file = dict()
+token = ''
 
 
 @app.route("/test", methods = ["POST"])
@@ -47,7 +48,6 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
-                    token = ''
                     slack = Slacker(token)
 
                     attachments_dict = dict()
@@ -100,6 +100,7 @@ def userSearch():
         temp_dict = dict()
         temp_dict['slack_id'] = str(rand_num)
         temp_dict['git_id'] = git_id
+        temp_dict['slack_name'] = "UCI"
 
         # Add User Data
         user_list.append(temp_dict)
@@ -120,7 +121,6 @@ def userSearch():
 
     # Return Ture or Random Number
     return sign_in_flag
-
 
 # Synchronize User Data
 @app.route("/syncUserData", methods = ["POST"])
@@ -143,33 +143,6 @@ def createRandomTemp():
 
     return rand_num
 
-
-# List channels & users in slack.
-@app.route("/listChannelAndUser", methods = ["POST"])
-def list_slack():
-    try:
-        token = os.environ['SLACK_TOKEN']
-        slack = Slacker(token)
-
-        # Get channel list
-        response = slack.channels.list()
-        channels = response.body['channels']
-        for channel in channels:
-            print(channel['id'], channel['name'])
-            # if not channel['is_archived']:
-            # slack.channels.join(channel['name'])
-        print()
-
-        # Get users list
-        response = slack.users.list()
-        users = response.body['members']
-        for user in users:
-            if not user['deleted']:
-                print(user['id'], user['name'], user['is_admin'], user[
-                    'is_owner'])
-        print()
-    except KeyError as ex:
-        print('Environment variable %s not set.' % str(ex))
 # MAIN
 if __name__ == "__main__":
 
@@ -177,7 +150,6 @@ if __name__ == "__main__":
     with open('./user_data/user.json', 'r') as f:
         user_list = json.load(f)['user']
         print(user_list)
-    list_slack()
 
     # Run App
     app.run(debug=True, host="0.0.0.0", port=5009)
