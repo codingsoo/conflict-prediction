@@ -122,5 +122,6 @@ if __name__ == "__main__":
     print("CHATBOT Client Start!")
 
     # User Verifying Process
-    verifyingUser()
-    postToServer("/gitLsFiles",commandGitLsFiles())
+    # verifyingUser()
+    # postToServer("/gitLsFiles",commandGitLsFiles())
+

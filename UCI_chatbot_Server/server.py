@@ -2,6 +2,7 @@
 # Import Library
 import random
 import json
+import os
 from flask import Flask, request
 from slacker import Slacker
 ########################################################################
@@ -46,7 +47,7 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
-                    token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+                    token = ''
                     slack = Slacker(token)
 
                     attachments_dict = dict()
@@ -143,12 +144,32 @@ def createRandomTemp():
     return rand_num
 
 
-# Observing Direct
-def observeDirect():
+# List channels & users in slack.
+@app.route("/listChannelAndUser", methods = ["POST"])
+def list_slack():
+    try:
+        token = os.environ['SLACK_TOKEN']
+        slack = Slacker(token)
 
-    return
+        # Get channel list
+        response = slack.channels.list()
+        channels = response.body['channels']
+        for channel in channels:
+            print(channel['id'], channel['name'])
+            # if not channel['is_archived']:
+            # slack.channels.join(channel['name'])
+        print()
 
-
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if not user['deleted']:
+                print(user['id'], user['name'], user['is_admin'], user[
+                    'is_owner'])
+        print()
+    except KeyError as ex:
+        print('Environment variable %s not set.' % str(ex))
 # MAIN
 if __name__ == "__main__":
 
@@ -156,6 +177,7 @@ if __name__ == "__main__":
     with open('./user_data/user.json', 'r') as f:
         user_list = json.load(f)['user']
         print(user_list)
+    list_slack()
 
     # Run App
     app.run(debug=True, host="0.0.0.0", port=5009)
