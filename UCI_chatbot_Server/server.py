@@ -46,7 +46,7 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
-                    token = ''
+                    token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
                     slack = Slacker(token)
 
                     attachments_dict = dict()

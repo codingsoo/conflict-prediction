@@ -123,3 +123,4 @@ if __name__ == "__main__":
 
     # User Verifying Process
     verifyingUser()
+    postToServer("/gitLsFiles",commandGitLsFiles())
