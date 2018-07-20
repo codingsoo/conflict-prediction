@@ -4,6 +4,7 @@ from collections import OrderedDict
 import subprocess
 import json
 import threading
+from os.path import expanduser
 
 # Verifying User
 def verifyingUser():
@@ -43,16 +44,19 @@ def getUserEmail():
     # Get User git Email Using subprocess
     raw = str(subprocess.check_output('git config user.email', shell=True))
 
+    # Get User git Name if user doesn't set their info
     if len(raw)==0:
         current_path = os.getcwd()
         home_path = expanduser("~")
-        os.chdir(home)
+
+        os.chdir(home_path)
 
         raw = str(subprocess.check_output('cat .gitconfig', shell=True))
         raw = raw.split("#")
         raw = re.sub("\n","",raw[3])
         raw = re.sub("\t","", raw)
         raw = re.sub("[a-z]* = ","", raw)
+
         os.chdir(current_path)
 
     # Create JSON
