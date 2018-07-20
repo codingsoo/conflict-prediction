@@ -1,0 +1,19 @@
+#
+{
+  'a/UCI_chatbot_Server/server.py': [
+    ['', '-1,5', '2/2'],
+    ["token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'", '-20,7', '1/1'],
+    ['def cmd1():', '-36,7', '0/1']
+  ],
+  'a/UCI_chatbot_Server/client.py': [
+    ['import subprocess', '-5,6', '2/0'],
+    ['def verifyingUser():', '-27,7', '1/1']
+  ],
+  'a/client.py': [
+    ['', '-1,14', '4/7'],
+    ['def verifyingUser():', '-16,32', '38/10'],
+    ['def postToServer(uri, json_data):', '-55,39', '257/10']
+  ]
+}
+
+{u'a/UCI_chatbot_Server/server.py': [[u'', u'-1,5', u'2/2'], [u"token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'", u'-20,7', u'1/1'], [u'def cmd1():', u'-36,7', u'0/1']], u'a/UCI_chatbot_Server/client.py': [[u'import subprocess', u'-5,6', u'2/0'], [u'def verifyingUser():', u'-27,7', u'1/1']], u'a/client.py': [[u'', u'-1,14', u'4/7'], [u'def verifyingUser():', u'-16,32', u'38/10'], [u'def postToServer(uri, json_data):', u'-55,39', u'257/10']]}

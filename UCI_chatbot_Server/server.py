@@ -1,5 +1,5 @@
 ########################################################################
-# Import Library
+# Import Library##
 import random
 import json
 import os
@@ -14,13 +14,13 @@ app = Flask(__name__)
 # User List
 user_list = list()
 working_file = dict()
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 
 
 # test for log
 @app.route("/test", methods = ["POST"])
 def test():
-
+    ##
     return "test"
 
 
@@ -36,7 +36,6 @@ def cmd1():
 
     # Direct Score Calculate Process
     # git_diff_content = content['git_diff_content']
-    #
     # for temp_content in git_diff_content:
     #     print("temp_content : ")
     #     print(temp_content)
