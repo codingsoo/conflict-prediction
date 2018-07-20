@@ -124,29 +124,33 @@ def commandGitDiff():
     # log
     print(temp_list)
 
-    # Changed git files To String
-    raw_ls_files = str(subprocess.check_output('git ls-files -m', shell=True))
+    # Modify git diff : Delete white space
+    for i in range(0, len(temp_list)):
+        temp_list[i].strip()
 
-    # Input changed file name list
-    file_name_list = raw_ls_files.splitlines()
-
-    # File Content List
-    file_content_list = list()
-
-    # Read Files Content
-    for temp_name in file_name_list:
-
-        # log
-        print(temp_name.strip())
-
-        # File name modify process
-        temp_file_name = temp_name.strip()
-
-        # File Open
-        file = open(temp_file_name, 'r')
-
-        # log
-        print(file_content_list.append(file.read()))
+    # # Changed git files To String
+    # raw_ls_files = str(subprocess.check_output('git ls-files -m', shell=True))
+    #
+    # # Input changed file name list
+    # file_name_list = raw_ls_files.splitlines()
+    #
+    # # File Content List
+    # file_content_list = list()
+    #
+    # # Read Files Content
+    # for temp_name in file_name_list:
+    #
+    #     # log
+    #     print(temp_name.strip())
+    #
+    #     # File name modify process
+    #     temp_file_name = temp_name.strip()
+    #
+    #     # File Open
+    #     file = open(temp_file_name, 'r')
+    #
+    #     # log
+    #     print(file_content_list.append(file.read()))
 
     # Make Dictionary
     temp_dict = OrderedDict()
@@ -157,8 +161,8 @@ def commandGitDiff():
     # Add Dictionary => git diff list
     temp_dict['git_diff'] = temp_list
 
-    # Add Dictionary => changed file content
-    temp_dict['git_diff_content'] = file_content_list
+    # # Add Dictionary => changed file content
+    # temp_dict['git_diff_content'] = file_content_list
 
     return temp_dict
 

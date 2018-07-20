@@ -12,8 +12,6 @@ for temp in temp_list:
 
     temp_file_name = temp.strip()
 
-    file = open(temp_file_name, 'r')
+test11 = 2
 
-    print(file_list.append(file.read()))
-
-print(file_list)
+print(2)

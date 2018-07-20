@@ -14,7 +14,7 @@ app = Flask(__name__)
 # User List
 user_list = list()
 working_file = dict()
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 
 # test for log
@@ -35,12 +35,11 @@ def cmd1():
     print(content)
 
     # Direct Score Calculate Process
-    git_diff_content = content['git_diff_content']
-
-    for temp_content in git_diff_content:
-        print("temp_content : ")
-        print(temp_content)
-
+    # git_diff_content = content['git_diff_content']
+    #
+    # for temp_content in git_diff_content:
+    #     print("temp_content : ")
+    #     print(temp_content)
 
     return "test"
 
@@ -64,7 +63,6 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
-                    token = ''
                     slack = Slacker(token)
 
                     attachments_dict = dict()
