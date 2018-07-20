@@ -16,4 +16,4 @@
   ]
 }
 
-{u'a/UCI_chatbot_Server/server.py': [[u'', u'-1,5', u'2/2'], [u"token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'", u'-20,7', u'1/1'], [u'def cmd1():', u'-36,7', u'0/1']], u'a/UCI_chatbot_Server/client.py': [[u'import subprocess', u'-5,6', u'2/0'], [u'def verifyingUser():', u'-27,7', u'1/1']], u'a/client.py': [[u'', u'-1,14', u'4/7'], [u'def verifyingUser():', u'-16,32', u'38/10'], [u'def postToServer(uri, json_data):', u'-55,39', u'257/10']]}
+{u'a/UCI_chatbot_Server/server.py': [[u'', u'-1,5', u'2/2'], [u"'", u'-20,7', u'1/1'], [u'def cmd1():', u'-36,7', u'0/1']], u'a/UCI_chatbot_Server/client.py': [[u'import subprocess', u'-5,6', u'2/0'], [u'def verifyingUser():', u'-27,7', u'1/1']], u'a/client.py': [[u'', u'-1,14', u'4/7'], [u'def verifyingUser():', u'-16,32', u'38/10'], [u'def postToServer(uri, json_data):', u'-55,39', u'257/10']]}
