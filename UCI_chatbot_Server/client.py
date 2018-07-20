@@ -3,7 +3,7 @@ import requests
 from collections import OrderedDict
 import subprocess
 import json
-
+import threading
 
 # Verifying User
 def verifyingUser():
@@ -95,14 +95,71 @@ def getToServer(uri, json_data):
 
 # Command : git diff
 def commandGitDiff():
-    return
+
+    # Input User Git Email
+    email = str(subprocess.check_output('git config user.email', shell=True)).strip()
+
+    # Input Git Diff Command
+    raw = str(subprocess.check_output('git diff', shell=True))
+
+    # Split by Lines
+    temp_list = raw.splitlines()
+
+    # log
+    print(temp_list)
+
+    # Changed git files To String
+    raw_ls_files = str(subprocess.check_output('git ls-files -m', shell=True))
+
+    # Input changed file name list
+    file_name_list = raw_ls_files.splitlines()
+
+    # File Content List
+    file_content_list = list()
+
+    # Read Files Content
+    for temp_name in file_name_list:
+
+        # log
+        print(temp_name.strip())
+
+        # File name modify process
+        temp_file_name = temp_name.strip()
+
+        # File Open
+        file = open(temp_file_name, 'r')
+
+        # log
+        print(file_content_list.append(file.read()))
+
+    # Make Dictionary
+    temp_dict = OrderedDict()
+
+    # Add Dictionary => User git id
+    temp_dict['git_id'] = email
+
+    # Add Dictionary => git diff list
+    temp_dict['git_diff'] = temp_list
+
+    # Add Dictionary => changed file content
+    temp_dict['git_diff_content'] = file_content_list
+
+    return temp_dict
 
 
 # Command : git ls-files -m
 def commandGitLsFiles():
+
+    # Input User Git Email
     email = str(subprocess.check_output('git config user.email', shell=True))
+
+    # Input Git Diff Command
     raw = str(subprocess.check_output('git ls-files -m', shell=True))
+
+    # Create JSON_data List
     json_data = []
+
+    # Append JSON data
     json_data.append(email)
     order_num = 0
 
@@ -112,7 +169,41 @@ def commandGitLsFiles():
         json_data.append(raw[:check_point])
         raw = raw[check_point + 1:]
 
+    # log
+    print(json_data)
+
     return json_data
+
+
+# Class for Threading
+class AsyncTask:
+
+    # init
+    def __init__(self):
+        pass
+
+    # send To Server : git diff / git ls-files -m
+    def sendToServer_GitDiff_GitLsFiles(self):
+
+        # Post To Server : git diff
+        postToServer("/gitDiff", commandGitDiff())
+
+        # Post To Server : git ls-files -m
+        postToServer("/gitLsFiles", commandGitLsFiles())
+
+        # Thread Start
+        threading.Timer(10, self.sendToServer_GitDiff_GitLsFiles).start()
+
+
+# Send To Server : Git Info
+def sendToServer_git_data():
+    # Create Async Object
+    asyncTask = AsyncTask()
+
+    # Start Sending Git Data
+    asyncTask.sendToServer_GitDiff_GitLsFiles()
+
+    return
 
 
 # MAIN
@@ -125,3 +216,5 @@ if __name__ == "__main__":
     verifyingUser()
     # postToServer("/gitLsFiles",commandGitLsFiles())
 
+    # Start Thread for sending git data
+    sendToServer_git_data()

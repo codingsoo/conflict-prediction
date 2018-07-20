@@ -17,23 +17,35 @@ working_file = dict()
 token = ''
 
 
+# test for log
 @app.route("/test", methods = ["POST"])
 def test():
 
     return "test"
 
 
-# Request for Command1
+# Request for git diff
 @app.route("/gitDiff", methods = ["POST", "GET"])
 def cmd1():
 
     # Get command1 content
-    content = request.get_json()
+    content = request.get_json(silent=True)
+
+    # log
     print(content)
+
+    # Direct Score Calculate Process
+    git_diff_content = content['git_diff_content']
+
+    for temp_content in git_diff_content:
+        print("temp_content : ")
+        print(temp_content)
+
+
     return "test"
 
 
-# Request for Command2
+# Request for git ls-files -m
 @app.route("/gitLsFiles", methods = ["POST", "GET"])
 def cmd2():
     # for test
@@ -41,6 +53,10 @@ def cmd2():
 
     # Get command2 content
     content = request.get_json(silent=True)
+
+    # log
+    print(content)
+
     key = str(content[0]).strip()
     for keys in working_file.keys():
         if keys == key:
@@ -48,6 +64,7 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
+                    token = ''
                     slack = Slacker(token)
 
                     attachments_dict = dict()
@@ -64,7 +81,7 @@ def cmd2():
     return "test"
 
 
-# User Search
+# User Search And Verifying
 @app.route("/userSearch", methods = ["POST"])
 def userSearch():
 
@@ -85,7 +102,7 @@ def userSearch():
 
         compare_temp = str(temp['git_id'])
 
-        # Already Sign In
+        # Already Sign In => break loop
         if(compare_temp == git_id):
             sign_in_flag = "True"
             break
@@ -104,12 +121,15 @@ def userSearch():
 
         # Add User Data
         user_list.append(temp_dict)
+
+        # log
         print(user_list)
 
         # Create JSON User Data
         json_dict = dict()
         json_dict['user'] = user_list
 
+        # log
         print(json_dict)
 
         # Save User Data Json file
@@ -125,6 +145,7 @@ def userSearch():
 # Synchronize User Data
 @app.route("/syncUserData", methods = ["POST"])
 def syncUserData():
+
     # Import User Data
     with open('./user_data/user.json', 'r') as f:
         user_list = json.load(f)['user']
@@ -132,7 +153,7 @@ def syncUserData():
 
     return "test"
 
-
+# Random Number for User sign-in
 def createRandomTemp():
 
     # Create Random Number

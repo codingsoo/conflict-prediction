@@ -1,12 +1,18 @@
-import os
-from datetime import datetime
-from slackclient import SlackClient
+# import os
+# from datetime import datetime
+# from slackclient import SlackClient
+#
+# channel = 'CBNKGMWBH'
+#
+# token = ''
+# sc = SlackClient(token)
+#
+# history = sc.api_call("channels.history", channel=channel)
+#
+# print(history)
 
-channel = 'CBNKGMWBH'
+import subprocess
 
-token = ''
-sc = SlackClient(token)
+raw = str(subprocess.check_output('git ls-files -m', shell=True))
 
-history = sc.api_call("channels.history", channel=channel)
-
-print(history)
+print(raw)
