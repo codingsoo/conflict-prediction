@@ -1,17 +1,19 @@
 import re
 import random
 import os
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import urllib2
 import json
 from collections import OrderedDict
 
 code_file_links = []
 base_url = "http://github.com"
 url = "https://github.com/UCNLP/conflict-detector"
+
 #Get html document from url
 def __init__bs(url):
-    html = urlopen(url).read()
+    request = urllib2.Request(url)
+    html = urllib2.urlopen(request).read()
     bs = BeautifulSoup(html, 'html.parser')
 
     return bs

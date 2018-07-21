@@ -34,11 +34,7 @@ def cmd1():
     # log
     print(content)
 
-    # Direct Score Calculate Process
-    # git_diff_content = content['git_diff_content']
-    # for temp_content in git_diff_content:
-    #     print("temp_content : ")
-    #     print(temp_content)
+    # 디프 정보를 받으면 JSON으로 저장
 
     return "test"
 
