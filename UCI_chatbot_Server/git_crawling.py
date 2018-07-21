@@ -40,8 +40,8 @@ def getClassFunctionInfo(url):
                 name = line.find_all("span",{"class":"pl-en"})
                 for class_name in name:
                     class_name_list.append(class_name.text)
-    print(def_name_list)
-    print(class_name_list)
+    #print(def_name_list)
+    #print(class_name_list)
 
     return def_name_list, class_name_list
 
@@ -64,8 +64,10 @@ def getLink(url):
             code_file_links.append(path)
         else :
             next_url = base_url +init_url
+            print next_url
             getLink(next_url)
 
+    print code_file_links
     return code_file_links
 
 #Write files' info in json file
