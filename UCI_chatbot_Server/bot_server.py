@@ -15,6 +15,11 @@ CMD_LIST = ['work', 'home', 'cal']
 # User List Data
 user_list = list()
 
+# Situation Shell
+get_severe_shell = []
+approved_shell = []
+notify_conflict_shell = []
+
 # find slack user's name
 def list_slack(id):
     try:
@@ -82,9 +87,19 @@ def on_open(ws):
 
     thread.start_new_thread(run, ())
 
+def make_shell_list(file):
+    f = open(file,"r")
+    text = f.read()
+    text = text.split("\n")
+
+    return text
 
 #### MAIN ####
 
+#Make up situation shell
+get_severe_shell = make_shell_list('./situation_shell/get_severe.txt')
+approved_shell = make_shell_list('./situation_shell/approved.txt')
+notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
 
 
 res = slack.auth.test().body
