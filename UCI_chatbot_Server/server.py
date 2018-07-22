@@ -14,7 +14,7 @@ app = Flask(__name__)
 user_git_id_list = list()
 working_file = dict()
 working_list = dict()
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -86,7 +86,7 @@ def userSearch():
     git_id = str(content['email'])
 
     for email in user_git_id_list.keys():
-        if str(email) == git_id:
+        if git_id == str(email) and type(user_git_id_list[email]) != int:
             return "True"
 
     # Generate Random Number
@@ -101,7 +101,7 @@ def userSearch():
         json.dump(json_dict, make_file)
 
     # Return Ture or Random Number
-    return rand_num
+    return str(rand_num)
 
 # Synchronize User Data
 @app.route("/syncUserData", methods = ["POST"])
