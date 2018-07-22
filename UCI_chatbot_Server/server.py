@@ -29,10 +29,15 @@ def cmd1():
     # Get command2 content
     content = request.get_json(silent=True)
 
-    working_list[content['git_id']] = content['git_diff']
+    print content['git_id']
+    print user_git_id_list
+
+    working_list[user_git_id_list[content['git_id']]] = content['git_diff']
 
     print content
     print working_list
+
+
 
     return "test"
 
@@ -89,7 +94,7 @@ def userSearch():
         # log
         # print (str(temp['git_id']))
 
-        compare_temp = str(temp['git_id'])
+        compare_temp = temp['git_id']
 
         # Already Sign In => break loop
         if(compare_temp == git_id):
@@ -141,6 +146,10 @@ def createRandomTemp():
 # MAIN
 if __name__ == "__main__":
 
-    syncUserData()
+    # Import User Data
+    with open('./user_data/user_git.json', 'r') as f:
+        user_git_id_list = json.load(f)
+        print(user_git_id_list)
+
     # Run App
     app.run(debug=True, host="0.0.0.0", port=5009)
