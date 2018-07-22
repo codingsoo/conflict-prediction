@@ -31,7 +31,7 @@ conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI
 # { user_name : { user_name : error_name } }
 error_list = dict()
 
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -56,10 +56,13 @@ def cmd1():
     # Create working_list
     working_list[user_slack_id] = content['git_diff']
 
+    # Put user's working list to conflict list
     for file_name in  working_list[user_slack_id]:
         user_list = []
 
+        # Conflict case
         if file_name in conflict_list.keys() and user_slack_id not in conflict_list[file_name]:
+            # Analyze conflict severity
             if file_name in working_list[conflict_list[file_name][0]].keys():
                 error = 'in'
                 for user1_work_place in working_list[conflict_list[file_name][0]][file_name].keys():
@@ -81,15 +84,17 @@ def cmd1():
                             if pre_working_space > working_space:
                                 error = 'in' + str(working_line) + str(working_space)
 
-                print error
+                conflict_list[file_name].append(user_slack_id)
                 conflict_list[file_name].sort()
                 user_error_dict = dict()
-                user_error_dict[user_slack_id] = error
+                user_error_dict[conflict_list[file_name][1]] = error
                 error_list[conflict_list[file_name][0]] = user_error_dict
                 print error_list
                 del(conflict_list[file_name])
             else:
                 conflict_list[file_name][0] = user_slack_id
+
+        # No conflict
         else:
             user_list.append(user_slack_id)
             conflict_list[file_name] = user_list
