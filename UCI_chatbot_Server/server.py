@@ -7,15 +7,14 @@ from flask import Flask, request
 from slacker import Slacker
 ########################################################################
 
-
 # Create app
 app = Flask(__name__)
 
 # User List
-user_list = list()
+user_git_id_list = list()
 working_file = dict()
-token = ''
-
+working_list = dict()
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -27,14 +26,13 @@ def test():
 # Request for git diff
 @app.route("/gitDiff", methods = ["POST", "GET"])
 def cmd1():
-
-    # Get command1 content
+    # Get command2 content
     content = request.get_json(silent=True)
 
-    # log
-    print(content)
+    working_list[content['git_id']] = content['git_diff']
 
-    # 디프 정보를 받으면 JSON으로 저장
+    print content
+    print working_list
 
     return "test"
 
@@ -43,7 +41,7 @@ def cmd1():
 @app.route("/gitLsFiles", methods = ["POST", "GET"])
 def cmd2():
     # for test
-    working_file['test'] = ['client.py','server.py']
+    working_file['test'] = {}
 
     # Get command2 content
     content = request.get_json(silent=True)
@@ -67,7 +65,7 @@ def cmd2():
 
                     slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
-    print working_file
+    # print working_file
 
     working_file[key] = content[1:]
 
@@ -85,13 +83,11 @@ def userSearch():
     content = request.get_json(silent=True)
     git_id = str(content['email'])
 
-    print(git_id)
-
     # User Search
-    for temp in user_list:
+    for temp in user_git_id_list:
 
         # log
-        print (str(temp['git_id']))
+        # print (str(temp['git_id']))
 
         compare_temp = str(temp['git_id'])
 
@@ -106,27 +102,12 @@ def userSearch():
         # Generate Random Number
         rand_num = createRandomTemp()
 
-        # Create User Data
-        temp_dict = dict()
-        temp_dict['slack_id'] = str(rand_num)
-        temp_dict['git_id'] = git_id
-        temp_dict['slack_name'] = "UCI"
-
-        # Add User Data
-        user_list.append(temp_dict)
-
-        # log
-        print(user_list)
-
         # Create JSON User Data
         json_dict = dict()
-        json_dict['user'] = user_list
-
-        # log
-        print(json_dict)
+        json_dict[git_id] = rand_num
 
         # Save User Data Json file
-        with open('./user_data/user.json', 'w') as make_file:
+        with open('./user_data/user_git.json', 'w') as make_file:
             json.dump(json_dict, make_file)
 
         # Return Random Number
@@ -140,9 +121,9 @@ def userSearch():
 def syncUserData():
 
     # Import User Data
-    with open('./user_data/user.json', 'r') as f:
-        user_list = json.load(f)['user']
-        print(user_list)
+    with open('./user_data/user_git.json', 'r') as f:
+        user_git_id_list = json.load(f)
+        # print(user_list)
 
     return "test"
 
@@ -160,10 +141,6 @@ def createRandomTemp():
 # MAIN
 if __name__ == "__main__":
 
-    # Import User Data
-    with open('./user_data/user.json', 'r') as f:
-        user_list = json.load(f)['user']
-        print(user_list)
-
+    syncUserData()
     # Run App
     app.run(debug=True, host="0.0.0.0", port=5009)
