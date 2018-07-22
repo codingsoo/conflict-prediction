@@ -11,9 +11,18 @@ from slacker import Slacker
 app = Flask(__name__)
 
 # User List
-user_git_id_list = list()
+user_git_id_list = dict()
 working_file = dict()
+
+# git diff
 working_list = dict()
+
+# { file_name : user_name }
+conflict_list = dict()
+
+# { user_name : { user_name : error_name } }
+error_list = dict()
+
 token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 # test for log
@@ -26,18 +35,74 @@ def test():
 # Request for git diff
 @app.route("/gitDiff", methods = ["POST", "GET"])
 def cmd1():
+
     # Get command2 content
     content = request.get_json(silent=True)
 
+    # log
+    print content
+
+    # Get User slack id
+    user_slack_id = user_git_id_list[str(content['git_id'])]
+
+    # log
     print content['git_id']
     print user_git_id_list
 
-    working_list[user_git_id_list[content['git_id']]] = content['git_diff']
+    # Create working_list
+    working_list[user_slack_id] = content['git_diff']
+
+    # log
+    print ("conflict list keys : " + str(conflict_list.keys()))
+
+    # conflict list == null
+    if conflict_list.keys() == []:
+
+        # all file, user pair is added
+        for file_name in content['git_diff']:
+            conflict_list[file_name] = user_slack_id
+
+    # conflict list != null
+    else:
+
+        # Append New git diff Info To conflict_list
+        for file_name in content['git_diff'].keys():
+
+            # log
+            print file_name
+
+            # conflict detect
+            for conflict_file_name in conflict_list.keys():
+
+                # log
+                print conflict_file_name
+
+                # Conflict
+                if (file_name == conflict_file_name) and (conflict_list[conflict_file_name] != user_slack_id):
+
+                    print "conflict"
+
+                    # POP : get error_user1
+                    error_user1 = conflict_list.pop(file_name)
+
+                    error_user2_info = dict()
+
+                    # find error header [function, class, in] about old user (user1) #
+                    conflict_header_name = str(working_list[error_user1][conflict_file_name][1])
+
+                    error_user2_info[user_slack_id] = conflict_header_name
+
+                    error_list[error_user1] = error_user2_info
+
+                # Non - conflict
+                else:
+                    print "non-conflict"
+                    conflict_list[file_name] = user_slack_id
 
     print content
     print working_list
-
-
+    print conflict_list
+    print error_list
 
     return "test"
 

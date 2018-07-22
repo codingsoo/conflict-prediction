@@ -64,6 +64,7 @@ def getUserEmail():
     # Create JSON
     json_data = OrderedDict()
     json_data["email"] = raw.strip()
+    # json_data["email"] = "jcjc@naver.com"
 
     return json_data
 
@@ -136,9 +137,11 @@ def commandGitDiff():
     diff_file_list = dict()
 
     # diff_file list
-    diff_function_list = list()
+    diff_function_list = dict()
 
-    # diff_obj : each git information
+    # diff_obj_dict
+    diff_function_dict = dict()
+    # diff_obj : each git information content
     diff_function_obj = list()
 
     # diff_function_obj Definition
@@ -146,6 +149,8 @@ def commandGitDiff():
     function_name = ""
     working_line = ""
     plus_minus_count = 0
+    temp_func_name = ""
+    temp_count = 0
 
     for t in temp_list:
 
@@ -156,21 +161,24 @@ def commandGitDiff():
             if (dt != 0):
 
                 # Create diff function obj
-                diff_function_obj.append(function_name)
+                # diff_function_obj.append(function_name)
                 diff_function_obj.append(working_line)
                 diff_function_obj.append(str(plus_minus_count))
 
+                diff_function_dict[function_name] = diff_function_obj
+
                 # Create diff function list
-                diff_function_list.append(diff_function_obj)
+                # diff_function_list.append(diff_function_dict)
 
                 # Add diff_file_list
-                diff_file_list[str(file_name)] = diff_function_list
+                diff_file_list[str(file_name)] = diff_function_dict
 
                 diff_function_obj = list()
-                diff_function_list = list()
+                diff_function_dict = dict()
 
                 dt = 0
                 df = 0
+                plus_minus_count = 0
 
             # Find file name
             file_name = t.split(' ')[2][1:]
@@ -182,30 +190,41 @@ def commandGitDiff():
 
             # Second function name
             if(df != 0):
+                if(function_name == temp_func_name):
+                    plus_minus_count += temp_count
 
                 # Create diff_function_obj
-                diff_function_obj.append(function_name)
                 diff_function_obj.append(working_line)
                 diff_function_obj.append(str(plus_minus_count))
+                diff_function_dict[function_name] = diff_function_obj
 
                 # Create diff_function_list
-                diff_function_list.append(diff_function_obj)
+                # diff_function_list.append(diff_function_obj)
 
                 # Initialize obj
                 diff_function_obj = list()
 
                 # Initialize plus, minus count
+                temp_count = plus_minus_count
                 plus_minus_count = 0
                 df = 0
 
-            # Find function
+            # Find function name
+            temp_func_name = function_name
             function_name = t.split("@@")[2].strip()
-            if(function_name == ""):
+            if(function_name == temp_func_name):
+                pass
+            elif(function_name == ""):
                 function_name = "in"
 
-            # Find working Line
-            working_line = t.split(' ')[1].strip()
-            working_line = working_line.split(',')[0][1:]
+                # Find working Line
+                working_line = t.split(' ')[1].strip()
+                working_line = working_line.split(',')[0][1:]
+            else:
+                # Find working Line
+                working_line = t.split(' ')[1].strip()
+                working_line = working_line.split(',')[0][1:]
+
 
             df += 1
 
@@ -224,16 +243,16 @@ def commandGitDiff():
         # Final plus, minus count finish => ADD all
         if str(t) == str(temp_list[len(temp_list)-1]):
 
-            # Create diff function obj
-            diff_function_obj.append(function_name)
+            # Create diff_function_obj
             diff_function_obj.append(working_line)
             diff_function_obj.append(str(plus_minus_count))
+            diff_function_dict[function_name] = diff_function_obj
 
             # Create diff function list
-            diff_function_list.append(diff_function_obj)
+            # diff_function_list.append(diff_function_obj)
 
             # Create diff file list
-            diff_file_list[str(file_name)] = diff_function_list
+            diff_file_list[str(file_name)] = diff_function_dict
 
             # dic_keys = diff_file_list.keys()
             #
