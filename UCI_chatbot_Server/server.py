@@ -81,45 +81,27 @@ def cmd2():
 @app.route("/userSearch", methods = ["POST"])
 def userSearch():
 
-    # Initialize sign_in_flag
-    sign_in_flag = "False"
-
     # Get User Git ID
     content = request.get_json(silent=True)
     git_id = str(content['email'])
 
-    # User Search
-    for temp in user_git_id_list:
+    for email in user_git_id_list.keys():
+        if str(email) == git_id:
+            return "True"
 
-        # log
-        # print (str(temp['git_id']))
+    # Generate Random Number
+    rand_num = createRandomTemp()
 
-        compare_temp = temp['git_id']
+    # Create JSON User Data
+    json_dict = dict()
+    json_dict[git_id] = rand_num
 
-        # Already Sign In => break loop
-        if(compare_temp == git_id):
-            sign_in_flag = "True"
-            break
-
-    # User have to sign in
-    if(sign_in_flag != "True"):
-
-        # Generate Random Number
-        rand_num = createRandomTemp()
-
-        # Create JSON User Data
-        json_dict = dict()
-        json_dict[git_id] = rand_num
-
-        # Save User Data Json file
-        with open('./user_data/user_git.json', 'w') as make_file:
-            json.dump(json_dict, make_file)
-
-        # Return Random Number
-        sign_in_flag = str(rand_num)
+    # Save User Data Json file
+    with open('./user_data/user_git.json', 'w') as make_file:
+        json.dump(json_dict, make_file)
 
     # Return Ture or Random Number
-    return sign_in_flag
+    return rand_num
 
 # Synchronize User Data
 @app.route("/syncUserData", methods = ["POST"])
