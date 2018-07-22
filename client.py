@@ -112,6 +112,7 @@ def getToServer(uri, json_data):
 
 
 # Command : git diff
+# Output : git_id : , file_name : [edit_part, working_line,working_range, new_line_count, deleted_line_count]
 def commandGitDiff():
 
     # Input User Git Email
@@ -192,7 +193,7 @@ def commandGitDiff():
                 df = 0
 
             # Find file name
-            file_name = t.split(' ')[2]
+            file_name = t.split(' ')[2][1:]
 
             dt += 1
 
@@ -284,12 +285,12 @@ def commandGitDiff():
     # Add Dictionary => git diff list
     temp_dict['git_diff'] = diff_file_list
 
-    print(diff_file_list)
+    print(temp_dict)
 
     # # Add Dictionary => changed file content
     # temp_dict['git_diff_content'] = file_content_list
 
-    return diff_file_list
+    return temp_dict
 
 
 # Command : git ls-files -m
@@ -314,7 +315,7 @@ def commandGitLsFiles():
         json_data.append(raw[:check_point])
         raw = raw[check_point + 1:]
 
-    # log
+    # print log
     print(json_data)
 
     return json_data
@@ -334,7 +335,7 @@ class AsyncTask:
         postToServer("/gitDiff", commandGitDiff())
 
         # Post To Server : git ls-files -m
-        postToServer("/gitLsFiles", commandGitLsFiles())
+        # postToServer("/gitLsFiles", commandGitLsFiles())
 
         # Thread Start
         threading.Timer(10, self.sendToServer_GitDiff_GitLsFiles).start()
