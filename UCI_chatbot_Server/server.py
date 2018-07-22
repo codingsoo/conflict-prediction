@@ -17,8 +17,16 @@ working_file = dict()
 # git diff
 working_list = dict()
 
-# { file_name : user_name }
-conflict_list = dict()
+# test
+working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
+
+
+# { file_name : [user_name] }
+conflict_list = dict([])
+
+# test
+conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI_chatbot_Server/user_data/user_git.json': [u'learnitdeep2'], u'/UCI_chatbot_Server/server.py': [u'learnitdeep2']}
+
 
 # { user_name : { user_name : error_name } }
 error_list = dict()
@@ -39,70 +47,103 @@ def cmd1():
     # Get command2 content
     content = request.get_json(silent=True)
 
-    # log
-    print content
-
     # Get User slack id
-    user_slack_id = user_git_id_list[str(content['git_id'])]
-
-    # log
-    print content['git_id']
-    print user_git_id_list
+    if content['git_id']:
+        user_slack_id = user_git_id_list[str(content['git_id'])]
+    else:
+        user_slack_id = content['git_id']
 
     # Create working_list
     working_list[user_slack_id] = content['git_diff']
 
-    # log
-    print ("conflict list keys : " + str(conflict_list.keys()))
+    for file_name in  working_list[user_slack_id]:
+        user_list = []
 
-    # conflict list == null
-    if conflict_list.keys() == []:
+        if file_name in conflict_list.keys() and user_slack_id not in conflict_list[file_name]:
+            if file_name in working_list[conflict_list[file_name][0]].keys():
+                error = 'in'
+                for user1_work_place in working_list[conflict_list[file_name][0]][file_name].keys():
+                    for user2_work_place in working_list[user_slack_id][file_name].keys():
+                        if user1_work_place == user2_work_place and 'def' in user1_work_place:
+                            error = user1_work_place
+                        elif user1_work_place == user2_work_place and 'class' in user1_work_place and 'def' not in error:
+                            error = user1_work_place
+                        elif error == 'in':
+                            working_line = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
+                            working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            error = error + str(working_line) + ',' + str(working_space)
+                        elif 'in' in error:
+                            pre_working_line = int(error[2:].split(',')[0])
+                            pre_working_space = int(error[2:].split(',')[1])
+                            working_line = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
+                            working_space = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
 
-        # all file, user pair is added
-        for file_name in content['git_diff']:
-            conflict_list[file_name] = user_slack_id
+                            if pre_working_space > working_space:
+                                error = 'in' + str(working_line) + str(working_space)
 
-    # conflict list != null
-    else:
+                print error
+                conflict_list[file_name].sort()
+                user_error_dict = dict()
+                user_error_dict[user_slack_id] = error
+                error_list[conflict_list[file_name][0]] = user_error_dict
+                print error_list
+                del(conflict_list[file_name])
+            else:
+                conflict_list[file_name][0] = user_slack_id
+        else:
+            user_list.append(user_slack_id)
+            conflict_list[file_name] = user_list
 
-        # Append New git diff Info To conflict_list
-        for file_name in content['git_diff'].keys():
+            print conflict_list
 
-            # log
-            print file_name
-
-            # conflict detect
-            for conflict_file_name in conflict_list.keys():
-
-                # log
-                print conflict_file_name
-
-                # Conflict
-                if (file_name == conflict_file_name) and (conflict_list[conflict_file_name] != user_slack_id):
-
-                    print "conflict"
-
-                    # POP : get error_user1
-                    error_user1 = conflict_list.pop(file_name)
-
-                    error_user2_info = dict()
-
-                    # find error header [function, class, in] about old user (user1) #
-                    conflict_header_name = str(working_list[error_user1][conflict_file_name][1])
-
-                    error_user2_info[user_slack_id] = conflict_header_name
-
-                    error_list[error_user1] = error_user2_info
-
-                # Non - conflict
-                else:
-                    print "non-conflict"
-                    conflict_list[file_name] = user_slack_id
-
-    print content
-    print working_list
-    print conflict_list
-    print error_list
+    # # conflict list == null
+    # if conflict_list.keys() == []:
+    #
+    #     # all file, user pair is added
+    #     for file_name in content['git_diff']:
+    #         conflict_list[file_name] = user_slack_id
+    #
+    # # conflict list != null
+    # else:
+    #
+    #     # Append New git diff Info To conflict_list
+    #     for file_name in content['git_diff'].keys():
+    #
+    #         # log
+    #         print file_name
+    #
+    #         # conflict detect
+    #         for conflict_file_name in conflict_list.keys():
+    #
+    #             # log
+    #             print conflict_file_name
+    #
+    #             # Conflict
+    #             if (file_name == conflict_file_name) and (conflict_list[conflict_file_name] != user_slack_id):
+    #
+    #                 print "conflict"
+    #
+    #                 # POP : get error_user1
+    #                 error_user1 = conflict_list.pop(file_name)
+    #
+    #                 error_user2_info = dict()
+    #
+    #                 # find error header [function, class, in] about old user (user1) #
+    #                 conflict_header_name = str(working_list[error_user1][conflict_file_name][1])
+    #
+    #                 error_user2_info[user_slack_id] = conflict_header_name
+    #
+    #                 error_list[error_user1] = error_user2_info
+    #
+    #             # Non - conflict
+    #             else:
+    #                 print "non-conflict"
+    #                 conflict_list[file_name] = user_slack_id
+    #
+    # print content
+    # print working_list
+    # print conflict_list
+    # print error_list
 
     return "test"
 
