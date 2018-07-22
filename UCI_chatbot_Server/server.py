@@ -14,7 +14,7 @@ app = Flask(__name__)
 user_git_id_list = list()
 working_file = dict()
 working_list = dict()
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 
 # test for log
 @app.route("/test", methods = ["POST"])

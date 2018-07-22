@@ -145,8 +145,7 @@ def commandGitDiff():
     file_name = ""
     function_name = ""
     working_line = ""
-    plus_count = 0
-    minus_count = 0
+    plus_minus_count = 0
 
     for t in temp_list:
 
@@ -159,31 +158,34 @@ def commandGitDiff():
                 # Create diff function obj
                 diff_function_obj.append(function_name)
                 diff_function_obj.append(working_line)
-                diff_function_obj.append(str(plus_count) + "/" + str(minus_count))
+                diff_function_obj.append(str(plus_minus_count))
 
                 # Create diff function list
                 diff_function_list.append(diff_function_obj)
 
-                dic_keys = diff_file_list.keys()
+                # Add diff_file_list
+                diff_file_list[str(file_name)] = diff_function_list
 
-                key_flag = False
+                # dic_keys = diff_file_list.keys()
 
-                # Dictionary key replication check
-                for temp_key in dic_keys:
-                    if temp_key == file_name:
-                        key_flag = True
-                        break
-                    else:
-                        key_flag = False
+                # key_flag = False
 
-                # Dictionary key replication check
-                if(key_flag):
-                    # Already exist dictionary
-                    for temp_function_obj in diff_function_list:
-                        diff_file_list[str(file_name)].append(temp_function_obj)
-                else:
-                    # Create diff file list
-                    diff_file_list[str(file_name)] = diff_function_list
+                # # Dictionary key replication check
+                # for temp_key in dic_keys:
+                #     if temp_key == file_name:
+                #         key_flag = True
+                #         break
+                #     else:
+                #         key_flag = False
+                #
+                # # Dictionary key replication check
+                # if(key_flag):
+                #     # Already exist dictionary
+                #     for temp_function_obj in diff_function_list:
+                #         diff_file_list[str(file_name)].append(temp_function_obj)
+                # else:
+                #     # Create diff file list
+                #     diff_file_list[str(file_name)] = diff_function_list
 
                 # Initialize obj / list
                 diff_function_obj = list()
@@ -206,7 +208,7 @@ def commandGitDiff():
                 # Create diff_function_obj
                 diff_function_obj.append(function_name)
                 diff_function_obj.append(working_line)
-                diff_function_obj.append(str(plus_count) + "/" + str(minus_count))
+                diff_function_obj.append(str(plus_minus_count))
 
                 # Create diff_function_list
                 diff_function_list.append(diff_function_obj)
@@ -215,15 +217,17 @@ def commandGitDiff():
                 diff_function_obj = list()
 
                 # Initialize plus, minus count
-                plus_count = 0
-                minus_count = 0
+                plus_minus_count = 0
                 df = 0
 
             # Find function
             function_name = t.split("@@")[2].strip()
+            if(function_name == ""):
+                function_name = "in"
 
             # Find working Line
             working_line = t.split(' ')[1].strip()
+            working_line = working_line.split(',')[0][1:]
 
             df += 1
 
@@ -231,13 +235,13 @@ def commandGitDiff():
         elif (t[0] == "+") and (t[1:3] != "++"):
 
             # Find plus length
-            plus_count += 1
+            plus_minus_count += 1
 
         # Find minus_token
         elif (t[0] == "-") and (t[1:3] != "--"):
 
             # Find minus length
-            minus_count += 1
+            plus_minus_count += 1
 
         # Final plus, minus count finish => ADD all
         if str(t) == str(temp_list[len(temp_list)-1]):
@@ -245,36 +249,39 @@ def commandGitDiff():
             # Create diff function obj
             diff_function_obj.append(function_name)
             diff_function_obj.append(working_line)
-            diff_function_obj.append(str(plus_count) + "/" + str(minus_count))
+            diff_function_obj.append(str(plus_minus_count))
 
             # Create diff function list
             diff_function_list.append(diff_function_obj)
 
-            dic_keys = diff_file_list.keys()
+            # Create diff file list
+            diff_file_list[str(file_name)] = diff_function_list
 
-            key_flag = False
-
-            # Dictionary key replication check
-            for temp_key in dic_keys:
-
-                # Dictionary key is replication
-                if temp_key == file_name:
-                    key_flag = True
-                    break
-                # Dictionary key is not replication
-                else:
-                    key_flag = False
-
-            # Dictionary key replication check
-            if (key_flag):
-
-                # Already exist dictionary
-                for temp_function_obj in diff_function_list:
-                    diff_file_list[str(file_name)].append(temp_function_obj)
-
-            else:
-                # Create diff file list
-                diff_file_list[str(file_name)] = diff_function_list
+            # dic_keys = diff_file_list.keys()
+            #
+            # key_flag = False
+            #
+            # # Dictionary key replication check
+            # for temp_key in dic_keys:
+            #
+            #     # Dictionary key is replication
+            #     if temp_key == file_name:
+            #         key_flag = True
+            #         break
+            #     # Dictionary key is not replication
+            #     else:
+            #         key_flag = False
+            #
+            # # Dictionary key replication check
+            # if (key_flag):
+            #
+            #     # Already exist dictionary
+            #     for temp_function_obj in diff_function_list:
+            #         diff_file_list[str(file_name)].append(temp_function_obj)
+            #
+            # else:
+            #     # Create diff file list
+            #     diff_file_list[str(file_name)] = diff_function_list
 
     # Make Dictionary
     temp_dict = OrderedDict()
