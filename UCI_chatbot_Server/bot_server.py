@@ -7,7 +7,7 @@ import json
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 slack = Slacker(token)
 CMDCHAR = '?'
 CMD_LIST = ['work', 'home', 'cal']
@@ -100,6 +100,8 @@ def make_shell_list(file):
 get_severe_shell = make_shell_list('./situation_shell/get_severe.txt')
 approved_shell = make_shell_list('./situation_shell/approved.txt')
 notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
+
+print notify_conflict_shell[0]%('hhh1','hhh2','hhh3')
 
 
 res = slack.auth.test().body

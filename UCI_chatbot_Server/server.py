@@ -23,7 +23,7 @@ conflict_list = dict()
 # { user_name : { user_name : error_name } }
 error_list = dict()
 
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 
 # test for log
 @app.route("/test", methods = ["POST"])
