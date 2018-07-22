@@ -166,28 +166,6 @@ def commandGitDiff():
                 # Add diff_file_list
                 diff_file_list[str(file_name)] = diff_function_list
 
-                # dic_keys = diff_file_list.keys()
-
-                # key_flag = False
-
-                # # Dictionary key replication check
-                # for temp_key in dic_keys:
-                #     if temp_key == file_name:
-                #         key_flag = True
-                #         break
-                #     else:
-                #         key_flag = False
-                #
-                # # Dictionary key replication check
-                # if(key_flag):
-                #     # Already exist dictionary
-                #     for temp_function_obj in diff_function_list:
-                #         diff_file_list[str(file_name)].append(temp_function_obj)
-                # else:
-                #     # Create diff file list
-                #     diff_file_list[str(file_name)] = diff_function_list
-
-                # Initialize obj / list
                 diff_function_obj = list()
                 diff_function_list = list()
 
