@@ -147,7 +147,11 @@ def cmd1():
                     # Severe case to in
                     elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
                         attachments_dict = dict()
+<<<<<<< Updated upstream
                         attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], file_name + " file")
+=======
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], " same file")
+>>>>>>> Stashed changes
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
