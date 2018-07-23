@@ -17,7 +17,7 @@ working_file = dict()
 working_list = dict()
 
 # test
-working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
+# working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
 
 # Approved list
 approved_list = []
@@ -26,7 +26,7 @@ approved_list = []
 conflict_list = dict([])
 
 # test
-conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI_chatbot_Server/user_data/user_git.json': [u'learnitdeep2'], u'/UCI_chatbot_Server/server.py': [u'learnitdeep2']}
+# conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI_chatbot_Server/user_data/user_git.json': [u'learnitdeep2'], u'/UCI_chatbot_Server/server.py': [u'learnitdeep2']}
 
 
 # { user_name : { user_name : error_name } }
@@ -297,4 +297,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="0.0.0.0", port=5009)
+    app.run(debug=True, host="0.0.0.0", port=80)
