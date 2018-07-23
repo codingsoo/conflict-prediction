@@ -130,6 +130,8 @@ def cmd1():
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
+                        error_list[conflict_list[file_name][0]][conflict_list[file_name][1]] = error
+
                     # Severe case to class
                     elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
                         attachments_dict = dict()
@@ -139,6 +141,7 @@ def cmd1():
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
+                        error_list[conflict_list[file_name][0]][conflict_list[file_name][1]] = error
 
                     # Severe case to in
                     elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
@@ -149,6 +152,8 @@ def cmd1():
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
+                        error_list[conflict_list[file_name][0]][conflict_list[file_name][1]] = error
+
                     # Conflict solved
                     elif ('def' in pre_error and 'def' not in error) or ('class' in pre_error and 'def' not in error and 'class' not in error) or ('in' in pre_error and 'in' in error and int(pre_error[2:].split(',')[1]) + 5 < int(error[2:].split(',')[1])):
                         attachments_dict = dict()
@@ -157,6 +162,7 @@ def cmd1():
                         attachments = [attachments_dict]
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+                        del(error_list[conflict_list[file_name][0]][conflict_list[file_name][1]][file_name])
                     # Same conflict
                     else :
                         pass
@@ -196,6 +202,18 @@ def cmd1():
                 del(conflict_list[file_name])
             # No conflict
             else:
+                # pre-conflict exist
+                conflict_check_user = []
+                conflict_check_user.append(conflict_list[file_name][0])
+                conflict_check_user.append(user_slack_id)
+                conflict_check_user.sort()
+                attachments_dict = dict()
+                attachments_dict['text'] = conflict_finished[random.randint(0, len(conflict_finished) - 1)] % (conflict_check_user[0], conflict_check_user[1])
+                attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                attachments = [attachments_dict]
+
+                slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+                del (error_list[conflict_check_user[0]][conflict_check_user[1]][file_name])
                 conflict_list[file_name][0] = user_slack_id
 
         # No conflict
@@ -216,8 +234,6 @@ def cmd2():
 
     # Get command2 content
     content = request.get_json(silent=True)
-
-    sss
 
     # log
     print(content)
