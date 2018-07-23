@@ -33,7 +33,7 @@ conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI
 error_list = dict()
 
 # test
-error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
+# error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
 token = ''
 slack = Slacker(token)
@@ -71,6 +71,8 @@ def cmd1():
 
     # Create working_list
     working_list[user_slack_id] = content['git_diff']
+
+    user_mem = []
 
     # Put user's working list to conflict list
     for file_name in  working_list[user_slack_id]:
@@ -114,7 +116,7 @@ def cmd1():
                 conflict_list[file_name].sort()
 
                 # When pre-conflict exist
-                if conflict_list[file_name][0] in error_list.keys() and conflict_list[file_name][1] in error_list[conflict_list[file_name][0]].keys():
+                if conflict_list[file_name][0] in error_list.keys() and conflict_list[file_name][1] in error_list[conflict_list[file_name][0]].keys() and file_name in error_list[conflict_list[file_name][0]][conflict_list[file_name][1]].keys():
                     pre_error = error_list[conflict_list[file_name][0]]
 
                     # Severe case to def
@@ -135,7 +137,9 @@ def cmd1():
                 # When pre-conflict doesn't exist
                 else:
                     user_error_dict = dict()
-                    user_error_dict[conflict_list[file_name][1]] = error
+                    func_error_dict = dict()
+                    func_error_dict[file_name] = error
+                    user_error_dict[conflict_list[file_name][1]] = func_error_dict
                     error_list[conflict_list[file_name][0]] = user_error_dict
 
                     # def detected
