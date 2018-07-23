@@ -35,12 +35,13 @@ error_list = dict()
 # test
 # error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 slack = Slacker(token)
 
 def make_shell_list(file):
     f = open(file,"r")
     text = f.read()
+    text = unicode(text,'utf-8')
     text = text.split("\n")
 
     return text
@@ -221,6 +222,8 @@ def cmd2():
 
     # Get command2 content
     content = request.get_json(silent=True)
+
+    sss
 
     # log
     print(content)
