@@ -117,7 +117,7 @@ def cmd1():
 
                 # When pre-conflict exist
                 if conflict_list[file_name][0] in error_list.keys() and conflict_list[file_name][1] in error_list[conflict_list[file_name][0]].keys() and file_name in error_list[conflict_list[file_name][0]][conflict_list[file_name][1]].keys():
-                    pre_error = error_list[conflict_list[file_name][0]]
+                    pre_error = error_list[conflict_list[file_name][0]][conflict_list[file_name][1]][file_name]
 
                     # Severe case to def
                     if 'def' in error and 'def' not in pre_error:
