@@ -129,7 +129,7 @@ def cmd1():
                     # Severe case to def
                     if 'def' in error and 'def' not in pre_error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], pre_error, error + " function")
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], file_name, error + " function")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -138,7 +138,7 @@ def cmd1():
                     # Severe case to class
                     elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], error + " class")
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], file_name ,error + " class")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
