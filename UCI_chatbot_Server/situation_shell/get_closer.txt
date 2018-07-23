@@ -1,0 +1,9 @@
+Hey, %s and %s! You guys' location is more closer!
+Hey, %s and %s! You guys' location get closer and closer!
+It seems %s and %s are more closer.
+Two developers %s and %s are working too closer!
+%s and %s are working too closer!
+%s and %s are engaging in closer.
+As %s and %s are working continue, it is more closer!
+Hey, %s and %s what you guys doing? You guys get closer and closer!
+Hey, %s and %s what you guys doing? You guys get more closer!
