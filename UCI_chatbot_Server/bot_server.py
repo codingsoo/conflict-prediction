@@ -1,4 +1,4 @@
-# Import Library
+b# Import Library
 from slacker import Slacker
 import websocket
 import thread
@@ -122,7 +122,7 @@ res = slack.auth.test().body
 msg = [{
     'fallback': res['user'] + ' is LOG-IN!',
     'pretext': '*Connected to ' + res['team'] + '(' + channel + ')*',
-    'text': 'bot Usage : ' + CMDCHAR + '{' + ','.join(CMD_LIST) + '}\nbot Help : ' + CMDCHAR + 'help',
+    'text': 'Hello! I\'m SAYME. \nIf you need me, please call me with @SAYME first.',
     'color': '#36a64f',
     'mrkdwn_in': ['pretext']
 }]
