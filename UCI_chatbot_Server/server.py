@@ -152,9 +152,21 @@ def cmd1():
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
                     # class detected
                     elif 'class' in error:
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+                    # same file detected
                     else:
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " file")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+
                 del(conflict_list[file_name])
             # No conflict
             else:
