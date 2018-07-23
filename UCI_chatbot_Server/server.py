@@ -2,7 +2,6 @@
 # Import Library##
 import random
 import json
-import os
 from flask import Flask, request
 from slacker import Slacker
 ########################################################################
@@ -37,6 +36,18 @@ error_list = dict()
 error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
 token = ''
+slack = Slacker(token)
+
+def make_shell_list(file):
+    f = open(file,"r")
+    text = f.read()
+    text = text.split("\n")
+
+    return text
+
+# bot_rule_based_talk
+go_to_same_file_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
+
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -90,10 +101,12 @@ def cmd1():
                             working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
                             error = error + str(working_line) + ',' + str(working_space)
                         elif 'in' in error:
+                            print working_list[user_slack_id][file_name]
+                            print working_list[conflict_list[file_name][0]][file_name]['import json']
                             pre_working_line = int(error[2:].split(',')[0])
                             pre_working_space = int(error[2:].split(',')[1])
-                            working_line = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
-                            working_space = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            working_line = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
+                            working_space = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
 
                             if pre_working_space > working_space:
                                 error = 'in' + str(working_line) + str(working_space)
@@ -128,7 +141,12 @@ def cmd1():
 
                     # def detected
                     if 'def' in error:
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
                     # class detected
                     elif 'class' in error:
                         pass
@@ -145,55 +163,6 @@ def cmd1():
             conflict_list[file_name] = user_list
 
             print conflict_list
-
-    # # conflict list == null
-    # if conflict_list.keys() == []:
-    #
-    #     # all file, user pair is added
-    #     for file_name in content['git_diff']:
-    #         conflict_list[file_name] = user_slack_id
-    #
-    # # conflict list != null
-    # else:
-    #
-    #     # Append New git diff Info To conflict_list
-    #     for file_name in content['git_diff'].keys():
-    #
-    #         # log
-    #         print file_name
-    #
-    #         # conflict detect
-    #         for conflict_file_name in conflict_list.keys():
-    #
-    #             # log
-    #             print conflict_file_name
-    #
-    #             # Conflict
-    #             if (file_name == conflict_file_name) and (conflict_list[conflict_file_name] != user_slack_id):
-    #
-    #                 print "conflict"
-    #
-    #                 # POP : get error_user1
-    #                 error_user1 = conflict_list.pop(file_name)
-    #
-    #                 error_user2_info = dict()
-    #
-    #                 # find error header [function, class, in] about old user (user1) #
-    #                 conflict_header_name = str(working_list[error_user1][conflict_file_name][1])
-    #
-    #                 error_user2_info[user_slack_id] = conflict_header_name
-    #
-    #                 error_list[error_user1] = error_user2_info
-    #
-    #             # Non - conflict
-    #             else:
-    #                 print "non-conflict"
-    #                 conflict_list[file_name] = user_slack_id
-    #
-    # print content
-    # print working_list
-    # print conflict_list
-    # print error_list
 
     return "test"
 
@@ -217,8 +186,6 @@ def cmd2():
         for working_files in working_file[keys]:
             for new_working_files in content:
                 if new_working_files in working_files:
-                    slack = Slacker(token)
-
                     attachments_dict = dict()
                     attachments_dict['text'] = "Conflict Detected!"
                     attachments_dict['mrkdwn_in'] = ["text", "pretext"]

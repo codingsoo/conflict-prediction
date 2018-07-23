@@ -153,7 +153,6 @@ def commandGitDiff():
     temp_count = 0
 
     for t in temp_list:
-
         # Find file_name
         if t[0:10] == "diff --git":
 

@@ -1,4 +1,3 @@
-b# Import Library
 from slacker import Slacker
 import websocket
 import thread
@@ -9,8 +8,6 @@ import json
 channel = '#code-conflict-chatbot'
 token = ''
 slack = Slacker(token)
-CMDCHAR = '?'
-CMD_LIST = ['work', 'home', 'cal']
 
 # User List Data
 user_list = list()
@@ -113,16 +110,13 @@ get_severe_shell = make_shell_list('./situation_shell/get_severe.txt')
 approved_shell = make_shell_list('./situation_shell/approved.txt')
 notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
 
-print notify_conflict_shell[0]%('hhh1','hhh2','hhh3')
-
-
 res = slack.auth.test().body
 
 
 msg = [{
     'fallback': res['user'] + ' is LOG-IN!',
     'pretext': '*Connected to ' + res['team'] + '(' + channel + ')*',
-    'text': 'Hello! I\'m SAYME. \nIf you need me, please call me with @SAYME first.',
+    'text': 'Hello! I\'m Sayme. \nIf you need me, please call me with @Sayme first.',
     'color': '#36a64f',
     'mrkdwn_in': ['pretext']
 }]
