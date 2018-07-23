@@ -20,6 +20,8 @@ working_list = dict()
 # test
 working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
 
+# Approved list
+approved_list = []
 
 # { file_name : [user_name] }
 conflict_list = dict([])
@@ -31,7 +33,10 @@ conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI
 # { user_name : { user_name : error_name } }
 error_list = dict()
 
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+# test
+error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
+
+token = ''
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -67,10 +72,13 @@ def cmd1():
                 error = 'in'
                 for user1_work_place in working_list[conflict_list[file_name][0]][file_name].keys():
                     for user2_work_place in working_list[user_slack_id][file_name].keys():
+                        # Def case
                         if user1_work_place == user2_work_place and 'def' in user1_work_place:
                             error = user1_work_place
+                        # Class case
                         elif user1_work_place == user2_work_place and 'class' in user1_work_place and 'def' not in error:
                             error = user1_work_place
+                        # Same file case
                         elif error == 'in':
                             working_line = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
                             working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
@@ -79,18 +87,49 @@ def cmd1():
                             pre_working_line = int(error[2:].split(',')[0])
                             pre_working_space = int(error[2:].split(',')[1])
                             working_line = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
-                            working_space = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            working_space = abs(int(working_list[conflict_list[file_name][0]][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
 
                             if pre_working_space > working_space:
                                 error = 'in' + str(working_line) + str(working_space)
 
                 conflict_list[file_name].append(user_slack_id)
                 conflict_list[file_name].sort()
-                user_error_dict = dict()
-                user_error_dict[conflict_list[file_name][1]] = error
-                error_list[conflict_list[file_name][0]] = user_error_dict
-                print error_list
+
+                # When pre-conflict exist
+                if conflict_list[file_name][0] in error_list.keys() and conflict_list[file_name][1] in error_list[conflict_list[file_name][0]].keys():
+                    pre_error = error_list[conflict_list[file_name][0]]
+
+                    # Severe case to def
+                    if 'def' in error and 'def' not in pre_error:
+                        pass
+                    # Severe case to class
+                    elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
+                        pass
+                    # Severe case to in
+                    elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
+                        pass
+                    # Conflict solved
+                    elif ('def' in pre_error and 'def' not in error) or ('class' in pre_error and 'def' not in error and 'class' not in error) or ('in' in pre_error and 'in' in error and int(pre_error[2:].split(',')[1]) + 5 < int(error[2:].split(',')[1])):
+                        pass
+                    # Same conflict
+                    else :
+                        pass
+                # When pre-conflict doesn't exist
+                else:
+                    user_error_dict = dict()
+                    user_error_dict[conflict_list[file_name][1]] = error
+                    error_list[conflict_list[file_name][0]] = user_error_dict
+
+                    # def detected
+                    if 'def' in error:
+                        pass
+                    # class detected
+                    elif 'class' in error:
+                        pass
+                    else:
+                        pass
                 del(conflict_list[file_name])
+            # No conflict
             else:
                 conflict_list[file_name][0] = user_slack_id
 
