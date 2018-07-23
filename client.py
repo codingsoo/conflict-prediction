@@ -337,7 +337,7 @@ class AsyncTask:
         # postToServer("/gitLsFiles", commandGitLsFiles())
 
         # Thread Start
-        threading.Timer(50, self.sendToServer_GitDiff_GitLsFiles).start()
+        threading.Timer(10, self.sendToServer_GitDiff_GitLsFiles).start()
 
 
 # Send To Server : Git Info
