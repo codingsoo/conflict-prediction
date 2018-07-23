@@ -64,8 +64,11 @@ def cmd1():
     # Get command2 content
     content = request.get_json(silent=True)
 
+    with open('./user_data/user_git.json', 'r') as f:
+        user_git_id_list = json.load(f)
+
     # Get User slack id
-    if content['git_id']:
+    if content['git_id'] :
         user_slack_id = user_git_id_list[str(content['git_id'])]
     else:
         user_slack_id = content['git_id']

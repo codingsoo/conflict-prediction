@@ -22,6 +22,9 @@ channel = '#code-conflict-chatbot'
 token = ''
 slack = Slacker(token)
 
+user_git = dict()
+user_slack = dict()
+
 # User List Data
 user_list = list()
 
@@ -74,9 +77,9 @@ def on_message(ws, message):
                         user_git[git_user] = user_name
                 #
                 #         # Save User Data Json file
-                with open('./user_data/user_git.json', 'w') as make_file1, open('./user_data/user_slack.json', 'w') as make_file2:
-                    json.dump(user_git, make_file1)
-                    json.dump(user_slack, make_file2)
+            with open('./user_data/user_git.json', 'w') as make_file1, open('./user_data/user_slack.json', 'w') as make_file2:
+                json.dump(user_git, make_file1)
+                json.dump(user_slack, make_file2)
 
         elif '.py' in rand_text:
             for py_file in rand_text.split(' '):
