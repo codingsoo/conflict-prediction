@@ -7,7 +7,7 @@ import json
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 slack = Slacker(token)
 CMDCHAR = '?'
 CMD_LIST = ['work', 'home', 'cal']
@@ -72,6 +72,18 @@ def on_message(ws, message):
                 with open('./user_data/user_git.json', 'w') as make_file1, open('./user_data/user_slack.json', 'w') as make_file2:
                     json.dump(user_git, make_file1)
                     json.dump(user_slack, make_file2)
+        elif '.py' in str(msg.text):
+            for file in str(msg.text).split(' '):
+                if '.py' in file:
+                    approved_list = []
+                    with open('./user_data/approved_list.json', 'r') as f:
+                        approved_list = json.load(f)
+
+                    approved_list.append(file)
+
+                    with open('./user_data/approved_list.json', 'w') as f:
+                        json.dump(approved_list,f)
+                    break
 
 def on_error(ws, error):
     print error

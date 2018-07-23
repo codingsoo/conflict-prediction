@@ -36,7 +36,7 @@ error_list = dict()
 # test
 error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -64,6 +64,11 @@ def cmd1():
     # Put user's working list to conflict list
     for file_name in  working_list[user_slack_id]:
         user_list = []
+
+        with open('./user_data/approved_list.json', 'r') as f:
+            approved_list = json.load(f)
+        if file_name in approved_list:
+            continue
 
         # Conflict case
         if file_name in conflict_list.keys() and user_slack_id not in conflict_list[file_name]:
