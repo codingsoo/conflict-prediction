@@ -47,7 +47,8 @@ def make_shell_list(file):
 
 # bot_rule_based_talk
 go_to_same_file_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
-
+get_severe_diff_file = make_shell_list('./situation_shell/file_to_class.txt')
+conflict_finished = make_shell_list('./situation_shell/conflict_finished.txt')
 
 # test for log
 @app.route("/test", methods = ["POST"])
@@ -121,16 +122,40 @@ def cmd1():
 
                     # Severe case to def
                     if 'def' in error and 'def' not in pre_error:
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+
                     # Severe case to class
                     elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+
+
                     # Severe case to in
                     elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " file")
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
+
                     # Conflict solved
                     elif ('def' in pre_error and 'def' not in error) or ('class' in pre_error and 'def' not in error and 'class' not in error) or ('in' in pre_error and 'in' in error and int(pre_error[2:].split(',')[1]) + 5 < int(error[2:].split(',')[1])):
-                        pass
+                        attachments_dict = dict()
+                        attachments_dict['text'] = conflict_finished[random.randint(0,len(conflict_finished)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1])
+                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                        attachments = [attachments_dict]
+
+                        slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
                     # Same conflict
                     else :
                         pass

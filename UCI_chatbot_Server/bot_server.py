@@ -3,6 +3,19 @@ import websocket
 import thread
 import time
 import json
+import random
+
+add_ignore = []
+
+def make_shell_list(file):
+    f = open(file,"r")
+    text = f.read()
+    text = text.split("\n")
+
+    return text
+
+add_ignore = make_shell_list('./situation_shell/add_ignore.txt')
+print add_ignore
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
@@ -11,11 +24,6 @@ slack = Slacker(token)
 
 # User List Data
 user_list = list()
-
-# Situation Shell
-get_severe_shell = []
-approved_shell = []
-notify_conflict_shell = []
 
 # find slack user's name
 def list_slack(id):
@@ -69,14 +77,21 @@ def on_message(ws, message):
                 with open('./user_data/user_git.json', 'w') as make_file1, open('./user_data/user_slack.json', 'w') as make_file2:
                     json.dump(user_git, make_file1)
                     json.dump(user_slack, make_file2)
-        elif '.py' in str(msg.text):
-            for file in str(msg.text).split(' '):
-                if '.py' in file:
+
+        elif '.py' in rand_text:
+            for py_file in rand_text.split(' '):
+                if '.py' in py_file:
                     approved_list = []
                     with open('./user_data/approved_list.json', 'r') as f:
                         approved_list = json.load(f)
 
-                    approved_list.append(file)
+                    approved_list.append(py_file)
+                    attachments_dict = dict()
+                    attachments_dict['text'] = add_ignore[random.randint(0, len(add_ignore)-1)] % (py_file)
+                    attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                    attachments = [attachments_dict]
+
+                    slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
                     with open('./user_data/approved_list.json', 'w') as f:
                         json.dump(approved_list,f)
@@ -95,20 +110,11 @@ def on_open(ws):
         time.sleep(1)
 
     thread.start_new_thread(run, ())
-
-def make_shell_list(file):
-    f = open(file,"r")
-    text = f.read()
-    text = text.split("\n")
-
-    return text
-
-#### MAIN ####
-
-#Make up situation shell
 get_severe_shell = make_shell_list('./situation_shell/get_severe.txt')
 approved_shell = make_shell_list('./situation_shell/approved.txt')
 notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
+
+#### MAIN ####
 
 res = slack.auth.test().body
 
