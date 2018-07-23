@@ -35,7 +35,7 @@ error_list = dict()
 # test
 # error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 slack = Slacker(token)
 
 def make_shell_list(file):
@@ -67,8 +67,6 @@ def cmd1():
 
     with open('./user_data/user_git.json', 'r') as f:
         user_git_id_list = json.load(f)
-
-    test = 100000
     # Get User slack id
     if content['git_id'] :
         user_slack_id = user_git_id_list[str(content['git_id'])]
@@ -78,17 +76,13 @@ def cmd1():
     # Create working_list
     working_list[user_slack_id] = content['git_diff']
 
-    user_mem = []
-
-    i = 0
-
     # Put user's working list to conflict list
     for file_name in  working_list[user_slack_id]:
         user_list = []
 
         with open('./user_data/approved_list.json', 'r') as f:
             approved_list = json.load(f)
-        if str(file_name) in approved_list:
+        if str(file_name.split('/')[-1]) in approved_list:
             continue
 
         # Conflict case
@@ -309,4 +303,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="0.0.0.0", port=80)
+    app.run(debug=True, host="127.0.0.1", port=5009)

@@ -73,10 +73,10 @@ def getUserEmail():
 def postToServer(uri, json_data):
 
     # IP Address
-    ip_addr = "35.237.100.101"
+    ip_addr = "127.0.0.1" #"35.237.100.101"
 
     # Create URL
-    url = "http://" + ip_addr + ":80" + uri
+    url = "http://" + ip_addr + ":5009" + uri
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
@@ -94,10 +94,10 @@ def postToServer(uri, json_data):
 def getToServer(uri, json_data):
 
     # IP Address
-    ip_addr = "35.237.100.101"
+    ip_addr = "127.0.0.1" #"35.237.100.101"
 
     # Create URL
-    url = "http://" + ip_addr + ":80" + uri
+    url = "http://" + ip_addr + ":5009" + uri
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
