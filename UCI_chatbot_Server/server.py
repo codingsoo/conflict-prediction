@@ -87,7 +87,7 @@ def cmd1():
 
         with open('./user_data/approved_list.json', 'r') as f:
             approved_list = json.load(f)
-        if file_name in approved_list:
+        if str(file_name) in approved_list:
             continue
 
         # Conflict case
