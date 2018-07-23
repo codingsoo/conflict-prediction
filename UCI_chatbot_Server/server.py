@@ -78,6 +78,8 @@ def cmd1():
 
     user_mem = []
 
+    i = 0
+
     # Put user's working list to conflict list
     for file_name in  working_list[user_slack_id]:
         user_list = []
@@ -260,6 +262,9 @@ def userSearch():
 
     # Create JSON User Data
     json_dict = dict()
+    with open('./user_data/user_git.json', 'r') as make_file:
+        json_dict = json.load(make_file)
+
     json_dict[git_id] = rand_num
 
     # Save User Data Json file
