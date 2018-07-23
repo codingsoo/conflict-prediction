@@ -211,19 +211,15 @@ def commandGitDiff():
             # Find function name
             temp_func_name = function_name
             function_name = t.split("@@")[2].strip()
+
             if(function_name == temp_func_name):
                 pass
             elif(function_name == ""):
                 function_name = "in"
-
-                # Find working Line
-                working_line = t.split(' ')[1].strip()
-                working_line = working_line.split(',')[0][1:]
             else:
                 # Find working Line
                 working_line = t.split(' ')[1].strip()
                 working_line = working_line.split(',')[0][1:]
-
 
             df += 1
 

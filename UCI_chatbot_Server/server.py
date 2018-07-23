@@ -81,7 +81,6 @@ def cmd1():
         if file_name in approved_list:
             continue
 
-
         # Conflict case
         if file_name in conflict_list.keys() and user_slack_id not in conflict_list[file_name]:
             # Analyze conflict severity
