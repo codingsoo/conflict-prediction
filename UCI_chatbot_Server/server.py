@@ -145,7 +145,7 @@ def cmd1():
                     # def detected
                     if 'def' in error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -153,7 +153,7 @@ def cmd1():
                     # class detected
                     elif 'class' in error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -161,7 +161,7 @@ def cmd1():
                     # same file detected
                     else:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell))] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " file")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " file")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
