@@ -67,6 +67,7 @@ def cmd1():
     with open('./user_data/user_git.json', 'r') as f:
         user_git_id_list = json.load(f)
 
+    test = 100000
     # Get User slack id
     if content['git_id'] :
         user_slack_id = user_git_id_list[str(content['git_id'])]
@@ -128,7 +129,7 @@ def cmd1():
                     # Severe case to def
                     if 'def' in error and 'def' not in pre_error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], error + " function")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -137,7 +138,7 @@ def cmd1():
                     # Severe case to class
                     elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], error + " class")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -147,11 +148,7 @@ def cmd1():
                     # Severe case to in
                     elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
                         attachments_dict = dict()
-<<<<<<< Updated upstream
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], file_name + " file")
-=======
-                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], " same file")
->>>>>>> Stashed changes
+                        attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], " same file")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -179,7 +176,7 @@ def cmd1():
                     # def detected
                     if 'def' in error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " function")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], error + " function")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -187,7 +184,7 @@ def cmd1():
                     # class detected
                     elif 'class' in error:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], error + " class")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], error + " class")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
@@ -195,7 +192,7 @@ def cmd1():
                     # same file detected
                     else:
                         attachments_dict = dict()
-                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1], file_name + " file")
+                        attachments_dict['text'] = go_to_same_file_shell[random.randint(0,len(go_to_same_file_shell)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], file_name + " file")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
