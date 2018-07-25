@@ -111,6 +111,8 @@ def generate_file_dependency():
 # 2. Class dependency       # [ [ 'file name + class name', dependency class list ], ['file name + class name', 'dependency class list' ]
 def generate_func_class_dependency():
 
+    all_dependency_list = list()
+
     # Read Each File
     for temp_dir in file_dir:
 
@@ -147,6 +149,11 @@ def generate_func_class_dependency():
 
                     # Read class name
                     class_name = file_line.strip()
+
+                    # String processing
+                    if class_name[-1] == ':':
+                        class_name = class_name[:-1].strip()
+
                     class_dep = True
 
                 # Generate function dependency [ keyword : def ]
@@ -154,14 +161,19 @@ def generate_func_class_dependency():
 
                     # Read function name
                     def_name = file_line.strip()
+
+                    # String processing
+                    def_name = def_name.split('(')[0]
+
                     def_dep = True
 
                     # class function dependency
                     if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
                         temp_list = []
-                        temp_list.append(temp_dir + ' | ' + class_name)
-                        temp_list.append(temp_dir + ' | ' + def_name)
+                        temp_list.append(temp_dir + '|' + class_name)
+                        temp_list.append(temp_dir + '|' + def_name)
                         content_dependency_list.append(temp_list)
+                        all_dependency_list.append(temp_list)
                         break
 
                 # Import function dependency
@@ -177,19 +189,19 @@ def generate_func_class_dependency():
                                 find_flag = temp_token.find(temp_func_class_name)
 
                                 if  (find_flag > 0) and def_dep:
-
-                                    print file_line
-
                                     temp_func_list = []
-                                    temp_func_list.append(temp_dir + ' | ' + def_name)
-                                    temp_func_list.append(t_dir + ' | def ' + temp_func_class_name)
+                                    temp_func_list.append(temp_dir + '|' + def_name)
+                                    temp_func_list.append(t_dir + '|def ' + temp_func_class_name)
                                     content_dependency_list.append(temp_func_list)
+                                    all_dependency_list.append(temp_func_list)
                                     break
 
                 # index plus
                 index += 1
 
         print content_dependency_list
+
+    return all_dependency_list
 
 
 def class_func_name(raw_name_list):
@@ -216,7 +228,25 @@ def class_func_name(raw_name_list):
     return convert_name_list
 
 
+def create_edge(raw_list):
+
+    print "raw_list"
+    print raw_list
+
+    for dep_obj in raw_list:
+        for compare_dep in raw_list:
+
+            if dep_obj[1] == compare_dep[0]:
+                new_temp = []
+                new_temp.append(dep_obj[0])
+                new_temp.append(compare_dep[1])
+
+                raw_list.append(new_temp)
+
+    print raw_list
+
 if __name__ == '__main__':
+
     search_directory(root_dir)
 
     print file_dir
@@ -229,13 +259,14 @@ if __name__ == '__main__':
     print " "
     print " "
 
-
     generate_file_dependency()
 
     print " "
     print " "
 
-    generate_func_class_dependency()
+    raw_list = generate_func_class_dependency()
+
+    create_edge(raw_list)
 
     print " "
     print " "
