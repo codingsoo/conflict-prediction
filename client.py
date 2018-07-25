@@ -76,7 +76,7 @@ def postToServer(uri, json_data):
     ip_addr = "127.0.0.1" #"35.237.100.101"
 
     # Create URL
-    url = "http://" + ip_addr + ":5009" + uri
+    url = "http://" + ip_addr + ":5009" + uri # 80
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
@@ -97,7 +97,7 @@ def getToServer(uri, json_data):
     ip_addr = "127.0.0.1" #"35.237.100.101"
 
     # Create URL
-    url = "http://" + ip_addr + ":5009" + uri
+    url = "http://" + ip_addr + ":5009" + uri # 80
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
