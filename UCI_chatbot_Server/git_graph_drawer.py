@@ -11,7 +11,7 @@ def search_directory(url):
         for filename in files:
             ext = os.path.splitext(filename)[-1]
             if ext == '.py':
-                print("%s/%s" % (file_path, filename))
+                # print("%s/%s" % (file_path, filename))
                 file_dir.append(os.path.join(file_path,filename))
                 file_name.append(filename[:len(filename)-3])
 
@@ -62,8 +62,9 @@ def generate_dependency():
             index = 0
             temp_line = file_line.split(' ')
 
-            if (type(file_line[0:4]) == "str"):
-                class_dep = False
+            if (file_line[0:4] != '    '):
+                if file_line != '':
+                    class_dep = False
 
             # Read Each token
             for temp_token in temp_line:
@@ -87,13 +88,11 @@ def generate_dependency():
                     class_name = file_line.strip()
                     in_content.append(class_name)
                     class_dep = True
-                    print class_name
 
                 # Generate function dependency [ keyword : def ]
                 elif temp_token == "def":
                     def_name = file_line.strip()
                     in_content.append(def_name)
-                    print def_name
 
                     # class function dependency
                     if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
@@ -113,17 +112,16 @@ def generate_dependency():
                 index += 1
 
         file_content_list[temp_dir] = in_content
-        print file_content_list
-        print 111
+        # print file_content_list
         print content_dependency_list
 
 
 if __name__ == '__main__':
     search_directory(root_dir)
 
-    print file_dir
-    print file_name
+    # print file_dir
+    # print file_name
 
     generate_dependency()
 
-    print file_dependency
+    # print file_dependency
