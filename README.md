@@ -11,7 +11,7 @@ This chatbot works for detecting the potential conflicts and lets developers kno
 
 System Architecture
 ---------------------
-![Imgur](https://i.imgur.com/zYqaF2m.png)
+![system_structure](/img/system_structure.png)  
 
 There are two parts in our system - Client and Server.
 ## Client
