@@ -54,6 +54,7 @@ def generate_dependency():
         content_dependency_list = []
         class_name = ""
         def_name = ""
+        class_dep = False
 
         # Read Each line
         for file_line in file_content:
@@ -61,8 +62,8 @@ def generate_dependency():
             index = 0
             temp_line = file_line.split(' ')
 
-            if file_line[0:4] != "    ":
-                print()
+            if (type(file_line[0:4]) == "str"):
+                class_dep = False
 
             # Read Each token
             for temp_token in temp_line:
@@ -85,28 +86,28 @@ def generate_dependency():
                 elif temp_token == "class":
                     class_name = file_line.strip()
                     in_content.append(class_name)
-
+                    class_dep = True
                     print class_name
 
                 # Generate function dependency [ keyword : def ]
                 elif temp_token == "def":
                     def_name = file_line.strip()
                     in_content.append(def_name)
-
                     print def_name
 
                     # class function dependency
-                    if (file_line[0:4] == "    ") and (len(file_line) >= 4):
+                    if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
                         temp_list = []
                         temp_list.append(temp_dir + ' | ' + class_name)
                         temp_list.append(temp_dir + ' | ' + def_name)
                         content_dependency_list.append(temp_list)
 
-                    if (file_line[0:4] == "    ") and (len(file_line) >= 4):
-                        temp_list1 = []
-                        temp_list1.append(temp_dir + ' | ' + def_name)
-                        temp_list1.append(temp_dir + ' | ' + def_name)
-                        content_dependency_list.append(temp_list1)
+                    # # def function dependency
+                    # if (file_line[0:4] == "    ") and (len(file_line) >= 4) and def_dep:
+                    #     temp_list1 = []
+                    #     temp_list1.append(temp_dir + ' | ' + def_name)
+                    #     temp_list1.append(temp_dir + ' | ' + def_name)
+                    #     content_dependency_list.append(temp_list1)
 
                 # index plus
                 index += 1
