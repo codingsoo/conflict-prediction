@@ -44,6 +44,9 @@ def generate_dependency():
         file_content = file_reader(temp_dir).splitlines()
         temp_file_list = []
 
+        # log
+        print temp_dir
+
         # Read Each line
         for file_line in file_content:
 
@@ -53,7 +56,7 @@ def generate_dependency():
             # Read Each token
             for temp_token in temp_line:
 
-                # Generate file dependency : import
+                # Generate file dependency [keyword : import]
                 if temp_token == "import":
                     import_file = temp_line[index + 1]
 
@@ -67,10 +70,15 @@ def generate_dependency():
                             file_dependency[temp_dir] = temp_file_list
                             break
 
-                # Generate class
-                elif temp_token == "class:":
-                    class_name = temp_line[1][:-1]
+                # Generate class dependency [ keyword : class ]
+                elif temp_token == "class":
+                    class_name = file_line.strip()
                     print class_name
+
+                # Generate function dependency [ keyword : def ]
+                elif temp_token == "def":
+                    def_name = file_line.strip()
+                    print def_name
 
                 # index plus
                 index += 1
