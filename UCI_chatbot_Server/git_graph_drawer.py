@@ -47,11 +47,22 @@ def generate_dependency():
         # log
         print temp_dir
 
+        # Initialize class, function set
+        # Initialize file dict for dependency
+        in_content = list()
+        file_content_list = dict()
+        content_dependency_list = []
+        class_name = ""
+        def_name = ""
+
         # Read Each line
         for file_line in file_content:
 
             index = 0
             temp_line = file_line.split(' ')
+
+            if file_line[0:4] != "    ":
+                print()
 
             # Read Each token
             for temp_token in temp_line:
@@ -73,15 +84,37 @@ def generate_dependency():
                 # Generate class dependency [ keyword : class ]
                 elif temp_token == "class":
                     class_name = file_line.strip()
+                    in_content.append(class_name)
+
                     print class_name
 
                 # Generate function dependency [ keyword : def ]
                 elif temp_token == "def":
                     def_name = file_line.strip()
+                    in_content.append(def_name)
+
                     print def_name
+
+                    # class function dependency
+                    if (file_line[0:4] == "    ") and (len(file_line) >= 4):
+                        temp_list = []
+                        temp_list.append(temp_dir + ' | ' + class_name)
+                        temp_list.append(temp_dir + ' | ' + def_name)
+                        content_dependency_list.append(temp_list)
+
+                    if (file_line[0:4] == "    ") and (len(file_line) >= 4):
+                        temp_list1 = []
+                        temp_list1.append(temp_dir + ' | ' + def_name)
+                        temp_list1.append(temp_dir + ' | ' + def_name)
+                        content_dependency_list.append(temp_list1)
 
                 # index plus
                 index += 1
+
+        file_content_list[temp_dir] = in_content
+        print file_content_list
+        print 111
+        print content_dependency_list
 
 
 if __name__ == '__main__':
