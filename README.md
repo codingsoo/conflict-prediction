@@ -11,7 +11,7 @@ This chatbot works for detecting the potential conflicts and lets developers kno
 
 System Architecture
 ---------------------
-![system_structure](/img/system_structure.png)  
+![system_structure](/UCI_chatbot_Server/img/system_structure.png)  
 
 There are two parts in our system - Client and Server.
 ## Client
