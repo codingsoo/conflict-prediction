@@ -19,7 +19,7 @@ print add_ignore
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 slack = Slacker(token)
 
 user_git = dict()

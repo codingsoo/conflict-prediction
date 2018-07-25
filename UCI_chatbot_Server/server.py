@@ -35,7 +35,7 @@ error_list = dict()
 # test
 # error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
-token = ''
+token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
 slack = Slacker(token)
 
 def make_shell_list(file):
@@ -101,7 +101,7 @@ def cmd1():
                         # Same file case
                         elif error == 'in':
                             working_line = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
-                            working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) - int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
                             error = error + str(working_line) + ',' + str(working_space)
                         elif 'in' in error:
                             print working_list[user_slack_id][file_name]
@@ -111,8 +111,8 @@ def cmd1():
                             working_line = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
                             working_space = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
 
-                            if pre_working_space > working_space:
-                                error = 'in' + str(working_line) + str(working_space)
+                            if pre_working_space < working_space:
+                                error = 'in' + str(working_line) + ',' + str(working_space)
 
                 conflict_list[file_name].append(user_slack_id)
                 conflict_list[file_name].sort()
@@ -144,7 +144,7 @@ def cmd1():
                         error_list[conflict_list[file_name][0]][conflict_list[file_name][1]] = error
 
                     # Severe case to in
-                    elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) + 5 < int(pre_error[2:].split(',')[1]):
+                    elif 'in' in pre_error and 'in' in error and int(error[2:].split(',')[1]) - 5 > int(pre_error[2:].split(',')[1]):
                         attachments_dict = dict()
                         attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], " same file")
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
@@ -155,7 +155,7 @@ def cmd1():
                         error_list[conflict_list[file_name][0]][conflict_list[file_name][1]] = error
 
                     # Conflict solved
-                    elif ('def' in pre_error and 'def' not in error) or ('class' in pre_error and 'def' not in error and 'class' not in error) or ('in' in pre_error and 'in' in error and int(pre_error[2:].split(',')[1]) + 5 < int(error[2:].split(',')[1])):
+                    elif ('def' in pre_error and 'def' not in error) or ('class' in pre_error and 'def' not in error and 'class' not in error) or ('in' in pre_error and 'in' in error and int(pre_error[2:].split(',')[1]) + 5 > int(error[2:].split(',')[1])):
                         attachments_dict = dict()
                         attachments_dict['text'] = conflict_finished[random.randint(0,len(conflict_finished)-1)] % (conflict_list[file_name][0],conflict_list[file_name][1])
                         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
@@ -199,7 +199,6 @@ def cmd1():
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
 
-                del(conflict_list[file_name])
             # No conflict
             else:
                 # pre-conflict exist
