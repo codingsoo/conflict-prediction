@@ -59,7 +59,22 @@ def on_message(ws, message):
     if msg['type'] == 'message':
 
         # Message Content Convert
-        rand_text = str(msg['text'])
+        ran_text = str(msg['text'])
+
+        chatting_word = dict()
+
+        chatting_word['NP'] = 'No Problem'
+        chatting_word['np'] = 'No Problem'
+
+        rand_text = ''
+
+        for word in ran_text.split(' '):
+            if len(word) <=4 and word in chatting_word:
+                rand_text = rand_text + chatting_word[word] + ' '
+            else:
+                rand_text = rand_text + word + ' '
+
+        print rand_text
 
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
