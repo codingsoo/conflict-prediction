@@ -17,7 +17,7 @@ working_file = dict()
 working_list = dict()
 
 # test
-# working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
+working_list = {u'learnitdeep2': {u'/UCI_chatbot_Server/bot_server.py': {u'import json': [u'7', u'2']}, u'/UCI_chatbot_Server/server.py': {u'def cmd1():': [u'39', u'140'], u'working_file = dict()': [u'17', u'6']}}}
 
 # Approved list
 approved_list = []
@@ -26,7 +26,7 @@ approved_list = []
 conflict_list = dict([])
 
 # test
-# conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI_chatbot_Server/user_data/user_git.json': [u'learnitdeep2'], u'/UCI_chatbot_Server/server.py': [u'learnitdeep2']}
+conflict_list = {u'/UCI_chatbot_Server/bot_server.py': [u'learnitdeep2'], u'/UCI_chatbot_Server/user_data/user_git.json': [u'learnitdeep2'], u'/UCI_chatbot_Server/server.py': [u'learnitdeep2']}
 
 
 # { user_name : { user_name : error_name } }
@@ -64,6 +64,8 @@ def cmd1():
 
     # Get command2 content
     content = request.get_json(silent=True)
+    print content
+    used_files = dict(list())
 
     with open('./user_data/user_git.json', 'r') as f:
         user_git_id_list = json.load(f)
@@ -104,8 +106,8 @@ def cmd1():
                             working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
                             error = error + str(working_line) + ',' + str(working_space)
                         elif 'in' in error:
-                            print working_list[user_slack_id][file_name]
-                            print working_list[conflict_list[file_name][0]][file_name]['import json']
+                            #print working_list[user_slack_id][file_name]
+                            #print working_list[conflict_list[file_name][0]][file_name]['import json']
                             pre_working_line = int(error[2:].split(',')[0])
                             pre_working_space = int(error[2:].split(',')[1])
                             working_line = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
@@ -136,7 +138,6 @@ def cmd1():
                     elif 'class' in error and 'def' not in pre_error and 'class' not in pre_error:
                         attachments_dict = dict()
                         attachments_dict['text'] = get_severe_diff_file[random.randint(0,len(get_severe_diff_file)-1)] % ('@'+conflict_list[file_name][0],'@'+conflict_list[file_name][1], file_name ,error + " class")
-                        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                         attachments = [attachments_dict]
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
@@ -220,7 +221,18 @@ def cmd1():
             user_list.append(user_slack_id)
             conflict_list[file_name] = user_list
 
-            print conflict_list
+        # In direct
+        index = 0
+        for group in content['git_graph']:
+            if file_name in group and index in used_files :
+                for user in used_files[index] :
+                    if user != user_slack_id and file_name in working_list[user].keys():
+                        # conflict detected
+                        print("hello")
+                    else:
+                        del(used_files[index])
+                used_files[index].append(user_slack_id)
+            index = index + 1
 
     return "test"
 
@@ -318,4 +330,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="127.0.0.1", port=5009)
+    app.run(debug=True, host="127.0.0.1", port=80)
