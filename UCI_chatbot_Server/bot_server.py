@@ -4,6 +4,7 @@ import thread
 import time
 import json
 import random
+from punctuator2.play_with_model import do_punctuate
 
 add_ignore = []
 
@@ -74,7 +75,7 @@ def on_message(ws, message):
             else:
                 rand_text = rand_text + word + ' '
 
-        print rand_text
+        print do_punctuate(rand_text)
 
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
