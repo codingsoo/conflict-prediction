@@ -162,7 +162,7 @@ def cmd1():
                         attachments = [attachments_dict]
 
                         slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
-                        del(error_list[conflict_list[file_name][0]][conflict_list[file_name][1]][file_name])
+                        error_list[conflict_list[file_name][0]][conflict_list[file_name][1]][file_name] = error
                     # Same conflict
                     else :
                         pass
@@ -212,7 +212,7 @@ def cmd1():
                 attachments = [attachments_dict]
 
                 slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
-                del (error_list[conflict_check_user[0]][conflict_check_user[1]][file_name])
+                # del (error_list[conflict_check_user[0]][conflict_check_user[1]][file_name])
                 conflict_list[file_name][0] = user_slack_id
 
         # No conflict
