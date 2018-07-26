@@ -1,5 +1,5 @@
 import os
-
+import re
 
 root_dir = "C:\Users\jc\Desktop\py_test"
 file_dir = []
@@ -65,6 +65,7 @@ def generate_file_dependency():
             if (file_line[0:4] != '    '):
                 if file_line != '':
                     class_dep = False
+                    def_dep = False
 
             # Read Each token
             for temp_token in temp_line:
@@ -177,24 +178,51 @@ def generate_func_class_dependency():
                         break
 
                 # Import function dependency
-                elif file_line[0:4] == '    ':
-                    for t_dir in file_dir:
+                elif re.findall(str("  "), file_line) != None:
 
-                        if t_dir != temp_dir:
-                            # Read clear function, class name
-                            func_class_name_list = class_func_name(file_content_list[t_dir])
+                    # function - function call dependency
+                    if def_dep:
+                        for t_dir in file_dir:
 
-                            # Search about usage of function
-                            for temp_func_class_name in func_class_name_list:
-                                find_flag = temp_token.find(temp_func_class_name)
+                            # Search other directory
+                            if t_dir != temp_dir:
 
-                                if  (find_flag > 0) and def_dep:
-                                    temp_func_list = []
-                                    temp_func_list.append(temp_dir + '|' + def_name)
-                                    temp_func_list.append(t_dir + '|def ' + temp_func_class_name)
-                                    content_dependency_list.append(temp_func_list)
-                                    all_dependency_list.append(temp_func_list)
-                                    break
+                                # Read clear function, class name
+                                func_name_list = convert_func_name(file_content_list[t_dir])
+
+                                # Search about usage of function
+                                for temp_func_name in func_name_list:
+                                    find_flag = temp_token.find(temp_func_name)
+
+                                    if  (find_flag > 0) and def_dep:
+                                        temp_func_list = []
+                                        temp_func_list.append(t_dir + '|def ' + temp_func_name)
+                                        temp_func_list.append(temp_dir + '|' + def_name)
+                                        content_dependency_list.append(temp_func_list)
+                                        all_dependency_list.append(temp_func_list)
+                                        break
+
+                    # function - class call dependency
+                    elif class_dep:
+                        for t_dir in file_dir:
+
+                            # Search other directory
+                            if t_dir != temp_dir:
+
+                                # Read clear function, class name
+                                class_name_list = convert_class_name(file_content_list[t_dir])
+
+                                # Search about usage of function
+                                for temp_class_name in class_name_list:
+                                    find_flag = temp_token.find(temp_class_name)
+
+                                    if  (find_flag > 0) and def_dep:
+                                        temp_func_list = []
+                                        temp_func_list.append(t_dir + '|def ' + temp_class_name)
+                                        temp_func_list.append(temp_dir + '|' + class_name)
+                                        content_dependency_list.append(temp_func_list)
+                                        all_dependency_list.append(temp_func_list)
+                                        break
 
                 # index plus
                 index += 1
@@ -204,7 +232,7 @@ def generate_func_class_dependency():
     return all_dependency_list
 
 
-def class_func_name(raw_name_list):
+def convert_func_name(raw_name_list):
 
     convert_name_list = []
 
@@ -212,17 +240,30 @@ def class_func_name(raw_name_list):
 
         split_name = str(raw_name).split(' ')
 
-        # if(split_name[0] == "class"):
-        #     temp_name = split_name[1]
-        #
-        #     if(temp_name[-1] == ':'):
-        #         temp_name = temp_name[:-1]
-        #
-        #     convert_name_list.append(temp_name)
+
 
         if(split_name[0] == "def"):
             temp_name_list = split_name[1].split('(')
             temp_name = temp_name_list[0]
+            convert_name_list.append(temp_name)
+
+    return convert_name_list
+
+
+def convert_class_name(raw_name_list):
+
+    convert_name_list = []
+
+    for raw_name in raw_name_list:
+
+        split_name = str(raw_name).split(' ')
+
+        if(split_name[0] == "class"):
+            temp_name = split_name[1]
+
+            if(temp_name[-1] == ':'):
+                temp_name = temp_name[:-1]
+
             convert_name_list.append(temp_name)
 
     return convert_name_list
@@ -244,6 +285,7 @@ def create_edge(raw_list):
                 raw_list.append(new_temp)
 
     print raw_list
+
 
 if __name__ == '__main__':
 

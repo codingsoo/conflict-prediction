@@ -299,6 +299,7 @@ def userSearch():
     # Return Ture or Random Number
     return str(rand_num)
 
+
 # Synchronize User Data
 @app.route("/syncUserData", methods = ["POST"])
 def syncUserData():
@@ -310,6 +311,7 @@ def syncUserData():
 
     return "test"
 
+
 # Random Number for User sign-in
 def createRandomTemp():
 
@@ -320,6 +322,7 @@ def createRandomTemp():
     print("random Number: " + str(rand_num))
 
     return rand_num
+
 
 # MAIN
 if __name__ == "__main__":
