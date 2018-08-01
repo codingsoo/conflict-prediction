@@ -74,8 +74,6 @@ def on_message(ws, message):
             else:
                 rand_text = rand_text + word + ' '
 
-        print do_punctuate(rand_text)
-
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             with open('./user_data/user_git.json', 'r') as f1, open('./user_data/user_slack.json','r') as f2:
