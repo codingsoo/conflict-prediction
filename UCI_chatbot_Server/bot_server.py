@@ -4,7 +4,6 @@ import thread
 import time
 import json
 import random
-from punctuator2.play_with_model import do_punctuate
 
 add_ignore = []
 
