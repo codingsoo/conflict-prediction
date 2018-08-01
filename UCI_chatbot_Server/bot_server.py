@@ -38,9 +38,9 @@ def list_slack(id):
         users = response.body['members']
         for user in users:
             if not user['deleted'] and user['id'] == id:
-                print user
+                #print user
                 # print(user['id'], user['name'], user['is_admin'], user['is_owner'])
-                return user['display_name_normalized']
+                return user.get('profile').get('real_name_normalized')
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
 
@@ -59,8 +59,8 @@ def on_message(ws, message):
     if msg['type'] == 'message':
 
         # Message Content Convert
-        ran_text = str(msg['text'])
 
+        ran_text = str(msg['text'])
         chatting_word = dict()
 
         chatting_word['NP'] = 'No Problem'
@@ -69,18 +69,20 @@ def on_message(ws, message):
         rand_text = ''
 
         for word in ran_text.split(' '):
+            print(word)
             if len(word) <=4 and word in chatting_word:
                 rand_text = rand_text + chatting_word[word] + ' '
             else:
                 rand_text = rand_text + word + ' '
+        rand_text = rand_text[:-1]
 
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             with open('./user_data/user_git.json', 'r') as f1, open('./user_data/user_slack.json','r') as f2:
                 user_git = json.load(f1)
                 user_slack = json.load(f2)
-                # Search User Register
 
+                # Search User Register
                 for git_user in user_git.keys():
                     # Slack id == RandomNumber ####
                     if str(user_git[git_user]) == rand_text:
