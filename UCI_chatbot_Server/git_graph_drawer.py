@@ -1,7 +1,7 @@
 import os
 import re
 
-root_dir = "C:\Users\jc\Desktop\py_test"
+root_dir = "D:\\byeongal\\test"
 file_dir = []
 file_name = []
 file_dependency = {}
@@ -48,7 +48,7 @@ def generate_file_dependency():
         temp_file_list = []
 
         # log
-        print temp_dir
+        # print temp_dir
 
         # Initialize class, function set
         # Initialize file dict for dependency
@@ -104,7 +104,7 @@ def generate_file_dependency():
                 index += 1
 
         file_content_list[temp_dir] = in_content
-        print file_content_list
+        # print file_content_list
 
 
 # Generate Function Class Dependency
@@ -118,7 +118,7 @@ def generate_func_class_dependency():
     for temp_dir in file_dir:
 
         # log
-        print temp_dir
+        # print temp_dir
 
         # Read Raw data
         file_content = file_reader(temp_dir).splitlines()
@@ -171,8 +171,8 @@ def generate_func_class_dependency():
                     # class function dependency
                     if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
                         temp_list = []
+                        temp_list.append(temp_dir + '|' + class_name + '|' + def_name)
                         temp_list.append(temp_dir + '|' + class_name)
-                        temp_list.append(temp_dir + '|' + def_name)
                         content_dependency_list.append(temp_list)
                         all_dependency_list.append(temp_list)
                         break
@@ -227,7 +227,7 @@ def generate_func_class_dependency():
                 # index plus
                 index += 1
 
-        print content_dependency_list
+        #print content_dependency_list
 
     return all_dependency_list
 
@@ -271,8 +271,8 @@ def convert_class_name(raw_name_list):
 
 def create_edge(raw_list):
 
-    print "raw_list"
-    print raw_list
+    # print "raw_list"
+    # print raw_list
 
     for dep_obj in raw_list:
         for compare_dep in raw_list:
@@ -284,33 +284,34 @@ def create_edge(raw_list):
 
                 raw_list.append(new_temp)
 
-    print raw_list
+    #print raw_list
 
 
 if __name__ == '__main__':
 
     search_directory(root_dir)
 
-    print file_dir
+    # print file_dir
 
-    print " "
-    print " "
+    # print " "
+    # print " "
 
-    print file_name
+    #print file_name
 
-    print " "
-    print " "
+    # print " "
+    # print " "
 
     generate_file_dependency()
 
-    print " "
-    print " "
+    # print " "
+    # print " "
 
     raw_list = generate_func_class_dependency()
+    raw_list = [ [os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list ]
 
-    create_edge(raw_list)
+    # create_edge(raw_list)
 
-    print " "
-    print " "
+    # print " "
+    # print " "
 
-    print file_dependency
+    print raw_list
