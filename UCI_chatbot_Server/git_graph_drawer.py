@@ -1,11 +1,24 @@
 import os
 import re
+import requests
+import json
+import subprocess
 
-root_dir = "D:\\byeongal\\test"
+
+# File definition
+# os.path.join(os.getcwd(), 'UCI_chatbot_Server')
+root_dir = "C:\\Users\\jc\\Desktop\\py_test"
+root_dir_temp = ""
 file_dir = []
 file_name = []
+
+# Dependency definition
 file_dependency = {}
 file_content_list = dict()
+
+# Request definition
+ip_addr = "127.0.0.1"
+port = "8080"
 
 
 # Search All Directory And Append simple file name
@@ -182,6 +195,8 @@ def generate_func_class_dependency():
 
                     # function - function call dependency
                     if def_dep:
+
+                        # Search all directory
                         for t_dir in file_dir:
 
                             # Search other directory
@@ -194,16 +209,25 @@ def generate_func_class_dependency():
                                 for temp_func_name in func_name_list:
                                     find_flag = temp_token.find(temp_func_name)
 
-                                    if  (find_flag > 0) and def_dep:
+                                    # Find function dependency
+                                    if find_flag > 0:
                                         temp_func_list = []
                                         temp_func_list.append(t_dir + '|def ' + temp_func_name)
-                                        temp_func_list.append(temp_dir + '|' + def_name)
+
+                                        # class dependency discriptor
+                                        if class_dep:
+                                            temp_func_list.append(temp_dir + '|' + class_name)
+                                        else:
+                                            temp_func_list.append(temp_dir + '|' + def_name)
+
                                         content_dependency_list.append(temp_func_list)
                                         all_dependency_list.append(temp_func_list)
                                         break
 
                     # function - class call dependency
                     elif class_dep:
+
+                        # Search all directory
                         for t_dir in file_dir:
 
                             # Search other directory
@@ -216,7 +240,8 @@ def generate_func_class_dependency():
                                 for temp_class_name in class_name_list:
                                     find_flag = temp_token.find(temp_class_name)
 
-                                    if  (find_flag > 0) and def_dep:
+                                    # Find Class dependency
+                                    if find_flag > 0:
                                         temp_func_list = []
                                         temp_func_list.append(t_dir + '|def ' + temp_class_name)
                                         temp_func_list.append(temp_dir + '|' + class_name)
@@ -224,7 +249,7 @@ def generate_func_class_dependency():
                                         all_dependency_list.append(temp_func_list)
                                         break
 
-                # index plus
+            # index plus
                 index += 1
 
         #print content_dependency_list
@@ -239,8 +264,6 @@ def convert_func_name(raw_name_list):
     for raw_name in raw_name_list:
 
         split_name = str(raw_name).split(' ')
-
-
 
         if(split_name[0] == "def"):
             temp_name_list = split_name[1].split('(')
@@ -266,6 +289,7 @@ def convert_class_name(raw_name_list):
 
             convert_name_list.append(temp_name)
 
+    print convert_name_list
     return convert_name_list
 
 
@@ -287,31 +311,57 @@ def create_edge(raw_list):
     #print raw_list
 
 
-if __name__ == '__main__':
+# Post To Server
+def postToServer(uri, json_data):
 
-    search_directory(root_dir)
+    # Create URL
+    url = "http://" + ip_addr + ":" + port + uri # 80
 
-    # print file_dir
+    # Headers
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
 
-    # print " "
-    # print " "
+    # Post To Server
+    req = requests.post(url, headers=headers, data = json.dumps(json_data))
 
-    #print file_name
+    # Log
+    print(req)
 
-    # print " "
-    # print " "
+    return req
+
+
+# Send To Server with graph data [ [u, v], [u, v], [u, v] ]
+def sendGraphInfo():
+
+    search_directory(root_dir_temp)
 
     generate_file_dependency()
 
-    # print " "
-    # print " "
-
     raw_list = generate_func_class_dependency()
-    raw_list = [ [os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list ]
+    graph_data = [ [os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list ]
 
-    # create_edge(raw_list)
+    print(graph_data)
 
-    # print " "
-    # print " "
+    # Post To Server
+    postToServer("/graphInfo", graph_data)
 
-    print raw_list
+
+# Git clone using user URL
+def gitCloneFromURL(git_url):
+
+    cmd_line = 'git clone ' + git_url
+    git_dir_name = git_url.split('/')[4][:-4]
+
+    root_dir_temp = os.path.join(os.getcwd(), git_dir_name)
+
+    # git clone from user git url
+    git_clone_return = str(subprocess.check_output(cmd_line, shell=True)).strip()
+
+
+
+
+
+
+if __name__ == '__main__':
+
+    # Send to the server with Git dependency of function and class
+    sendGraphInfo()

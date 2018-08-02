@@ -1,6 +1,5 @@
 import os
 
-
 root_dir = os.path.join(os.getcwd(), 'UCI_chatbot_Server')
 file_dir = []
 file_name = []
@@ -173,8 +172,8 @@ def generate_func_class_dependency():
                     # class function dependency
                     if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
                         temp_list = []
+                        temp_list.append(temp_dir + '|' + class_name + '|' + def_name)
                         temp_list.append(temp_dir + '|' + class_name)
-                        temp_list.append(temp_dir + '|' + def_name)
                         content_dependency_list.append(temp_list)
                         all_dependency_list.append(temp_list)
                         break

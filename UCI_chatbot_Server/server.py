@@ -312,6 +312,16 @@ def syncUserData():
     return "test"
 
 
+# Receive Graph Info from git_graph_drawer
+@app.route("/graphInfo", methods = ["POST"])
+def graphInfo():
+
+    # Receive Graph Info
+    content = request.get_json(silent=True)
+    print(str(content))
+
+    return "success"
+
 # Random Number for User sign-in
 def createRandomTemp():
 
@@ -333,4 +343,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="127.0.0.1", port=80)
+    app.run(debug=True, host="127.0.0.1", port=8080)
