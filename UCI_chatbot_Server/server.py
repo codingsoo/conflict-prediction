@@ -4,6 +4,8 @@ import random
 import json
 from flask import Flask, request
 from slacker import Slacker
+import os
+from git_clone_info import git_clone_info
 ########################################################################
 
 # Create app
@@ -35,6 +37,9 @@ error_list = dict()
 # test
 # error_list = {u'learnitdeep': {u'learnitdeep2': u'def cmd1():'}}
 
+git_clone_info = git_clone_info()
+
+# Slack api
 token = ''
 slack = Slacker(token)
 
@@ -52,9 +57,12 @@ get_severe_diff_file = make_shell_list('./situation_shell/file_to_class.txt')
 conflict_finished = make_shell_list('./situation_shell/conflict_finished.txt')
 
 # test for log
-@app.route("/test", methods = ["POST"])
+@app.route("/test", methods = ["POST", "GET"])
 def test():
     ##
+
+    print git_clone_info.get_git_clone_info()
+
     return "test"
 
 
@@ -84,7 +92,7 @@ def cmd1():
 
         with open('./user_data/approved_list.json', 'r') as f:
             approved_list = json.load(f)
-        if str(file_name.split('/')[-1]) in approved_list:
+        if str(os.path.basename()) in approved_list:
             continue
 
         # Conflict case
@@ -320,6 +328,8 @@ def graphInfo():
     content = request.get_json(silent=True)
     print(str(content))
 
+    git_clone_info.set_git_clone_info(content)
+    print git_clone_info.get_git_clone_info()
     return "success"
 
 # Random Number for User sign-in

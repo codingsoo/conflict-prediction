@@ -357,11 +357,10 @@ def gitCloneFromURL(git_url):
     git_clone_return = str(subprocess.check_output(cmd_line, shell=True)).strip()
 
 
-
-
-
-
 if __name__ == '__main__':
+
+    # git clone from user git url
+    gitCloneFromURL("https://github.com/UCNLP/conflict-detector.git")
 
     # Send to the server with Git dependency of function and class
     sendGraphInfo()
