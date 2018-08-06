@@ -168,7 +168,10 @@ def commandGitDiff():
                 # diff_function_list.append(diff_function_dict)
 
                 # Add diff_file_list
-                diff_file_list[str(file_name)] = diff_function_dict
+                if str(file_name) == "":
+                    continue
+                else:
+                    diff_file_list[str(file_name)] = diff_function_dict
 
                 diff_function_obj = list()
                 diff_function_dict = dict()
