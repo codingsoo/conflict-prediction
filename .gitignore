@@ -2,3 +2,4 @@
 .DS_Store
 __init__.py
 INTERSPEECH-T-BRNN-pre.pcl
+token.json

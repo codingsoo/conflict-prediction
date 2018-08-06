@@ -19,8 +19,6 @@ print add_ignore
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
-token = ''
-slack = Slacker(token)
 
 user_git = dict()
 user_slack = dict()
@@ -134,6 +132,13 @@ approved_shell = make_shell_list('./situation_shell/approved.txt')
 notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
 
 #### MAIN ####
+
+# Read token data
+with open('../token.json', 'r') as token_file:
+    token_file_json = json.load(token_file)
+
+token = token_file_json['token']
+slack = Slacker(token)
 
 res = slack.auth.test().body
 
