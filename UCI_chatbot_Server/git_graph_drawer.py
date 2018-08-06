@@ -3,6 +3,7 @@ import re
 import requests
 import json
 import subprocess
+import time
 
 
 # File definition
@@ -357,10 +358,28 @@ def gitCloneFromURL(git_url):
     return root_dir_temp
 
 
+# Remove exists dir
+def removeDir(root_dir_temp):
+    # windows
+    # cmd_line = 'rmdir /S /Q ' + root_dir_temp
+
+    #linux
+    cmd_line = 'rm -rf ' + root_dir_temp
+    subprocess.check_output(cmd_line, shell=True)
+
+
 if __name__ == '__main__':
 
-    # git clone from user git url
-    root_dir_temp = gitCloneFromURL("https://github.com/j21chan/py_test")
+    while(1):
 
-    # Send to the server with Git dependency of function and class
-    sendGraphInfo(root_dir_temp)
+        # git clone from user git url
+        root_dir_temp = gitCloneFromURL("https://github.com/j21chan/py_test")
+        print root_dir_temp
+        # Send to the server with Git dependency of function and class
+        sendGraphInfo(root_dir_temp)
+
+        # Remove exist dir
+        removeDir(root_dir_temp)
+
+        # Delay
+        time.sleep(60)

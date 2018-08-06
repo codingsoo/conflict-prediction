@@ -335,10 +335,7 @@ def graphInfo():
 
     # Receive Graph Info
     content = request.get_json(silent=True)
-    print(str(content))
-
     git_clone_info.set_git_clone_info(content)
-    print git_clone_info.get_git_clone_info()
     return "success"
 
 # Random Number for User sign-in
@@ -368,4 +365,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="0.0.0.0", port=80)
+    app.run(debug=True, host="0.0.0.0", port=8080)
