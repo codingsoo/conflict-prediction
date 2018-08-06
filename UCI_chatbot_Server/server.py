@@ -357,11 +357,10 @@ def createRandomTemp():
 if __name__ == "__main__":
 
     # Import Token
-    with open('../token.json', 'r') as token_file:
-        token_file_json = json.load(token_file)
-
-    token = token_file_json['token']
-    slack = Slacker(token)
+    # with open('../token.json', 'r') as token_file:
+    #     token_file_json = json.load(token_file)
+    #
+    # token = token_file_json['token']
 
     # Import User Data
     with open('./user_data/user_git.json', 'r') as f:

@@ -8,7 +8,6 @@ import subprocess
 # File definition
 # os.path.join(os.getcwd(), 'UCI_chatbot_Server')
 root_dir = "C:\\Users\\jc\\Desktop\\py_test"
-root_dir_temp = ""
 file_dir = []
 file_name = []
 
@@ -330,7 +329,7 @@ def postToServer(uri, json_data):
 
 
 # Send To Server with graph data [ [u, v], [u, v], [u, v] ]
-def sendGraphInfo():
+def sendGraphInfo(root_dir_temp):
 
     search_directory(root_dir_temp)
 
@@ -349,18 +348,19 @@ def sendGraphInfo():
 def gitCloneFromURL(git_url):
 
     cmd_line = 'git clone ' + git_url
-    git_dir_name = git_url.split('/')[4][:-4]
-
+    git_dir_name = git_url.split('/')[4]
     root_dir_temp = os.path.join(os.getcwd(), git_dir_name)
 
     # git clone from user git url
     git_clone_return = str(subprocess.check_output(cmd_line, shell=True)).strip()
 
+    return root_dir_temp
+
 
 if __name__ == '__main__':
 
     # git clone from user git url
-    gitCloneFromURL("https://github.com/UCNLP/conflict-detector.git")
+    root_dir_temp = gitCloneFromURL("https://github.com/j21chan/py_test")
 
     # Send to the server with Git dependency of function and class
-    sendGraphInfo()
+    sendGraphInfo(root_dir_temp)
