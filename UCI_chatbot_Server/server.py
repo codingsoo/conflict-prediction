@@ -39,10 +39,6 @@ error_list = dict()
 
 git_clone_info = git_clone_info()
 
-# Slack api
-token = ''
-slack = Slacker(token)
-
 def make_shell_list(file):
     f = open(file,"r")
     text = f.read()
@@ -92,7 +88,7 @@ def cmd1():
 
         with open('./user_data/approved_list.json', 'r') as f:
             approved_list = json.load(f)
-        if str(os.path.basename()) in approved_list:
+        if file_name in approved_list:
             continue
 
         # Conflict case
@@ -102,6 +98,19 @@ def cmd1():
                 error = 'in'
                 for user1_work_place in working_list[conflict_list[file_name][0]][file_name].keys():
                     for user2_work_place in working_list[user_slack_id][file_name].keys():
+                        user1_working_line = working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][0]
+                        user1_working_space = working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]
+                        user2_working_line = working_list[user_slack_id][file_name][user2_work_place][0]
+                        user2_working_space = working_list[user_slack_id][file_name][user2_work_place][1]
+                        if user1_working_space == "" :
+                            user1_working_space = 0
+                        if user2_working_space == "":
+                            user2_working_space = 0
+                        if user1_working_line == "":
+                            user1_working_line = 0
+                        if user2_working_line == "":
+                            user2_working_line = 0
+
                         # Def case
                         if user1_work_place == user2_work_place and 'def' in user1_work_place:
                             error = user1_work_place
@@ -110,16 +119,16 @@ def cmd1():
                             error = user1_work_place
                         # Same file case
                         elif error == 'in':
-                            working_line = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
-                            working_space = abs(int(working_list[str(conflict_list[file_name][0])][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            working_line = abs(int(user1_working_line) - int(user2_working_line))
+                            working_space = abs(int(user1_working_space) + int(user2_working_space))
                             error = error + str(working_line) + ',' + str(working_space)
                         elif 'in' in error:
                             #print working_list[user_slack_id][file_name]
                             #print working_list[conflict_list[file_name][0]][file_name]['import json']
                             pre_working_line = int(error[2:].split(',')[0])
                             pre_working_space = int(error[2:].split(',')[1])
-                            working_line = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][0]) - int(working_list[user_slack_id][file_name][user2_work_place][0]))
-                            working_space = abs(int(working_list[conflict_list[file_name][0]][file_name][user1_work_place][1]) + int(working_list[user_slack_id][file_name][user2_work_place][1]))
+                            working_line = abs(int(user1_working_line) - int(user2_working_line))
+                            working_space = abs(int(user1_working_space) + int(user2_working_space))
 
                             if pre_working_space < working_space:
                                 error = 'in' + str(working_line) + ',' + str(working_space)
@@ -228,19 +237,19 @@ def cmd1():
         else:
             user_list.append(user_slack_id)
             conflict_list[file_name] = user_list
-
-        # In direct
-        index = 0
-        for group in content['git_graph']:
-            if file_name in group and index in used_files :
-                for user in used_files[index] :
-                    if user != user_slack_id and file_name in working_list[user].keys():
-                        # conflict detected
-                        print("hello")
-                    else:
-                        del(used_files[index])
-                used_files[index].append(user_slack_id)
-            index = index + 1
+        #
+        # # In direct
+        # index = 0
+        # for group in content['git_graph']:
+        #     if file_name in group and index in used_files :
+        #         for user in used_files[index] :
+        #             if user != user_slack_id and file_name in working_list[user].keys():
+        #                 # conflict detected
+        #                 print("hello")
+        #             else:
+        #                 del(used_files[index])
+        #         used_files[index].append(user_slack_id)
+        #     index = index + 1
 
     return "test"
 
@@ -352,6 +361,7 @@ if __name__ == "__main__":
         token_file_json = json.load(token_file)
 
     token = token_file_json['token']
+    slack = Slacker(token)
 
     # Import User Data
     with open('./user_data/user_git.json', 'r') as f:
@@ -359,4 +369,4 @@ if __name__ == "__main__":
         print(user_git_id_list)
 
     # Run App
-    app.run(debug=True, host="127.0.0.1", port=8080)
+    app.run(debug=True, host="0.0.0.0", port=80)
