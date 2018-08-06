@@ -8,6 +8,10 @@ from os.path import expanduser
 import os
 import re
 
+# IP definition
+ip_addr = "127.0.0.1"
+port = "5009"
+
 # Verifying User
 def verifyingUser():
 
@@ -72,11 +76,8 @@ def getUserEmail():
 # Post To Server
 def postToServer(uri, json_data):
 
-    # IP Address
-    ip_addr = "35.237.100.101" #"35.237.100.101"
-
     # Create URL
-    url = "http://" + ip_addr + ":80" + uri # 80
+    url = "http://" + ip_addr + ":" + port + uri # 80
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
@@ -93,11 +94,8 @@ def postToServer(uri, json_data):
 # Get To Server
 def getToServer(uri, json_data):
 
-    # IP Address
-    ip_addr = "35.237.100.101" #"35.237.100.101"
-
     # Create URL
-    url = "http://" + ip_addr + ":80" + uri # 80
+    url = "http://" + ip_addr + ":" + port + uri # 80
 
     # Headers
     headers = {'Content-Type': 'application/json; charset=utf-8'}
