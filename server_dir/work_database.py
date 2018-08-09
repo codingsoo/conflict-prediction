@@ -34,6 +34,9 @@ class work_database:
 
     def detect_direct_conflict(self, project_name, working_list, user_name):
 
+        rows = list()
+
+        # search [project_name, file_name] in the working_table
         try:
             for temp_work in working_list:
                 sql = "select * " \
@@ -47,12 +50,22 @@ class work_database:
                 rows = self.cursor.fetchall()
                 rows = list(rows)
 
+                if(rows != []):
+                    break
+
         except:
             self.conn.rollback()
             print("ERROR : detect direct conflict")
 
-        finally:
-            pass
+        # Direct Conflict
+        if(rows != []):
+            for temp_other_work in rows:
+                for temp_user_work in working_list:
+
+                    # other_logic_name == current_user_name
+                    if(temp_other_work[2] == temp_user_work[1]):
+                        print(temp_other_work[2] + " conflict")
+                        break
 
         return
 
