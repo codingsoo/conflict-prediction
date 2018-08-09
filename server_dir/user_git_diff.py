@@ -17,6 +17,7 @@ class user_git_diff:
 
     def get_working_data(self):
 
+        # working_list = [ ["file_name", "logic_name"], ["file_name", "logic_name"], ... ]
         working_list = list()
 
         temp_work_data_dict = self.content[self.proj_name][self.user_name]

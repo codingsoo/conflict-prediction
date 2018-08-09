@@ -27,6 +27,32 @@ class work_database:
 
         except:
             self.conn.rollback()
+            print("ERROR : delete user data")
+
+        return
+
+
+    def detect_direct_conflict(self, project_name, working_list, user_name):
+
+        try:
+            for temp_work in working_list:
+                sql = "select * " \
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s'" % (project_name, temp_work[0])
+
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                rows = self.cursor.fetchall()
+                rows = list(rows)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : detect direct conflict")
+
+        finally:
+            pass
 
         return
 
