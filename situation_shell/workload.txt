@@ -1,0 +1,10 @@
+During %s and %s are working on the same %s file, your workload is getting bigger. Be careful.
+%s and %s workload in the same %s file is getting more overlapped. It can be more serious.
+Hey, %s and %s, be careful about more serious situation. Your amount of overlapped work in %s file is getting bigger.
+%s and %s are working on a same %s file, and your overlapped workload is getting bigger. Be careful!
+I would like to let you know that %s and %s are working on %s file and it is getting worse because of growing overlapped.
+Hey, %s and %s! your work load in same %s file is getting bigger!
+Overlapped workload of %s and %s is getting bigger, so be cautious!
+Hey, %s and %s, what you guys doing? You guys workload in same %s file is getting bigger!
+%s and %s, be careful about conflict, because your workload in same %s file is getting bigger.
+Two developers %s and %s are working too much in the same file!

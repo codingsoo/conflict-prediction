@@ -1,0 +1,70 @@
+It seems %s and %s are working on the same %s. I think you need to talk about it.
+It seems %s and %s are working on the same %s. I think you have to talk about it.
+It seems %s and %s are working on the same %s. I think you need to chat with others.
+It seems %s and %s are working on the same %s. I think you have to chat with others.
+It seems %s and %s are working on the same %s. I think you have to address it.
+It seems %s and %s are working on the same %s. I think this problem should be solved.
+It seems %s and %s are working on the same %s. I think this problem should be addressed.
+It seems %s and %s are working on the same %s. I think this problem should be fixed.
+It seems %s and %s are working on the same %s. I think you need to solve it.
+It seems %s and %s are working on the same %s. I think you need to check it.
+It seems %s and %s are working on the same %s. It is dangerous!
+It seems %s and %s are engaging in the same %s. I think you need to talk about it.
+It seems %s and %s are engaging in the same %s. I think you have to talk about it.
+It seems %s and %s are engaging in the same %s. I think you need to chat with others.
+It seems %s and %s are engaging in the same %s. I think you have to chat with others.
+It seems %s and %s are engaging in the same %s. I think you have to address it.
+It seems %s and %s are engaging in the same %s. I think this problem should be solved.
+It seems %s and %s are engaging in the same %s. I think this problem should be addressed.
+It seems %s and %s are engaging in the same %s. I think this problem should be fixed.
+It seems %s and %s are engaging in the same %s. I think you need to solve it.
+It seems %s and %s are engaging in the same %s. I think you need to check it.
+It seems %s and %s are engaging in the same %s. It is dangerous!
+%s and %s! It seems you are working on the same %s. I think you need to talk about it.
+%s and %s! It seems you are working on the same %s. I think this problem should be solved.
+%s and %s! It seems you are engaging in the same %s. I think you need to solve it.
+%s and %s! It seems you are engaging in the same %s. I think you need to talk about it.
+%s and %s! It seems you are engaging in the same %s. I think this problem should be solved.
+%s and %s! It seems you are engaging in the same %s. I think you need to solve it.
+%s and %s, you’re on the same %s. It could get worse if you both move to same.
+Two developers %s and %s are working simultaneously in %s.
+Two developers %s and %s are working in the same %s.
+Did you guys know that both of you, %s, %s working on same %s?
+Hey, %s and %s, you are working on the same - %s. Be careful about conflict!
+Hey, %s and %s, you are engaging in the same - %s. Be careful about conflict!
+Hey, %s and %s, you are working on the same - %s. Be cautious about conflict!
+Hey, %s and %s, you are engaging in the same - %s. Be cautious about conflict!
+You should know that %s and %s are working on a same : %s.
+%s and %s are working on a same %s, so conflict can be happened soon. Be careful!
+%s and %s are working on a same %s.
+%s and %s are engaging a same %s.
+%s and %s are working on %s. It’s dangerous!
+%s and %s are engaging in %s. It’s dangerous!
+%s and %s are working on %s. It’s unsafe!
+%s and %s are engaging in %s. It’s unsafe!
+%s and %s are working on %s. It’s hazardous!
+%s and %s are engaging in %s. It’s hazardous!
+%s and %s are working on %s. It’s risky!
+%s and %s are engaging in %s. It’s risky!
+%s and %s have started working on %s. It seems not good.
+%s and %s have started engaging in %s. It seems not good.
+I would like to let you know that %s and %s are working on %s and it is not good.
+I would like to let you know that %s and %s are engaging in %s and it is not good.
+I’m letting you know that %s and %s are working on %s and it is not good.
+I’m letting you know that %s and %s are engaging in %s and it is not good.
+I want to let you know that %s and %s are working on %s and it is not good.
+I want to let you know that %s and %s are engaging in %s and it is not good.
+Multiple developers %s and %s are working on the same %s.
+Multiple developers %s and %s are engaging in the same %s.
+There're more than one user(%s, %s) in the same %s.
+Hey %s and %s! You guys are too close! Both of you working on %s.
+Hey %s and %s! You guys are too close! Both of you engaging in %s.
+%s and %s , I think it’s not a good idea to work on same %s. It could make the situation worse.
+%s and %s , I think it’s not a good idea to work on same %s. It is likely to occur conflicts
+Hey, %s and %s what you guys doing? I think both of you on same %s is not a good idea.
+As %s and %s are working on the same %s, it is dangerous.
+As %s and %s are working on the same %s, it is likely to occur conflicts.
+As %s and %s are working on the same %s, there is a chance that conflicts may occur.
+As %s and %s are working on the same %s, there is a possibility of potential conflicts.
+As %s and %s are engaging in the same %s, it is dangerous.
+Just let you know that %s and %s are on same %s.

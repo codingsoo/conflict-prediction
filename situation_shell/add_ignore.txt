@@ -1,0 +1,9 @@
+Ok! I'll put %s to ignore list!
+Sure! I'll put %s to ignore list!
+Okay! I'll put %s to ignore list!
+Ok! %s has been added to ignore list.
+Sure! %s has been added to ignore list.
+Okay! %s has been added to ignore list.
+Ok! Now we have %s in the ignore list.
+Sure! Now we have %s in the ignore list.
+Okay! Now we have %s in the ignore list.

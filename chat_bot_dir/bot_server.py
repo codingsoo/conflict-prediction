@@ -4,17 +4,19 @@ import time
 import json
 import random
 import _thread
+import os
+from pathlib import Path
 
 add_ignore = []
 
 def make_shell_list(file):
-    f = open(file,"r")
+    f = open(file,"rt",encoding="UTF8")
     text = f.read()
     text = text.split("\n")
 
     return text
 
-add_ignore = make_shell_list('./situation_shell/add_ignore.txt')
+add_ignore = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","add_ignore.txt"))
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
@@ -57,21 +59,7 @@ def on_message(ws, message):
 
         # Message Content Convert
 
-        ran_text = str(msg['text'])
-        chatting_word = dict()
-
-        chatting_word['NP'] = 'No Problem'
-        chatting_word['np'] = 'No Problem'
-
-        rand_text = ''
-
-        for word in ran_text.split(' '):
-            print(word)
-            if len(word) <=4 and word in chatting_word:
-                rand_text = rand_text + chatting_word[word] + ' '
-            else:
-                rand_text = rand_text + word + ' '
-        rand_text = rand_text[:-1]
+        rand_text = str(msg['text'])
 
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
@@ -127,17 +115,17 @@ def on_open(ws):
 
     _thread.start_new_thread(run, ())
 
-get_severe_shell = make_shell_list('./situation_shell/get_severe.txt')
-approved_shell = make_shell_list('./situation_shell/approved.txt')
-notify_conflict_shell = make_shell_list('./situation_shell/go_to_same_file.txt')
+get_severe_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","get_severe.txt"))
+approved_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","approved.txt"))
+notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
 
 # Read token data
-# with open('../token.json', 'r') as token_file:
-#     token_file_json = json.load(token_file)
+with open('../token.json', 'r') as token_file:
+    token_file_json = json.load(token_file)
 
-# token = token_file_json['token']
+token = token_file_json['token']
 slack = Slacker(token)
 
 res = slack.auth.test().body
