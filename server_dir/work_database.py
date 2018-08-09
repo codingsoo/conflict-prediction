@@ -69,11 +69,13 @@ class work_database:
                 for temp_user_work in working_list:
 
                     # Condition
-                    # other_file_name == current_user_file_name
-                    # and
-                    # other_logic_name == current_user_logic_name
-                    if(temp_other_work[1] == temp_user_work[0] and temp_other_work[2] == temp_user_work[1]):
-                        print(temp_other_work[1] + temp_other_work[2] + " conflict")
+                    # other_file_name == current_user_file_name and other_logic_name == current_user_logic_name
+                    if(temp_other_work[1] == temp_user_work[0]
+                       and temp_other_work[2] == temp_user_work[1]):
+                        print("*** Conflict ***")
+                        print("project name : " + project_name)
+                        print("file name : " + temp_other_work[1])
+                        print("logic name : "+ temp_other_work[2] + '\n')
 
             result = "conflict"
         else:
