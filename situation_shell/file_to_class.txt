@@ -1,0 +1,7 @@
+Hey %s and %s! You guys are working the same %s to same %s. Be careful!
+%s and %s were working on the same %s, but now you are working on the same %s. It's more dangerous than before!
+I would like to tell you about bigger severity, because %s and %s were working on the same %s, but now they're working on the same %s.
+%s and %s were working on the same %s before, but now you guys are working on the same %s. It's more hazardous than before!
+I think %s and %s are making more serious situation. You were working on the same %s, but now you're working on the same %s.
+Hey, %s and %s! You are working on the same %s, but now you are working on the same %s. It is getting worse, so be cautious about conflict!
+Two developers %s and %s were working simultaneously in %s, but now they are working simultaneously in %s.

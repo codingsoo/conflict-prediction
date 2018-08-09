@@ -1,0 +1,10 @@
+%s and %s, thank you! Conflict has been solved!
+%s and %s, good! Conflict has been solved!
+%s and %s, cool! Conflict has been solved!
+%s and %s, nice! Conflict has been solved!
+%s and %s, good news! Conflict has been solved!
+%s and %s, thank you! No more conflicts!
+%s and %s, good! No more conflicts!
+%s and %s, cool! No more conflicts!
+%s and %s, nice job! No more conflicts!
+%s and %s, good news! No more conflicts!
