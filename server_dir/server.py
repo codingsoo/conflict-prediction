@@ -51,7 +51,6 @@ def git_diff():
 
     content = request.get_json(silent=True)
 
-    git_diff_logic(content)
 
 
 # Main
