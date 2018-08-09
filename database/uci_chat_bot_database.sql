@@ -18,8 +18,8 @@ CREATE TABLE working_table (
 );
 */
 
-/*
-3.
+
+use uci_chat_Bot;
 CREATE TABLE conflict_table (
 	project_name varchar(20) not null,
     file_name varchar(20) not null,
@@ -29,4 +29,3 @@ CREATE TABLE conflict_table (
     
     primary key(project_name, file_name, logic_name, user_name)
 );
-*/
