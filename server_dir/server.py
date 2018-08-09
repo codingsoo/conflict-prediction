@@ -50,7 +50,9 @@ def sync_user_data():
 def git_diff():
 
     content = request.get_json(silent=True)
+    git_diff_logic(content)
 
+    return "git_diff"
 
 
 # Main

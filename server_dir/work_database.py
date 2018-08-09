@@ -101,8 +101,8 @@ class work_database:
 
         for temp_work in working_list:
             try:
-                sql = "insert into working_table (project_name, file_name, logic_name, user_name) " \
-                      "value ('%s', '%s', '%s', '%s')" %(project_name, temp_work[0], temp_work[1], user_name)
+                sql = "insert into working_table (project_name, file_name, logic_name, user_name, work_line, work_amount) " \
+                      "value ('%s', '%s', '%s', '%s', %d, %d)" %(project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
 
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -111,7 +111,10 @@ class work_database:
                 print("ERROR : insert user data")
 
 
+    # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic_name, user1_name, user2_name):
+
+        # User 1 data
         try:
             sql1 = "insert into conflict_table (project_name, file_name, logic_name, user_name) " \
                    "value ('%s', '%s', '%s', '%s')" % (project_name, file_name, logic_name, user1_name)
@@ -121,6 +124,7 @@ class work_database:
             self.conn.rollback()
             print("ERROR : insert conflict data")
 
+        # User 2 data
         try:
             sql2 = "insert into conflict_table (project_name, file_name, logic_name, user_name) " \
                    "value ('%s', '%s', '%s', '%s')" % (project_name, file_name, logic_name, user2_name)

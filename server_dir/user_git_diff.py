@@ -22,7 +22,7 @@ class user_git_diff:
 
     def get_working_data(self):
 
-        # working_list = [ ["file_name", "logic_name"], ["file_name", "logic_name"], ... ]
+        # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
         working_list = list()
 
         # get file dict
@@ -34,10 +34,12 @@ class user_git_diff:
             logic_list = temp_work_data_dict[file_name]
 
             # search each file name and each logic name
-            # temp_work = ["file_name", "logic_name"]
+            # temp_work = ["file_name", "logic_name", "work_line", "work_amount"]
             for temp_logic in logic_list:
-                temp_work.append(file_name)
-                temp_work.append(temp_logic[0]) # temp_logic[0] = logic_name
+                temp_work.append(file_name)     # file_name
+                temp_work.append(temp_logic[0]) # logic_name
+                temp_work.append(temp_logic[1]) # work_line
+                temp_work.append(temp_logic[2]) # work_amount
 
             # append temp_work
             working_list.append(temp_work)
