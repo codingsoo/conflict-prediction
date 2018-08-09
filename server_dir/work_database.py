@@ -2,6 +2,7 @@ import pymysql
 
 class work_database:
 
+    # Constructor
     def __init__(self):
         # get mysql database connection
         self.conn = pymysql.connect(host='127.0.0.1',
@@ -11,6 +12,8 @@ class work_database:
                                charset='utf8')
         self.cursor = self.conn.cursor()
 
+
+    # Delete User working data
     def delete_user_data(self, user_name):
 
         try:
@@ -27,6 +30,8 @@ class work_database:
 
         return
 
+
+    # Close Database connection and cursor
     def close_db(self):
 
         self.cursor.close()
