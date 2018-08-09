@@ -34,20 +34,46 @@ def lemm_word():
 def wsd_synm():
     with open("fin_lemm.json", 'r') as f:
         sntcs = json.load(f)
+    with open("response.json", 'r') as r:
+        respons = json.load(r)
+
+
     af_wsd = []
+
+    #verb_dict
+    verb_dict = dict()
     for sntc in sntcs:
         # Each sentence has a synonym word [[original verb, objective, sentecne],[synonym verb, original verb, sentence]...]
         word_syn_set = []
 
-        # a list of synonym verbs
-        syn_set = lesk(sntc[2].split(), sntc[0], 'v').lemma_names()
-        # get rid of lesk form
-        sntc[0] = lesk(sntc[2].split(), sntc[0], 'v').lemmas()[0].name()
+         # Initialize each verb dict
+        verb_dict[sntc[1]] = dict()
+        # Create { verb : { obj : chat_response, obj : chat_response } ... }
+        verb_dict[sntc[1]][sntc[2]] = respons[sntc[1]][sntc[2]]
+
+        #If verb contains "not" then when finding synonym, only original verb without "not" should be found.
+        if (sntc[0].split()[0] != "not"):
+            # a list of synonym verbs
+            syn_set = lesk(sntc[2].split(), sntc[0], 'v').lemma_names()
+            # get rid of lesk form
+            sntc[0] = lesk(sntc[2].split(), sntc[0], 'v').lemmas()[0].name()
+        else:
+            # a list of synonym verbs
+            syn_set = lesk(sntc[2].split(), sntc[0].split()[1], 'v').lemma_names()
+            # get rid of lesk form
+            sntc[0] = lesk(sntc[2].split(), sntc[0].split()[1], 'v').lemmas()[0].name()
+
+
 
         # make a list in this form [synonym verb, original verb, sentence] for each synonym verb
         for syn in syn_set:
             syn_verb = [str(syn), str(sntc[2]), str(sntc[3])]
             if str(sntc[1]) != str(syn):
+                #If verb contains "not" then synonyms also should contains "not"
+                if (sntc[1].split()[0] == "not"):
+                    syn = "not " + syn
+                verb_dict[syn] = dict()
+                verb_dict[syn][sntc[2]] = respons[sntc[1]][sntc[2]]
                 word_syn_set.append(syn_verb)
             else:
                 continue
@@ -57,3 +83,5 @@ def wsd_synm():
 
     with open("synonym.json", "w") as f:
         f.write(json.dumps(af_wsd))
+    with open("responds2.json", "w") as temp_file:
+        temp_file.write(json.dumps(verb_dict))
