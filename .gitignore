@@ -1,2 +1,5 @@
 .idea/
 chat_bot_server_virenv/
+token.json
+.DS_Store/
+venv/
