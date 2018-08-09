@@ -10,6 +10,8 @@ class work_database:
                                password='99189918',
                                db='uci_chat_bot',
                                charset='utf8')
+
+        # get cursor
         self.cursor = self.conn.cursor()
 
 
@@ -32,12 +34,14 @@ class work_database:
         return
 
 
+    # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
 
         rows = list()
 
         # search [project_name, file_name] in the working_table
         try:
+            # search each file name
             for temp_work in working_list:
                 sql = "select * " \
                       "from working_table " \
@@ -50,6 +54,7 @@ class work_database:
                 rows = self.cursor.fetchall()
                 rows = list(rows)
 
+                # detect direct conflict
                 if(rows != []):
                     break
 
@@ -62,13 +67,25 @@ class work_database:
             for temp_other_work in rows:
                 for temp_user_work in working_list:
 
-                    # other_logic_name == current_user_name
+                    # other_logic_name == current_user_logic_name
                     if(temp_other_work[2] == temp_user_work[1]):
                         print(temp_other_work[2] + " conflict")
-                        break
 
-        return
+            result = "conflict"
+        else:
+            result = "non-conflict"
 
+        return result
+
+
+    def insert_user_data(self, project_name, working_list, user_name):
+
+        for temp_work in working_list:
+            sql = "insert into working_table (project_name, file_name, logic_name, user_name) " \
+                  "value ('%s', '%s', '%s', '%s')" %(project_name, temp_work[0], temp_work[1], user_name)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
 
     # Close Database connection and cursor
     def close_db(self):

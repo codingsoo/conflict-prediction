@@ -2,11 +2,43 @@ from server_dir.server_git import *
 
 if __name__ == "__main__":
 
-    # file name, logic name
-    temp_work = [["b", "c"], ["c", "d"]]
+    content = {
+        'a' : {
+            'user1' : {
+                'b' : [
+                    [
+                        'c',
+                        3,
+                        4
+                    ]
+                ],
+                'c' : [
+                    [
+                        'd',
+                        4,
+                        3
+                    ]
+                ]
+            }
+        }
+    }
 
-    w_db = work_database()
+    temp = user_git_diff(content)
+    print(temp.get_working_data())
 
-    # w_db.delete_user_data("user1")
+    # # file name, logic name
+    # temp_work = [["b", "c"], ["c", "d"]]
     #
-    w_db.detect_direct_conflict("a", temp_work, "user1")
+    w_db = work_database()
+    #
+    w_db.delete_user_data(temp.get_user_name())
+    # #
+    w_db.detect_direct_conflict(temp.get_proj_name(),
+                                temp.get_working_data(),
+                                temp.get_user_name())
+
+    w_db.insert_user_data(temp.get_proj_name(),
+                            temp.get_working_data(),
+                            temp.get_user_name())
+
+    w_db.close_db()
