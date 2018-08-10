@@ -3,6 +3,8 @@ Import Library
 """
 import json
 import random
+import os
+from pathlib import Path
 
 
 """
@@ -63,7 +65,7 @@ return      : user_git_id_list
 def read_user_data_logic():
 
     # Import User Data
-    with open('./user_data/user_git.json', 'r') as f:
+    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f:
         user_git_id_list = json.load(f)
 
     return user_git_id_list
