@@ -20,8 +20,7 @@ Punctuator
 
 sentense.json
 
-POS tagging, Dependency tagging
--------------------------------
+##POS tagging, Dependency tagging
 
 ### Requirements
 
