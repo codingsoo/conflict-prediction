@@ -1,0 +1,25 @@
+I want to ignore any notification about File1.py
+Is this severe?
+How severe is this?
+I want to know the location of User1 and ignore notification about File.py
+I want to know the location and size of conflict.
+How many users are working on file1.py?
+Is conflict in file1.py getting more serious?
+Let me know where is location of conflict.
+Sayme, don't notify me about this conflict again.
+I want to ignore any notification about File1.py.
+I want to know the location, and size of conflict.
+Where is Myron working on?
+Do you think this is gonna make a conflict?
+Where is Myron working on?
+Is this conflict getting more serious?
+Where is the conflict?
+How many users are working on this file?
+Sayme, do you know who wrote code line 14?
+Sayme, how severe is this?
+Who's working on this file right now?
+Sayme, don't notify me about this conflict again.
+Sayme, is User1 working on File2.py now?
+Sayme, where is User1's location?
+Can you add File1.py to ignore list?
+Sayme, can you tell me who wrote code line 16?
