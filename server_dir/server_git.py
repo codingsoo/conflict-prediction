@@ -20,14 +20,14 @@ def git_diff_logic(content):
     w_db.delete_user_data(user_data.get_user_name())
 
     # detect direct conflict
-    w_db.detect_direct_conflict(user_data.get_proj_name(),
-                                user_data.get_working_data(),
-                                user_data.get_user_name())
+    w_db.detect_direct_conflict(project_name = user_data.get_proj_name(),
+                                working_list = user_data.get_working_data(),
+                                user_name    = user_data.get_user_name())
 
     # insert user data
-    w_db.insert_user_data(user_data.get_proj_name(),
-                          user_data.get_working_data(),
-                          user_data.get_user_name())
+    w_db.insert_user_data(project_name = user_data.get_proj_name(),
+                          working_list = user_data.get_working_data(),
+                          user_name    = user_data.get_user_name())
 
     # close database
     w_db.close_db()
