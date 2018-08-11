@@ -54,6 +54,7 @@ class work_database:
                       "from working_table " \
                       "where project_name = '%s' " \
                       "and file_name = '%s'" % (project_name, temp_work[0])
+                print(sql)
 
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -71,13 +72,13 @@ class work_database:
             self.conn.rollback()
             print("ERROR : detect direct conflict")
 
+        all_rows_list = list(set(all_rows_list))
         print(all_rows_list)
-
 
         # Conflict
         if(all_rows_list != []):
 
-            # temp_other_work : ["project_name", "file_name", "logic_name", "user_name", "timestamp"]
+            # temp_other_work : ["project_name", "file_name", "logic_name", "user_name", "working_line", "working_amount","timestamp"]
             for temp_other_work in all_rows_list:
                 # temp_user_work : ["file_name", "logic_name", "work_line", "work_amount"]
                 for temp_user_work in working_list:
@@ -105,6 +106,7 @@ class work_database:
                         self.conn.rollback()
                         print("ERROR : get conflict_table")
 
+                    print(already_conflict_list)
 
                     # Already conflict
                     if(already_conflict_list != []):
@@ -113,7 +115,8 @@ class work_database:
                             t_ser = temp_already1[7]  # severity
 
                             # calculate severity
-                            if (temp_user_work[1] == temp_other_work[2]):
+                            if (temp_user_work[0] == temp_other_work[1]
+                                and temp_user_work[1] == temp_other_work[2]):
                                 if (temp_user_work[1][:3] == "def"):
                                     severity = 3
                                 elif (temp_user_work[1][:5] == "class"):
@@ -130,42 +133,46 @@ class work_database:
                                     else:
                                         print("lower severity")
 
-                            else:
+                                self.update_conflict_data(project_name=project_name,
+                                                          file_name=temp_user_work[0],
+                                                          logic1_name=temp_user_work[1],
+                                                          logic2_name=temp_other_work[2],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3],
+                                                          severity=severity)
+
+                            elif(temp_user_work[0] == temp_other_work[1]
+                                 and temp_user_work[1] != temp_other_work[2]):
                                 # After 30 minutes
                                 if (d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30)):
                                     print("softer")
                                 severity = 1
 
-                            try:
-                                sql = "update conflict_table " \
-                                      "set logic1_name = '%s', logic2_name = '%s', severity = %d " \
-                                      "where project_name = '%s' " \
-                                      "and file_name = '%s' " \
-                                      "and user1_name = '%s' " \
-                                      "and user2_name = '%s' " % (temp_user_work[1], temp_other_work[2], severity,
-                                                                  project_name, temp_user_work[0], user_name, temp_other_work[3])
-                                print(sql)
-                                self.cursor.execute(sql)
-                                self.conn.commit()
+                                self.update_conflict_data(project_name=project_name,
+                                                          file_name=temp_user_work[0],
+                                                          logic1_name=temp_user_work[1],
+                                                          logic2_name=temp_other_work[2],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3],
+                                                          severity=severity)
 
-                            except:
-                                self.conn.rollback()
-                                print("ERROR : get conflict_table")
 
                     # First Conflict
                     else:
-                        # logic name is same
-                        if(temp_user_work[1] == temp_other_work[2]):
-
+                        # logic name is same and file name is same
+                        if(temp_user_work[0] == temp_other_work[1]
+                            and temp_user_work[1] == temp_other_work[2]):
+                            print("work name : " + temp_user_work[1] + temp_other_work[2])
                             # calculate severity
                             if (temp_user_work[1][:3] == "def"):
                                 severity = 3
+                                print("first conflict!! : 3")
                             elif (temp_user_work[1][:5] == "class"):
                                 severity = 2
+                                print("first conflict!! : 2")
                             else:
                                 severity = 1
-
-                            print("first conflict!!")
+                                print("first conflict!! : 1")
 
                             self.insert_conflict_data(project_name=project_name,
                                                       file_name=temp_user_work[0],
@@ -175,6 +182,17 @@ class work_database:
                                                       user2_name=temp_other_work[3],
                                                       severity = severity)
 
+                        # Just in
+                        elif(temp_user_work[0] == temp_other_work[1]):
+                            print("### just in ####")
+                            self.insert_conflict_data(project_name=project_name,
+                                                      file_name=temp_user_work[0],
+                                                      logic1_name=temp_user_work[1],
+                                                      logic2_name=temp_other_work[2],
+                                                      user1_name=user_name,
+                                                      user2_name=temp_other_work[3],
+                                                      severity=1)
+
         # Non-conflict
         else:
             try:
@@ -182,6 +200,7 @@ class work_database:
                       "from conflict_table " \
                       "where user1_name = '%s' " \
                       "or user2_name = '%s' " % (user_name, user_name)
+                print(sql)
 
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -198,6 +217,7 @@ class work_database:
             try:
                 sql = "insert into working_table (project_name, file_name, logic_name, user_name, work_line, work_amount) " \
                       "value ('%s', '%s', '%s', '%s', %d, %d)" %(project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+                print(sql)
 
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -221,6 +241,7 @@ class work_database:
                    "value ('%s', '%s', '%s', '%s', '%s', '%s', %d)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity)
             self.cursor.execute(sql1)
             self.conn.commit()
+            print(sql1)
         except:
             self.conn.rollback()
             print("ERROR : insert conflict data")
@@ -228,21 +249,23 @@ class work_database:
 
 
     # update conflict data
-    def update_conflict_data(self, project_name, file_name, logic_name, user1_name, user2_name, severity):
+    def update_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
         try:
-            sql1 = "update conflict_table " \
-                   "set logic_name = '%s', severity = %d " \
-                   "where project_name = '%s' " \
-                   "and file_name = '%s' " \
-                   "and user1_name = '%s' " \
-                   "and user2_name = '%s' " \
-                   "" % (logic_name, severity, project_name, file_name, user1_name, user2_name)
-            print(sql1)
-            self.cursor.execute(sql1)
+            sql = "update conflict_table " \
+                  "set logic1_name = '%s', logic2_name = '%s', severity = %d " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and user1_name = '%s' " \
+                  "and user2_name = '%s' " % (logic1_name, logic2_name, severity,
+                                              project_name, file_name, user1_name, user2_name)
+            print(sql)
+            self.cursor.execute(sql)
             self.conn.commit()
+
         except:
             self.conn.rollback()
-            print("ERROR : update conflict data")
+            print(self.cursor.Error)
+            print("ERROR : update conflict_table")
         return
     
 

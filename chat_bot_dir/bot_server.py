@@ -63,7 +63,7 @@ def on_message(ws, message):
 
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
-            with open('../user_data/user_git.json', 'r') as f1, open('../user_data/user_slack.json','r') as f2:
+            with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'r') as f2:
                 user_git = json.load(f1)
                 user_slack = json.load(f2)
 
@@ -78,7 +78,7 @@ def on_message(ws, message):
                         user_git[git_user] = user_name
                 #
                 #         # Save User Data Json file
-            with open('../user_data/user_git.json', 'w') as make_file1, open('../user_data/user_slack.json', 'w') as make_file2:
+            with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'w') as make_file2:
                 json.dump(user_git, make_file1)
                 json.dump(user_slack, make_file2)
 
@@ -122,10 +122,10 @@ notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"s
 #### MAIN ####
 
 # Read token data
-with open('../token.json', 'r') as token_file:
-    token_file_json = json.load(token_file)
+# with open('../token.json', 'r') as token_file:
+#     token_file_json = json.load(token_file)
 
-token = token_file_json['token']
+token = ''
 slack = Slacker(token)
 
 res = slack.auth.test().body

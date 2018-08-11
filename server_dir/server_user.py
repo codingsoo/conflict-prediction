@@ -17,6 +17,8 @@ def user_search_logic(content, user_git_id_list):
 
     git_id = str(content['email'])
 
+    print(git_id)
+
     for email in user_git_id_list.keys():
         if git_id == str(email) and type(user_git_id_list[email]) != int:
             return "True"
@@ -26,13 +28,13 @@ def user_search_logic(content, user_git_id_list):
 
     # Create JSON User Data
     json_dict = dict()
-    with open('./user_data/user_git.json', 'r') as make_file:
+    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as make_file:
         json_dict = json.load(make_file)
 
     json_dict[git_id] = rand_num
 
     # Save User Data Json file
-    with open('./user_data/user_git.json', 'w') as make_file:
+    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file:
         json.dump(json_dict, make_file)
 
     # Return Ture or Random Number

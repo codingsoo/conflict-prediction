@@ -252,27 +252,28 @@ def temp(self, project_name, working_list, user_name):
 
 
 if __name__ == "__main__":
-
     content = {
-        'a' : {
-            'user2' : {
-                'b' : [
+        'git_id' : 'jc_com@naver.com',
+        'git_diff': {
+            'a project': {
+                'b file': [
                     [
-                        'def s',
+                        'class c',
                         4,
                         16
                     ]
+                ],
+                'd file': [
+                    [
+                        'def e',
+                        145,
+                        42
+                    ]
                 ]
-                # 'z' : [
-                #     [
-                #         'def e',
-                #         145,
-                #         42
-                #     ]
-                # ]
             }
         }
     }
+
 
     temp = user_git_diff(content)
     print(temp.get_working_data())
