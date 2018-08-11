@@ -52,31 +52,35 @@ def wsd_synm():
         verb_dict[sntc[1]][sntc[2]] = respons[sntc[1]][sntc[2]]
 
         #If verb contains "not" then when finding synonym, only original verb without "not" should be found.
-        if (sntc[0].split()[0] != "not"):
+        if (sntc[0].split("_")[0] != "not"):
             # a list of synonym verbs
             syn_set = lesk(sntc[2].split(), sntc[0], 'v').lemma_names()
             # get rid of lesk form
             sntc[0] = lesk(sntc[2].split(), sntc[0], 'v').lemmas()[0].name()
         else:
             # a list of synonym verbs
-            syn_set = lesk(sntc[2].split(), sntc[0].split()[1], 'v').lemma_names()
+            syn_set = lesk(sntc[2].split(), sntc[0].split("_")[1], 'v').lemma_names()
             # get rid of lesk form
-            sntc[0] = lesk(sntc[2].split(), sntc[0].split()[1], 'v').lemmas()[0].name()
+            sntc[0] = lesk(sntc[2].split(), sntc[0].split("_")[1], 'v').lemmas()[0].name()
 
 
 
         # make a list in this form [synonym verb, original verb, sentence] for each synonym verb
         for syn in syn_set:
-            syn_verb = [str(syn), str(sntc[2]), str(sntc[3])]
-            if str(sntc[1]) != str(syn):
-                #If verb contains "not" then synonyms also should contains "not"
-                if (sntc[1].split()[0] == "not"):
-                    syn = "not " + syn
-                verb_dict[syn] = dict()
-                verb_dict[syn][sntc[2]] = respons[sntc[1]][sntc[2]]
-                word_syn_set.append(syn_verb)
-            else:
+            #if synonym length is 2 except the word "not" then ignore it. )
+            if (len(syn.split("_")) == 3 or (syn.split("_")[0] != "not" and len(syn.split("_")) == 2)):
                 continue
+            else :
+                if str(sntc[1]) != str(syn):
+                    #If verb contains "not" then synonyms also should contains "not"
+                    if (sntc[1].split("_")[0] == "not"):
+                        syn = "not_" + syn
+                    verb_dict[syn] = dict()
+                    verb_dict[syn][sntc[2]] = respons[sntc[1]][sntc[2]]
+                    syn_verb = [str(syn), str(sntc[2]), str(sntc[3])]
+                    word_syn_set.append(syn_verb)
+                else:
+                    continue
         del sntc[0]
         word_syn_set.insert(0, sntc)
         af_wsd.append(word_syn_set)
