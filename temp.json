@@ -2,6 +2,6 @@
   ["working", "Myron", "Where is Myron working on?"],
   ["tell", "me", "Could you tell me the working status of user1"],
   ["ignore", "notification", "I want to ignore any notification about File1.py"],
-  ["notify", "me", "Sayme, don't notify me about this conflict again"],
-  ["think", "", "I think it is not a problem."]
+  ["not_notify", "me", "Sayme, don't notify me about this conflict again"],
+  ["think", " not_problem", "I think it is not a problem."]
 ]

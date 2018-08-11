@@ -71,7 +71,7 @@ def wsd_synm():
             if (len(syn.split("_")) == 3 or (syn.split("_")[0] != "not" and len(syn.split("_")) == 2)):
                 continue
             else :
-                if str(sntc[1]) != str(syn):
+                if str(sntc[1]) != str(syn) and (len(sntc[1].split("_")) == 2 and sntc[1].split("_")[1] != syn):
                     #If verb contains "not" then synonyms also should contains "not"
                     if (sntc[1].split("_")[0] == "not"):
                         syn = "not_" + syn
@@ -85,7 +85,12 @@ def wsd_synm():
         word_syn_set.insert(0, sntc)
         af_wsd.append(word_syn_set)
 
+    print af_wsd
+    print verb_dict
     with open("synonym.json", "w") as f:
         f.write(json.dumps(af_wsd))
     with open("responds2.json", "w") as temp_file:
         temp_file.write(json.dumps(verb_dict))
+
+lemm_word()
+wsd_synm()

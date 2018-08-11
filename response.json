@@ -1,0 +1,18 @@
+{
+
+	"work" : {
+    "Myron" :"WorkingStatus Notice()"
+    },
+    "tell" : {
+    "the working status of user1" : "WorkingStatus Notice"
+    },
+    "ignore" : {
+    "notification" : "SwitchNotification()"
+    },
+    "not_notify" : {
+    "conflict" : "SwitchNotification()"
+    },
+    "think" : {
+    "not problem" : "Finish"
+    }
+}
