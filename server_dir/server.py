@@ -7,7 +7,7 @@ Function : Detect git conflict between developers
 from flask import Flask, request
 from server_dir.server_git import *
 from server_dir.server_user import *
-
+from server_dir.server_git import *
 # Create Server
 app = Flask(__name__)
 
@@ -45,12 +45,15 @@ def sync_user_data():
     return "sync success"
 
 
-# Read the information of User Git Diff data
+# Read the information of Upser Git Diff data
 @app.route("/git_diff", methods = ["POST"])
 def git_diff():
 
     content = request.get_json(silent=True)
-    git_diff_logic(content)
+    print(convert_data(content))
+    # git_diff_logic(content)
+
+
 
     return "git_diff"
 

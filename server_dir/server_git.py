@@ -15,7 +15,7 @@ return      : none
 """
 
 # BASE_PATH for clone repository.
-BASE_PATH =""
+BASE_PATH ="D:\\repo2"
 
 def git_diff_logic(content):
 
@@ -54,39 +54,41 @@ def convert_data(content) :
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)
 
-    if os.path.isdir(os.path.join(full_base_path, project_name)) :
-        edit_time = os.path.getatime(os.path.join(full_base_path, project_name))
+    if not os.path.isdir(full_base_path) :
+        os.makedirs(full_base_path)
+    if os.path.isdir(os.path.join(full_base_path, os.path.splitext(project_name)[0])) :
+        edit_time = os.path.getatime(os.path.join(full_base_path, os.path.splitext(project_name)[0]))
         gap = time.time() - edit_time
         if gap >= 14400 :
-            shutil.rmtree(os.path.join(full_base_path, project_name))
-            subprocess.check_output('git clone {}'.format(URL), shell=True, cwd=os.path.join(BASE_PATH, owner_name))
+            shutil.rmtree(os.path.join(full_base_path, os.path.splitext(project_name)[0]))
+            subprocess.check_output('git clone {}'.format(URL), shell=True, cwd=full_base_path)
     else :
-        subprocess.check_output('git clone {}'.format(URL), shell=True, cwd=os.path.join(BASE_PATH, owner_name))
+        subprocess.check_output('git clone {}'.format(URL), shell=True, cwd=full_base_path)
 
-    full_base_path = os.path.join(full_base_path, project_name)
+    full_base_path = os.path.join(full_base_path, os.path.splitext(project_name)[0])
+    for file_path, value in content['working_list'].items() :
+        print(file_path)
+        file_path = os.path.normpath(file_path)
+        full_file_path = os.path.join(full_base_path, file_path)
+        print(full_file_path)
+        py_info = get_py_info(full_file_path)
+        func_list, class_list = get_py_info_list(py_info)
+        func_list.sort(key=lambda x : x[1])
+        class_list.sort(key=lambda x : x[1])
 
-    for each_work in content['working_list'] :
-        for file_path, value in each_work :
-            file_path = os.path.normpath(file_path)[2:]
-            full_file_path = os.path.join(full_base_path, file_path)
-            py_info = get_py_info(full_file_path)
-            func_list, class_list = get_py_info_list(py_info)
-            func_list.sort(key=lambda x : x[1])
-            class_list.sort(key=lambda x : x[1])
+        converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]] = []
 
-            converted_data['git_diff'][content['repository_name']][full_file_path] = []
-
-            for chunk in value['edit_chuck'] :
-                start, end = chunk
-                for logic in func_list :
-                    if logic[2] < start or end > logic[1] :
-                        continue
-                    converted_data['git_diff'][content['repository_name']][full_file_path].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start)])
-                    low, high = -1, len(class_list) - 1
-                for i, logic in enumerate(class_list):
-                    if logic[2] < start or end > logic[1] :
-                        continue
-                    converted_data['git_diff'][content['repository_name']][full_file_path].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start)])
+        for chunk in value['edit_chuck'] :
+            start, end = chunk
+            for logic in func_list :
+                if logic[2] < start or end < logic[1] :
+                    continue
+                converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
+                low, high = -1, len(class_list) - 1
+            for i, logic in enumerate(class_list):
+                if logic[2] < start or end > logic[1] :
+                    continue
+                converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
 
     return converted_data
 
