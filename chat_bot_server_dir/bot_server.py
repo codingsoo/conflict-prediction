@@ -131,7 +131,7 @@ notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"s
 #     token_file_json = json.load(token_file)
 
 # token = token_file_json['token']
-token = 'xoxb-151102038320-397292596885-Nv3wRxgdo5DNbwM29yjXQgMd'
+token = ''
 slack = Slacker(token)
 
 res = slack.auth.test().body
