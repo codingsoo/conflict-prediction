@@ -133,7 +133,7 @@ def send_channel_message(channel, message):
 def send_direct_message(user_id, message):
     slack = get_slack()
     attachments_dict = dict()
-    attachments_dict['pretext'] = "%s" % (message)
+    attachments_dict['text'] = "%s" % (message)
     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
     attachments = [attachments_dict]
     slack.chat.post_message(channel="" + user_id, text=None, attachments=attachments, as_user=True)
