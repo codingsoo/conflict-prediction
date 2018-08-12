@@ -15,7 +15,7 @@ return      : none
 """
 
 # BASE_PATH for clone repository.
-BASE_PATH ="D:\\repo2"
+BASE_PATH = "C:\\Users\\jc\\Desktop\\repository"
 
 def git_diff_logic(content):
 
@@ -32,7 +32,6 @@ def git_diff_logic(content):
     w_db.detect_direct_conflict(project_name = user_data.get_proj_name(),
                                 working_list = user_data.get_working_data(),
                                 user_name    = user_data.get_user_name())
-
     # insert user data
     w_db.insert_user_data(project_name = user_data.get_proj_name(),
                           working_list = user_data.get_working_data(),
@@ -49,6 +48,7 @@ def convert_data(content) :
     converted_data['git_id'] = content['user_email']
     converted_data['git_diff'] = dict()
     converted_data['git_diff'][content['repository_name']] = dict()
+    print(content['repository_name'])
     owner_name, project_name = content['repository_name'].split('/')
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)

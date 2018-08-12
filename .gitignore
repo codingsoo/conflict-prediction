@@ -5,3 +5,4 @@ token.json
 venv/
 chat_bot_server_dir/bot_server_config.ini
 server_dir/server_config.ini
+*/__pycache__/

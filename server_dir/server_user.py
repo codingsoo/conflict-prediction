@@ -15,7 +15,7 @@ return      : True / Random Number
 """
 def user_search_logic(content, user_git_id_list):
 
-    git_id = str(content['email'])
+    git_id = str(content['user_email'])
 
     print(git_id)
 

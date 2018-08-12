@@ -48,6 +48,10 @@ def make_get_closer_list():
     get_closer_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_closer.txt"))
     return get_closer_list
 
+def make_lower_severity_list():
+    lower_severity = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", ".txt"))
+    return lower_severity
+
 # Get user slack id
 def get_user_slack_id(git_id):
     slack_id = ""
@@ -92,8 +96,8 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
 
     elif(conflict_flag == 3):
         # lower serverity
-        conflict_finished_shell = make_conflict_finished_list()
-        message = conflict_finished_shell[random.randint(0, len(conflict_finished_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
+        lower_severity = make_lower_severity_list()
+        message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
 
 
     # First conflict
@@ -110,7 +114,12 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == 0):
         # just in
         get_closer = make_same_file_shell_list()
-        message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
+        message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+
+    elif(conflict_flag == -1):
+        # conflict solved
+        conflict_finished = make_conflict_finished_list()
+        message = conflict_finished[random.randint(0, len(conflict_finished) - 1)] % ('you', user2_slack_id_code[0])
 
     send_direct_message(user1_slack_id_code[1], message)
     print(message)

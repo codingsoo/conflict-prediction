@@ -36,6 +36,8 @@ class user_git_diff:
         # get file dict
         temp_work_data_dict = self.content['git_diff'][self.proj_name]
 
+        print(temp_work_data_dict)
+
         for file_name in temp_work_data_dict.keys():
 
             logic_list = temp_work_data_dict[file_name]
@@ -43,7 +45,7 @@ class user_git_diff:
             # temp_work = ["file_name", "logic_name", "work_line", "work_amount"]
             for temp_logic in logic_list:
                 temp_work = list()
-                temp_work.append(file_name)     # file_name
+                temp_work.append(file_name.replace('\\', '/'))     # file_name
                 temp_work.append(temp_logic[0]) # logic_name
                 temp_work.append(temp_logic[1]) # work_line
                 temp_work.append(temp_logic[2]) # work_amount
