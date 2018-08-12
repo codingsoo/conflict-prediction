@@ -7,7 +7,8 @@ import _thread
 import os
 from pathlib import Path
 import configparser
-
+from chat_bot_server_dir.punctuator2.play_with_model import punctuator
+from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 
 add_ignore = []
 
@@ -51,17 +52,13 @@ def on_message(ws, message):
     # JSON Data To Message
     msg = json.loads(message)
 
-    # log
-    print(msg)
-
     # Import User Data
 
     # Message Type is message
     if msg['type'] == 'message':
-
         # Message Content Convert
 
-        rand_text = str(msg['text'])
+        rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'r') as f2:
@@ -143,7 +140,10 @@ def load_token() :
 token = load_token()
 slack = Slacker(token)
 
+model_list = model_loading()
+
 res = slack.auth.test().body
+
 
 
 msg = [{
