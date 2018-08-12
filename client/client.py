@@ -33,7 +33,11 @@ def post_to_server(uri, json_data) :
     return req
 
 def set_repository_name(json_data) :
-    json_data['repository_name'] = subprocess.check_output('git config --local remote.origin.url', shell=True, universal_newlines=True).split(':')[-1].strip()
+    result = subprocess.check_output('git config --local remote.origin.url', shell=True, universal_newlines=True)
+    if result.startswith("git@") :
+        json_data['repository_name'] = result[15:].strip()
+    else :
+        json_data['repository_name'] = result[19:].strip()
     print(json_data['repository_name'])
 
 def set_user_email(json_data) :
@@ -85,7 +89,10 @@ def set_user_git_diff(json_data) :
                 elif os.path.isfile(full_path) :
                     json_data['working_list'][full_path] = { 'edit_chuck' : [], 'total_edit' : 0}
                     logic = []
-                    idx += 4
+                    if user_git_diff[idx + 4].startswith("@@") :
+                        idx += 4
+                    else :
+                        idx += 5
                     continue
             elif line.startswith("@@") :
                 if flag :
@@ -97,12 +104,18 @@ def set_user_git_diff(json_data) :
 
 
                 _, number, code = [ each.strip() for each in line.split("@@")]
-                origin_start, middle, edited_end = number.split(',')
-                origin_end, edited_start = middle.split(' ')
+                comma_count = number.count(',')
+                if comma_count == 2 :
+                    origin_start, middle, edited_end = number.split(',')
+                    origin_end, edited_start = middle.split(' ')
 
-                origin_start, origin_end, edited_start, edited_end = \
-                    abs(int(origin_start)), int(origin_end), int(edited_start), int(edited_end)
-
+                    origin_start, origin_end, edited_start, edited_end = \
+                        abs(int(origin_start)), int(origin_end), int(edited_start), int(edited_end)
+                elif comma_count == 1 :
+                    origin_start, middle = number.split(',')
+                    edited_start, edited_end = middle.split(' ')
+                    origin_start, edited_start, edited_end = \
+                        abs(int(origin_start)), int(edited_start), int(edited_end)
                 first_minus, first_plus = 0, 0
                 start_idx = idx + 1
                 minus_count, plus_count = 0, 0
@@ -142,12 +155,12 @@ def send_to_server_git_data() :
     set_user_email(json_data)
     set_repository_name(json_data)
     set_user_git_diff(json_data)
+    print(json_data)
     post_to_server("/git_diff", json_data)
     threading.Timer(10, send_to_server_git_data).start()
-    print(json_data)
 
 if __name__ == '__main__' :
     print("CHATBOT Client Start!")
     load_config()
     verifying_user()
-    # send_to_server_git_data()
+    send_to_server_git_data()
