@@ -9,6 +9,7 @@ from pathlib import Path
 import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
+import nltk.data
 
 add_ignore = []
 
@@ -104,6 +105,10 @@ def on_message(ws, message):
                         json.dump(approved_list,f)
                     break
 
+        else:
+            content = tokenizer.tokenize(rand_text)
+            print(content)
+
 def on_error(ws, error):
     print(error)
 
@@ -141,6 +146,8 @@ token = load_token()
 slack = Slacker(token)
 
 model_list = model_loading()
+# nltk.download('punkt')
+tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 res = slack.auth.test().body
 
