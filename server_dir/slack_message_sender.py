@@ -44,13 +44,28 @@ def send_channel_message(channel, message):
 # Put user slack id and message for sending chatbot message
 def send_direct_message(user_id, message):
     attachments_dict = dict()
-    attachments_dict['pretext'] = "%s" % (message)
+    attachments_dict['text'] = "%s" % (message)
     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
     attachments = [attachments_dict]
     slack.chat.post_message(channel="" + user_id, text=None, attachments=attachments, as_user=True)
     return
 
+def list_slack(id):
+    try:
+        slack = Slacker(token)
 
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if not user['deleted'] and user['id'] == id:
+                #print user
+                # print(user['id'], user['name'], user['is_admin'], user['is_owner'])
+                return user.get('profile').get('real_name_normalized')
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
+
+#
 # if __name__ == "__main__":
 #     send_channel_message("code-conflict-chatbot", "Channel output test")
-#     send_direct_message("UBSUW48AX", "DM output test")
+#     send_direct_message("UBG02LZNJ", "DM output test")
