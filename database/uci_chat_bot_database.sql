@@ -36,7 +36,7 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
 
-/* 4. user_table */
+/* 4. create user_table */
 CREATE TABLE `user_table` (
 	`git_id` VARCHAR(30) NOT NULL,
 	`slack_id` VARCHAR(30) NOT NULL

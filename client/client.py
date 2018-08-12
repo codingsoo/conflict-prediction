@@ -149,5 +149,5 @@ def send_to_server_git_data() :
 if __name__ == '__main__' :
     print("CHATBOT Client Start!")
     load_config()
-    # verifying_user()
-    send_to_server_git_data()
+    verifying_user()
+    # send_to_server_git_data()
