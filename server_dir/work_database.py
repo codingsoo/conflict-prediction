@@ -117,10 +117,10 @@ class work_database:
                             # calculate severity
                             if (temp_user_work[0] == temp_other_work[1]
                                 and temp_user_work[1] == temp_other_work[2]):
-                                if (temp_user_work[1][:3] == "def"):
+                                if (temp_user_work[1][:8] == "function"):
                                     severity = 3
                                 elif (temp_user_work[1][:5] == "class"):
-                                    severity = 2
+                                    severity = 3
                                 else:
                                     severity = 1
 
@@ -140,13 +140,31 @@ class work_database:
                                                           user1_name=user_name,
                                                           user2_name=temp_other_work[3],
                                                           severity=severity)
+                                self.increase_alert_count(project_name=project_name,
+                                                          file_name=temp_user_work[0],
+                                                          logic1_name=temp_user_work[1],
+                                                          logic2_name=temp_other_work[2],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
 
                             elif(temp_user_work[0] == temp_other_work[1]
                                  and temp_user_work[1] != temp_other_work[2]):
+
+                                if (temp_user_work[1][:5] == "class"):
+                                    severity = 2
+                                    print("alredy conflict : class : 2")
+                                else:
+                                    print("already conflict : softer : 1")
+                                    severity = 1
+
                                 # After 30 minutes
                                 if (d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30)):
-                                    print("softer")
-                                severity = 1
+                                    if (t_ser < severity):
+                                        print("getting severity")
+                                    elif (t_ser == severity):
+                                        print("same severity")
+                                    else:
+                                        print("lower severity")
 
                                 self.update_conflict_data(project_name=project_name,
                                                           file_name=temp_user_work[0],
@@ -156,23 +174,32 @@ class work_database:
                                                           user2_name=temp_other_work[3],
                                                           severity=severity)
 
+                                self.increase_alert_count(project_name=project_name,
+                                                          file_name=temp_user_work[0],
+                                                          logic1_name=temp_user_work[1],
+                                                          logic2_name=temp_other_work[2],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
+
 
                     # First Conflict
                     else:
-                        # logic name is same and file name is same
+                        # file name is same
+                        # logic name is same
                         if(temp_user_work[0] == temp_other_work[1]
                             and temp_user_work[1] == temp_other_work[2]):
                             print("work name : " + temp_user_work[1] + temp_other_work[2])
+
                             # calculate severity
-                            if (temp_user_work[1][:3] == "def"):
+                            if (temp_user_work[1][:8] == "function"):
                                 severity = 3
-                                print("first conflict!! : 3")
+                                print("### first conflict : function : 3")
                             elif (temp_user_work[1][:5] == "class"):
-                                severity = 2
-                                print("first conflict!! : 2")
+                                severity = 3
+                                print("### first conflict : same function in class : 3")
                             else:
                                 severity = 1
-                                print("first conflict!! : 1")
+                                print("### first conflict: : just in : 1")
 
                             self.insert_conflict_data(project_name=project_name,
                                                       file_name=temp_user_work[0],
@@ -183,15 +210,26 @@ class work_database:
                                                       severity = severity)
 
                         # Just in
+                        # file name is same
                         elif(temp_user_work[0] == temp_other_work[1]):
-                            print("### just in ####")
+
+                            # Same class conflict
+                            if(temp_user_work[1][:5] == "class"):
+                                severity = 2
+                                print("### first conflict : just in class : 2 ###")
+
+                            # in conflict
+                            else:
+                                severity = 1
+                                print("### just in ####")
+
                             self.insert_conflict_data(project_name=project_name,
                                                       file_name=temp_user_work[0],
                                                       logic1_name=temp_user_work[1],
                                                       logic2_name=temp_other_work[2],
                                                       user1_name=user_name,
                                                       user2_name=temp_other_work[3],
-                                                      severity=1)
+                                                      severity=severity)
 
         # Non-conflict
         else:
@@ -268,6 +306,43 @@ class work_database:
             print("ERROR : update conflict_table")
         return
     
+
+    def increase_alert_count(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name):
+        try:
+            sql = "update conflict_table " \
+                  "set alert_count = alert_count + 1 " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and logic1_name = '%s' " \
+                  "and logic2_name = '%s' " \
+                  "and user1_name = '%s' " \
+                  "and user2_name = '%s' " % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : increase alert count")
+
+
+    def delete_conflict_list(self):
+        try:
+            sql = "select * " \
+                  "from conflict_list "
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : increase alert count")
+
+        # for temp_raw in
+
+
 
     # Close Database connection and cursor
     def close_db(self):
