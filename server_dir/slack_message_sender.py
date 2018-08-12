@@ -1,5 +1,7 @@
 from slacker import Slacker
 import json
+import os
+from pathlib import Path
 
 # Read token data
 with open('..\\token.json', 'r') as token_file:
@@ -10,9 +12,20 @@ slack = Slacker(token)
 
 
 # Get user slack id
-def get_user_slack_id():
-    pass
-    return
+def get_user_slack_id(git_id):
+
+    # Import User Data
+    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'r') as f1:
+        user_slack_id_dict = json.load(f1)
+
+    # Import User Data
+    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f2:
+        user_git_id_dict = json.load(f2)
+
+    slack_id = user_git_id_dict[git_id]
+    slack_id_code = user_slack_id_dict[slack_id]
+
+    return slack_id_code
 
 
 # def send_first_conflict(git_id, conflict_project, conflict_file, conflict_logic, ):
