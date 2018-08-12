@@ -40,6 +40,7 @@ def user_search():
 @app.route("/sync_user_data", methods = ["POST"])
 def sync_user_data():
 
+    global user_git_id_list
     user_git_id_list = read_user_data_logic()
 
     return "sync success"
@@ -50,10 +51,8 @@ def sync_user_data():
 def git_diff():
 
     content = request.get_json(silent=True)
-    print(convert_data(content))
-    # git_diff_logic(content)
-
-
+    converted_data = convert_data(content)
+    git_diff_logic(converted_data)
 
     return "git_diff"
 
@@ -65,4 +64,4 @@ if __name__ == "__main__":
     user_git_id_list = read_user_data_logic()
 
     # Run Server
-    app.run(debug=True, host="0.0.0.0", port="5009")
+    app.run(debug=True, host="192.168.43.185", port="5009")

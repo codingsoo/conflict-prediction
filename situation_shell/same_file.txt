@@ -28,7 +28,6 @@ It seems %s and %s are engaging in the same %s %s. It is dangerous!
 %s and %s! It seems you are engaging in the same %s %s. I think you need to solve it.
 %s and %s, you’re on the same %s %s. It could get worse if you both move to same class.
 Two developers %s and %s are working simultaneously in %s %s.
-Two developers %s and %s are working in the same %s. (%s Name : %s)
 Did you guys know that both of you, %s, %s working on same %s %s?
 Hey, %s and %s, you are working on the same %s - %s. Be careful about conflict!
 Hey, %s and %s, you are engaging in the same %s - %s. Be careful about conflict!
@@ -54,8 +53,6 @@ I’m letting you know that %s and %s are working on %s %s and it is not good.
 I’m letting you know that %s and %s are engaging in %s %s and it is not good.
 I want to let you know that %s and %s are working on %s %s and it is not good.
 I want to let you know that %s and %s are engaging in %s %s and it is not good.
-Multiple developers %s and %s are working on the same %s (%s Name : %s).
-Multiple developers %s and %s are engaging in the same %s (%s Name : %s).
 There’re more than one user(%s, %s) in the same %s %s.
 Hey %s and %s! You guys are too close! Both of you working on %s %s.
 Hey %s and %s! You guys are too close! Both of you engaging in %s %s.

@@ -128,18 +128,15 @@ class work_database:
                                 else:
                                     severity = 1
 
-                                # After 30 minutes
-                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
-                                     and (temp_already1[6] == 1)):
-                                    if (t_ser < severity):
-                                        print("getting severity")
-                                        conflict_flag = 5
-                                    elif (t_ser == severity):
-                                        print("same severity")
-                                        conflict_flag = 4
-                                    else:
-                                        print("lower severity")
-                                        conflict_flag = 3
+                                if (t_ser < severity):
+                                    print("getting severity")
+                                    conflict_flag = 5
+                                elif (t_ser == severity):
+                                    print("same severity")
+                                    conflict_flag = 4
+                                elif(t_ser > severity):
+                                    print("lower severity")
+                                    conflict_flag = 3
                                     send_conflict_message(conflict_flag=conflict_flag,
                                                           conflict_project=project_name,
                                                           conflict_file=temp_user_work[1],
@@ -147,7 +144,15 @@ class work_database:
                                                           user1_name=user_name,
                                                           user2_name=temp_other_work[3])
 
-
+                                # After 30 minutes
+                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
+                                    and (temp_already1[6] == 1)):
+                                    send_conflict_message(conflict_flag=conflict_flag,
+                                                          conflict_project=project_name,
+                                                          conflict_file=temp_user_work[1],
+                                                          conflict_logic=temp_user_work[0],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
 
                                     self.increase_alert_count(project_name=project_name,
                                                               file_name=temp_user_work[0],
@@ -168,7 +173,6 @@ class work_database:
                             elif(temp_user_work[0] == temp_other_work[1]
                                  and temp_user_work[1] != temp_other_work[2]):
 
-
                                 if (temp_user_work[1][:5] == "class"):
                                     severity = 2
                                     print("alredy conflict : class : 2")
@@ -176,18 +180,25 @@ class work_database:
                                     print("already conflict : softer : 1")
                                     severity = 1
 
+                                if (t_ser < severity):
+                                    print("getting severity")
+                                    conflict_flag = 5
+                                elif (t_ser == severity):
+                                    print("same severity")
+                                    conflict_flag = 4
+                                elif(t_ser > severity):
+                                    print("lower severity")
+                                    conflict_flag = 3
+                                    send_conflict_message(conflict_flag=conflict_flag,
+                                                          conflict_project=project_name,
+                                                          conflict_file=temp_user_work[1],
+                                                          conflict_logic=temp_user_work[0],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
+
                                 # After 30 minutes
                                 if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
-                                     and (temp_already1[6] == 1)):
-                                    if (t_ser < severity):
-                                        print("getting severity")
-                                        conflict_flag = 5
-                                    elif (t_ser == severity):
-                                        print("same severity")
-                                        conflict_flag = 4
-                                    else:
-                                        print("lower severity")
-                                        conflict_flag = 3
+                                    and (temp_already1[6] == 1)):
 
                                     send_conflict_message(conflict_flag=conflict_flag,
                                                           conflict_project=project_name,
@@ -211,6 +222,7 @@ class work_database:
                                                           user1_name=user_name,
                                                           user2_name=temp_other_work[3],
                                                           severity=severity)
+
 
                     # First Conflict
                     else:
@@ -282,6 +294,40 @@ class work_database:
 
         # Non-conflict
         else:
+            raw_list_temp = list()
+            try:
+                sql = "select * " \
+                      "from conflict_table " \
+                      "where user1_name = '%s' " % (user_name)
+                print(sql)
+
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_list_temp = self.cursor.fetchall()
+                raw_list_temp = list(raw_list_temp)
+            except:
+                self.conn.rollback()
+                print("ERROR : delete user conflict data")
+            print("####")
+            print(raw_list_temp)
+
+            if(raw_list_temp != []):
+                for raw_temp in raw_list_temp:
+                    send_conflict_message(conflict_flag=-1,
+                                          conflict_project=project_name,
+                                          conflict_file=raw_temp[1],
+                                          conflict_logic=raw_temp[2],
+                                          user1_name=user_name,
+                                          user2_name=raw_temp[5])
+
+                    send_conflict_message(conflict_flag=-1,
+                                          conflict_project=project_name,
+                                          conflict_file=raw_temp[1],
+                                          conflict_logic=raw_temp[2],
+                                          user1_name=raw_temp[5],
+                                          user2_name=user_name)
+
             try:
                 sql = "delete " \
                       "from conflict_table " \
@@ -299,8 +345,8 @@ class work_database:
 
     # Insert User data to working_table
     def insert_user_data(self, project_name, working_list, user_name):
-
         for temp_work in working_list:
+            print("temp : " + temp_work[0])
             try:
                 sql = "insert into working_table (project_name, file_name, logic_name, user_name, work_line, work_amount) " \
                       "value ('%s', '%s', '%s', '%s', %d, %d)" %(project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
@@ -311,13 +357,6 @@ class work_database:
             except:
                 self.conn.rollback()
                 print("ERROR : insert user data")
-
-
-    def alert_conflict(self):
-
-
-
-        pass
 
 
     # Insert conflict data
