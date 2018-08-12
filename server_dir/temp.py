@@ -258,14 +258,14 @@ if __name__ == "__main__":
             'a project': {
                 'b file': [
                     [
-                        'class c',
+                        'class:AClass:function',
                         4,
-                        16
+                         16
                     ]
                 ],
                 'd file': [
                     [
-                        'def e',
+                        'function:edd',
                         145,
                         42
                     ]
