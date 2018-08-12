@@ -30,7 +30,7 @@ user_slack = dict()
 user_list = list()
 
 # find slack user's name
-def list_slack(id):
+def get_slack_display_name(id):
     try:
         slack = Slacker(token)
 
@@ -78,7 +78,7 @@ def on_message(ws, message):
                         # user_slack[msg['user']] = user_name
                         # user_git[git_user] = user_name
 
-                        user_name = list_slack(msg['user'])
+                        user_name = get_slack_display_name(msg['user'])
                         user_slack[user_name] = msg['user']
                         user_git[git_user] = user_name
 
