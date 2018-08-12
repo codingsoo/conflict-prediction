@@ -67,9 +67,12 @@ def convert_data(content) :
 
     full_base_path = os.path.join(full_base_path, os.path.splitext(project_name)[0])
     for file_path, value in content['working_list'].items() :
-        print(file_path)
         file_path = os.path.normpath(file_path)
+        if not os.path.splitext(file_path)[-1] == '.py' :
+            continue
         full_file_path = os.path.join(full_base_path, file_path)
+        if not os.path.exists(full_file_path) :
+            continue
         print(full_file_path)
         py_info = get_py_info(full_file_path)
         func_list, class_list = get_py_info_list(py_info)
@@ -80,15 +83,20 @@ def convert_data(content) :
 
         for chunk in value['edit_chuck'] :
             start, end = chunk
+            flag = False
             for logic in func_list :
                 if logic[2] < start or end < logic[1] :
                     continue
                 converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
+                flag = True
                 low, high = -1, len(class_list) - 1
             for i, logic in enumerate(class_list):
                 if logic[2] < start or end > logic[1] :
                     continue
                 converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
+                flag = True
+            if flag == False :
+                converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH) + 1:]].append(['in', start, end - start + 1])
 
     return converted_data
 
