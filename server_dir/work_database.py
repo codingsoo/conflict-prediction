@@ -42,6 +42,8 @@ class work_database:
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
 
+        self.delete_conflict_list()
+
         ##### 1.
         # all conflict list
         all_rows_list = list()
@@ -125,13 +127,20 @@ class work_database:
                                     severity = 1
 
                                 # After 30 minutes
-                                if (d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30)):
+                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
+                                     and (temp_already1[6] == 1)):
                                     if (t_ser < severity):
                                         print("getting severity")
                                     elif (t_ser == severity):
                                         print("same severity")
                                     else:
                                         print("lower severity")
+                                    self.increase_alert_count(project_name=project_name,
+                                                              file_name=temp_user_work[0],
+                                                              logic1_name=temp_user_work[1],
+                                                              logic2_name=temp_other_work[2],
+                                                              user1_name=user_name,
+                                                              user2_name=temp_other_work[3])
 
                                 self.update_conflict_data(project_name=project_name,
                                                           file_name=temp_user_work[0],
@@ -140,12 +149,7 @@ class work_database:
                                                           user1_name=user_name,
                                                           user2_name=temp_other_work[3],
                                                           severity=severity)
-                                self.increase_alert_count(project_name=project_name,
-                                                          file_name=temp_user_work[0],
-                                                          logic1_name=temp_user_work[1],
-                                                          logic2_name=temp_other_work[2],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
+
 
                             elif(temp_user_work[0] == temp_other_work[1]
                                  and temp_user_work[1] != temp_other_work[2]):
@@ -158,13 +162,21 @@ class work_database:
                                     severity = 1
 
                                 # After 30 minutes
-                                if (d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30)):
+                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
+                                     and (temp_already1[6] == 1)):
                                     if (t_ser < severity):
                                         print("getting severity")
                                     elif (t_ser == severity):
                                         print("same severity")
                                     else:
                                         print("lower severity")
+
+                                    self.increase_alert_count(project_name=project_name,
+                                                              file_name=temp_user_work[0],
+                                                              logic1_name=temp_user_work[1],
+                                                              logic2_name=temp_other_work[2],
+                                                              user1_name=user_name,
+                                                              user2_name=temp_other_work[3])
 
                                 self.update_conflict_data(project_name=project_name,
                                                           file_name=temp_user_work[0],
@@ -173,14 +185,6 @@ class work_database:
                                                           user1_name=user_name,
                                                           user2_name=temp_other_work[3],
                                                           severity=severity)
-
-                                self.increase_alert_count(project_name=project_name,
-                                                          file_name=temp_user_work[0],
-                                                          logic1_name=temp_user_work[1],
-                                                          logic2_name=temp_other_work[2],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
-
 
                     # First Conflict
                     else:
@@ -326,22 +330,22 @@ class work_database:
 
 
     def delete_conflict_list(self):
+
         try:
-            sql = "select * " \
-                  "from conflict_list "
+            sql = "delete " \
+                  "from conflict_table " \
+                  "where alert_count >= 2 " \
+                  "and TIMEDIFF(now(),log_time) > 24"
             print(sql)
 
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
         except:
             self.conn.rollback()
-            print("ERROR : increase alert count")
+            print("ERROR : get conflict_table")
 
-        # for temp_raw in
-
+        return
 
 
     # Close Database connection and cursor
