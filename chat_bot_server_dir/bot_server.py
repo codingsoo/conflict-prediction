@@ -73,9 +73,14 @@ def on_message(ws, message):
                     if str(user_git[git_user]) == rand_text:
                         # random number convert user id
                         # user_list[count]['slack_id'] = msg['user']
+                        # user_name = list_slack(msg['user'])
+                        # user_slack[msg['user']] = user_name
+                        # user_git[git_user] = user_name
+
                         user_name = list_slack(msg['user'])
-                        user_slack[msg['user']] = user_name
+                        user_slack[user_name] = msg['user']
                         user_git[git_user] = user_name
+
                 #
                 #         # Save User Data Json file
             with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'w') as make_file2:
@@ -122,10 +127,11 @@ notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"s
 #### MAIN ####
 
 # Read token data
-with open('../token.json', 'r') as token_file:
-    token_file_json = json.load(token_file)
+# with open('../token.json', 'r') as token_file:
+#     token_file_json = json.load(token_file)
 
-token = token_file_json['token']
+# token = token_file_json['token']
+token = ''
 slack = Slacker(token)
 
 res = slack.auth.test().body
