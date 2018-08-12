@@ -3,3 +3,5 @@ chat_bot_server_virenv/
 token.json
 .DS_Store/
 venv/
+chat_bot_server_dir/bot_server_config.ini
+server_dir/server_config.ini

@@ -6,6 +6,8 @@ import random
 import _thread
 import os
 from pathlib import Path
+import configparser
+
 
 add_ignore = []
 
@@ -125,13 +127,21 @@ approved_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situatio
 notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
+def load_token() :
+    if not os.path.isfile("bot_server_config.ini") :
+        print("ERROR :: There is no bot_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read("bot_server_config.ini")
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is bot_server_config.ini")
+            exit(2)
+    return token
 
-# Read token data
-# with open('../token.json', 'r') as token_file:
-#     token_file_json = json.load(token_file)
-
-# token = token_file_json['token']
-token = ''
+token = load_token()
 slack = Slacker(token)
 
 res = slack.auth.test().body

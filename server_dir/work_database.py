@@ -1,5 +1,7 @@
 import pymysql
 import datetime as d
+from server_dir.slack_message_sender import *
+
 """
 class : work_database
 function list
@@ -131,10 +133,22 @@ class work_database:
                                      and (temp_already1[6] == 1)):
                                     if (t_ser < severity):
                                         print("getting severity")
+                                        conflict_flag = 5
                                     elif (t_ser == severity):
                                         print("same severity")
+                                        conflict_flag = 4
                                     else:
                                         print("lower severity")
+                                        conflict_flag = 3
+                                    send_conflict_message(conflict_flag=conflict_flag,
+                                                          conflict_project=project_name,
+                                                          conflict_file=temp_user_work[1],
+                                                          conflict_logic=temp_user_work[0],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
+
+
+
                                     self.increase_alert_count(project_name=project_name,
                                                               file_name=temp_user_work[0],
                                                               logic1_name=temp_user_work[1],
@@ -154,6 +168,7 @@ class work_database:
                             elif(temp_user_work[0] == temp_other_work[1]
                                  and temp_user_work[1] != temp_other_work[2]):
 
+
                                 if (temp_user_work[1][:5] == "class"):
                                     severity = 2
                                     print("alredy conflict : class : 2")
@@ -166,10 +181,21 @@ class work_database:
                                      and (temp_already1[6] == 1)):
                                     if (t_ser < severity):
                                         print("getting severity")
+                                        conflict_flag = 5
                                     elif (t_ser == severity):
                                         print("same severity")
+                                        conflict_flag = 4
                                     else:
                                         print("lower severity")
+                                        conflict_flag = 3
+
+                                    send_conflict_message(conflict_flag=conflict_flag,
+                                                          conflict_project=project_name,
+                                                          conflict_file=temp_user_work[1],
+                                                          conflict_logic=temp_user_work[0],
+                                                          user1_name=user_name,
+                                                          user2_name=temp_other_work[3])
+
 
                                     self.increase_alert_count(project_name=project_name,
                                                               file_name=temp_user_work[0],
@@ -197,13 +223,23 @@ class work_database:
                             # calculate severity
                             if (temp_user_work[1][:8] == "function"):
                                 severity = 3
+                                conflict_flag = 2
                                 print("### first conflict : function : 3")
                             elif (temp_user_work[1][:5] == "class"):
                                 severity = 3
+                                conflict_flag = 1
                                 print("### first conflict : same function in class : 3")
                             else:
                                 severity = 1
+                                conflict_flag = 0
                                 print("### first conflict: : just in : 1")
+
+                            send_conflict_message(conflict_flag=conflict_flag,
+                                                  conflict_project=project_name,
+                                                  conflict_file=temp_user_work[1],
+                                                  conflict_logic=temp_user_work[0],
+                                                  user1_name=user_name,
+                                                  user2_name=temp_other_work[3])
 
                             self.insert_conflict_data(project_name=project_name,
                                                       file_name=temp_user_work[0],
@@ -220,12 +256,21 @@ class work_database:
                             # Same class conflict
                             if(temp_user_work[1][:5] == "class"):
                                 severity = 2
+                                conflict_flag = 1
                                 print("### first conflict : just in class : 2 ###")
 
                             # in conflict
                             else:
                                 severity = 1
+                                conflict_flag = 0
                                 print("### just in ####")
+
+                            send_conflict_message(conflict_flag=conflict_flag,
+                                                  conflict_project=project_name,
+                                                  conflict_file=temp_user_work[1],
+                                                  conflict_logic=temp_user_work[0],
+                                                  user1_name=user_name,
+                                                  user2_name=temp_other_work[3])
 
                             self.insert_conflict_data(project_name=project_name,
                                                       file_name=temp_user_work[0],
