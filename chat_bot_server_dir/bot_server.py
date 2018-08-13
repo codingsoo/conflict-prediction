@@ -9,6 +9,7 @@ from pathlib import Path
 import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
 import nltk.data
 
 add_ignore = []
@@ -107,7 +108,11 @@ def on_message(ws, message):
 
         else:
             content = tokenizer.tokenize(rand_text)
-            print(content)
+            for sentence in content:
+                if require_something_sentence(sentence):
+                    pass
+                else:
+                    pass
 
 def on_error(ws, error):
     print(error)

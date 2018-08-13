@@ -38,20 +38,12 @@ def is_question(parse_list):
 
     return False
 
-def classfier(sentence):
+def require_something_sentence(sentence):
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("Please ", '')
     pos_tag_list = nlp.pos_tag(sentence)
-    word_tokenize_list = nlp.word_tokenize(sentence)
     parse_list = nlp.parse(sentence)
-    print(nlp.word_tokenize(sentence))
-    print(nlp.pos_tag(sentence))
-    print(nlp.ner(sentence))
-    print(nlp.parse(sentence))
-    print(nlp.dependency_parse(sentence))
 
     if(is_command(pos_tag_list) or is_desire(pos_tag_list) or is_question(parse_list) or is_suggestion(pos_tag_list)):
-        print ("send to server")
-    return
-
-classfier("What is your working line")
+        return True
+    return False
