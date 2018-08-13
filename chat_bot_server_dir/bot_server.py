@@ -6,11 +6,24 @@ import random
 import _thread
 import os
 import configparser
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
+from server_dir.slack_message_sender import send_channel_message
+from server_dir.slack_message_sender import send_direct_message
 import nltk.data
+
+chatterbot = ChatBot("Training Example")
+chatterbot.set_trainer(ChatterBotCorpusTrainer)
+
+chatterbot.train(
+    "chatterbot.corpus.english.greetings",
+    "chatterbot.corpus.english.conversations"
+)
+chatbot = ChatBot("Ron Obvious")
 
 def load_token() :
     if not os.path.isfile("bot_server_config.ini") :
@@ -89,14 +102,17 @@ def on_message(ws, message):
 
     # JSON Data To Message
     msg = json.loads(message)
+    print(msg)
 
     # Import User Data
 
     # Message Type is message
     if msg['type'] == 'message':
         # Message Content Convert
-
-        rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
+        try:
+            rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
+        except:
+            rand_text = msg['text']
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             with open(os.path.join(os.path.pardir, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(os.path.pardir, "user_data", "user_slack.json"), 'r') as f2:
@@ -148,7 +164,11 @@ def on_message(ws, message):
                 if require_something_sentence(sentence):
                     pass
                 else:
-                    pass
+                    try:
+                        response = chatbot.get_response(sentence)
+                        send_direct_message(msg["user"], response)
+                    except:
+                        pass
 
 def on_error(ws, error):
     print(error)
@@ -190,6 +210,9 @@ slack.chat.post_message(channel, '', attachments=msg, as_user=True)
 
 response = slack.rtm.start()
 endpoint = response.body['url']
+
+# print(project_structure)
+# print(slack_name_list)
 
 # websocket.enableTrace(True)
 ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)

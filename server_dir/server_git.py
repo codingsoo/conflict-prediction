@@ -15,7 +15,7 @@ return      : none
 """
 
 # BASE_PATH for clone repository.
-BASE_PATH = "C:\\Users\\jc\\Desktop\\repository"
+BASE_PATH = os.path.pardir
 
 def git_diff_logic(content):
 
@@ -44,12 +44,16 @@ def git_diff_logic(content):
 
 
 def convert_data(content) :
+
     converted_data = dict()
     converted_data['git_id'] = content['user_email']
     converted_data['git_diff'] = dict()
-    converted_data['git_diff'][content['repository_name']] = dict()
     print(content['repository_name'])
-    owner_name, project_name = content['repository_name'].split('/')
+    content_list = content['repository_name'].split('/')
+    owner_name, project_name = content_list[-2], content_list[-1]
+    content['repository_name'] = owner_name + '/' + project_name
+    converted_data['git_diff'][content['repository_name']] = dict()
+
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)

@@ -92,7 +92,7 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == 4):
         # same server
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = same_shell[random.randint(0, len(same_shell) - 1)] % (str(user1_slack_id_code[0]), str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
 
     elif(conflict_flag == 3):
         # lower serverity

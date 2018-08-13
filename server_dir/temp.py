@@ -1,6 +1,6 @@
 from server_dir.server_git import *
 
-def tempw(self, project_name, working_list, user_name):
+def temp(self, project_name, working_list, user_name):
     # 알람 카운트 2인것들 다 삭제
 
     # all conflict list
@@ -253,7 +253,7 @@ def tempw(self, project_name, working_list, user_name):
 
 if __name__ == "__main__":
     content = {
-        'git_id' : 'kms@naver.com',
+        'git_id' : 'cj@naver.com',
         'git_diff': {
             'a project': {
                 'b file': [
