@@ -9,9 +9,11 @@ import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
+from chat_bot_server_dir.project_parser import project_parser
 import nltk.data
 
 add_ignore = []
+project_structure = project_parser('UCNLP', 'client')
 
 def make_shell_list(file):
     f = open(file,"rt",encoding="UTF8")
