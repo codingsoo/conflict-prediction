@@ -5,7 +5,7 @@ import subprocess
 
 from chat_bot_server_dir.python_logic_parser import *
 
-BASE_PATH = "D:\\repo2"
+BASE_PATH = os.path.pardir
 
 def project_parser( owner_name, project_name ) :
     URL = "https://github.com/{}/{}".format(owner_name, project_name)

@@ -5,7 +5,6 @@ import json
 import random
 import _thread
 import os
-from pathlib import Path
 import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
@@ -21,7 +20,7 @@ def make_shell_list(file):
 
     return text
 
-add_ignore = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","add_ignore.txt"))
+add_ignore = make_shell_list(os.path.join(os.path.pardir,"situation_shell","add_ignore.txt"))
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
@@ -63,7 +62,7 @@ def on_message(ws, message):
         rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
-            with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'r') as f2:
+            with open(os.path.join(os.path.pardir, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(os.path.pardir, "user_data", "user_slack.json"), 'r') as f2:
                 user_git = json.load(f1)
                 user_slack = json.load(f2)
 
@@ -83,7 +82,7 @@ def on_message(ws, message):
 
                 #
                 #         # Save User Data Json file
-            with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file1, open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'w') as make_file2:
+            with open(os.path.join(os.path.pardir, "user_data", "user_git.json"), 'w') as make_file1, open(os.path.join(os.path.pardir, "user_data", "user_slack.json"), 'w') as make_file2:
                 json.dump(user_git, make_file1)
                 json.dump(user_slack, make_file2)
 
@@ -128,9 +127,9 @@ def on_open(ws):
 
     _thread.start_new_thread(run, ())
 
-get_severe_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","get_severe.txt"))
-approved_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","approved.txt"))
-notify_conflict_shell = make_shell_list(os.path.join(Path(os.getcwd()).parent,"situation_shell","go_to_same_file.txt"))
+get_severe_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","get_severe.txt"))
+approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","approved.txt"))
+notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
 def load_token() :
