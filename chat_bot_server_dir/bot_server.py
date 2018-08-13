@@ -12,6 +12,23 @@ from chat_bot_server_dir.user_intent_classifier.intent_classifier import require
 from chat_bot_server_dir.project_parser import project_parser
 import nltk.data
 
+def load_token() :
+    if not os.path.isfile("bot_server_config.ini") :
+        print("ERROR :: There is no bot_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read("bot_server_config.ini")
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is bot_server_config.ini")
+            exit(2)
+    return token
+
+token = load_token()
+slack = Slacker(token)
+
 add_ignore = []
 project_structure = project_parser('UCNLP', 'client')
 
@@ -36,8 +53,6 @@ user_list = list()
 # find slack user's name
 def get_slack_display_name(id):
     try:
-        slack = Slacker(token)
-
         # Get users list
         response = slack.users.list()
         users = response.body['members']
@@ -45,9 +60,29 @@ def get_slack_display_name(id):
             if not user['deleted'] and user['id'] == id:
                 # print(user)
                 # print(user['id'], user['name'], user['is_admin'], user['profile']['display_name'])
-                return user.get('profile').get('display_name')
+                if user.get('profile').get('display_name') != '':
+                    return user.get('profile').get('display_name')
+                else:
+                    return user.get('profile').get('real_name')
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
+
+def get_slack_name_list():
+    try:
+        user_list = list()
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if user.get('profile').get('display_name') != '':
+                user_list.append(user.get('profile').get('display_name'))
+            else:
+                user_list.append(user.get('profile').get('real_name'))
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
+    return user_list
+
+slack_name_list = get_slack_name_list()
 
 # Message Entered on Slack
 def on_message(ws, message):
@@ -134,22 +169,6 @@ approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","
 notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
-def load_token() :
-    if not os.path.isfile("bot_server_config.ini") :
-        print("ERROR :: There is no bot_server_config.ini")
-        exit(2)
-    else :
-        config = configparser.ConfigParser()
-        config.read("bot_server_config.ini")
-        try :
-            token=config["SLACK"]["TOKEN"]
-        except :
-            print("ERROR :: It is bot_server_config.ini")
-            exit(2)
-    return token
-
-token = load_token()
-slack = Slacker(token)
 
 model_list = model_loading()
 # nltk.download('punkt')
