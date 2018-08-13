@@ -37,7 +37,7 @@ def make_same_file_shell_list():
     return go_to_same_file_shell_list
 
 def make_server_shell_list():
-    get_server_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_server.txt"))
+    get_server_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe.txt"))
     return get_server_shell_list
 
 def make_conflict_finished_list():
@@ -49,7 +49,7 @@ def make_get_closer_list():
     return get_closer_list
 
 def make_lower_severity_list():
-    lower_severity = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", ".txt"))
+    lower_severity = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "conflict_alleviated.txt"))
     return lower_severity
 
 # Get user slack id
@@ -97,7 +97,7 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == 3):
         # lower serverity
         lower_severity = make_lower_severity_list()
-        message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
 
 
     # First conflict
@@ -114,7 +114,7 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == 0):
         # just in
         get_closer = make_same_file_shell_list()
-        message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, " ")
 
     elif(conflict_flag == -1):
         # conflict solved
@@ -124,6 +124,19 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     send_direct_message(user1_slack_id_code[1], message)
     print(message)
 
+    return
+
+
+def send_conflict_message_channel(conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
+    user1_slack_id_code = get_user_slack_id(user1_name)
+    user2_slack_id_code = get_user_slack_id(user2_name)
+    message = ""
+
+    # same server
+    same_shell = make_same_file_shell_list()
+    message = same_shell[random.randint(0, len(same_shell) - 1)] % (
+    user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+    send_channel_message("code-conflict-chatbot", message)
     return
 
 

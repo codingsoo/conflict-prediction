@@ -258,18 +258,23 @@ if __name__ == "__main__":
             'a project': {
                 'b file': [
                     [
-                        'class:AClass:function1',
+                        'class:AClass:function12',
                         4,
                          16
-                    ]
-                ],
-                'd file': [
+                    ],
                     [
-                        'function:edd',
-                        145,
-                        42
+                        'function:AClass:function2',
+                        4,
+                        16
                     ]
                 ]
+                # 'f file': [
+                #     [
+                #         'function:edd',
+                #         145,
+                #         42
+                #     ]
+                # ]
             }
         }
     }

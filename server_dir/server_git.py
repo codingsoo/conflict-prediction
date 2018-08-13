@@ -53,6 +53,7 @@ def convert_data(content) :
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)
+    print(full_base_path)
 
     if not os.path.isdir(full_base_path) :
         os.makedirs(full_base_path)

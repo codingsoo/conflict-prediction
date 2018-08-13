@@ -46,300 +46,370 @@ class work_database:
 
         self.delete_conflict_list()
 
-        ##### 1.
-        # all conflict list
-        all_rows_list = list()
-
-        # search [project_name, file_name] in the working_table
-        try:
-            # search each file name
-            for temp_work in working_list:
-                sql = "select * " \
-                      "from working_table " \
-                      "where project_name = '%s' " \
-                      "and file_name = '%s'" % (project_name, temp_work[0])
-                print(sql)
-
-                self.cursor.execute(sql)
-                self.conn.commit()
-
-                # get rows data
-                rows_list = self.cursor.fetchall()
-                rows_list = list(rows_list)
-
-                # detect direct conflict : same file
-                if (rows_list != []):
-                    for temp_row in rows_list:
-                        all_rows_list.append(temp_row)
-
-        except:
-            self.conn.rollback()
-            print("ERROR : detect direct conflict")
-
-        all_rows_list = list(set(all_rows_list))
-        print(all_rows_list)
+        file_conflict_list = self.search_working_table(project_name, working_list)
 
         # Conflict
-        if(all_rows_list != []):
+        if(file_conflict_list != []):
 
-            # temp_other_work : ["project_name", "file_name", "logic_name", "user_name", "working_line", "working_amount","timestamp"]
-            for temp_other_work in all_rows_list:
-                # temp_user_work : ["file_name", "logic_name", "work_line", "work_amount"]
-                for temp_user_work in working_list:
+            print("#### Conflict !!! ####")
 
-                    # Search already conflict data
-                    already_conflict_list = list()
+            already_conflict_list = self.search_already_conflict_table(project_name, file_conflict_list, working_list, user_name)
 
-                    try:
-                        # n_list = [user_name, temp_other_work[3]].sort()
+            # Already conflicted
+            if(already_conflict_list != []):
 
-                        sql = "select * " \
-                              "from conflict_table " \
-                              "where project_name = '%s' " \
-                              "and file_name = '%s' " \
-                              "and user1_name = '%s' " \
-                              "and user2_name = '%s' " % (project_name, temp_user_work[0], user_name, temp_other_work[3])
-                        print(sql)
-                        self.cursor.execute(sql)
-                        self.conn.commit()
+                print("#### Already Conflict !!! ####")
 
-                        already_conflict_list = self.cursor.fetchall()
-                        already_conflict_list = list(already_conflict_list)
+                # Search the best value of severity and return list
+                best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
 
-                    except:
-                        self.conn.rollback()
-                        print("ERROR : get conflict_table")
+                # Compare current conflict and database conflict
+                # Send the conflict message
+                # Update conflict database
+                self.compare_current_conflict_and_db_conflict(already_conflict_list, best_conflict_list)
 
-                    print(already_conflict_list)
+            # First conflict
+            else:
 
-                    # Already conflict
-                    if(already_conflict_list != []):
-                        for temp_already1 in already_conflict_list:
+                print("#### First Conflict !!! ####")
 
-                            t_ser = temp_already1[7]  # severity
-
-                            # calculate severity
-                            if (temp_user_work[0] == temp_other_work[1]
-                                and temp_user_work[1] == temp_other_work[2]):
-                                if (temp_user_work[1][:8] == "function"):
-                                    severity = 3
-                                elif (temp_user_work[1][:5] == "class"):
-                                    severity = 3
-                                else:
-                                    severity = 1
-
-                                if (t_ser < severity):
-                                    print("getting severity")
-                                    conflict_flag = 5
-                                elif (t_ser == severity):
-                                    print("same severity")
-                                    conflict_flag = 4
-                                elif(t_ser > severity):
-                                    print("lower severity")
-                                    conflict_flag = 3
-                                    send_conflict_message(conflict_flag=conflict_flag,
-                                                          conflict_project=project_name,
-                                                          conflict_file=temp_user_work[1],
-                                                          conflict_logic=temp_user_work[0],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
-
-                                # After 30 minutes
-                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
-                                    and (temp_already1[6] == 1)):
-                                    send_conflict_message(conflict_flag=conflict_flag,
-                                                          conflict_project=project_name,
-                                                          conflict_file=temp_user_work[1],
-                                                          conflict_logic=temp_user_work[0],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
-
-                                    self.increase_alert_count(project_name=project_name,
-                                                              file_name=temp_user_work[0],
-                                                              logic1_name=temp_user_work[1],
-                                                              logic2_name=temp_other_work[2],
-                                                              user1_name=user_name,
-                                                              user2_name=temp_other_work[3])
-
-                                self.update_conflict_data(project_name=project_name,
-                                                          file_name=temp_user_work[0],
-                                                          logic1_name=temp_user_work[1],
-                                                          logic2_name=temp_other_work[2],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3],
-                                                          severity=severity)
-
-
-                            elif(temp_user_work[0] == temp_other_work[1]
-                                 and temp_user_work[1] != temp_other_work[2]):
-
-                                if (temp_user_work[1][:5] == "class"):
-                                    severity = 2
-                                    print("alredy conflict : class : 2")
-                                else:
-                                    print("already conflict : softer : 1")
-                                    severity = 1
-
-                                if (t_ser < severity):
-                                    print("getting severity")
-                                    conflict_flag = 5
-                                elif (t_ser == severity):
-                                    print("same severity")
-                                    conflict_flag = 4
-                                elif(t_ser > severity):
-                                    print("lower severity")
-                                    conflict_flag = 3
-                                    send_conflict_message(conflict_flag=conflict_flag,
-                                                          conflict_project=project_name,
-                                                          conflict_file=temp_user_work[1],
-                                                          conflict_logic=temp_user_work[0],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
-
-                                # After 30 minutes
-                                if ((d.datetime.today() - temp_already1[8] > d.timedelta(minutes=30))
-                                    and (temp_already1[6] == 1)):
-
-                                    send_conflict_message(conflict_flag=conflict_flag,
-                                                          conflict_project=project_name,
-                                                          conflict_file=temp_user_work[1],
-                                                          conflict_logic=temp_user_work[0],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3])
-
-
-                                    self.increase_alert_count(project_name=project_name,
-                                                              file_name=temp_user_work[0],
-                                                              logic1_name=temp_user_work[1],
-                                                              logic2_name=temp_other_work[2],
-                                                              user1_name=user_name,
-                                                              user2_name=temp_other_work[3])
-
-                                self.update_conflict_data(project_name=project_name,
-                                                          file_name=temp_user_work[0],
-                                                          logic1_name=temp_user_work[1],
-                                                          logic2_name=temp_other_work[2],
-                                                          user1_name=user_name,
-                                                          user2_name=temp_other_work[3],
-                                                          severity=severity)
-
-
-                    # First Conflict
-                    else:
-                        # file name is same
-                        # logic name is same
-                        if(temp_user_work[0] == temp_other_work[1]
-                            and temp_user_work[1] == temp_other_work[2]):
-                            print("work name : " + temp_user_work[1] + temp_other_work[2])
-
-                            # calculate severity
-                            if (temp_user_work[1][:8] == "function"):
-                                severity = 3
-                                conflict_flag = 2
-                                print("### first conflict : function : 3")
-                            elif (temp_user_work[1][:5] == "class"):
-                                severity = 3
-                                conflict_flag = 1
-                                print("### first conflict : same function in class : 3")
-                            else:
-                                severity = 1
-                                conflict_flag = 0
-                                print("### first conflict: : just in : 1")
-
-                            send_conflict_message(conflict_flag=conflict_flag,
-                                                  conflict_project=project_name,
-                                                  conflict_file=temp_user_work[1],
-                                                  conflict_logic=temp_user_work[0],
-                                                  user1_name=user_name,
-                                                  user2_name=temp_other_work[3])
-
-                            self.insert_conflict_data(project_name=project_name,
-                                                      file_name=temp_user_work[0],
-                                                      logic1_name=temp_user_work[1],
-                                                      logic2_name=temp_other_work[2],
-                                                      user1_name=user_name,
-                                                      user2_name=temp_other_work[3],
-                                                      severity = severity)
-
-                        # Just in
-                        # file name is same
-                        elif(temp_user_work[0] == temp_other_work[1]):
-
-                            # Same class conflict
-                            if(temp_user_work[1][:5] == "class"):
-                                severity = 2
-                                conflict_flag = 1
-                                print("### first conflict : just in class : 2 ###")
-
-                            # in conflict
-                            else:
-                                severity = 1
-                                conflict_flag = 0
-                                print("### just in ####")
-
-                            send_conflict_message(conflict_flag=conflict_flag,
-                                                  conflict_project=project_name,
-                                                  conflict_file=temp_user_work[1],
-                                                  conflict_logic=temp_user_work[0],
-                                                  user1_name=user_name,
-                                                  user2_name=temp_other_work[3])
-
-                            self.insert_conflict_data(project_name=project_name,
-                                                      file_name=temp_user_work[0],
-                                                      logic1_name=temp_user_work[1],
-                                                      logic2_name=temp_other_work[2],
-                                                      user1_name=user_name,
-                                                      user2_name=temp_other_work[3],
-                                                      severity=severity)
+                # Search the best value of severity and return list
+                best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
+                self.update_first_best_conflict_list(best_conflict_list)
 
         # Non-conflict
         else:
-            raw_list_temp = list()
+            print("#### Non-Conflict !!! ####")
+            self.non_conflict_logic(project_name, user_name)
+
+        return
+
+
+    # Delete conflict list
+    def delete_conflict_list(self):
+
+        try:
+            sql = "delete " \
+                  "from conflict_table " \
+                  "where alert_count >= 2 " \
+                  "and TIMEDIFF(now(),log_time) > 24"
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : delete conflict list")
+
+        return
+
+
+    def search_working_table(self, project_name, working_list):
+
+        all_row_list = list()
+
+        # ["file_name", "logic_name", "work_line", "work_amount"]
+        for temp_work in working_list:
+            raw_list = list()
             try:
                 sql = "select * " \
-                      "from conflict_table " \
-                      "where user1_name = '%s' " % (user_name)
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " % (project_name, temp_work[0])
                 print(sql)
 
                 self.cursor.execute(sql)
                 self.conn.commit()
 
-                raw_list_temp = self.cursor.fetchall()
-                raw_list_temp = list(raw_list_temp)
+                raw_list = self.cursor.fetchall()
+                raw_list = list(raw_list)
             except:
                 self.conn.rollback()
-                print("ERROR : delete user conflict data")
-            print("####")
-            print(raw_list_temp)
+                print("ERROR : search working table")
 
-            if(raw_list_temp != []):
-                for raw_temp in raw_list_temp:
-                    send_conflict_message(conflict_flag=-1,
-                                          conflict_project=project_name,
-                                          conflict_file=raw_temp[1],
-                                          conflict_logic=raw_temp[2],
-                                          user1_name=user_name,
-                                          user2_name=raw_temp[5])
+            # There is conflict file
+            if(raw_list != []):
+                for temp in raw_list:
+                    all_row_list.append(temp)
 
-                    send_conflict_message(conflict_flag=-1,
-                                          conflict_project=project_name,
-                                          conflict_file=raw_temp[1],
-                                          conflict_logic=raw_temp[2],
-                                          user1_name=raw_temp[5],
-                                          user2_name=user_name)
+        return all_row_list
 
-            try:
-                sql = "delete " \
-                      "from conflict_table " \
-                      "where user1_name = '%s' " \
-                      "or user2_name = '%s' " % (user_name, user_name)
-                print(sql)
 
-                self.cursor.execute(sql)
-                self.conn.commit()
-            except:
-                self.conn.rollback()
-                print("ERROR : delete user conflict data")
+    def search_already_conflict_table(self, project_name, conflict_list, working_list, user_name):
+
+        all_row_list = list()
+
+        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
+        for temp_other_work in conflict_list:
+
+            # ["file_name", "logic_name", "work_line", "work_amount"]
+            for temp_user_work in working_list:
+                raw_list = list()
+                try:
+                    sql = "select * " \
+                          "from conflict_table " \
+                          "where project_name = '%s' " \
+                          "and file_name = '%s' " \
+                          "and user1_name = '%s' " \
+                          "and user2_name = '%s' " % (project_name, temp_user_work[0], user_name, temp_other_work[3])
+                    print(sql)
+
+                    self.cursor.execute(sql)
+                    self.conn.commit()
+
+                    raw_list = self.cursor.fetchall()
+                    raw_list = list(raw_list)
+                except:
+                    self.conn.rollback()
+                    print("ERROR : search already conflict talbe")
+
+                # There is conflict file
+                if(raw_list != []):
+                    for temp in raw_list:
+                        all_row_list.append(temp)
+
+        all_row_list = list(set(all_row_list))
+
+        return all_row_list
+
+
+    def search_best_conflict(self, project_name, conflict_list, working_list, user_name):
+        # 미리 컨플릭트 난 리스트는 각 파일당 한개의 로직
+        # 현재 컨플릭트 난 리스트는 각 파일당 여러개의 로직
+
+        best_conflict_dict = dict()
+        all_severity_list = list()
+
+        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
+        for temp_other_work in conflict_list:
+
+            # ["file_name", "logic_name", "work_line", "work_amount"]
+            for temp_user_work in working_list:
+
+                # Same file name
+                if(temp_other_work[1] == temp_user_work[0]):
+
+                    # Calculate severity of the current conflict
+                    # Same logic name => search best conflict
+                    if(temp_other_work[2] == temp_user_work[1]):
+                        if(temp_user_work[1][:8] == "function"):
+                            print("same function conflict : 3")
+                            severity = 3
+                        elif(temp_user_work[1][:5] == "class"):
+                            print("same def in same class conflict : 3")
+                            severity = 3
+                        else:
+                            print("same in conflict : 1")
+                            severity = 1
+
+                    # Different logic name
+                    else:
+                        if(temp_user_work[1][:5] == "class"):
+                            print("same class conflict : 2")
+                            severity = 2
+                        else:
+                            print("just in conflict : 1")
+                            severity = 1
+
+                    print(temp_user_work[0])
+
+                    # key: file name / value: severity conflict list
+                    if(temp_user_work[0] in best_conflict_dict):
+
+                        temp_conflict_list = list()
+                        temp_conflict_list.append(severity)
+                        temp_conflict_list.append(project_name)         # project_name
+                        temp_conflict_list.append(temp_user_work[0])    # file_name
+                        temp_conflict_list.append(temp_user_work[1])    # logic1_name
+                        temp_conflict_list.append(temp_other_work[2])   # logic2_name
+                        temp_conflict_list.append(user_name)            # user1_name
+                        temp_conflict_list.append(temp_other_work[3])   # user2_name
+
+                        temp_all_list = list()
+
+                        for t_list in best_conflict_dict[temp_user_work[0]]:
+                            temp_all_list.append(t_list)
+                        temp_all_list.append(temp_conflict_list)
+
+                        print(best_conflict_dict[temp_user_work[0]])
+
+                        best_conflict_dict[temp_user_work[0]] = temp_all_list
+
+
+                    else:
+                        best_conflict_dict[temp_user_work[0]] = list()
+
+                        temp_conflict_list = list()
+                        temp_conflict_list.append(severity)
+                        temp_conflict_list.append(project_name)         # project_name
+                        temp_conflict_list.append(temp_user_work[0])    # file_name
+                        temp_conflict_list.append(temp_user_work[1])    # logic1_name
+                        temp_conflict_list.append(temp_other_work[2])   # logic2_name
+                        temp_conflict_list.append(user_name)            # user1_name
+                        temp_conflict_list.append(temp_other_work[3])   # user2_name
+
+                        best_conflict_dict[temp_user_work[0]].append(temp_conflict_list)
+
+        print(best_conflict_dict)
+
+        for temp_key in best_conflict_dict.keys():
+            print(temp_key)
+            temp_best_conflict = max(best_conflict_dict[temp_key])
+            all_severity_list.append(temp_best_conflict)
+
+        print(all_severity_list)
+
+        return all_severity_list
+
+
+    def compare_current_conflict_and_db_conflict(self, already_conflict_list, best_conflict_list):
+
+        print("#### compare current conflict ####")
+        print(already_conflict_list)
+        print(best_conflict_list)
+
+        # [project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time]
+        for temp_already in already_conflict_list:
+
+            # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
+            for temp_best in best_conflict_list:
+
+                conflict_flag = 0
+
+                # Compare severity
+                # same project and same logic
+                if(temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2]):
+
+                    print("work name : " + temp_already[2] + " / " + temp_best[3])
+
+                    if (temp_already[7] < temp_best[0]):
+                        print("getting severity")
+                        conflict_flag = 5
+                        send_conflict_message(conflict_flag=conflict_flag,
+                                              conflict_project=temp_best[1],
+                                              conflict_file=temp_best[2],
+                                              conflict_logic=temp_best[3],
+                                              user1_name=temp_best[5],
+                                              user2_name=temp_best[6])
+                    elif (temp_already[7] == temp_best[0]):
+                        print("same severity")
+                        conflict_flag = 4
+                    elif (temp_already[7] > temp_best[0]):
+                        print("lower severity")
+                        conflict_flag = 3
+                        send_conflict_message(conflict_flag=conflict_flag,
+                                              conflict_project=temp_best[1],
+                                              conflict_file=temp_best[2],
+                                              conflict_logic=temp_best[3],
+                                              user1_name=temp_best[5],
+                                              user2_name=temp_best[6])
+
+                    # After 30 minutes => send direct message
+                    if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
+                        and (temp_already[6] == 1)):
+                        send_conflict_message(conflict_flag=conflict_flag,
+                                              conflict_project=temp_best[1],
+                                              conflict_file=temp_best[2],
+                                              conflict_logic=temp_best[3],
+                                              user1_name=temp_best[5],
+                                              user2_name=temp_best[6])
+                        self.increase_alert_count(project_name=temp_best[1],
+                                                  file_name=temp_best[2],
+                                                  logic1_name=temp_best[3],
+                                                  logic2_name=temp_best[4],
+                                                  user1_name=temp_best[5],
+                                                  user2_name=temp_best[6])
+
+                    # After 60 minutes => send channel message
+                    elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
+                        and (temp_already[6] == 2)):
+                        send_conflict_message_channel(conflict_project=temp_best[1],
+                                                      conflict_file=temp_best[2],
+                                                      conflict_logic=temp_best[3],
+                                                      user1_name=temp_best[5],
+                                                      user2_name=temp_best[6])
+
+
+                    self.update_conflict_data(project_name=temp_best[1],
+                                              file_name=temp_best[2],
+                                              logic1_name=temp_best[3],
+                                              logic2_name=temp_best[4],
+                                              user1_name=temp_best[5],
+                                              user2_name=temp_best[6],
+                                              severity=temp_best[0])
+
+        return
+
+
+    def update_first_best_conflict_list(self, best_conflict_list):
+
+        # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
+        for temp_best in best_conflict_list:
+            self.insert_conflict_data(project_name=temp_best[1],
+                                      file_name=temp_best[2],
+                                      logic1_name=temp_best[3],
+                                      logic2_name=temp_best[4],
+                                      user1_name=temp_best[5],
+                                      user2_name=temp_best[6],
+                                      severity=temp_best[0])
+
+            send_conflict_message(conflict_flag=4,
+                                  conflict_project=temp_best[1],
+                                  conflict_file=temp_best[2],
+                                  conflict_logic=temp_best[3],
+                                  user1_name=temp_best[5],
+                                  user2_name=temp_best[6])
+        return
+
+
+    def non_conflict_logic(self, project_name, user_name):
+        raw_list_temp = list()
+        try:
+            sql = "select * " \
+                  "from conflict_table " \
+                  "where user1_name = '%s' " % (user_name)
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list_temp = self.cursor.fetchall()
+            raw_list_temp = list(raw_list_temp)
+        except:
+            self.conn.rollback()
+            print("ERROR : delete user conflict data")
+
+        print(raw_list_temp)
+
+        if (raw_list_temp != []):
+            for raw_temp in raw_list_temp:
+                send_conflict_message(conflict_flag=-1,
+                                      conflict_project=project_name,
+                                      conflict_file=raw_temp[1],
+                                      conflict_logic=raw_temp[2],
+                                      user1_name=user_name,
+                                      user2_name=raw_temp[5])
+
+                send_conflict_message(conflict_flag=-1,
+                                      conflict_project=project_name,
+                                      conflict_file=raw_temp[1],
+                                      conflict_logic=raw_temp[2],
+                                      user1_name=raw_temp[5],
+                                      user2_name=user_name)
+
+        try:
+            sql = "delete " \
+                  "from conflict_table " \
+                  "where user1_name = '%s' " \
+                  "or user2_name = '%s' " % (user_name, user_name)
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : delete user conflict data")
 
         return
 
@@ -411,25 +481,6 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : increase alert count")
-
-
-    def delete_conflict_list(self):
-
-        try:
-            sql = "delete " \
-                  "from conflict_table " \
-                  "where alert_count >= 2 " \
-                  "and TIMEDIFF(now(),log_time) > 24"
-            print(sql)
-
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-        except:
-            self.conn.rollback()
-            print("ERROR : get conflict_table")
-
-        return
 
 
     # Close Database connection and cursor
