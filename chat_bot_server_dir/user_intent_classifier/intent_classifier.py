@@ -35,7 +35,6 @@ def is_suggestion(pos_tag_list):
 def is_question(parse_list):
     if "SBARQ" in parse_list or "SQ" in parse_list:
         return True
-
     return False
 
 def require_something_sentence(sentence):
@@ -45,5 +44,7 @@ def require_something_sentence(sentence):
     parse_list = nlp.parse(sentence)
 
     if(is_command(pos_tag_list) or is_desire(pos_tag_list) or is_question(parse_list) or is_suggestion(pos_tag_list)):
+        nlp.close()
         return True
+    nlp.close()
     return False
