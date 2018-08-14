@@ -9,8 +9,8 @@ import os
 import re
 
 # IP definition
-ip_addr = "35.237.100.101"
-port = "80"
+ip_addr = "127.0.0.1"
+port = "5009"
 
 # Verifying User
 def verifyingUser():
@@ -19,7 +19,7 @@ def verifyingUser():
     json_email = getUserEmail()
 
     # User Search
-    res = postToServer(uri="/userSearch", json_data=json_email)
+    res = postToServer(uri="/user_search", json_data=json_email)
 
     # Response Data Parsing
     user_flag = res.text
@@ -37,7 +37,7 @@ def verifyingUser():
         raw_input("Input Any Key (If you entered random number to Slack): ")
 
         # Synchronize User Data
-        postToServer("/syncUserData", "sync")
+        postToServer("/sync_user_data", "sync")
 
         print("Success")
 
@@ -306,7 +306,7 @@ class AsyncTask:
     def sendToServer_GitDiff_GitLsFiles(self):
 
         # Post To Server : git diff
-        postToServer("/gitDiff", commandGitDiff())
+        postToServer("/git_diff", commandGitDiff())
 
         # Post To Server : git ls-files -m
         # postToServer("/gitLsFiles", commandGitLsFiles())
@@ -359,4 +359,4 @@ if __name__ == "__main__":
     # postToServer("/gitLsFiles",commandGitLsFiles())
 
     # Start Thread for sending git data
-    sendToServer_git_data()
+    # sendToServer_git_data()

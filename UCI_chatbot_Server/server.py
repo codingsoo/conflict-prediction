@@ -238,18 +238,54 @@ def cmd1():
             user_list.append(user_slack_id)
             conflict_list[file_name] = user_list
         #
-        # # In direct
-        # index = 0
-        # for group in content['git_graph']:
-        #     if file_name in group and index in used_files :
-        #         for user in used_files[index] :
-        #             if user != user_slack_id and file_name in working_list[user].keys():
-        #                 # conflict detected
-        #                 print("hello")
-        #             else:
-        #                 del(used_files[index])
-        #         used_files[index].append(user_slack_id)
-        #     index = index + 1
+
+        # For Indirected
+        working_node_set = set()
+        visit = set()
+        q = Queue.Queue()
+
+        for key, value in working_list:
+            if key == user_slack_id:
+                for key2, value2 in value:
+                    for key3, value3 in value2:
+                        if key3 == 'in':
+                            continue
+                        else:
+                            if value3 in visit:
+                                continue
+                            visit.add(value3)
+                            q.put([value3, value3])
+                continue
+            else:
+                for key2, value2 in value:
+                    for key3, value3 in value2:
+                        if key3 == 'in':
+                            continue
+                        else:
+                            working_node_set.add(key3)
+
+        with open('./user_data/approved_list.json', 'r') as f:
+            approved_list = json.load(f)
+
+        graph_data = {}
+        git_clone_info = 1
+        for (u, v) in git_clone_info.get_git_clone_info():
+            if not u in graph_data:
+                graph_data[u] = set()
+            graph_data[u].add(v)
+
+        indirected_result = []
+        while not q.empty():
+            node, source = q.get()
+            file_name = os.path.basename(node.split('|')[0])
+            if file_name in approved_list:
+                continue
+            for next in graph_data[node]:
+                if not next in visit and not os.path.basename(file_name) in approved_list:
+                    visit.add(next)
+                    q.put([next, source])
+                    if next in working_node_set:
+                        indirected_result.append([source, next])
 
     return "test"
 
