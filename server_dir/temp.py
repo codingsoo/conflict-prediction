@@ -316,11 +316,7 @@ if __name__ == "__main__":
     # # w_db.detect_direct_conflict(temp.get_proj_name(),
     # #                             temp.get_working_data(),
     # #                             temp.get_user_name())
-    #
-    #
-    #
     # w_db.insert_user_data(temp.get_proj_name(),
     #                         temp.get_working_data(),
     #                         temp.get_user_name())
-    #
     # w_db.close_db()

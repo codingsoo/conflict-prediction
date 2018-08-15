@@ -1,6 +1,7 @@
 import pymysql
 import datetime as d
 from server_dir.slack_message_sender import *
+from server_dir.conflict_flag_enum import Conflict_flag
 
 class indirect_work_database:
 
@@ -38,21 +39,38 @@ class indirect_work_database:
             if(already_indirect_conflict_list != []):
 
                 print("#### Already Indirect Conflict !!! ####")
-                # db insert
-                # 사용자 알람 => 30분 이상일때만 알람
-                # 알람 카운트 증가
+
+                for temp_already in already_indirect_conflict_list:
+
+                    # After 30 minutes => send direct message
+                    if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
+                        and (temp_already[6] == 1)):
+
+                        send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                              conflict_project=project_name,
+                                              conflict_file=temp_best[2],
+                                              conflict_logic=temp_best[3],
+                                              user1_name=temp_best[5],
+                                              user2_name=temp_best[6])
+                        self.increase_alert_count(project_name=temp_best[1],
+                                                  file_name=temp_best[2],
+                                                  logic1_name=temp_best[3],
+                                                  logic2_name=temp_best[4],
+                                                  user1_name=temp_best[5],
+                                                  user2_name=temp_best[6])
 
             # First conflict
             else:
 
                 print("#### First Conflict !!! ####")
-                # db insert
+                self.insert_conflict_data(project_name, indirect_conflict_list)
+
                 # 사용자한태 알람
 
         # Non-conflict
         else:
             print("#### Non-Conflict !!! ####")
-            # indirect conlfict table 자기 정보 다 삭제
+            self.non_indirect_conflict_logic(project_name, user_name)
 
         return
 
@@ -100,7 +118,6 @@ class indirect_work_database:
 
         return raw_list
 
-
     def search_logic_dependency(self, project_name, user_working_list, other_working_list, user_name):
 
         all_raw_list = list()
@@ -128,6 +145,8 @@ class indirect_work_database:
                     raw_list = self.cursor.fetchall()
                     raw_list = list(raw_list)
 
+                    print(raw_list)
+
                     if(raw_list != []):
                         temp_raw = list()
 
@@ -135,6 +154,7 @@ class indirect_work_database:
                         temp_raw.append(temp_user_logic)    # user logic
                         temp_raw.append(temp_other_work[3]) # other name
                         temp_raw.append(temp_other_logic)   # other logic
+                        temp_raw.append(raw_list[0][3])        # length
 
                         all_raw_list.append(temp_raw)
 
@@ -179,3 +199,82 @@ class indirect_work_database:
                 print("ERROR : search already indirect conflict table")
 
         return all_raw_list
+
+
+    # Insert conflict data
+    def insert_conflict_data(self, project_name, indirect_conflict_list):
+        print(indirect_conflict_list)
+
+        sql1 = "insert into indirect_conflict_table (project_name, u, v, length, user1_name, user2_name) values "
+
+        # [user1_name, user1_logic, user2_name, user2_logic, length]
+        for temp_indirect_conflict in indirect_conflict_list:
+            sql1 += "('%s', '%s', '%s', %d, '%s', '%s'), " %(project_name,
+                                                             temp_indirect_conflict[1], temp_indirect_conflict[3],temp_indirect_conflict[4],
+                                                             temp_indirect_conflict[0], temp_indirect_conflict[2])
+
+        sql1 = sql1[:-2]
+
+        try:
+            self.cursor.execute(sql1)
+            self.conn.commit()
+            print(sql1)
+        except:
+            self.conn.rollback()
+            print("ERROR : insert indirect conflict data")
+
+        return
+
+
+    def non_indirect_conflict_logic(self, project_name, user_name):
+        raw_list_temp = list()
+        try:
+            sql = "select * " \
+                  "from indirect_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list_temp = self.cursor.fetchall()
+            raw_list_temp = list(raw_list_temp)
+        except:
+            self.conn.rollback()
+            print("ERROR : select user indirect conflict data")
+
+        print(raw_list_temp)
+
+        # Send to the user about indirect solved message
+        if (raw_list_temp != []):
+            for raw_temp in raw_list_temp:
+                send_conflict_message(conflict_flag=-1,
+                                      conflict_project=project_name,
+                                      conflict_file=raw_temp[1],
+                                      conflict_logic=raw_temp[2],
+                                      user1_name=user_name,
+                                      user2_name=raw_temp[5])
+
+                send_conflict_message(conflict_flag=-1,
+                                      conflict_project=project_name,
+                                      conflict_file=raw_temp[1],
+                                      conflict_logic=raw_temp[2],
+                                      user1_name=raw_temp[5],
+                                      user2_name=user_name)
+
+        # Delete all user conflict list
+        try:
+            sql = "delete " \
+                  "from indirect_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
+            print(sql)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : delete user indirect conflict data")
+
+        return

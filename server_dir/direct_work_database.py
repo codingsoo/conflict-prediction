@@ -1,6 +1,7 @@
 import pymysql
 import datetime as d
 from server_dir.slack_message_sender import *
+from server_dir.conflict_flag_enum import Conflict_flag
 
 """
 class : work_database
@@ -285,7 +286,7 @@ class work_database:
 
                     if (temp_already[7] < temp_best[0]):
                         print("getting severity")
-                        conflict_flag = 5
+                        conflict_flag = Conflict_flag.getting_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
                                               conflict_file=temp_best[2],
@@ -294,10 +295,10 @@ class work_database:
                                               user2_name=temp_best[6])
                     elif (temp_already[7] == temp_best[0]):
                         print("same severity")
-                        conflict_flag = 4
+                        conflict_flag = Conflict_flag.same_severity.value
                     elif (temp_already[7] > temp_best[0]):
                         print("lower severity")
-                        conflict_flag = 3
+                        conflict_flag = Conflict_flag.lower_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
                                               conflict_file=temp_best[2],
@@ -308,7 +309,7 @@ class work_database:
                     # After 30 minutes => send direct message
                     if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
                         and (temp_already[6] == 1)
-                        and (conflict_flag == 4)):
+                        and (conflict_flag == Conflict_flag.same_severity.value)):
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
                                               conflict_file=temp_best[2],
@@ -325,7 +326,7 @@ class work_database:
                     # After 60 minutes => send channel message
                     elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
                         and (temp_already[6] == 2)
-                        and (conflict_flag == 4)):
+                        and (conflict_flag == Conflict_flag.same_severity.value)):
                         send_conflict_message_channel(conflict_project=temp_best[1],
                                                       conflict_file=temp_best[2],
                                                       conflict_logic=temp_best[3],
@@ -358,7 +359,7 @@ class work_database:
                                       user2_name=temp_best[6],
                                       severity=temp_best[0])
 
-            send_conflict_message(conflict_flag=4,
+            send_conflict_message(conflict_flag=Conflict_flag.same_severity.value,
                                   conflict_project=temp_best[1],
                                   conflict_file=temp_best[2],
                                   conflict_logic=temp_best[3],
@@ -373,7 +374,8 @@ class work_database:
         try:
             sql = "select * " \
                   "from conflict_table " \
-                  "where user1_name = '%s' " % (user_name)
+                  "where project_name = '%s' " \
+                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
             print(sql)
 
             self.cursor.execute(sql)
@@ -383,20 +385,20 @@ class work_database:
             raw_list_temp = list(raw_list_temp)
         except:
             self.conn.rollback()
-            print("ERROR : delete user conflict data")
+            print("ERROR : select user conflict data")
 
         print(raw_list_temp)
 
         if (raw_list_temp != []):
             for raw_temp in raw_list_temp:
-                send_conflict_message(conflict_flag=-1,
+                send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
                                       conflict_project=project_name,
                                       conflict_file=raw_temp[1],
                                       conflict_logic=raw_temp[2],
                                       user1_name=user_name,
                                       user2_name=raw_temp[5])
 
-                send_conflict_message(conflict_flag=-1,
+                send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
                                       conflict_project=project_name,
                                       conflict_file=raw_temp[1],
                                       conflict_logic=raw_temp[2],
@@ -406,8 +408,8 @@ class work_database:
         try:
             sql = "delete " \
                   "from conflict_table " \
-                  "where user1_name = '%s' " \
-                  "or user2_name = '%s' " % (user_name, user_name)
+                  "where project_name = '%s' " \
+                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
             print(sql)
 
             self.cursor.execute(sql)

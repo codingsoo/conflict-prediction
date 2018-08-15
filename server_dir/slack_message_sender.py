@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import random
 import configparser
+from server_dir.conflict_flag_enum import Conflict_flag
 
 def get_slack():
     token = ''
@@ -84,38 +85,38 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     message = ""
 
     # Already conflict
-    if(conflict_flag == 5):
+    if(conflict_flag == Conflict_flag.getting_severity.value):
         # get server
         server_shell = make_server_shell_list()
         message = server_shell[random.randint(0, len(server_shell) - 1)]
 
-    elif(conflict_flag == 4):
+    elif(conflict_flag == Conflict_flag.same_severity.value):
         # same server
         same_shell = make_same_file_shell_list()
         message = same_shell[random.randint(0, len(same_shell) - 1)] % (str(user1_slack_id_code[0]), str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
 
-    elif(conflict_flag == 3):
+    elif(conflict_flag == Conflict_flag.lower_severity.value):
         # lower serverity
         lower_severity = make_lower_severity_list()
         message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
 
     # First conflict
-    elif(conflict_flag == 2):
+    elif(conflict_flag == Conflict_flag.same_function.value):
         # same function
         same_shell = make_same_file_shell_list()
         message = same_shell[random.randint(0, len(same_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
 
-    elif(conflict_flag == 1):
+    elif(conflict_flag == Conflict_flag.same_class.value):
         # same class
         same_shell = make_same_file_shell_list()
         message = same_shell[random.randint(0, len(same_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
 
-    elif(conflict_flag == 0):
+    elif(conflict_flag == Conflict_flag.file_in.value):
         # just in
         get_closer = make_same_file_shell_list()
         message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, " ")
 
-    elif(conflict_flag == -1):
+    elif(conflict_flag == Conflict_flag.conflict_finished.value):
         # conflict solved
         conflict_finished = make_conflict_finished_list()
         message = conflict_finished[random.randint(0, len(conflict_finished) - 1)] % ('you', user2_slack_id_code[0])
