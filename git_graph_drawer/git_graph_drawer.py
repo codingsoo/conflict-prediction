@@ -7,7 +7,6 @@ import time
 from flask import Flask, request
 from pathlib import Path
 
-
 # Create Server
 app = Flask(__name__)
 
@@ -44,7 +43,6 @@ def search_directory(url):
 
     print("file_dir: " + str(file_dir))
     print("file_name : " + str(file_name))
-
 
 # File Content Data Reader
 def file_reader(url):
