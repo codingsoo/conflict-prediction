@@ -3,13 +3,6 @@ import datetime as d
 from server_dir.slack_message_sender import *
 from server_dir.conflict_flag_enum import Conflict_flag
 
-"""
-class : work_database
-function list
-- __init__
-- delete_user_data
-"""
-
 class work_database:
 
     # Constructor
@@ -44,7 +37,6 @@ class work_database:
 
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
-
         self.delete_conflict_list()
 
         file_conflict_list = self.search_working_table(project_name, working_list)
@@ -52,14 +44,14 @@ class work_database:
         # Conflict
         if(file_conflict_list != []):
 
-            print("#### Conflict !!! ####")
+            print("\n#### Direct Conflict !!! ####")
 
             already_conflict_list = self.search_already_conflict_table(project_name, file_conflict_list, working_list, user_name)
 
             # Already conflicted
             if(already_conflict_list != []):
 
-                print("#### Already Conflict !!! ####")
+                print("\n#### Already Direct Conflict !!! ####")
 
                 # Search the best value of severity and return list
                 best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
@@ -72,7 +64,7 @@ class work_database:
             # First conflict
             else:
 
-                print("#### First Conflict !!! ####")
+                print("\n#### First Direct Conflict !!! ####")
 
                 # Search the best value of severity and return list
                 best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
@@ -80,7 +72,7 @@ class work_database:
 
         # Non-conflict
         else:
-            print("#### Non-Conflict !!! ####")
+            print("\n#### Non-Direct Conflict !!! ####")
             self.non_conflict_logic(project_name, user_name)
 
         return
@@ -88,7 +80,6 @@ class work_database:
 
     # Delete conflict list
     def delete_conflict_list(self):
-
         try:
             sql = "delete " \
                   "from conflict_table " \
@@ -101,13 +92,12 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : delete conflict list")
+            print("ERROR : delete direct conflict list")
 
         return
 
 
     def search_working_table(self, project_name, working_list):
-
         all_row_list = list()
 
         # ["file_name", "logic_name", "work_line", "work_amount"]
@@ -138,7 +128,6 @@ class work_database:
 
 
     def search_already_conflict_table(self, project_name, conflict_list, working_list, user_name):
-
         all_row_list = list()
 
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
@@ -163,7 +152,7 @@ class work_database:
                     raw_list = list(raw_list)
                 except:
                     self.conn.rollback()
-                    print("ERROR : search already conflict talbe")
+                    print("ERROR : search already direct conflict table")
 
                 # There is conflict file
                 if(raw_list != []):
@@ -176,8 +165,6 @@ class work_database:
 
 
     def search_best_conflict(self, project_name, conflict_list, working_list, user_name):
-        # 미리 컨플릭트 난 리스트는 각 파일당 한개의 로직
-        # 현재 컨플릭트 난 리스트는 각 파일당 여러개의 로직
 
         best_conflict_dict = dict()
         all_severity_list = list()
@@ -195,25 +182,23 @@ class work_database:
                     # Same logic name => search best conflict
                     if(temp_other_work[2] == temp_user_work[1]):
                         if(temp_user_work[1][:8] == "function"):
-                            print("same function conflict : 3")
+                            print("same function direct conflict : 3")
                             severity = 3
                         elif(temp_user_work[1][:5] == "class"):
-                            print("same def in same class conflict : 3")
+                            print("same def in same class direct conflict : 3")
                             severity = 3
                         else:
-                            print("same in conflict : 1")
+                            print("same in direct conflict : 1")
                             severity = 1
 
                     # Different logic name
                     else:
                         if(temp_user_work[1][:5] == "class"):
-                            print("same class conflict : 2")
+                            print("same class direct conflict : 2")
                             severity = 2
                         else:
-                            print("just in conflict : 1")
+                            print("just in direct conflict : 1")
                             severity = 1
-
-                    print(temp_user_work[0])
 
                     # key: file name / value: severity conflict list
                     if(temp_user_work[0] in best_conflict_dict):
@@ -233,8 +218,6 @@ class work_database:
                             temp_all_list.append(t_list)
                         temp_all_list.append(temp_conflict_list)
 
-                        print(best_conflict_dict[temp_user_work[0]])
-
                         best_conflict_dict[temp_user_work[0]] = temp_all_list
 
 
@@ -252,23 +235,14 @@ class work_database:
 
                         best_conflict_dict[temp_user_work[0]].append(temp_conflict_list)
 
-        print(best_conflict_dict)
-
         for temp_key in best_conflict_dict.keys():
-            print(temp_key)
             temp_best_conflict = max(best_conflict_dict[temp_key])
             all_severity_list.append(temp_best_conflict)
-
-        print(all_severity_list)
 
         return all_severity_list
 
 
     def compare_current_conflict_and_db_conflict(self, already_conflict_list, best_conflict_list):
-
-        print("#### compare current conflict ####")
-        print(already_conflict_list)
-        print(best_conflict_list)
 
         # [project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time]
         for temp_already in already_conflict_list:
@@ -282,10 +256,8 @@ class work_database:
                 # same project and same logic
                 if(temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2]):
 
-                    print("work name : " + temp_already[2] + " / " + temp_best[3])
-
                     if (temp_already[7] < temp_best[0]):
-                        print("getting severity")
+                        print("direct : getting severity")
                         conflict_flag = Conflict_flag.getting_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
@@ -294,10 +266,10 @@ class work_database:
                                               user1_name=temp_best[5],
                                               user2_name=temp_best[6])
                     elif (temp_already[7] == temp_best[0]):
-                        print("same severity")
+                        print("direct same severity")
                         conflict_flag = Conflict_flag.same_severity.value
                     elif (temp_already[7] > temp_best[0]):
-                        print("lower severity")
+                        print("direct lower severity")
                         conflict_flag = Conflict_flag.lower_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
@@ -348,8 +320,6 @@ class work_database:
     def update_first_best_conflict_list(self, best_conflict_list):
 
         # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
-        print("#### update first best conflict list #####")
-        print(best_conflict_list)
         for temp_best in best_conflict_list:
             self.insert_conflict_data(project_name=temp_best[1],
                                       file_name=temp_best[2],
@@ -385,9 +355,7 @@ class work_database:
             raw_list_temp = list(raw_list_temp)
         except:
             self.conn.rollback()
-            print("ERROR : select user conflict data")
-
-        print(raw_list_temp)
+            print("ERROR : select user direct conflict data")
 
         if (raw_list_temp != []):
             for raw_temp in raw_list_temp:
@@ -416,14 +384,13 @@ class work_database:
             self.conn.commit()
         except:
             self.conn.rollback()
-            print("ERROR : delete user conflict data")
+            print("ERROR : delete user direct conflict data")
 
         return
 
     # Insert User data to working_table
     def insert_user_data(self, project_name, working_list, user_name):
         for temp_work in working_list:
-            print("temp : " + temp_work[0])
             try:
                 sql = "insert into working_table (project_name, file_name, logic_name, user_name, work_line, work_amount) " \
                       "value ('%s', '%s', '%s', '%s', %d, %d)" %(project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
@@ -438,7 +405,6 @@ class work_database:
 
     # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
-        # User 1 data
         try:
             sql1 = "insert into conflict_table (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity) " \
                    "value ('%s', '%s', '%s', '%s', '%s', '%s', %d)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity)
@@ -447,7 +413,7 @@ class work_database:
             print(sql1)
         except:
             self.conn.rollback()
-            print("ERROR : insert conflict data")
+            print("ERROR : insert direct conflict data")
         return
 
 
@@ -467,8 +433,7 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print(self.cursor.Error)
-            print("ERROR : update conflict_table")
+            print("ERROR : update direct conflict_table")
         return
     
 
@@ -487,7 +452,7 @@ class work_database:
             self.conn.commit()
         except:
             self.conn.rollback()
-            print("ERROR : increase alert count")
+            print("ERROR : increase direct alert count")
 
 
     # Close Database connection and cursor

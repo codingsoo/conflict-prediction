@@ -14,38 +14,42 @@ function    : detect direct conflict between the developers
 parameter   : content_json
 return      : none
 """
-
 # BASE_PATH for clone repository.
 BASE_PATH = os.path.pardir
 
 def git_diff_logic(content):
 
-    # create user git diff data
+    # Create user git diff data
     user_data = user_git_diff(content)
 
-    # create database object
-    direct_w_db = work_database()
+    # Create direct and indirect database connection
+    w_db = work_database()
+    iw_db = indirect_work_database()
 
-    # delete current user data
-    direct_w_db.delete_user_data(user_data.get_user_name())
+    # Delete current user data
+    w_db.delete_user_data(user_data.get_user_name())
 
-    # detect direct conflict
-    direct_w_db.detect_direct_conflict(project_name = user_data.get_proj_name(),
-                                       working_list = user_data.get_working_data(),
-                                       user_name    = user_data.get_user_name())
+    # Detect direct conflict
+    w_db.detect_direct_conflict(user_data.get_proj_name(),
+                                user_data.get_working_data(),
+                                user_data.get_user_name())
 
-    # detect indirect conflict
+    # Detect indirect conflict
+    iw_db.detect_indirect_conflict(user_data.get_proj_name(),
+                                   user_data.get_working_data(),
+                                   user_data.get_user_name())
 
+    # Insert current user data
+    w_db.insert_user_data(user_data.get_proj_name(),
+                          user_data.get_working_data(),
+                          user_data.get_user_name())
 
-    # insert user data
-    direct_w_db.insert_user_data(project_name = user_data.get_proj_name(),
-                                 working_list = user_data.get_working_data(),
-                                 user_name    = user_data.get_user_name())
-
-    # close database
-    direct_w_db.close_db()
-
+    # Close direct and indirect database connection
+    w_db.close_db()
+    iw_db.close_db()
     return
+
+
 
 
 def convert_data(content) :

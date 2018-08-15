@@ -26,50 +26,25 @@ class indirect_work_database:
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
 
-        print("other_working_list : " + str(other_working_list))
-        print("indirect_conflict_list : " + str(indirect_conflict_list))
-
         # Conflict
         if(indirect_conflict_list != []):
-
-            print("#### Indirect Conflict !!! ####")
+            print("\n#### Indirect Conflict !!! ####")
             already_indirect_conflict_list = self.search_already_indirect_conflict_table(project_name, indirect_conflict_list)
 
             # Already indirect conflicted
             if(already_indirect_conflict_list != []):
-
-                print("#### Already Indirect Conflict !!! ####")
-
-                for temp_already in already_indirect_conflict_list:
-
-                    # After 30 minutes => send direct message
-                    if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
-                        and (temp_already[6] == 1)):
-
-                        send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
-                                              conflict_project=project_name,
-                                              conflict_file=temp_best[2],
-                                              conflict_logic=temp_best[3],
-                                              user1_name=temp_best[5],
-                                              user2_name=temp_best[6])
-                        self.increase_alert_count(project_name=temp_best[1],
-                                                  file_name=temp_best[2],
-                                                  logic1_name=temp_best[3],
-                                                  logic2_name=temp_best[4],
-                                                  user1_name=temp_best[5],
-                                                  user2_name=temp_best[6])
+                print("\n#### Already Indirect Conflict !!! ####")
+                self.already_indirect_logic(project_name, user_name, already_indirect_conflict_list)
 
             # First conflict
             else:
-
-                print("#### First Conflict !!! ####")
-                self.insert_conflict_data(project_name, indirect_conflict_list)
-
-                # 사용자한태 알람
+                print("\n#### First Conflict !!! ####")
+                # first indirect conflict logic
+                self.first_indirect_logic(project_name, user_name, indirect_conflict_list)
 
         # Non-conflict
         else:
-            print("#### Non-Conflict !!! ####")
+            print("\n#### Non-Conflict !!! ####")
             self.non_indirect_conflict_logic(project_name, user_name)
 
         return
@@ -114,8 +89,6 @@ class indirect_work_database:
             self.conn.rollback()
             print("ERROR : search indirect working table")
 
-        print(raw_list)
-
         return raw_list
 
     def search_logic_dependency(self, project_name, user_working_list, other_working_list, user_name):
@@ -145,9 +118,7 @@ class indirect_work_database:
                     raw_list = self.cursor.fetchall()
                     raw_list = list(raw_list)
 
-                    print(raw_list)
-
-                    if(raw_list != []):
+                    if((raw_list != []) and (temp_user_logic != temp_other_logic)):
                         temp_raw = list()
 
                         temp_raw.append(user_name)          # user name
@@ -161,8 +132,6 @@ class indirect_work_database:
                 except:
                     self.conn.rollback()
                     print("ERROR : search logic dependency")
-
-        print(all_raw_list)
 
         return all_raw_list
 
@@ -201,10 +170,49 @@ class indirect_work_database:
         return all_raw_list
 
 
+    def already_indirect_logic(self, project_name, user_name, already_indirect_conflict_list):
+        for temp_already in already_indirect_conflict_list:
+
+            # After 30 minutes => send direct message
+            if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=30))
+                and (temp_already[6] == 1)):
+
+                temp_file_logic1 = temp_already[1].split('|')
+                temp_file_logic2 = temp_already[2].split('|')
+
+                send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                      conflict_project=project_name,
+                                      conflict_file=temp_file_logic1,
+                                      conflict_logic=temp_file_logic2,
+                                      user1_name=user_name,
+                                      user2_name=temp_already[5])
+
+                self.increase_alert_count(project_name=project_name,
+                                          u=temp_already[1],
+                                          v=temp_already[2],
+                                          user1_name=temp_already[4],
+                                          user2_name=temp_already[5])
+        return
+
+
+    def first_indirect_logic(self, project_name, user_name, indirect_conflict_list):
+
+        for temp_conflict in indirect_conflict_list:
+
+            temp_file_logic1 = temp_conflict[1].split('|')
+            temp_file_logic2 = temp_conflict[3].split('|')
+            self.insert_conflict_data(project_name, indirect_conflict_list)
+            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                  conflict_project=project_name,
+                                  conflict_file=temp_file_logic1,
+                                  conflict_logic=temp_file_logic2,
+                                  user1_name=user_name,
+                                  user2_name=temp_conflict[2])
+        return
+
+
     # Insert conflict data
     def insert_conflict_data(self, project_name, indirect_conflict_list):
-        print(indirect_conflict_list)
-
         sql1 = "insert into indirect_conflict_table (project_name, u, v, length, user1_name, user2_name) values "
 
         # [user1_name, user1_logic, user2_name, user2_logic, length]
@@ -244,8 +252,6 @@ class indirect_work_database:
             self.conn.rollback()
             print("ERROR : select user indirect conflict data")
 
-        print(raw_list_temp)
-
         # Send to the user about indirect solved message
         if (raw_list_temp != []):
             for raw_temp in raw_list_temp:
@@ -278,3 +284,25 @@ class indirect_work_database:
             print("ERROR : delete user indirect conflict data")
 
         return
+
+    def increase_alert_count(self, project_name, u, v, user1_name, user2_name):
+        try:
+            sql = "update indirect_conflict_table " \
+                  "set alert_count = alert_count + 1 " \
+                  "where project_name = '%s' " \
+                  "and u = '%s' " \
+                  "and v = '%s' " \
+                  "and user1_name = '%s' " \
+                  "and user2_name = '%s' " % (project_name, u, v, user1_name, user2_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : increase alert count")
+
+    # Close Database connection and cursor
+    def close_db(self):
+
+        self.cursor.close()
+        self.conn.close()

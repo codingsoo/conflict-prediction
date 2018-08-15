@@ -282,7 +282,7 @@ def temp(self, project_name, working_list, user_name):
 if __name__ == "__main__":
 
     content = {
-        'git_id' : 'u2',
+        'git_id' : 'learnitdeep@gmail.com',
         'git_diff': {
             'a': {
                 'h': [
@@ -291,32 +291,29 @@ if __name__ == "__main__":
                         4,
                          16
                     ]
-                ],
+                ]
             }
         }
     }
 
 
     temp = user_git_diff(content)
-    print(temp.get_working_data())
+    print("current user: " + str(temp.get_working_data()))
 
     iw_db = indirect_work_database()
+    w_db = work_database()
+
+    w_db.delete_user_data(temp.get_user_name())
+
+    w_db.detect_direct_conflict(temp.get_proj_name(),
+                                 temp.get_working_data(),
+                                 temp.get_user_name())
 
     iw_db.detect_indirect_conflict(temp.get_proj_name(),
                                    temp.get_working_data(),
                                    temp.get_user_name())
 
-######################
-    # temp = user_git_diff(content)
-    # print(temp.get_working_data())
-    # # # file name, logic name
-    # w_db = work_database()
-    # w_db.delete_user_data(temp.get_user_name())
-    # iw_db = indirect
-    # # w_db.detect_direct_conflict(temp.get_proj_name(),
-    # #                             temp.get_working_data(),
-    # #                             temp.get_user_name())
-    # w_db.insert_user_data(temp.get_proj_name(),
-    #                         temp.get_working_data(),
-    #                         temp.get_user_name())
-    # w_db.close_db()
+    w_db.insert_user_data(temp.get_proj_name(),
+                             temp.get_working_data(),
+                             temp.get_user_name())
+    iw_db.close_db()

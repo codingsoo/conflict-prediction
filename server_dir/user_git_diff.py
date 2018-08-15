@@ -10,10 +10,6 @@ class user_git_diff:
 
         for proj_name_temp in self.content['git_diff'].keys():
             self.proj_name = proj_name_temp
-        # with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f:
-        #     raw = json.load(f)
-        #
-        # self.user_name = raw[content['git_id']]
 
         self.user_name = self.content['git_id']
 
@@ -35,8 +31,6 @@ class user_git_diff:
 
         # get file dict
         temp_work_data_dict = self.content['git_diff'][self.proj_name]
-
-        print(temp_work_data_dict)
 
         for file_name in temp_work_data_dict.keys():
 

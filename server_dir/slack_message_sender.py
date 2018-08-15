@@ -22,6 +22,7 @@ def get_slack():
     slack = Slacker(token)
     return slack
 
+
 def make_shell_list(file):
     f = open(file, "r", encoding="UTF8")
     text = f.read()
@@ -70,7 +71,7 @@ def get_user_slack_id(git_id):
         slack_id_code = user_slack_id_dict[slack_id]
     except:
         print("ERROR : no slack id data")
-        slack_id_code = "AAAA"
+        slack_id_code = "AAAAA"
 
     f1.close()
     f2.close()
@@ -120,6 +121,12 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         # conflict solved
         conflict_finished = make_conflict_finished_list()
         message = conflict_finished[random.randint(0, len(conflict_finished) - 1)] % ('you', user2_slack_id_code[0])
+
+    elif(conflict_flag == Conflict_flag.indirect_conflict.value):
+        message = "indirect conflict : your name : %s / your file : %s / your logic : %s " \
+                  "/ other name : %s / other file: %s / other logic : %s " \
+                  "" %(user1_slack_id_code[0], conflict_file[0], conflict_file[1],
+                       user2_slack_id_code[0], conflict_logic[0], conflict_logic[1])
 
     send_direct_message(user1_slack_id_code[1], message)
     print(message)
