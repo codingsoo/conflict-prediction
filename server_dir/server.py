@@ -5,9 +5,9 @@ Function : Detect git conflict between developers
 
 # import library
 from flask import Flask, request
-from server_dir.server_git import *
 from server_dir.server_user import *
 from server_dir.server_git import *
+
 # Create Server
 app = Flask(__name__)
 
@@ -51,10 +51,22 @@ def sync_user_data():
 def git_diff():
 
     content = request.get_json(silent=True)
+    print("content : " + str(content))
     converted_data = convert_data(content)
+    print("converted_data : " + str(converted_data))
     git_diff_logic(converted_data)
 
     return "git_diff"
+
+
+@app.route("/indirect_info", methods = ["POST"])
+def graph_info():
+
+    content = request.get_json(silent=True)
+
+    print(content)
+
+    return "indirect_info"
 
 
 # Main
@@ -64,4 +76,4 @@ if __name__ == "__main__":
     user_git_id_list = read_user_data_logic()
 
     # Run Server
-    app.run(debug=True, host="192.168.43.209", port="5009")
+    app.run(debug=True, host="127.0.0.1", port="5009")

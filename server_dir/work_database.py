@@ -16,7 +16,7 @@ class work_database:
         # get mysql database connection
         self.conn = pymysql.connect(host     = '127.0.0.1',
                                     user     = 'root',
-                                    password = 'root',
+                                    password = '99189918',
                                     db       = 'uci_chat_bot',
                                     charset  = 'utf8')
 
@@ -307,7 +307,8 @@ class work_database:
 
                     # After 30 minutes => send direct message
                     if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
-                        and (temp_already[6] == 1)):
+                        and (temp_already[6] == 1)
+                        and (conflict_flag == 4)):
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
                                               conflict_file=temp_best[2],
@@ -323,7 +324,8 @@ class work_database:
 
                     # After 60 minutes => send channel message
                     elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
-                        and (temp_already[6] == 2)):
+                        and (temp_already[6] == 2)
+                        and (conflict_flag == 4)):
                         send_conflict_message_channel(conflict_project=temp_best[1],
                                                       conflict_file=temp_best[2],
                                                       conflict_logic=temp_best[3],
@@ -345,6 +347,8 @@ class work_database:
     def update_first_best_conflict_list(self, best_conflict_list):
 
         # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
+        print("#### update first best conflict list #####")
+        print(best_conflict_list)
         for temp_best in best_conflict_list:
             self.insert_conflict_data(project_name=temp_best[1],
                                       file_name=temp_best[2],
@@ -360,6 +364,7 @@ class work_database:
                                   conflict_logic=temp_best[3],
                                   user1_name=temp_best[5],
                                   user2_name=temp_best[6])
+            return
         return
 
 

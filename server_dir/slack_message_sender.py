@@ -99,7 +99,6 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         lower_severity = make_lower_severity_list()
         message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
 
-
     # First conflict
     elif(conflict_flag == 2):
         # same function

@@ -159,8 +159,26 @@ def send_to_server_git_data() :
     post_to_server("/git_diff", json_data)
     threading.Timer(10, send_to_server_git_data).start()
 
+
+def send_to_graph_server_repository_name():
+    ip_addr = "127.0.0.1"
+    port = "5010"
+
+    json_data = dict()
+    set_repository_name(json_data)
+    print(json_data)
+
+    url = "http://" + ip_addr + ":" + port + "/repository_name"
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    req = requests.post(url, headers=headers, data=json.dumps(json_data))
+    print("Status Code:", req.status_code)
+
+    threading.Timer(60, send_to_graph_server_repository_name).start()
+
+
 if __name__ == '__main__' :
     print("CHATBOT Client Start!")
     load_config()
     verifying_user()
     send_to_server_git_data()
+    send_to_graph_server_repository_name()

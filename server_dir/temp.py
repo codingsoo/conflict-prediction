@@ -253,28 +253,28 @@ def temp(self, project_name, working_list, user_name):
 
 if __name__ == "__main__":
     content = {
-        'git_id' : 'cj@naver.com',
+        'git_id' : 'chan_j@naver.com',
         'git_diff': {
-            'a project': {
+            'b project': {
                 'b file': [
                     [
-                        'class:AClass:function12',
+                        'class:AClass:function1188888',
                         4,
                          16
                     ],
                     [
-                        'function:AClass:function2',
+                        'function:function44442',
                         4,
                         16
                     ]
+                ],
+                'f file': [
+                    [
+                        'function:edd',
+                        145,
+                        42
+                    ]
                 ]
-                # 'f file': [
-                #     [
-                #         'function:edd',
-                #         145,
-                #         42
-                #     ]
-                # ]
             }
         }
     }
