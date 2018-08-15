@@ -5,5 +5,8 @@ token.json
 venv/
 chat_bot_server_dir/bot_server_config.ini
 server_dir/server_config.ini
-*/__pycache__/
+__pycache__/
 INTERSPEECH-T-BRNN.pcl
+stanford-corenlp-full-2018-02-27/
+server_config.ini
+UCNLP/

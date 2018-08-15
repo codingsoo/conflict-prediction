@@ -11,6 +11,7 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
+from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import give_intent_return_message
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
@@ -162,7 +163,12 @@ def on_message(ws, message):
             content = tokenizer.tokenize(rand_text)
             for sentence in content:
                 if require_something_sentence(sentence):
-                    pass
+                    response = give_intent_return_message(sentence)
+                    if response != None:
+                        send_direct_message(msg["user"], response)
+                    else:
+                        response = chatbot.get_response(sentence)
+                        send_direct_message(msg["user"], response)
                 else:
                     try:
                         response = chatbot.get_response(sentence)
