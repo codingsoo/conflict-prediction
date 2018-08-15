@@ -1,15 +1,15 @@
 Direct conflict
 ---------------
-## Class user_git_diff
+- Class user_git_diff
 
- - variable : content, proj_name, user_name
- - function
+  - variable : content, proj_name, user_name
+  - function
     - get_proj_name : return project name
     - get_user_name : return user name
     - get_working_data : return working data
 
-## Class work_database
- - function
+- Class work_database
+  - function
     - **detect_direct_conflict** : detect direct conflict (input : project name, working list, user name)
     - **delete_user_data** : delete past user data from working table (input : user name)
     - **search_working_table** : search user's project name and file name in working table (input : project name, file list / output : working table row)
