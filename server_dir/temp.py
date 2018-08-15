@@ -1,4 +1,5 @@
 from server_dir.server_git import *
+from server_dir.indirect_work_database import *
 
 def temp(self, project_name, working_list, user_name):
     # 알람 카운트 2인것들 다 삭제
@@ -250,8 +251,6 @@ def temp(self, project_name, working_list, user_name):
             self.conn.rollback()
             print("ERROR : delete user conflict data")
 
-
-if __name__ == "__main__":
     content = {
         'git_id' : 'chan_j@naver.com',
         'git_diff': {
@@ -280,22 +279,48 @@ if __name__ == "__main__":
     }
 
 
+if __name__ == "__main__":
+
+    content = {
+        'git_id' : 'u2',
+        'git_diff': {
+            'a': {
+                'h': [
+                    [
+                        'i',
+                        4,
+                         16
+                    ]
+                ],
+            }
+        }
+    }
+
+
     temp = user_git_diff(content)
     print(temp.get_working_data())
 
-    # # file name, logic name
-    # temp_work = [["b", "c"], ["c", "d"]]
-    #
-    w_db = work_database()
-    #
-    w_db.delete_user_data(temp.get_user_name())
-    # #
-    w_db.detect_direct_conflict(temp.get_proj_name(),
-                                temp.get_working_data(),
-                                temp.get_user_name())
+    iw_db = indirect_work_database()
 
-    w_db.insert_user_data(temp.get_proj_name(),
-                            temp.get_working_data(),
-                            temp.get_user_name())
+    iw_db.detect_indirect_conflict(temp.get_proj_name(),
+                                   temp.get_working_data(),
+                                   temp.get_user_name())
 
-    w_db.close_db()
+######################
+    # temp = user_git_diff(content)
+    # print(temp.get_working_data())
+    # # # file name, logic name
+    # w_db = work_database()
+    # w_db.delete_user_data(temp.get_user_name())
+    # iw_db = indirect
+    # # w_db.detect_direct_conflict(temp.get_proj_name(),
+    # #                             temp.get_working_data(),
+    # #                             temp.get_user_name())
+    #
+    #
+    #
+    # w_db.insert_user_data(temp.get_proj_name(),
+    #                         temp.get_working_data(),
+    #                         temp.get_user_name())
+    #
+    # w_db.close_db()

@@ -193,8 +193,8 @@ def generate_func_class_dependency():
                     # class function dependency
                     if (file_line[0:4] == "    ") and (len(file_line) >= 4) and class_dep:
                         temp_list = []
-                        temp_list.append(temp_dir + '|' + class_name + '|' + def_name)
-                        temp_list.append(temp_dir + '|' + class_name)
+                        temp_list.append(temp_dir + '|' + 'class:' + class_name[6:] + ':' + def_name[4:])
+                        temp_list.append(temp_dir + '|' + 'class:' + class_name[6:])
                         content_dependency_list.append(temp_list)
                         all_dependency_list.append(temp_list)
                         break
@@ -225,9 +225,9 @@ def generate_func_class_dependency():
 
                                         # class dependency discriptor
                                         if class_dep:
-                                            temp_func_list.append(temp_dir + '|' + class_name)
+                                            temp_func_list.append(temp_dir + '|' + 'class:' + class_name[6:])
                                         else:
-                                            temp_func_list.append(temp_dir + '|' + def_name)
+                                            temp_func_list.append(temp_dir + '|' + 'function:' + def_name[4:])
 
                                         content_dependency_list.append(temp_func_list)
                                         all_dependency_list.append(temp_func_list)
@@ -457,6 +457,6 @@ def repository_name():
 
 if __name__ == '__main__':
     # Run Server
-    app.run(debug=True, host="127.0.0.1", port="5010")
+    # app.run(debug=True, host="127.0.0.1", port="5010")
 
-    # indirect_logic("j21chan/py_test.git")
+    indirect_logic("j21chan/py_test.git")

@@ -59,16 +59,6 @@ def git_diff():
     return "git_diff"
 
 
-@app.route("/indirect_info", methods = ["POST"])
-def graph_info():
-
-    content = request.get_json(silent=True)
-
-    print(content)
-
-    return "indirect_info"
-
-
 # Main
 if __name__ == "__main__":
 
