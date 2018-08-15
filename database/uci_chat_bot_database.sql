@@ -44,3 +44,14 @@ CREATE TABLE `user_table` (
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
+
+/* 5. create logic_dependency */
+CREATE TABLE `logic_dependency` (
+	`project_name` VARCHAR(50) NOT NULL,
+	`u` VARCHAR(50) NOT NULL,
+	`v` VARCHAR(50) NOT NULL,
+	`length` INT(11) NOT NULL DEFAULT '0'
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;

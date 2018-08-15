@@ -6,9 +6,9 @@ def load_graph( edge_lists ) :
     for u, v in edge_lists :
         if not u in adjacency_matrix :
             adjacency_matrix[u] = dict()
-        if not v in adjacency_matrix :
-            adjacency_matrix[v] = dict()
-        adjacency_matrix[v][u] = 1
+        # if not v in adjacency_matrix :
+        #     adjacency_matrix[v] = dict()
+        # adjacency_matrix[v][u] = 1
         adjacency_matrix[u][v] = 1
 
 def run_floyd() :
@@ -23,7 +23,7 @@ def run_floyd() :
             if cur_logic in visited_set :
                 continue
             visited_set.add(cur_logic)
-            for next_logic, value in adjacency_matrix[cur_logic].items():
+            for next_logic, value in adjacency_matrix.get(cur_logic, dict()).items():
                 if not next_logic in visited_set :
                     if dist_dict.get(next_logic, cur_value + value + 1) >= cur_value + value :
                         dist_dict[next_logic] = cur_value + value
@@ -38,8 +38,8 @@ def save_result() :
             ret_list.append([key1, key2, value2])
     return ret_list
 
-def run( edge_lists ) :
+def create_indirect_edge_list( edge_lists ) :
     adjacency_matrix = dict()
     load_graph( edge_lists )
     run_floyd()
-    save_result()
+    return save_result()

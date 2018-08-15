@@ -6,6 +6,8 @@ import subprocess
 import time
 from flask import Flask, request
 from pathlib import Path
+from python_floyd import create_indirect_edge_list
+import pymysql
 
 # Create Server
 app = Flask(__name__)
@@ -336,28 +338,6 @@ def postToServer(uri, json_data):
     return req
 
 
-# Send To Server with graph data [ [u, v], [u, v], [u, v] ]
-def sendGraphInfo(root_dir_temp, git_repository_name):
-
-    send_data = dict()
-
-    send_data['repository_name'] = git_repository_name
-
-    search_directory(root_dir_temp)
-
-    generate_file_dependency()
-
-    raw_list = generate_func_class_dependency()
-    graph_data = [ [os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list ]
-
-    print(graph_data)
-
-    send_data['indirect_data'] = graph_data
-
-    # Post To Server
-    postToServer("/indirect_info", send_data)
-
-
 # Git clone using user URL
 def gitCloneFromURL(git_url):
 
@@ -374,13 +354,93 @@ def gitCloneFromURL(git_url):
 # Remove exists dir
 def removeDir(root_dir_temp):
 
+    print(root_dir_temp)
+
     # windows
     cmd_line = 'rmdir /S /Q ' + root_dir_temp
 
     #linux
     # cmd_line = 'rm -rf ' + root_dir_temp
+
     subprocess.check_output(cmd_line, shell=True)
 
+def store_graph_to_db(repository_name, graph_list):
+
+    # get mysql database connection
+    conn = pymysql.connect(host     = '127.0.0.1',
+                           user     = 'root',
+                           password = '99189918',
+                           db       = 'uci_chat_bot',
+                           charset  = 'utf8')
+
+    # get cursor
+    cursor = conn.cursor()
+
+    try:
+        sql = "delete " \
+              "from logic_dependency " \
+              "where project_name = '%s' " % (repository_name)
+
+        print(sql)
+
+        # execute sql
+        cursor.execute(sql)
+        conn.commit()
+
+    except:
+        conn.rollback()
+        print("ERROR : insert graph info")
+
+    try:
+        sql = "insert into logic_dependency (project_name, u, v, length) values"
+        for temp_graph in graph_list:
+
+            # create sql
+            sql += " ('%s', '%s', '%s', %d), " %(repository_name, temp_graph[0].replace('\\', '/'), temp_graph[1].replace('\\', '/'), temp_graph[2])
+
+        sql = sql[:-2]
+        print(sql)
+
+        # execute sql
+        cursor.execute(sql)
+        conn.commit()
+
+    except:
+        conn.rollback()
+        print("ERROR : insert graph info")
+
+    cursor.close()
+    conn.close()
+
+    return
+
+
+def indirect_logic(git_repository_name):
+
+    # git clone from user git url
+    root_dir_temp = gitCloneFromURL("https://github.com/" + str(git_repository_name))
+    root_dir_temp = root_dir_temp[:len(root_dir_temp)-4]
+    print(root_dir_temp)
+
+    search_directory(root_dir_temp)
+
+    generate_file_dependency()
+
+    raw_list = generate_func_class_dependency()
+    graph_data = [[os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list]
+
+    print(graph_data)
+
+    edge_list = create_indirect_edge_list(graph_data)
+
+    print("edge_list: " + str(edge_list))
+
+    store_graph_to_db(git_repository_name, edge_list)
+
+    # Remove exist dir
+    removeDir(root_dir_temp)
+
+    return
 
 @app.route('/repository_name', methods = ["GET", "POST"])
 def repository_name():
@@ -390,15 +450,7 @@ def repository_name():
 
     git_repository_name = content['repository_name']
 
-    # git clone from user git url
-    root_dir_temp = gitCloneFromURL("https://github.com/" + str(git_repository_name))
-    print(root_dir_temp)
-
-    # Send to the server with Git dependency of function and class
-    sendGraphInfo(root_dir_temp, git_repository_name)
-
-    # Remove exist dir
-    removeDir(root_dir_temp)
+    indirect_logic(git_repository_name)
 
     return "Success repository name"
 
@@ -406,3 +458,5 @@ def repository_name():
 if __name__ == '__main__':
     # Run Server
     app.run(debug=True, host="127.0.0.1", port="5010")
+
+    # indirect_logic("j21chan/py_test.git")
