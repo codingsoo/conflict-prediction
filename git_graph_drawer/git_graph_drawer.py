@@ -26,23 +26,18 @@ file_content_list = dict()
 
 # Search All Directory And Append simple file name
 def search_directory(url):
-    print(url)
     repo = os.path.basename(url)
-    print("repo : " + str(repo))
     for (file_path, dir, files) in os.walk(url):
-        print(file_path, dir)
         for filename in files:
             ext = os.path.splitext(filename)[-1]
             if ext == '.py':
-                print("file_path.split(repo)[1] : " + str(repo + file_path[len(url):]))
-                # print("dir : " + str(dir))
                 sub_file_path = repo + file_path[len(url):]
-                print("%s/%s" % (sub_file_path, filename))
+                # print("%s/%s" % (sub_file_path, filename))
                 file_dir.append(os.path.join(sub_file_path,filename))
                 file_name.append(filename[:len(filename)-3])
 
-    print("file_dir: " + str(file_dir))
-    print("file_name : " + str(file_name))
+    # print("file_dir: " + str(file_dir))
+    # print("file_name : " + str(file_name))
 
 # File Content Data Reader
 def file_reader(url):
