@@ -3,6 +3,7 @@ import re
 import requests
 import json
 import subprocess
+import project_analyzer
 import time
 from flask import Flask, request
 from pathlib import Path
@@ -430,8 +431,7 @@ def indirect_logic(git_repository_name):
 
     generate_file_dependency()
 
-    raw_list = generate_func_class_dependency()
-    graph_data = [[os.path.normpath(u), os.path.normpath(v)] for (u, v) in raw_list]
+    graph_data = project_analyzer.run(root_dir_temp)
 
     print(graph_data)
 
