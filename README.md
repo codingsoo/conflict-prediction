@@ -81,6 +81,73 @@ We pass the git diff information to the server through the above
 <br>
 
 ## Algorithms of detect conflict
+### Preprocessing of Project
+1. Python 라이브러리중 [`ast`](https://docs.python.org/3/library/ast.html)를 이용해서 파이썬 파일을 다음과 같은 형태로 파싱 한다.
+   1. `type` : `Function`, `Class` 그리고 `Call` 타입으로 분류 되며 각각은 함수, 클래스 그리고 피호출자를 의미 한다.
+   2. `name` : 해당 타입의 이름을 저장한다.
+   3. `start`, `end` : 함수와 클래스의 경우 해당 로직(함수와 클래스)의 시작과 끝을 의미 한다.
+   4. `members` : 함수와 클래스안에 있는 `Function`, `Class` 그리고 `Call` 타입을 저장 한다.
+2. 파싱한 결과로 부터 각 로직간의 관계를 구해서 edge list 형태로 저장한다.
+3. edge list를 [Floyd-Warshall](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm)를 이용해 각 로직간의 거리를 측정 한다.
+### dd
+1. Use ['ast'] of Python libraries (https://docs.python.org/3/library/ast.html) to parse Python files in the following form:
+   1. Type: 'Function', 'Class', and 'Call' types are categorized, each representing a function, class, and investee.
+   2. 'name' : Store the name of the type.
+   3. 'start' and 'end' : means the beginning and end of the corresponding logic (function and class) for a function and class.
+   4. 'members' : Store 'Function', 'Class' and 'Call' types in functions and classes.
+2. Obtain the relationship between each logic from the parsing result and store it in the form of an edge list.
+3. Use the edge list [Floyd-Warshall](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm) to measure the distance between each logic.
+
+#### Result Of Parsing
+```javascript
+conflict_test/counting_triangle.py : [
+    {
+        "type": "Function", 
+        "name": "run",
+        "start": 5,
+        "end": 34,
+        "members": [
+            {
+                "type": "Call",
+                "id": "dict"
+            },
+            {
+                "type": "Call",
+                "id": "sqrt"
+            },
+            {
+                "type": "Call",
+                "id": "byeongal_math.SquareMatrix.SquareMatrix"
+            },
+            {
+                "type": "Call",
+                "id": "byeongal_math.SquareMatrix.SquareMatrix.set_value"
+            },
+            {
+                "type": "Call",
+                "id": "byeongal_math.SquareMatrix.SquareMatrix.set_value"
+            },
+            {
+                "type": "Call",
+                "id": "byeongal_math.SquareMatrix.SquareMatrix.get_lower"
+            },
+            {
+                "type": "Call",
+                "id": "byeongal_math.SquareMatrix.SquareMatrix.get_upper"
+            },
+            {
+                "type": "Call",
+                "id": "print"
+            }
+        ]
+    },
+    {
+        "type": "Call",
+        "id": "run"
+    }
+]
+```
+
 
 ### Algorithm of detect direct conflict
 1. 알람 카운트가 2 이상이고 24시간 이상인 다이렉트 컨플릭트 리스트를 데이터베이스에서 삭제한다.
