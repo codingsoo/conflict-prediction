@@ -2,16 +2,27 @@
 
 ## Definition of conflict
 ### Definition of direct conflict
-다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 같은 파일과 같은 코드 부분을 수정할 때 발생하는 컨플릭트를 말한다.<br>
-Direct conflict is a conflict that occurs when two users (programmers) modify the same code part of the same file in a project stored in github 
+다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 같은 파일을 수정할 때 발생하는 컨플릭트를 말한다.
+다이렉트 컨플릭트의 종류는 같은 함수를 수정하는 경우, 같은 클래스의 같은 함수를 수정하는 경우, 같은 클래스를 수정하는 경우, 같은 파일 안에서 수정하는 경우 총 3가지로 나뉜다. 
+우리는 같은 함수를 수정하는 경우와 같은 클래스의 같은 함수를 수정하는 경우를 위험도가 가장 높은 상황으로 정의했다. 그다음으로 같은 클래스를 수정하는 경우를 두번째로 위험도가 높은 상황으로 정의했다.
+마지막으로 같은 파일에서만 수정하는 경우에는 가장 낮은 위험도로 정의했다.<br>
 
+Direct conflict is a conflict that occurs when two users (programmers) modify the same file in a project file stored in the destination hub.
+The types of direct conflicts are divided into three types: modification of the same function, modification of the same function of the same class, modification of the same class, and modification of the same file.
+We have defined the highest risk situation when modifying the same function, such as modifying the same function of the same class. Secondly, if you modify the same class, you have defined it as a high-risk situation.
+Lastly, if you modify only the same file, you have defined the lowest risk.
 <br>
 
 <br>
 
 ### Definition of indirect conflict
-인다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 디펜던시를 갖는 파일을 서로 수정할 때 발생하는 컨플릭트를 말한다. 디펜던시를 갖는 파일이란 한 파일에서 다른 파일의 모듈을 import 할 때 두개의 파일 사이에서 생기는 관계를 말한다.<br>
-Indirect Conflict is a conflict that occurs when two users (programmers) modify files with dependencies among the files in a project stored in the destination hub. File dependency refers to the relationship between two files when importing modules from one file to 
+인다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 디펜던시를 갖는 함수나 클래스를 서로 수정할 때 발생하는 컨플릭트를 말한다. 
+디펜던시를 갖는 함수나 클래스란 한 함수나 클래스에서 다른 함수나 클래스의 모듈을 import 할 때 두 개의 함수나 클래스 사이에서 생기는 관계를 말한다.
+우리는 함수와 클래스간의 관계를 그래프로 그리고, 노드 간의 길이를 계산하는 알고리즘을 이용해서 길이가 높아지면 위험도가 낮아지고 길이가 낮아지면 위험도가 높아지는 것으로 정의했다.<br>
+
+Indirect Conflict is a conflict that occurs when two users (programmers) modify a function or class with dependencies among files in a project stored in the hub.
+A function or class with a dependency refers to the relationship between two functions or classes when importing a function or class module from one function or class.
+We have defined a graph of the relationship between a function and a class and an algorithm that computes the length between nodes to increase the risk as the length increases and the risk increases as the length decreases.
 
 <br>
 
