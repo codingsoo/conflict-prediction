@@ -18,7 +18,6 @@ port = "5009"
 
 # File definition
 # os.path.join(os.getcwd(), 'UCI_chatbot_Server')
-root_dir = "C:\\Users\\jc\\Desktop\\py_test"
 file_dir = []
 file_name = []
 
@@ -38,8 +37,8 @@ def search_directory(url):
                 file_dir.append(os.path.join(sub_file_path,filename))
                 file_name.append(filename[:len(filename)-3])
 
-    # print("file_dir: " + str(file_dir))
-    # print("file_name : " + str(file_name))
+    print("file_dir: " + str(file_dir))
+    print("file_name : " + str(file_name))
 
 # File Content Data Reader
 def file_reader(url):
@@ -221,7 +220,8 @@ def generate_func_class_dependency():
                                     # Find function dependency
                                     if find_flag > 0:
                                         temp_func_list = []
-                                        temp_func_list.append(t_dir + '|def ' + temp_func_name)
+                                        print("temp_func_name : " +str(temp_func_name))
+                                        temp_func_list.append(t_dir + '|function:' + temp_func_name)
 
                                         # class dependency discriptor
                                         if class_dep:
@@ -252,8 +252,12 @@ def generate_func_class_dependency():
                                     # Find Class dependency
                                     if find_flag > 0:
                                         temp_func_list = []
-                                        temp_func_list.append(t_dir + '|def ' + temp_class_name)
-                                        temp_func_list.append(temp_dir + '|' + class_name)
+
+                                        print("temp_class_name : " +str(temp_class_name))
+                                        print("class_name : " + str(class_name))
+
+                                        temp_func_list.append(t_dir + '|class:' + temp_class_name)
+                                        temp_func_list.append(temp_dir + '|class:' + class_name)
                                         content_dependency_list.append(temp_func_list)
                                         all_dependency_list.append(temp_func_list)
                                         break

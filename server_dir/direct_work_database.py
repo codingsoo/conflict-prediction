@@ -320,6 +320,8 @@ class work_database:
     def update_first_best_conflict_list(self, best_conflict_list):
 
         # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
+        print("#### update first best conflict list #####")
+        print(best_conflict_list)
         for temp_best in best_conflict_list:
             self.insert_conflict_data(project_name=temp_best[1],
                                       file_name=temp_best[2],
