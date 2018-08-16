@@ -18,21 +18,21 @@ Indirect Conflict is a conflict that occurs when two users (programmers) modify 
 ## Structure of conflict detector
 ### Platform architecture
 <div align="center">
-<img src="images/uci_st.png" width="70%" height="70%">
+<img src="images/uci_st.png" width="100%" height="100%">
 </div>
 
 <br>
 
 ### Class diagram 
 <div align="center">
-<img src="images/uml_diagram.JPG" width="70%" height="70%">
+<img src="images/uml_diagram.JPG" width="100%" height="100%">
 </div>
 
 <br>
 
 ### Sequence diagram 
 <div align="center">
-<img src="images/uci_seq1.JPG" width="70%" height="70%">
+<img src="images/uci_seq1.JPG" width="100%" height="100%">
 </div>
 
 <br>
