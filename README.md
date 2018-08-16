@@ -7,6 +7,14 @@ Direct conflict is a conflict that occurs when two users (programmers) modify th
 
 <br>
 
+<br>
+
+### Definition of indirect conflict
+인다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 디펜던시를 갖는 파일을 서로 수정할 때 발생하는 컨플릭트를 말한다. 디펜던시를 갖는 파일이란 한 파일에서 다른 파일의 모듈을 import 할 때 두개의 파일 사이에서 생기는 관계를 말한다.<br>
+Indirect Conflict is a conflict that occurs when two users (programmers) modify files with dependencies among the files in a project stored in the destination hub. File dependency refers to the relationship between two files when importing modules from one file to 
+
+<br>
+
 ## Structure of conflict detector
 ### Platform architecture
 <div align="center">
@@ -26,12 +34,6 @@ Direct conflict is a conflict that occurs when two users (programmers) modify th
 <div align="center">
 <img src="images/uci_seq1.JPG" width="70%" height="70%">
 </div>
-
-<br>
-
-### Definition of indirect conflict
-인다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 디펜던시를 갖는 파일을 서로 수정할 때 발생하는 컨플릭트를 말한다. 디펜던시를 갖는 파일이란 한 파일에서 다른 파일의 모듈을 import 할 때 두개의 파일 사이에서 생기는 관계를 말한다.<br>
-Indirect Conflict is a conflict that occurs when two users (programmers) modify files with dependencies among the files in a project stored in the destination hub. File dependency refers to the relationship between two files when importing modules from one file to 
 
 <br>
 
