@@ -23,7 +23,7 @@ def git_diff_logic(content):
     user_data = user_git_diff(content)
 
     # Create direct and indirect database connection
-    w_db = work_database()
+    w_db = direct_work_database()
     iw_db = indirect_work_database()
 
     # Delete current user data
@@ -48,8 +48,6 @@ def git_diff_logic(content):
     w_db.close_db()
     iw_db.close_db()
     return
-
-
 
 
 def convert_data(content) :

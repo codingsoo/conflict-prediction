@@ -3,7 +3,7 @@ import datetime as d
 from server_dir.slack_message_sender import *
 from server_dir.conflict_flag_enum import Conflict_flag
 
-class work_database:
+class direct_work_database:
 
     # Constructor
     def __init__(self):
@@ -37,7 +37,7 @@ class work_database:
 
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
-        self.delete_conflict_list()
+        self.delete_direct_conflict_list()
 
         file_conflict_list = self.search_working_table(project_name, working_list)
 
@@ -46,7 +46,7 @@ class work_database:
 
             print("\n#### Direct Conflict !!! ####")
 
-            already_conflict_list = self.search_already_conflict_table(project_name, file_conflict_list, working_list, user_name)
+            already_conflict_list = self.search_already_direct_conflict_table(project_name, file_conflict_list, working_list, user_name)
 
             # Already conflicted
             if(already_conflict_list != []):
@@ -79,10 +79,10 @@ class work_database:
 
 
     # Delete conflict list
-    def delete_conflict_list(self):
+    def delete_direct_conflict_list(self):
         try:
             sql = "delete " \
-                  "from conflict_table " \
+                  "from direct_conflict_table " \
                   "where alert_count >= 2 " \
                   "and TIMEDIFF(now(),log_time) > 24"
             print(sql)
@@ -127,7 +127,7 @@ class work_database:
         return all_row_list
 
 
-    def search_already_conflict_table(self, project_name, conflict_list, working_list, user_name):
+    def search_already_direct_conflict_table(self, project_name, conflict_list, working_list, user_name):
         all_row_list = list()
 
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
@@ -138,7 +138,7 @@ class work_database:
                 raw_list = list()
                 try:
                     sql = "select * " \
-                          "from conflict_table " \
+                          "from direct_conflict_table " \
                           "where project_name = '%s' " \
                           "and file_name = '%s' " \
                           "and user1_name = '%s' " \
@@ -345,7 +345,7 @@ class work_database:
         raw_list_temp = list()
         try:
             sql = "select * " \
-                  "from conflict_table " \
+                  "from direct_conflict_table " \
                   "where project_name = '%s' " \
                   "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
             print(sql)
@@ -377,7 +377,7 @@ class work_database:
 
         try:
             sql = "delete " \
-                  "from conflict_table " \
+                  "from direct_conflict_table " \
                   "where project_name = '%s' " \
                   "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
             print(sql)
@@ -408,7 +408,7 @@ class work_database:
     # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
         try:
-            sql1 = "insert into conflict_table (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity) " \
+            sql1 = "insert into direct_conflict_table (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity) " \
                    "value ('%s', '%s', '%s', '%s', '%s', '%s', %d)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity)
             self.cursor.execute(sql1)
             self.conn.commit()
@@ -422,7 +422,7 @@ class work_database:
     # update conflict data
     def update_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
         try:
-            sql = "update conflict_table " \
+            sql = "update direct_conflict_table " \
                   "set logic1_name = '%s', logic2_name = '%s', severity = %d " \
                   "where project_name = '%s' " \
                   "and file_name = '%s' " \
@@ -435,13 +435,13 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : update direct conflict_table")
+            print("ERROR : update direct direct_conflict_table")
         return
     
 
     def increase_alert_count(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name):
         try:
-            sql = "update conflict_table " \
+            sql = "update direct_conflict_table " \
                   "set alert_count = alert_count + 1 " \
                   "where project_name = '%s' " \
                   "and file_name = '%s' " \
