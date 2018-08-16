@@ -3,12 +3,12 @@
 ## Definition of conflict
 ### Definition of direct conflict
 다이렉트 컨플릭트란 두명의 사용자(프로그래머)가 깃허브에 저장된 프로젝트의 파일 중에서 같은 파일을 수정할 때 발생하는 컨플릭트를 말한다.
-다이렉트 컨플릭트의 종류는 같은 함수를 수정하는 경우, 같은 클래스의 같은 함수를 수정하는 경우, 같은 클래스를 수정하는 경우, 같은 파일 안에서 수정하는 경우 총 3가지로 나뉜다. 
+다이렉트 컨플릭트의 종류는 같은 함수를 수정하는 경우, 같은 클래스의 같은 함수를 수정하는 경우, 같은 클래스를 수정하는 경우, 같은 파일 안에서 수정하는 경우 총 3가지로 구성된다. 
 우리는 같은 함수를 수정하는 경우와 같은 클래스의 같은 함수를 수정하는 경우를 위험도가 가장 높은 상황으로 정의했다. 그다음으로 같은 클래스를 수정하는 경우를 두번째로 위험도가 높은 상황으로 정의했다.
 마지막으로 같은 파일에서만 수정하는 경우에는 가장 낮은 위험도로 정의했다.<br>
 
 Direct conflict is a conflict that occurs when two users (programmers) modify the same file in a project file stored in the destination hub.
-The types of direct conflicts are divided into three types: modification of the same function, modification of the same function of the same class, modification of the same class, and modification of the same file.
+The types of direct conflicts consist of three things: modify the same function, modify the same function of the same class, modify the same class, modify it in the same file.
 We have defined the highest risk situation when modifying the same function, such as modifying the same function of the same class. Secondly, if you modify the same class, you have defined it as a high-risk situation.
 Lastly, if you modify only the same file, you have defined the lowest risk.
 <br>
