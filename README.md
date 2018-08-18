@@ -212,57 +212,40 @@ conflict_test/counting_triangle.py : [
 <br>
 
 ### Algorithm of detect indirect conflict
+1. 알람 카운트가 2 이상이고 24시간 이상인 인다이렉트 컨플릭트 리스트를 데이터베이스에서 삭제한다.
+2. 데이터베이스의 작업 테이블에서 현재 유저의 프로젝트 이름과 같은 다른 유저가 있는지 확인한다.
+3. 현재 유저의 프로젝트 이름, 현재 유저의 작업 내역과 프로젝트 이름이 같은 다른 유저의 작업 내역을 이용해서 데이터베이스의 logic dependency 테이블에 검색을 한다.
+    1. 현재 유저의 작업 내역과 다른 유저의 작업이 데이터베이스의 logic dependency 테이블에 의해서 연결이 됨 (indirect conflict)
+        1. 현재 인다이렉트 컨플릭트 정보를 이용해서 데이터베이스의 인다이렉트 컨플릭트 테이블을 조사한다.
+            1. 이미 인다이렉트 컨플릭트 정보가 존재함.
+                1. 현재 인다이렉트 컨플릭트 정보의 알람 카운트가 1이고 30분 이상일 때, 사용자에게 인다이렉트 컨플릭트 정보를 알려준다.
+                2. 현재 인다이렉트 컨플릭트 정보를 데이터베이스에 업데이트한다.
+                
+            2. 인다이렉트 정보가 존재하지 않음. (First indirect conflict)
+                1. 사용자에게 인다이렉트 컨플릭트 정보를 알려준다.
+                2. 현재 인다이렉트 컨플릭트 정보를 데이터베이스에 업데이트한다.
+                
+    2. 현재 유저의 작업 내역과 다른 유저의 작업이 데이터베이스의 logic dependency 테이블에 의해서 연결이 안 됨 (non-indirect conflict)
+        1. 인다이렉트 테이블에 현재 유저 정보가 있는지 확인한다.
+        2. 인다이렉트 테이블에 현재 유저 정보가 있음
+            1. 사용자들에게 인다이렉트 컨플릭트가 해결됬다는 것을 알려준다.
+        3. 인다이렉트 테이블에서 현재 유저 정보의 데이터를 삭제한다.
+        
+1. Delete the direct conflict list with an alarm count of 2 or more and 24 hours or more from the database.
+2. Verify that there is another user in the work table of the database, such as the current user's project name.
+3. Search the database's logic dependency table using the current user's project name, current user's job history and project name, and other user's job history.
+    1. The current user's work and other user's jobs are indirectly conflicted by the database's dependency table.
+        1. Investigate the in-direct conflict table of the database using the current direct conflict information.
+            1. In-direct conflict information already exists.
+                1. When the alarm count of current direct conflict information is 1 and is more than 30 minutes, it informs the user of in-direct conflict information.
+                2. Update the current direct conflict information to the database.
 
-1.	알람 카운트가 2 이상이고 24시간 이상인 인다이렉트 컨플릭트 리스트를 데이터베이스에서 삭제한다.
-2.	데이터베이스의 작업 테이블에서 현재 유저의 프로젝트 이름과 같은 다른 유저가 있는지 확인한다.
-3.	현재 유저의 프로젝트 이름, 현재 유저의 작업 내역과 프로젝트 이름이 같은 다른 유저의 작업 내역을 이용해서 데이터베이스의 logic dependency 테이블에 검색을 한다.
-
-	1.	현재 유저의 작업 내역과 다른 유저의 작업이 데이터베이스의 logic dependency 테이블에 의해서 연결이 됨 (indirect conflict)
-
-		1.	현재 인다이렉트 컨플릭트 정보를 이용해서 데이터베이스의 인다이렉트 컨플릭트 테이블을 조사한다.
-
-			1.	이미 인다이렉트 컨플릭트 정보가 존재함.
-
-				1.	현재 인다이렉트 컨플릭트 정보의 알람 카운트가 1이고 30분 이상일 때, 사용자에게 인다이렉트 컨플릭트 정보를 알려준다.
-				2.	현재 인다이렉트 컨플릭트 정보를 데이터베이스에 업데이트한다.
-
-			2.	인다이렉트 정보가 존재하지 않음. (First indirect conflict)
-
-				1.	사용자에게 인다이렉트 컨플릭트 정보를 알려준다.
-				2.	현재 인다이렉트 컨플릭트 정보를 데이터베이스에 업데이트한다.
-
-	2.	현재 유저의 작업 내역과 다른 유저의 작업이 데이터베이스의 logic dependency 테이블에 의해서 연결이 안 됨 (non-indirect conflict)
-
-		1.	인다이렉트 테이블에 현재 유저 정보가 있는지 확인한다.
-		2.	인다이렉트 테이블에 현재 유저 정보가 있음
-			1.	사용자들에게 인다이렉트 컨플릭트가 해결됬다는 것을 알려준다.
-		3.	인다이렉트 테이블에서 현재 유저 정보의 데이터를 삭제한다.
-
-4.	Delete the direct conflict list with an alarm count of 2 or more and 24 hours or more from the database.
-
-5.	Verify that there is another user in the work table of the database, such as the current user's project name.
-
-6.	Search the database's logic dependency table using the current user's project name, current user's job history and project name, and other user's job history.
-
-	1.	The current user's work and other user's jobs are indirectly conflicted by the database's dependency table.
-
-		1.	Investigate the in-direct conflict table of the database using the current direct conflict information.
-
-			1.	In-direct conflict information already exists.
-
-				1.	When the alarm count of current direct conflict information is 1 and is more than 30 minutes, it informs the user of in-direct conflict information.
-				2.	Update the current direct conflict information to the database.
-
-			2.	In direct information does not exist. (First indirect conflict)
-
-				1.	Inform the user of the in-direct conflict information.
-				2.	Update the current direct conflict information to the database.
-
-	2.	The current user's job history and other user's jobs are not linked by the database's dependency table (non-indirect conflict)
-
-		1.	Make sure that the direct table contains the current user information.
-		2.	Direct table has current user information
-			1.	Tell the users that the Direct Conflict has been resolved.
-		3.	Delete the current user information data from the direct table.
-
-<br>
+            2. In direct information does not exist. (First indirect conflict)
+                1. Inform the user of the in-direct conflict information.
+                2. Update the current direct conflict information to the database.
+                
+    2. The current user's job history and other user's jobs are not linked by the database's dependency table (non-indirect conflict)
+        1. Make sure that the direct table contains the current user information.
+        2. Direct table has current user information
+            1. Tell the users that the Direct Conflict has been resolved.
+        3. Delete the current user information data from the direct table.

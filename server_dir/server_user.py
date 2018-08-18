@@ -5,6 +5,7 @@ import json
 import random
 import os
 from pathlib import Path
+from user_data import user_database
 
 
 """
@@ -16,29 +17,48 @@ return      : True / Random Number
 def user_search_logic(content, user_git_id_list):
 
     git_id = str(content['user_email'])
-
     print(git_id)
 
-    for email in user_git_id_list.keys():
-        if git_id == str(email) and type(user_git_id_list[email]) != int:
-            return "True"
+    u_db = user_database()
 
-    # Generate Random Number
-    rand_num = create_random_number()
+    if(u_db.search_user(git_id)):
+        # Already Sign-in
+        return "True"
 
-    # Create JSON User Data
-    json_dict = dict()
-    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as make_file:
-        json_dict = json.load(make_file)
+    else:
+        # Process of Sign-in
 
-    json_dict[git_id] = rand_num
+        # Generate Random Number
+        rand_num = create_random_number()
 
-    # Save User Data Json file
-    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file:
-        json.dump(json_dict, make_file)
+        # Insert git id and random number
+        u_db.insert_git_id_random_number(git_id, rand_num)
 
-    # Return Ture or Random Number
-    return str(rand_num)
+        return str(rand_num)
+
+    #########################################################################################
+    # New Logic
+    # Old Logic
+    # for email in user_git_id_list.keys():
+    #     if git_id == str(email) and type(user_git_id_list[email]) != int:
+    #         return "True"
+    #
+    # # Generate Random Number
+    # rand_num = create_random_number()
+    #
+    # # Create JSON User Data
+    # json_dict = dict()
+    # with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as make_file:
+    #     json_dict = json.load(make_file)
+    #
+    # json_dict[git_id] = rand_num
+    #
+    # # Save User Data Json file
+    # with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'w') as make_file:
+    #     json.dump(json_dict, make_file)
+    #
+    # # Return Ture or Random Number
+    # return str(rand_num)
 
 
 """

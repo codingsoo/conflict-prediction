@@ -427,9 +427,9 @@ def indirect_logic(git_repository_name):
     root_dir_temp = root_dir_temp[:len(root_dir_temp)-4]
     print(root_dir_temp)
 
-    search_directory(root_dir_temp)
+    # search_directory(root_dir_temp)
 
-    generate_file_dependency()
+    # generate_file_dependency()
 
     graph_data = project_analyzer.run(root_dir_temp)
 
@@ -461,6 +461,6 @@ def repository_name():
 
 if __name__ == '__main__':
     # Run Server
-    # app.run(debug=True, host="127.0.0.1", port="5010")
+    app.run(debug=True, host="127.0.0.1", port="5010")
 
-    indirect_logic("j21chan/py_test.git")
+    # indirect_logic("j21chan/py_test.git")
