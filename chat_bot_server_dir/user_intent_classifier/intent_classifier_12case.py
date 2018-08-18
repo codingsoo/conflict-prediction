@@ -6,14 +6,10 @@ from stanfordcorenlp import StanfordCoreNLP
 from slacker import Slacker
 from nltk.corpus import wordnet
 from chat_bot_server_dir.project_parser import project_parser
-<<<<<<< Updated upstream
 from pathlib import Path
-
-=======
 import chat_bot_server_dir.user_intent_classifier.intent_classifier as intent_classifier
->>>>>>> Stashed changes
 
-#nltk.download('wordnet')
+nltk.download('wordnet')
 
 give_thanks = ["Thank you! Have a good day!", "That's good! Thank you!", "That is great! Thank you!", "Nice! Thank you!", "Ok. Thank you!"]
 ignore_file = ["Okay! I'll ignore that file", "Okay! Ignore list appended!", "Okay! Ignore file registered!", "Good! I'll ignore that file", "Good! Ignore list appened!", "Good! Ignore file registered!"]
@@ -77,7 +73,6 @@ def give_intent_return_message(sentence):
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)
 
-<<<<<<< Updated upstream
     dependency_catch_list = ["dobj", "nmod", "xcomp", "nsubj"]
 
     print ('Tokenize:', word_tokenize_list)
@@ -135,72 +130,71 @@ sentence10 = "Can you send this message to general channel?"#Announce
 sentence11 = "Can you send direct message to user2 that we should solve the conflict in File1.py?" #Message
 
 print(give_intent_return_message(sentence7))
-=======
-    print('Tokenize:', word_tokenize_list)
-    print('Part of Speech:', pos_tag_list)
-    print('Constituency Parsing:', parse_list)
-    print('Dependency Parsing:', dependency_parse_list)
+# print('Tokenize:', word_tokenize_list)
+# print('Part of Speech:', pos_tag_list)
+# print('Constituency Parsing:', parse_list)
+# print('Dependency Parsing:', dependency_parse_list)
 
-    # Case of question
-    if intent_classifier.require_something_sentence(sentence)==1:
-        # Intent words for analyzing the sentence
-        intent_word_list = []
-        # Questions starting with 5 w and 1 h (Direct Questions)
-        if "SBARQ" in parse_list:
-            # dependency_catch_list = ["advmod" , "nsubj", "dobj"]
-            for dependency_pair in dependency_parse_list:
-                if dependency_pair[0] == 'advmod':
-                    pair_set1 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
-                    intent_word_list.append(pair_set1)
-                if dependency_pair[0] == 'nsubj':
-                    pair_set2 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
-                    pair_set3 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
-                    intent_word_list.append(pair_set2)
-                    intent_word_list.append(pair_set3)
-                if dependency_pair[0] == 'dobj':
-                    pair_set4 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
-                    intent_word_list.append(pair_set4)
-                else:
-                    continue
-        # Questions starting with verb or modal (Inverted/Indirect Questions)
-        elif "SQ" in parse_list:
-            # dependency_catch_list = ["nsubj", "dobj"]
-            message_hint_words = {"chat", "talk", "tell", "speak", "say"}
-            for dependency_pair in dependency_parse_list:
-                # when the user wants to send message to other users
-                if dependency_pair[0] == 'nsubj' and word_tokenize_list[dependency_pair[1]-1] in message_hint_words:
-                    pass
-                    # message_sentence = 'after that'
-                if dependency_pair[0] == 'nsubj':
-                    pair_set1 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
-                    pair_set2 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
-                    intent_word_list.append(pair_set1)
-                    intent_word_list.append(pair_set2)
-                if dependency_pair[0] == 'dobj':
-                    pair_set3 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
-                    intent_word_list.append(pair_set3)
-                else:
-                    continue
+# Case of question
+# if intent_classifier.require_something_sentence(sentence)==1:
+#     # Intent words for analyzing the sentence
+#     intent_word_list = []
+#     # Questions starting with 5 w and 1 h (Direct Questions)
+#     if "SBARQ" in parse_list:
+#         # dependency_catch_list = ["advmod" , "nsubj", "dobj"]
+#         for dependency_pair in dependency_parse_list:
+#             if dependency_pair[0] == 'advmod':
+#                 pair_set1 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
+#                 intent_word_list.append(pair_set1)
+#             if dependency_pair[0] == 'nsubj':
+#                 pair_set2 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
+#                 pair_set3 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
+#                 intent_word_list.append(pair_set2)
+#                 intent_word_list.append(pair_set3)
+#             if dependency_pair[0] == 'dobj':
+#                 pair_set4 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
+#                 intent_word_list.append(pair_set4)
+#             else:
+#                 continue
+#     # Questions starting with verb or modal (Inverted/Indirect Questions)
+#     elif "SQ" in parse_list:
+#         # dependency_catch_list = ["nsubj", "dobj"]
+#         message_hint_words = {"chat", "talk", "tell", "speak", "say"}
+#         for dependency_pair in dependency_parse_list:
+#             # when the user wants to send message to other users
+#             if dependency_pair[0] == 'nsubj' and word_tokenize_list[dependency_pair[1]-1] in message_hint_words:
+#                 pass
+#                 # message_sentence = 'after that'
+#             if dependency_pair[0] == 'nsubj':
+#                 pair_set1 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
+#                 pair_set2 = find_syn(lemma(word_tokenize_list[dependency_pair[1] - 1]))
+#                 intent_word_list.append(pair_set1)
+#                 intent_word_list.append(pair_set2)
+#             if dependency_pair[0] == 'dobj':
+#                 pair_set3 = find_syn(lemma(word_tokenize_list[dependency_pair[2] - 1]))
+#                 intent_word_list.append(pair_set3)
+#             else:
+#                 continue
 
-    # for dependency_pair in dependency_parse_list:
-    #     if dependency_pair[0] in dependency_catch_list:
-    #         pair_set1 = find_syn(word_tokenize_list[dependency_pair[1] - 1])
-    #         pair_set2 = find_syn(word_tokenize_list[dependency_pair[2] - 1])
-    #         if "solve" in pair_set1 or "solve" in pair_set2:
-    #             return give_thanks[random.randint(0, len(give_thanks)-1)]
-    #         elif "ignore" in pair_set1 or "ignore" in pair_set2:
-    #             return ignore_file[random.randint(0, len(ignore_file)-1)]
-    #         elif "location" in pair_set1 or "location" in pair_set2:
-    #             return "oh that location is function_parsing_test 16 line."
-    #         elif "conflict" in pair_set1 or "conflict" in pair_set2:
-    #             return "You and jc's conflict size is 1."
-    #         elif ("size" in pair_set1 or "size" in pair_set2) and "working" in sentence:
-    #             return "jc's working size is 1."
-    #         elif ("recommend" in pair_set1 or "recommend" in pair_set2) and "conflict" in sentence:
-    #             return "You edited 1 line, but js worked 3line. I think you should stop."
-    #         elif "status" in pair_set1 or "status" in pair_set2:
-    #             return "jc is working on function_parsing_test 16 line."
+# for dependency_pair in dependency_parse_list:
+#     if dependency_pair[0] in dependency_catch_list:
+#         pair_set1 = find_syn(word_tokenize_list[dependency_pair[1] - 1])
+#         pair_set2 = find_syn(word_tokenize_list[dependency_pair[2] - 1])
+#         if "solve" in pair_set1 or "solve" in pair_set2:
+#             return give_thanks[random.randint(0, len(give_thanks)-1)]
+#         elif "ignore" in pair_set1 or "ignore" in pair_set2:
+#             return ignore_file[random.randint(0, len(ignore_file)-1)]
+#         elif "location" in pair_set1 or "location" in pair_set2:
+#             return "oh that location is function_parsing_test 16 line."
+#         elif "conflict" in pair_set1 or "conflict" in pair_set2:
+#             return "You and jc's conflict size is 1."
+#         elif ("size" in pair_set1 or "size" in pair_set2) and "working" in sentence:
+#             return "jc's working size is 1."
+#         elif ("recommend" in pair_set1 or "recommend" in pair_set2) and "conflict" in sentence:
+#             return "You edited 1 line, but js worked 3line. I think you should stop."
+#         elif "status" in pair_set1 or "status" in pair_set2:
+#             return "jc is working on function_parsing_test 16 line."
 
-    nlp.close()
+# nlp.close()
 
 give_intent_return_message("Can you talk to user2 that I will do it?")

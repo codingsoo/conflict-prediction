@@ -6,8 +6,6 @@ import random
 import _thread
 import os
 import configparser
-from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
@@ -15,17 +13,8 @@ from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import 
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
-import nltk.data
+import nltk
 from server_dir.user_database import user_database
-
-chatterbot = ChatBot("Training Example")
-chatterbot.set_trainer(ChatterBotCorpusTrainer)
-
-chatterbot.train(
-    "chatterbot.corpus.english.greetings",
-    "chatterbot.corpus.english.conversations"
-)
-chatbot = ChatBot("Ron Obvious")
 
 def load_token() :
     if not os.path.isfile("bot_server_config.ini") :
@@ -206,9 +195,9 @@ approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","
 notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
-
+nltk.download('punkt')
+nltk.download('wordnet')
 model_list = model_loading()
-# nltk.download('punkt')
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 res = slack.auth.test().body
