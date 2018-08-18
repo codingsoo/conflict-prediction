@@ -147,7 +147,6 @@ def verifying_user() :
     if(user_flag.isdigit()):
         print("Enter Random Number to Slack : " + user_flag)
         input("Input Any Key (If you entered random number to Slack): ")
-        post_to_server("/sync_user_data", "sync")
         print("Success")
 
 def send_to_server_git_data() :

@@ -55,3 +55,19 @@ class user_database:
         except:
             self.conn.rollback()
             print("ERROR : insert git id random number")
+
+
+    def set_slack_id_code(self, random_number, slack_id, slack_code):
+        try:
+            # create sql
+            sql = "update user_table " \
+                  "set slack_id = '%s', slack_code = '%s' " \
+                  "where slack_id = '%s' " % (slack_id, slack_code, random_number)
+
+            # execute sql
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : set slack id code")
