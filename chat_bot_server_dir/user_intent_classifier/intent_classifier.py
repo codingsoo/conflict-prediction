@@ -12,22 +12,23 @@ def is_command(pos_tag_list):
             return False
 
 def is_desire(pos_tag_list):
-    desire_list = ["want", "hope", "wish", "desire"]
+    desire_list = ["want", "hope", "wish", "desire", "like"] # + to부정사?
+    ignore_pos_list = ["PRP", "NN","NNP", "RB", ",","!",'.']
     for pos_tag in pos_tag_list:
-        print(pos_tag[0],pos_tag[1])
-        if pos_tag[1] == "PRP" or pos_tag[1] == "NNP" or pos_tag[1] == "RB":
-            pass
-        elif pos_tag[0] in desire_list :
+        #print(pos_tag[0],pos_tag[1])
+        if pos_tag[1] in ignore_pos_list: #do : VBP
+            continue
+        elif pos_tag[0] in desire_list:
             return True
         else:
             return False
 
 def is_suggestion(pos_tag_list):
-    suggestion_noun_list = ["Sayme", "sayme", "You", "you"]
+    suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME",".",","]
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             continue
-        elif pos_tag[1] == "MD" :
+        elif pos_tag[1] == "MD":
             return True
         else:
             return False
@@ -37,14 +38,24 @@ def is_question(parse_list):
         return True
     return False
 
+#please를 잘 못잡음 - 전처리해줌
 def require_something_sentence(sentence):
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("Please ", '')
+    sentence = sentence.replace("I think ", '') #I think 이외?
+    sentence = sentence.replace("have to", "should")
+    sentence = sentence.replace("don't have to", "shouldn\'t")
+    sentence = sentence.replace("do not have to", "shouldn\'t")
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)
 
-    if(is_command(pos_tag_list) or is_desire(pos_tag_list) or is_question(parse_list) or is_suggestion(pos_tag_list)):
-        nlp.close()
-        return True
-    nlp.close()
-    return False
+    if is_question(parse_list):
+        return 1
+    elif is_command(pos_tag_list):
+        return 2
+    elif is_suggestion(pos_tag_list):
+        return 3
+    elif is_desire(pos_tag_list):
+        return 4
+    else:
+        return 5
