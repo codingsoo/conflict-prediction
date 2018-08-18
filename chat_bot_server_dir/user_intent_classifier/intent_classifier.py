@@ -14,6 +14,9 @@ def is_command(pos_tag_list):
 def is_desire(pos_tag_list):
     desire_list = ["want", "hope", "wish", "desire", "like"] # + to부정사?
     ignore_pos_list = ["PRP", "NN","NNP", "RB", ",","!",'.']
+=======
+    desire_list = ["want", "hope", "wish", "desire", "need", "like"]
+>>>>>>> Stashed changes
     for pos_tag in pos_tag_list:
         #print(pos_tag[0],pos_tag[1])
         if pos_tag[1] in ignore_pos_list: #do : VBP
@@ -24,7 +27,11 @@ def is_desire(pos_tag_list):
             return False
 
 def is_suggestion(pos_tag_list):
+
     suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME",".",","]
+=======
+    suggestion_noun_list = ["You", "you"]
+>>>>>>> Stashed changes
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             continue
