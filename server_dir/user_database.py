@@ -22,7 +22,8 @@ class user_database:
             # create sql
             sql = "select *" \
                   "from user_table " \
-                  "where git_id = '%s' " % user_name
+                  "where git_id = '%s' " \
+                  "and slack_code = 'NULL' " % user_name
 
             # execute sql
             self.cursor.execute(sql)
@@ -44,14 +45,14 @@ class user_database:
     def insert_git_id_random_number(self, git_id, random_number):
         try:
             # create sql
-            sql = "insert into working_table " \
+            sql = "insert into user_table " \
                   "(git_id, slack_id) " \
                   "value ('%s', '%s') " % (git_id, str(random_number))
 
             # execute sql
             self.cursor.execute(sql)
             self.conn.commit()
-
+            print(sql)
         except:
             self.conn.rollback()
             print("ERROR : insert git id random number")
@@ -67,7 +68,33 @@ class user_database:
             # execute sql
             self.cursor.execute(sql)
             self.conn.commit()
-
+            print(sql)
         except:
             self.conn.rollback()
             print("ERROR : set slack id code")
+
+
+    def search_user_slack_id_code(self, git_id):
+        raw_list = list()
+
+        try:
+            # create sql
+            sql = "select slack_id, slack_code " \
+                  "from user_table " \
+                  "where git_id = '%s' " % git_id
+
+            # execute sql
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : search user slack id code data")
+
+        if(raw_list != []):
+            return raw_list
+        else:
+            return "No data", "No data"

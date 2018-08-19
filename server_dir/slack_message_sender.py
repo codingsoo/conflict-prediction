@@ -5,6 +5,7 @@ from pathlib import Path
 import random
 import configparser
 from server_dir.conflict_flag_enum import Conflict_flag
+from server_dir.user_database import user_database
 
 def get_slack():
     token = ''
@@ -56,27 +57,8 @@ def make_lower_severity_list():
 
 # Get user slack id
 def get_user_slack_id(git_id):
-    slack_id = ""
-
-    # Import User Data
-    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_slack.json"), 'r') as f1:
-        user_slack_id_dict = json.load(f1)
-
-    # Import User Data
-    with open(os.path.join(Path(os.getcwd()).parent, "user_data", "user_git.json"), 'r') as f2:
-        user_git_id_dict = json.load(f2)
-
-    try:
-        slack_id = user_git_id_dict[git_id]
-        slack_id_code = user_slack_id_dict[slack_id]
-    except:
-        print("ERROR : no slack id data")
-        slack_id_code = "AAAAA"
-
-    f1.close()
-    f2.close()
-
-    return slack_id, slack_id_code
+    u_db = user_database()
+    return u_db.search_user_slack_id_code(git_id)
 
 
 def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name):

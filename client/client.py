@@ -179,5 +179,5 @@ if __name__ == '__main__' :
     print("CHATBOT Client Start!")
     load_config()
     verifying_user()
-    send_to_server_git_data()
-    send_to_graph_server_repository_name()
+    # send_to_server_git_data()
+    # send_to_graph_server_repository_name()

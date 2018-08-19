@@ -110,35 +110,6 @@ def on_message(ws, message):
             w_db.set_slack_id_code(random_number=rand_text,
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
-            # with open(os.path.join(os.path.pardir, "user_data", "user_git.json"), 'r') as f1, open(os.path.join(os.path.pardir, "user_data", "user_slack.json"), 'r') as f2:
-            #     user_git = json.load(f1)
-            #     user_slack = json.load(f2)
-
-                # Search User Register
-                # for git_user in user_git.keys():
-                    # Slack id == RandomNumber ####
-
-
-                    # if str(user_git[git_user]) == rand_text:
-                        ### Old logic
-                        # random number convert user id
-                        # user_list[count]['slack_id'] = msg['user']
-                        # user_name = list_slack(msg['user'])
-                        # user_slack[msg['user']] = user_name
-                        # user_git[git_user] = user_name
-
-                        # Display name
-                        # user_name = get_slack_display_name(msg['user'])
-
-                        # Slack code
-                        # user_slack[user_name] = msg['user']
-                        # user_git[git_user] = user_name
-
-                #
-                #         # Save User Data Json file
-            # with open(os.path.join(os.path.pardir, "user_data", "user_git.json"), 'w') as make_file1, open(os.path.join(os.path.pardir, "user_data", "user_slack.json"), 'w') as make_file2:
-            #     json.dump(user_git, make_file1)
-            #     json.dump(user_slack, make_file2)
 
         elif '.py' in rand_text:
             for py_file in rand_text.split(' '):

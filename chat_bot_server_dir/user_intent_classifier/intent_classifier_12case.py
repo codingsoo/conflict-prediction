@@ -14,6 +14,7 @@ nltk.download('wordnet')
 give_thanks = ["Thank you! Have a good day!", "That's good! Thank you!", "That is great! Thank you!", "Nice! Thank you!", "Ok. Thank you!"]
 ignore_file = ["Okay! I'll ignore that file", "Okay! Ignore list appended!", "Okay! Ignore file registered!", "Good! I'll ignore that file", "Good! Ignore list appened!", "Good! Ignore file registered!"]
 location_list = ["Where","where","location"]
+dependency_catch_list = []
 
 def load_token() :
     bot_server_config_path = os.path.join(Path(os.getcwd()).parent, "bot_server_config.ini")
