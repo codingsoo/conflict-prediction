@@ -8,7 +8,7 @@ import os
 import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
-from chat_bot_server_dir.user_intent_classifier.intent_classifier import require_something_sentence
+from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import give_intent_return_message
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message

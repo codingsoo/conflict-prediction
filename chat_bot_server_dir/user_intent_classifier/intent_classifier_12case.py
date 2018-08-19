@@ -7,7 +7,7 @@ from slacker import Slacker
 from nltk.corpus import wordnet
 from chat_bot_server_dir.project_parser import project_parser
 from pathlib import Path
-import chat_bot_server_dir.user_intent_classifier.intent_classifier as intent_classifier
+import chat_bot_server_dir.user_intent_classifier.sentence_type_finder as intent_classifier
 
 nltk.download('wordnet')
 
