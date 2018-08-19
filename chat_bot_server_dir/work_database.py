@@ -59,6 +59,20 @@ class work_database:
 
         return
 
+
+    # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
+    def classify_conflict_approved_list(self, project_name, current_conflict_list):
+        db_approved_list = self.read_approved_list(project_name)
+
+        for temp_db_aproved in db_approved_list:
+            try:
+                current_conflict_list.remove(temp_db_aproved)
+            except:
+                print("ERROR : classify conflict approved list")
+
+        return current_conflict_list
+
+
     def read_project_name(self, slack_code):
         # Read git_id
         raw_list = list()

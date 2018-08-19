@@ -2,6 +2,7 @@ import pymysql
 import datetime as d
 from server_dir.slack_message_sender import *
 from server_dir.conflict_flag_enum import Conflict_flag
+from chat_bot_server_dir.work_database import work_database
 
 class direct_work_database:
 
@@ -40,6 +41,8 @@ class direct_work_database:
         self.delete_direct_conflict_list()
 
         file_conflict_list = self.search_working_table(project_name, working_list)
+
+        file_conflict_list = work_database().classify_conflict_approved_list(project_name, file_conflict_list)
 
         # Conflict
         if(file_conflict_list != []):
