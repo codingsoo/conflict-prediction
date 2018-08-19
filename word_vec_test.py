@@ -4,7 +4,7 @@ import spacy
 
 nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 doc1 = nlp("Where is the conflict?")
-doc2 = nlp("tell me the conflict location")
+doc2 = nlp("hi")
 doc3 = nlp("give me the conflict location")
 doc5 = nlp("Where is the conflict?")
 doc6 = nlp("tell me the conflict location")

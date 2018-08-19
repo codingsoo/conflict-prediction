@@ -40,11 +40,10 @@ def is_question(parse_list):
         return True
     return False
 
-#please를 잘 못잡음 - 전처리해줌
 def require_something_sentence(sentence):
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("Please ", '')
-    sentence = sentence.replace("I think ", '') #I think 이외?
+    sentence = sentence.replace("I think ", '')
     sentence = sentence.replace("have to", "should")
     sentence = sentence.replace("don't have to", "shouldn\'t")
     sentence = sentence.replace("do not have to", "shouldn\'t")
