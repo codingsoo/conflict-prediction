@@ -22,3 +22,24 @@ nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\L
 # 14. detect_indirect_conflict : Bot can detect indirect conflict and severity.
 
 question_sentence_list = []
+command_sentence_list = []
+suggestion_sentence_list = []
+desire_sentence_list = []
+
+def intent_classifier(sentence):
+    sentence_type = require_something_sentence(sentence)
+
+    # Question
+    if sentence_type == 1 :
+        pass
+    # Command
+    elif sentence_type == 2 :
+        pass
+    # Suggestion
+    elif sentence_type == 3 :
+        pass
+    # Desire
+    elif sentence_type == 4 :
+        pass
+    else:
+        pass
