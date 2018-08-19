@@ -38,8 +38,10 @@ ENGINE=InnoDB
 
 /* 4. create user_table */
 CREATE TABLE `user_table` (
-	`git_id` VARCHAR(30) NOT NULL,
-	`slack_id` VARCHAR(30) NOT NULL
+	`git_id` VARCHAR(50) NOT NULL,
+	`slack_id` VARCHAR(50) NOT NULL,
+	`slack_code` VARCHAR(50) NULL DEFAULT NULL,
+	`last_connection` DATETIME NULL DEFAULT CURRENT_TIMESTAMP
 )
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB

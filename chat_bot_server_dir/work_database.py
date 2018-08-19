@@ -7,7 +7,7 @@ class work_database:
         # get mysql database connection
         self.conn = pymysql.connect(host     = '127.0.0.1',
                                     user     = 'root',
-                                    password = '99189918',
+                                    password = 'root',
                                     db       = 'uci_chat_bot',
                                     charset  = 'utf8')
 
@@ -62,6 +62,26 @@ class work_database:
                 print("ERROR : remove approved list")
 
         return
+
+    def recommendation(self, user1, user2):
+        user1_working_amount = "SELECT work_amount " \
+                               "FROM working_table " \
+                               "WHERE user_name= '%s' " % user1
+        user2_working_amount = "SELECT work_amount " \
+                               "FROM working_table " \
+                               "WHERE user_name= '%s' " % user2
+        response_list = []
+
+        if user1_working_amount > user2_working_amount :
+            response_list.append(user1)
+            response_list.append(user1_working_amount)
+            return response_list
+        elif user1_working_amount < user2_working_amount :
+            response_list.append(user2)
+            response_list.append(user2_working_amount)
+            return response_list
+        else :
+            return response_list
 
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기

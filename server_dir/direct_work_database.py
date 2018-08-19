@@ -11,7 +11,7 @@ class direct_work_database:
         # get mysql database connection
         self.conn = pymysql.connect(host     = '127.0.0.1',
                                     user     = 'root',
-                                    password = '99189918',
+                                    password = 'root',
                                     db       = 'uci_chat_bot',
                                     charset  = 'utf8')
 
