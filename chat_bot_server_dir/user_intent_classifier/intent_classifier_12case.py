@@ -11,6 +11,7 @@ import chat_bot_server_dir.user_intent_classifier.intent_classifier as intent_cl
 
 nltk.download('wordnet')
 
+
 give_thanks = ["Thank you! Have a good day!", "That's good! Thank you!", "That is great! Thank you!", "Nice! Thank you!", "Ok. Thank you!"]
 ignore_file = ["Okay! I'll ignore that file", "Okay! Ignore list appended!", "Okay! Ignore file registered!", "Good! I'll ignore that file", "Good! Ignore list appened!", "Good! Ignore file registered!"]
 location_list = ["Where","where","location"]
@@ -52,6 +53,7 @@ def get_slack_name_list():
 
 slack_name_list = get_slack_name_list()
 project_structure = project_parser('UCNLP', 'client')
+
 
 def lemma(keyword):
     lemmatizer = nltk.WordNetLemmatizer()
@@ -151,6 +153,41 @@ def give_intent_return_message(sentence):
                 else:
                     pass
 
+    # Case of command
+    elif intent_classifier.require_something_sentence(sentence) == 2:
+        dependency_catch_list = ["dobj", "nmod", "nsubj", "neg"]
+        # Intent words for analyzing the sentence
+        intent_word_list = []
+
+        for dependency_pair in dependency_parse_list:
+            if dependency_pair[0] in dependency_catch_list and len(intent_word_list) != 4:
+                word1 = word_tokenize_list[dependency_pair[1] - 1]
+                word2 = word_tokenize_list[dependency_pair[2] - 1]
+                if dependency_pair[0] == "neg":
+                    intent_word_list.append("not")
+                elif dependency_pair[0] == "nsubj":
+                    if word2 != "me":
+                        if word1 not in intent_word_list:
+                            intent_word_list.append(word1)
+                        if word2 not in intent_word_list:
+                            intent_word_list.append(word2)
+                elif dependency_pair[0] == "nmod":
+                    if word1 not in intent_word_list:
+                        intent_word_list.append(word1)
+                    if word2 not in intent_word_list:
+                        intent_word_list.append(word2)
+                else:
+                    if word2 != "me":
+                        if word1 not in intent_word_list:
+                            intent_word_list.append(word1)
+                        if word2 not in intent_word_list:
+                            intent_word_list.append(word2)
+
+
+        if intent_word_list[0] == "not":
+            intent_word_list[1] = "not " + intent_word_list[1]
+            intent_word_list.remove("not")
+
     # Case of desire
     if intent_classifier.require_something_sentence(sentence) == 4:
         count = 1
@@ -184,6 +221,7 @@ def give_intent_return_message(sentence):
                 #case7 : other user working status
                 elif "status" in pair_set1 or "status" in pair_set2:
                     return "jc is working on function_parsing_test 16 line."
+
 
 
 
@@ -222,3 +260,6 @@ print(give_intent_return_message(sentence7))
     #             return "You edited 1 line, but js worked 3line. I think you should stop."
     #         elif "status" in pair_set1 or "status" in pair_set2:
     #             return "jc is working on function_parsing_test 16 line."
+
+
+give_intent_return_message("Don't let me know this again.")
