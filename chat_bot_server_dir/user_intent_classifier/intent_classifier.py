@@ -13,6 +13,7 @@ def is_command(pos_tag_list):
 
 def is_desire(pos_tag_list):
     ignore_pos_list = ["PRP", "NN","NNP", "RB", ",","!",'.']
+
     desire_list = ["want", "hope", "wish", "desire", "need", "like"]
 
     for pos_tag in pos_tag_list:
@@ -27,6 +28,7 @@ def is_desire(pos_tag_list):
 def is_suggestion(pos_tag_list):
 
     suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME",".",","]
+
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             continue
