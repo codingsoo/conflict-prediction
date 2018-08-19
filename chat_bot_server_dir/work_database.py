@@ -14,6 +14,10 @@ class work_database:
         # get cursor
         self.cursor = self.conn.cursor()
 
+    ####################################################
+    '''
+    Approved list
+    '''
 
     # Add approved list
     def add_approved_list(self, slack_code, req_approved_set):
@@ -91,8 +95,8 @@ class work_database:
             for temp_current_conflict in current_conflict_list:
 
                 # [user_name, user_logic, other_name, other_logic]
-                user1_file = str(str(temp_current_conflict[1]).split('|')[0]).split('/')[-1]
-                user2_file = str(str(temp_current_conflict[3]).split('|')[0]).split('/')[-1]
+                user1_file = str(temp_current_conflict[1]).split('|')[0]
+                user2_file = str(temp_current_conflict[3]).split('|')[0]
 
                 if((temp_db_aproved[0] == user1_file)
                    or (temp_db_aproved[0] == user2_file)):
@@ -104,6 +108,63 @@ class work_database:
         return current_conflict_list
 
 
+    def read_approved_list(self, project_name):
+        raw_list = list
+        try:
+            sql = "select approved_file " \
+                  "from approved_list " \
+                  "where project_name = '%s' " % project_name
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = set(raw_list)
+
+            # raw_list = self.cursor.fetchall()
+            # raw_list = list(raw_list)
+            #
+            # for temp in raw_list:
+            #     raw_set.add(temp)
+        except:
+            self.conn.rollback()
+            print("ERROR : read approved list")
+
+        return raw_list
+
+
+    ####################################################################3
+    '''
+    lock list
+    '''
+    # Add approved list
+    def add_lock_list(self, slack_code, req_lock_list):
+        project_name = self.read_project_name(slack_code)
+
+        # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
+        sql1 = "insert into approved_list (project_name, approved_file) values "
+        for temp_diff_approved in diff_approved_set:
+            sql1 += "('%s', '%s'), " % (project_name, temp_diff_approved)
+
+        sql1 = sql1[:-2]
+
+        try:
+            self.cursor.execute(sql1)
+            self.conn.commit()
+            print(sql1)
+        except:
+            self.conn.rollback()
+            print("ERROR : add approved list")
+
+        return
+
+
+
+    ####################################################################
+    '''
+    Utility
+    '''
     def read_project_name(self, slack_code):
         # Read git_id
         raw_list = list()
@@ -153,27 +214,3 @@ class work_database:
             return raw_list[0]
 
 
-    def read_approved_list(self, project_name):
-        raw_list = list
-        try:
-            sql = "select approved_file " \
-                  "from approved_list " \
-                  "where project_name = '%s' " % project_name
-
-            self.cursor.execute(sql)
-            self.conn.commit()
-            print(sql)
-
-            raw_list = self.cursor.fetchall()
-            raw_list = set(raw_list)
-
-            # raw_list = self.cursor.fetchall()
-            # raw_list = list(raw_list)
-            #
-            # for temp in raw_list:
-            #     raw_set.add(temp)
-        except:
-            self.conn.rollback()
-            print("ERROR : read approved list")
-
-        return raw_list
