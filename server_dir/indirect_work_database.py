@@ -2,6 +2,7 @@ import pymysql
 import datetime as d
 from server_dir.slack_message_sender import *
 from server_dir.conflict_flag_enum import Conflict_flag
+from chat_bot_server_dir.work_database import work_database
 
 class indirect_work_database:
 
@@ -25,6 +26,8 @@ class indirect_work_database:
 
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
+
+        indirect_conflict_list = work_database().classify_conflict_approved_list(project_name, indirect_conflict_list)
 
         # Conflict
         if(indirect_conflict_list != []):
