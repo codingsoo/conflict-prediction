@@ -61,7 +61,7 @@ class work_database:
 
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
-    def classify_conflict_approved_list(self, project_name, current_conflict_list):
+    def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
         db_approved_list = self.read_approved_list(project_name)
 
         print(db_approved_list)
@@ -71,6 +71,31 @@ class work_database:
             for temp_current_conflict in current_conflict_list:
 
                 if(temp_db_aproved[0] == temp_current_conflict[1]):
+                    try:
+                        current_conflict_list.remove(temp_current_conflict)
+                    except:
+                        print("ERROR : classify conflict approved list")
+
+        return current_conflict_list
+
+
+    # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
+    def classify_indirect_conflict_approved_list(self, project_name, current_conflict_list):
+        db_approved_list = self.read_approved_list(project_name)
+
+        print("current_conflict : " + str(current_conflict_list))
+        print(db_approved_list)
+
+        for temp_db_aproved in db_approved_list:
+            print("temp db approved : " + str(temp_db_aproved[0]))
+            for temp_current_conflict in current_conflict_list:
+
+                # [user_name, user_logic, other_name, other_logic]
+                user1_file = str(str(temp_current_conflict[1]).split('|')[0]).split('/')[-1]
+                user2_file = str(str(temp_current_conflict[3]).split('|')[0]).split('/')[-1]
+
+                if((temp_db_aproved[0] == user1_file)
+                   or (temp_db_aproved[0] == user2_file)):
                     try:
                         current_conflict_list.remove(temp_current_conflict)
                     except:

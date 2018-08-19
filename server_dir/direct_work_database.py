@@ -43,7 +43,7 @@ class direct_work_database:
 
         file_conflict_list = self.search_working_table(project_name, working_list)
 
-        file_conflict_list = work_database().classify_conflict_approved_list(project_name, file_conflict_list)
+        file_conflict_list = work_database().classify_direct_conflict_approved_list(project_name, file_conflict_list)
         print("file conflict list : " + str(file_conflict_list))
 
         # Conflict

@@ -27,7 +27,7 @@ class indirect_work_database:
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
 
-        indirect_conflict_list = work_database().classify_conflict_approved_list(project_name, indirect_conflict_list)
+        indirect_conflict_list = work_database().classify_indirect_conflict_approved_list(project_name, indirect_conflict_list)
 
         # Conflict
         if(indirect_conflict_list != []):
@@ -130,6 +130,7 @@ class indirect_work_database:
                         temp_raw.append(temp_other_logic)   # other logic
                         temp_raw.append(raw_list[0][3])        # length
 
+                        # [user_name, user_logic, other_name, other_logic]
                         all_raw_list.append(temp_raw)
 
                 except:
