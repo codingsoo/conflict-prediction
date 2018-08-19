@@ -239,7 +239,7 @@ sentence9 = "Can you lock File1.py?" #Lockfile
 sentence10 = "Can you send this message to general channel?"#Announce
 sentence11 = "Can you send direct message to user2 that we should solve the conflict in File1.py?" #Message
 
-print(give_intent_return_message(sentence7))
+# print(give_intent_return_message(sentence7))
 
     # Previous Myron's sample codes
     # for dependency_pair in dependency_parse_list:
@@ -262,4 +262,4 @@ print(give_intent_return_message(sentence7))
     #             return "jc is working on function_parsing_test 16 line."
 
 
-give_intent_return_message("Don't let me know this again.")
+# give_intent_return_message("Don't let me know this again.")
