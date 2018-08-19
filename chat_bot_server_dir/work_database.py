@@ -20,7 +20,7 @@ class work_database:
         project_name = self.read_project_name(slack_code)
         db_approved_set = self.read_approved_list(project_name)
 
-        diff_approved_set = db_approved_set-req_approved_set
+        diff_approved_set = req_approved_set-db_approved_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
         sql1 = "insert into approved_list (project_name, approved_file) values "
@@ -35,10 +35,29 @@ class work_database:
             print(sql1)
         except:
             self.conn.rollback()
-            print("ERROR : insert indirect conflict data")
+            print("ERROR : add approved list")
 
         return
 
+
+    # Remove approved list
+    def remove_approved_list(self, slack_code, remove_approve_list):
+        project_name = self.read_project_name(slack_code)
+
+        for temp_remove_file in remove_approve_list:
+            try:
+                sql = "delete " \
+                      "from approved_list " \
+                      "where project_name = '%s' " \
+                      "and approved_file = '%s' " %(project_name, temp_remove_file)
+                self.cursor.execute(sql)
+                self.conn.commit()
+                print(sql)
+            except:
+                self.conn.rollback()
+                print("ERROR : remove approved list")
+
+        return
 
     def read_project_name(self, slack_code):
         # Read git_id

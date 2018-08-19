@@ -99,11 +99,13 @@ def on_message(ws, message):
 
     # Message Type is message
     if msg['type'] == 'message':
+
         # Message Content Convert
         try:
             rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
         except:
             rand_text = msg['text']
+
         # Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             w_db = user_database()
@@ -111,9 +113,13 @@ def on_message(ws, message):
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
 
+        # Approved list
         elif '.py' in rand_text:
             for py_file in rand_text.split(' '):
                 if '.py' in py_file:
+
+
+
                     approved_list = []
                     with open('../user_data/approved_list.json', 'r') as f:
                         approved_list = json.load(f)
@@ -146,6 +152,7 @@ def on_message(ws, message):
                         send_direct_message(msg["user"], response)
                     except:
                         pass
+
 
 def on_error(ws, error):
     print(error)
