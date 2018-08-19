@@ -18,7 +18,7 @@ class work_database:
     # Add approved list
     def add_approved_list(self, slack_code, req_approved_set):
         project_name = self.read_project_name(slack_code)
-        db_approved_set = self.read_approved_list(project_name)
+        db_approved_set = set(self.read_approved_list(project_name))
 
         diff_approved_set = req_approved_set-db_approved_set
 
@@ -64,11 +64,17 @@ class work_database:
     def classify_conflict_approved_list(self, project_name, current_conflict_list):
         db_approved_list = self.read_approved_list(project_name)
 
+        print(db_approved_list)
+
         for temp_db_aproved in db_approved_list:
-            try:
-                current_conflict_list.remove(temp_db_aproved)
-            except:
-                print("ERROR : classify conflict approved list")
+            print("temp db approved : " + str(temp_db_aproved[0]))
+            for temp_current_conflict in current_conflict_list:
+
+                if(temp_db_aproved[0] == temp_current_conflict[1]):
+                    try:
+                        current_conflict_list.remove(temp_current_conflict)
+                    except:
+                        print("ERROR : classify conflict approved list")
 
         return current_conflict_list
 
@@ -123,7 +129,7 @@ class work_database:
 
 
     def read_approved_list(self, project_name):
-        raw_set = set()
+        raw_list = list
         try:
             sql = "select approved_file " \
                   "from approved_list " \
@@ -133,8 +139,8 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_set = self.cursor.fetchall()
-            raw_set = set(raw_set)
+            raw_list = self.cursor.fetchall()
+            raw_list = set(raw_list)
 
             # raw_list = self.cursor.fetchall()
             # raw_list = list(raw_list)
@@ -145,4 +151,4 @@ class work_database:
             self.conn.rollback()
             print("ERROR : read approved list")
 
-        return raw_set
+        return raw_list

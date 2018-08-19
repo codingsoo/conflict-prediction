@@ -301,7 +301,7 @@ if __name__ == "__main__":
     print("current user: " + str(temp.get_working_data()))
 
     iw_db = indirect_work_database()
-    w_db = work_database()
+    w_db = direct_work_database()
 
     w_db.delete_user_data(temp.get_user_name())
 
