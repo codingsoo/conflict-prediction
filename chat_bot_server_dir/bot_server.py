@@ -15,14 +15,17 @@ from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
 import nltk
 from server_dir.user_database import user_database
+from pathlib import Path
 
 def load_token() :
-    if not os.path.isfile("bot_server_config.ini") :
+    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+
+    if not os.path.isfile(file_path) :
         print("ERROR :: There is no bot_server_config.ini")
         exit(2)
     else :
         config = configparser.ConfigParser()
-        config.read("bot_server_config.ini")
+        config.read(file_path)
         try :
             token=config["SLACK"]["TOKEN"]
         except :

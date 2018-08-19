@@ -9,13 +9,11 @@ from flask import Flask, request
 from pathlib import Path
 from python_floyd import create_indirect_edge_list
 import pymysql
+from server_dir.server_config_loader import *
 
 # Create Server
 app = Flask(__name__)
 
-# Request definition
-ip_addr = "127.0.0.1"
-port = "5009"
 
 # File definition
 # os.path.join(os.getcwd(), 'UCI_chatbot_Server')
@@ -324,23 +322,22 @@ def create_edge(raw_list):
 
     #print raw_list
 
-
-# Post To Server
-def postToServer(uri, json_data):
-
-    # Create URL
-    url = "http://" + ip_addr + ":" + port + uri # 80
-
-    # Headers
-    headers = {'Content-Type': 'application/json; charset=utf-8'}
-
-    # Post To Server
-    req = requests.post(url, headers=headers, data = json.dumps(json_data))
-
-    # Log
-    print(req)
-
-    return req
+# # Post To Server
+# def postToServer(uri, json_data):
+#
+#     # Create URL
+#     url = "http://" + ip_addr + ":" + port + uri # 80
+#
+#     # Headers
+#     headers = {'Content-Type': 'application/json; charset=utf-8'}
+#
+#     # Post To Server
+#     req = requests.post(url, headers=headers, data = json.dumps(json_data))
+#
+#     # Log
+#     print(req)
+#
+#     return req
 
 
 # Git clone using user URL
@@ -460,7 +457,11 @@ def repository_name():
 
 
 if __name__ == '__main__':
+
+    # Load config
+    host, port = load_git_graph_server_config()
+
     # Run Server
-    app.run(debug=True, host="127.0.0.1", port="5010")
+    app.run(debug=True, host=host, port=port)
 
     # indirect_logic("j21chan/py_test.git")

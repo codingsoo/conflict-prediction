@@ -17,6 +17,7 @@ return      : none
 # BASE_PATH for clone repository.
 BASE_PATH = os.path.pardir
 
+
 def git_diff_logic(content):
 
     # Create user git diff data

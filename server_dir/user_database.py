@@ -7,7 +7,7 @@ class user_database:
         # get mysql database connection
         self.conn = pymysql.connect(host     = '127.0.0.1',
                                     user     = 'root',
-                                    password = 'root',
+                                    password = '99189918',
                                     db       = 'uci_chat_bot',
                                     charset  = 'utf8')
 
@@ -98,3 +98,8 @@ class user_database:
             return raw_list
         else:
             return "No data", "No data"
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+        return
