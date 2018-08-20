@@ -353,6 +353,13 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 9:
         work_db.close()
         return github_email, recent_data[2]
+    else:
+        if "hi" or "Hi" or "Hello" or "hello":
+            return "greeting"
+        elif "bye" or "Bye" or "See you" or "see you":
+            return "bye"
+        else:
+            return "no_response"
 
 if __name__ == '__main__':
-    print(extract_attention_word("Can you recommend what should I do to fix the conflict?",'a'))
+    print(extract_attention_word("hi",'a'))
