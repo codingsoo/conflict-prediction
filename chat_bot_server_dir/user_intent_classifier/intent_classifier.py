@@ -9,7 +9,12 @@ from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import 
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 from server_dir.slack_message_sender import send_channel_message
-
+from chat_bot_server_dir.project_parser import project_parser
+from chat_bot_server_dir.bot_server import get_slack_name_list
+from chat_bot_server_dir.python_logic_parser import *c
+from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
+from chat_bot_server_dir.work_database import *
+from server_dir.user_database import *
 
 
 # recent 작업 파일 및 충돌 대상자 가져오기
@@ -18,7 +23,9 @@ from server_dir.slack_message_sender import send_channel_message
 # a.close()
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
+
 nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
 
 # bot's feature
 # 1. ignore_file : It is like gitignore. User can customize their ignore files.
@@ -144,8 +151,9 @@ def get_file_path(file_list):
 def extract_attention_word(sentence):
     import re
     work_db = work_database
+    user_db = user_database
     intent_type = intent_classifier(sentence)
-   #i name_list = get_slack_name_list()
+    name_list = get_slack_name_list()
     if intent_type == 1:
         file_list = project_parser("UCNLP", "conflict-detector")["file"]
         result_file_list = []
@@ -167,6 +175,7 @@ def extract_attention_word(sentence):
             work_db.add_approved_list("slack_code", approve_set)
             print(approve_set)
         pass
+
     elif intent_type == 2:
         pass
     elif intent_type == 3:
@@ -191,17 +200,20 @@ def extract_attention_word(sentence):
             work_db.add_update_ignore("conflict-detector", [1, 0], "slack_code")
         else:
             work_db.add_update_ignore("conflict-detector", [0, 1], "slack_code")
+
         pass
     elif intent_type == 5:
         pass
     elif intent_type == 6:
-        # target_user_name = ""
-        # for name in name_list:
-        #     if name in sentence:
-        #         target_user_name = name
-        # if target_user_name == "":
-        #     print("There's no user")
-        # else:
+        target_user_name = ""
+        for name in name_list:
+            if name in sentence:
+                target_user_name = name
+        if target_user_name == "":
+            print("There's no user")
+        else:
+            user_db.match_user_git_id_code(target_user_name)
+
         pass
     elif intent_type == 7:
         import re
@@ -243,3 +255,4 @@ def extract_attention_word(sentence):
         pass
     work_db.close()
 
+extract_attention_word("Send Kathryn Choi the message.")
