@@ -428,6 +428,20 @@ class work_database:
             print("ERROR : add ignore")
         return git_email
 
+    def slack_name_to_slack_code(self, slack_name):
+        sql = "SELECT slack_code " \
+              "FROM user_table " \
+              "WHERE slack_id = '%s'" % (slack_name)
+        try:
+            self.cursor.execute(sql)
+            self.conn.commit()
+            slack_code = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : add ignore")
+        return slack_code
+
     def search_ignore(self, project_name, git_id):
         slack_code = self.convert_git_id_to_slack_code(git_id)[0]
         raw = tuple()

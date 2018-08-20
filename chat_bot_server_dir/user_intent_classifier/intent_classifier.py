@@ -277,7 +277,6 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 6:
 
         target_user_name = ""
-        work_db.slack_name_to_git_email(target_user_name)
 
         for name in name_list:
             if name in sentence:
@@ -333,11 +332,22 @@ def extract_attention_word(sentence, github_email):
             msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
         return channel, msg
 
-
-
     elif intent_type == 8:
-        pass
+        target_user_name = ""
+        slack_code = ""
+        for name in name_list:
+            if name in sentence:
+                target_user_name = name
+                break
+        if target_user_name == "":
+            slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
+        else:
+            slack_code = work_db.slack_name_to_slack_code(target_user_name)
 
+        start_that = sentence.find('that') + 4
+        msg = sentence[start_that:]
+
+        return slack_code, msg
 
     elif intent_type == 9:
 
@@ -346,4 +356,4 @@ def extract_attention_word(sentence, github_email):
     work_db.close()
 
 if __name__ == '__main__':
-    print(extract_attention_word("Can you tell everyone that I'm working on File1.py?",'a'))
+    print(extract_attention_word("Can you chat to User2 that I will check and solve the problem?",'a'))
