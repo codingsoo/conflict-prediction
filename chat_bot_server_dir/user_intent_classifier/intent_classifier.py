@@ -8,8 +8,9 @@ from chat_bot_server_dir.python_logic_parser import *
 from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import *
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
-
 from server_dir.slack_message_sender import send_channel_message
+
+
 
 # recent 작업 파일 및 충돌 대상자 가져오기
 # a = work_database()
@@ -64,6 +65,10 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+file_list = project_parser("UCNLP", "conflict-detector")["file"]
+user_list = get_slack_name_list()
+
+
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
     max = 0
@@ -81,6 +86,9 @@ def calcue_max(sentence, list):
 
     return max_idx
 
+
+print(file_list)
+print(user_list)
 
 
 def intent_classifier(sentence):
@@ -108,7 +116,15 @@ def intent_classifier(sentence):
     else:
         return 10
 
+def get_file_path(file_list):
+    result_file_list = []
+    for fl in file_list:
+        r = fl.split("/")[-1]
+        result_file_list.append(" " + r)
+    return result_file_list
+
 def extract_attention_word(sentence):
+    import re
     work_db = work_database
     intent_type = intent_classifier(sentence)
    #i name_list = get_slack_name_list()
@@ -128,25 +144,35 @@ def extract_attention_word(sentence):
                     approve_set.add(file_list[result_file_list.index(rfl)])
 
         if len(remove_list) > 0:
-            #work_db.remove_approved_list("lsebb1007", remove_list)
+            work_db.remove_approved_list("slackcode", remove_list)
             print(remove_list)
         elif len(approve_set) > 0:
-            #work_db.add_approved_list("lsebb1007", approve_set)
+            work_db.add_approved_list("slackcode", approve_set)
             print(approve_set)
-
         pass
     elif intent_type == 2:
         pass
     elif intent_type == 3:
-
+        global file_list
+        result_file_list = get_file_path(file_list)
+        for rfl in result_file_list:
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
+        pattern = re.compile("\d+")
+        num_list = re.findall(pattern, sentence)
+        if len(num_list) > 1:
+            if num_list[0] < num_list[1]:
+                work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[1])
+            else:
+                work_db.get_user_email("conflict-detector", file_path, num_list[1], num_list[0])
+        elif len(num_list) == 1:
+            work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[0])
         pass
     elif intent_type == 4:
         if 'direct' in sentence:
             work_db.add_update_ignore("conflict-detector", [1, 0], slack_code)
         else:
             work_db.add_update_ignore("conflict-detector", [0, 1], slack_code)
-
-        work_db.close()
         pass
     elif intent_type == 5:
         pass
@@ -192,12 +218,10 @@ def extract_attention_word(sentence):
             send_channel_message(chaanel, msg)
         else:
             pass
-
-
         pass
     elif intent_type == 8:
         pass
     elif intent_type == 9:
         pass
-
+    work_db.close()
 
