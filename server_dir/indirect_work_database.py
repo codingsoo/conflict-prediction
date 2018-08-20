@@ -25,13 +25,15 @@ class indirect_work_database:
 
     # Delete User working data
     def detect_indirect_conflict(self, project_name, working_list, user_name):
+        w_db = work_database()
 
         self.delete_conflict_list()
 
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
 
-        indirect_conflict_list = work_database().classify_indirect_conflict_approved_list(project_name, indirect_conflict_list)
+        indirect_conflict_list = w_db.classify_indirect_conflict_approved_list(project_name, indirect_conflict_list)
+        w_db.close()
 
         # Conflict
         if(indirect_conflict_list != []):

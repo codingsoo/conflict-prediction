@@ -23,6 +23,9 @@ class work_database:
     # Add approved list
     def add_approved_list(self, slack_code, req_approved_set):
         project_name = self.read_project_name(slack_code)
+        if(str(project_name).isdigit()):
+            print("ERROR : NO PROJECT NAME")
+            return
         db_approved_set = set(self.read_approved_list(project_name))
 
         diff_approved_set = req_approved_set-db_approved_set
@@ -48,7 +51,9 @@ class work_database:
     # Remove approved list
     def remove_approved_list(self, slack_code, remove_approve_list):
         project_name = self.read_project_name(slack_code)
-
+        if(str(project_name).isdigit()):
+            print("ERROR : NO PROJECT NAME")
+            return
         for temp_remove_file in remove_approve_list:
             try:
                 sql = "delete " \
@@ -153,7 +158,7 @@ class work_database:
 
 
     def read_approved_list(self, project_name):
-        raw_list = list
+        raw_list = list()
         try:
             sql = "select approved_file " \
                   "from approved_list " \
@@ -182,14 +187,20 @@ class work_database:
     '''
     lock list
     '''
-    # Add approved list
-    def add_lock_list(self, slack_code, req_lock_list):
+    # Add lock list
+    def add_lock_list(self, slack_code, req_lock_set, delete_time):
         project_name = self.read_project_name(slack_code)
+        if(str(project_name).isdigit()):
+            print("ERROR : NO PROJECT NAME")
+            return
+        db_lock_set = set(self.read_lock_list(slack_code, project_name))
+
+        diff_lock_set = req_lock_set-db_lock_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
-        sql1 = "insert into approved_list (project_name, approved_file) values "
-        for temp_diff_approved in diff_approved_set:
-            sql1 += "('%s', '%s'), " % (project_name, temp_diff_approved)
+        sql1 = "insert into lock_list (project_name, lock_file, slack_code) values "
+        for temp_diff_lock in diff_lock_set:
+            sql1 += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
 
         sql1 = sql1[:-2]
 
@@ -199,21 +210,136 @@ class work_database:
             print(sql1)
         except:
             self.conn.rollback()
-            print("ERROR : add approved list")
+            print("ERROR : add lock list")
+
+        return
+
+    # Remove approved list
+    def remove_lock_list(self, slack_code, remove_lock_list):
+        project_name = self.read_project_name(slack_code)
+        if(str(project_name).isdigit()):
+            print("ERROR : NO PROJECT NAME")
+            return
+        for temp_remove_file in remove_lock_list:
+            try:
+                sql = "delete " \
+                      "from lock_list " \
+                      "where project_name = '%s' " \
+                      "and lock_file = '%s' " \
+                      "and slack_code = '%s' " %(project_name, temp_remove_file, slack_code)
+                self.cursor.execute(sql)
+                self.conn.commit()
+                print(sql)
+            except:
+                self.conn.rollback()
+                print("ERROR : remove lock list")
 
         return
 
 
+    def auto_remove_lock_list(self):
+        try:
+            sql = "delete " \
+                  "from lock_list " \
+                  "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : auto remove lock list")
+
+        return
+
+    def read_lock_list(self, slack_code, project_name):
+        raw_list = list()
+        try:
+            sql = "select lock_file " \
+                  "from lock_list " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s' " % (project_name, slack_code)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : read lock list")
+
+        return raw_list
+
+
+    def inform_lock_file(self, project_name, working_list, git_id):
+        all_raw_list = list()
+
+        # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
+        slack_code = self.convert_git_id_to_slack_code(git_id)[0]
+        if(str(slack_code).isdigit()):
+            print("ERROR : NO SLACK CODE")
+            return
+
+        for temp_work in working_list:
+            try:
+                sql = "select * " \
+                      "from lock_list " \
+                      "where project_name = '%s' " \
+                      "and lock_file = '%s' " \
+                      "and slack_code != '%s' " %(project_name, temp_work[0], slack_code)
+                self.cursor.execute(sql)
+                self.conn.commit()
+                print(sql)
+
+                raw_list = list(self.cursor.fetchall())
+                if(raw_list != []):
+                    for temp in raw_list:
+                        all_raw_list.append(temp)
+            except:
+                self.conn.rollback()
+                print("ERROR : inform lock file")
+
+        if(all_raw_list != []):
+            for temp_raw in all_raw_list:
+                print("lock file : " + str(temp_raw))
+
+        return
 
     ####################################################################
     '''
     Utility
     '''
+    def convert_git_id_to_slack_code(self, git_id):
+        raw_list = list()
+
+        try:
+            sql = "select slack_code " \
+                  "from user_table " \
+                  "where git_id = '%s' " % git_id
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : read project name")
+
+        if(raw_list != []):
+            return raw_list[0]
+        else:
+            return -1
+
     def read_project_name(self, slack_code):
         # Read git_id
         raw_list = list()
         try:
-            sql = "select user_name " \
+            sql = "select git_id " \
                   "from user_table " \
                   "where slack_code = '%s' " % slack_code
 
@@ -229,6 +355,7 @@ class work_database:
 
         # slack_code don't verified
         if(raw_list == []):
+            print("ERROR : slack_code don't verified")
             return -2
         else:
             git_id = raw_list[0]
@@ -253,10 +380,12 @@ class work_database:
 
         # This user don't have project
         if(raw_list1 == []):
+            print("ERROR : This user don't have project")
             return -1
         else:
             return raw_list[0]
 
 
-# a = work_database
-# a.user_recognize(a, "111")
+    def close(self):
+        self.cursor.close()
+        self.conn.close()

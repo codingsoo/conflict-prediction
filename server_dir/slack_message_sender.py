@@ -129,6 +129,10 @@ def send_conflict_message_channel(conflict_project, conflict_file, conflict_logi
     return
 
 
+def send_lock_file_message(slack_code, lock_file_list):
+    pass
+
+
 # Put channel name and message for sending chatbot message
 def send_channel_message(channel, message):
     slack = get_slack()

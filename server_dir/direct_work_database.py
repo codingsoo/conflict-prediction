@@ -43,11 +43,18 @@ class direct_work_database:
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
         print("working list : " + str(working_list))
+        w_db = work_database()
+
+        w_db.auto_remove_lock_list()
+
         self.delete_direct_conflict_list()
+
+        w_db.inform_lock_file(project_name, working_list, user_name)
 
         file_conflict_list = self.search_working_table(project_name, working_list)
 
-        file_conflict_list = work_database().classify_direct_conflict_approved_list(project_name, file_conflict_list)
+        file_conflict_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
+        w_db.close()
         print("file conflict list : " + str(file_conflict_list))
 
         # Conflict
@@ -93,7 +100,7 @@ class direct_work_database:
             sql = "delete " \
                   "from direct_conflict_table " \
                   "where alert_count >= 2 " \
-                  "and TIMEDIFF(now(),log_time) > 24"
+                  "and TIMEDIFF(now(),log_time) > 24*60*60"
             print(sql)
 
             self.cursor.execute(sql)

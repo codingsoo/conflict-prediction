@@ -81,3 +81,15 @@ CREATE TABLE `indirect_conflict_table` (
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
+
+/* 8. lock_list */
+CREATE TABLE `lock_list` (
+	`project_name` VARCHAR(50) NULL DEFAULT NULL,
+	`lock_file` VARCHAR(50) NULL DEFAULT NULL,
+	`slack_code` VARCHAR(50) NULL DEFAULT NULL,
+	`delete_time` INT(11) NULL DEFAULT NULL,
+	`log_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
