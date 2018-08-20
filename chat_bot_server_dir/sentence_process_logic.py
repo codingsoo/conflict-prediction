@@ -13,7 +13,10 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
         code_history_logic(slack_code, param0, param1, param2)
 
     elif(intent_type == 4):
-        ignore_file_logic()
+        ignore_file_logic(slack_code, param0)
+
+    elif(intent_type == 5):
+        check_conflict_logic(slack_code, param0)
 
 
 def approved_file_logic(slack_code, approve_set, remove_list):
@@ -61,8 +64,14 @@ def ignore_file_logic(slack_code, ignore_list):
     return
 
 
-def check_conflict_logic():
-    pass
+def check_conflict_logic(slack_code, param0):
+    w_db = work_database()
+
+    project_name = w_db.read_project_name(slack_code)
+    w_db.is_conflict(project_name, slack_code, param0)
+
+    w_db.close()
+    return
 
 
 def other_working_status_logic():
