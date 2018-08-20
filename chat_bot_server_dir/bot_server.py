@@ -130,13 +130,7 @@ def on_message(ws, message):
 
             # Send the message to user
             if(return_message != "message"):
-                attachments_dict = dict()
-                attachments_dict['text'] = "%s" % (return_message)
-                attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-                attachments = [attachments_dict]
-                slack.chat.post_message(channel="" + user_slack_id, text=None, attachments=attachments, as_user=True)
-
-
+                send_direct_message(user_slack_id, return_message)
 
 
 def on_error(ws, error):
