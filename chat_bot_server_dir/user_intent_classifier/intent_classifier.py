@@ -1,11 +1,9 @@
 import spacy
+from slacker import Slacker
 
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
-from chat_bot_server_dir.bot_server import get_slack_name_list
 from chat_bot_server_dir.work_database import work_database
-from chat_bot_server_dir.python_logic_parser import *
-from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import *
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 
@@ -15,7 +13,7 @@ from chat_bot_server_dir.work_database import *
 # a.close()
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It is like gitignore. User can customize their ignore files.
@@ -62,6 +60,40 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+def load_token() :
+    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+
+    if not os.path.isfile(file_path) :
+        print("ERROR :: There is no all_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read(file_path)
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is all_server_config.ini")
+            exit(2)
+    return token
+
+token = load_token()
+slack = Slacker(token)
+
+def get_slack_name_list():
+    try:
+        user_list = list()
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if user.get('profile').get('display_name') != '':
+                user_list.append(user.get('profile').get('display_name'))
+            else:
+                user_list.append(user.get('profile').get('real_name'))
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
+    return user_list
+
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
     max = 0
@@ -106,12 +138,17 @@ def intent_classifier(sentence):
     else:
         return 10
 
+file_list = project_parser("UCNLP", "client")["file"]
+user_list = get_slack_name_list()
+
+print(file_list)
+print(user_list)
+
 def extract_attention_word(sentence):
     work_db = work_database
     intent_type = intent_classifier(sentence)
    #i name_list = get_slack_name_list()
     if intent_type == 1:
-        file_list = project_parser("UCNLP", "conflict-detector")["file"]
         result_file_list = []
         for fl in file_list:
             remove_list = []
@@ -139,12 +176,12 @@ def extract_attention_word(sentence):
 
         pass
     elif intent_type == 4:
-        if 'direct' in sentence:
-            work_db.add_update_ignore("conflict-detector", [1, 0], slack_code)
-        else:
-            work_db.add_update_ignore("conflict-detector", [0, 1], slack_code)
-
-        work_db.close()
+        # if 'direct' in sentence:
+        #     work_db.add_update_ignore("conflict-detector", [1, 0], slack_code)
+        # else:
+        #     work_db.add_update_ignore("conflict-detector", [0, 1], slack_code)
+        #
+        # work_db.close()
         pass
     elif intent_type == 5:
         pass
@@ -162,6 +199,7 @@ def extract_attention_word(sentence):
     elif intent_type == 8:
         pass
     elif intent_type == 9:
+
         pass
 
 

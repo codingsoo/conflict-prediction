@@ -9,7 +9,6 @@ import configparser
 from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
-from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import give_intent_return_message
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
@@ -36,7 +35,7 @@ def load_token() :
 token = load_token()
 slack = Slacker(token)
 
-add_ignore = []
+# add_ignore = []
 project_structure = project_parser('UCNLP', 'client')
 
 def make_shell_list(file):
@@ -46,7 +45,7 @@ def make_shell_list(file):
 
     return text
 
-add_ignore = make_shell_list(os.path.join(os.path.pardir,"situation_shell","add_ignore.txt"))
+# add_ignore = make_shell_list(os.path.join(os.path.pardir,"situation_shell","add_ignore.txt"))
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
@@ -129,7 +128,7 @@ def on_message(ws, message):
 
                     approved_list.append(py_file)
                     attachments_dict = dict()
-                    attachments_dict['text'] = add_ignore[random.randint(0, len(add_ignore)-1)] % (py_file)
+                    attachments_dict['text'] = 1 #add_ignore[random.randint(0, len(add_ignore)-1)] % (py_file)
                     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
                     attachments = [attachments_dict]
 
@@ -159,9 +158,9 @@ def on_open(ws):
 
     _thread.start_new_thread(run, ())
 
-get_severe_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","get_severe.txt"))
-approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","approved.txt"))
-notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
+# get_severe_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","get_severe.txt"))
+# approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","approved.txt"))
+# notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
 
 #### MAIN ####
 nltk.download('punkt')
