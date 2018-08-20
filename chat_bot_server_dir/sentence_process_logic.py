@@ -34,8 +34,14 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
     elif(intent_type == 9):
         message = recommend_solve_conflict_logic(param0, param1)
 
-    else:
-        message = ""
+    elif(intent_type == 10):
+        message = greeting_logic(slack_code)
+
+    elif(intent_type == 11):
+        message = bye_logic()
+
+    elif(intent_type == 12):
+        message = "I don't know what are you talking about"
 
     return message
 
@@ -153,13 +159,22 @@ def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
     return message
 
 
-def recognize_user_logic():
-    pass
+def greeting_logic(slack_code):
+    w_db = work_database()
+    message = ""
 
+    last_connection = w_db.user_recognize(slack_code)
 
-def greeting_logic():
-    pass
+    if(last_connection == 1):
+        message = "Hi~~!"
+    elif(last_connection == 2):
+        message = "Hi!! 일주일만에 방문했네"
+    elif(last_connection == 3):
+        message = "long time no see"
+
+    return message
 
 
 def bye_logic():
-    pass
+    message = "bye~~!"
+    return message
