@@ -433,6 +433,96 @@ class work_database:
 
     ####################################################################
     '''
+    is conflict
+    '''
+    def is_conflict(self, project_name, slack_code, file_name):
+        if(self.is_direct_conflict(project_name, file_name)):
+            print("IS DIRECT CONFLICT TRUE")
+
+        if(self.is_indirect_conflict(project_name, file_name)):
+            print("IS INDIRECT CONFLICT TRUE")
+
+        return
+
+
+    def is_direct_conflict(self, project_name, file_name):
+        raw_list = list()
+        try:
+            sql = "select * " \
+                  "from working_table " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " % (project_name, file_name)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : is direct conflict")
+
+        if(raw_list != []):
+            return True
+        else:
+            return False
+
+
+    def is_indirect_conflict(self, project_name, file_name):
+        raw_list = list()
+        try:
+            temp_file_name = str(file_name) + "%"
+            sql = "select * " \
+                  "from logic_dependency " \
+                  "where project_name = '%s' " \
+                  "and (u like '%s' or v like '%s' )" % (project_name, temp_file_name, temp_file_name)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : is indirect conflict")
+        file_list = list()
+
+        # [project_name, u, v, length]
+        for temp_raw in raw_list:
+            temp_u = str(temp_raw[1]).split('|')[0]
+            temp_v = str(temp_raw[2]).split('|')[0]
+
+            file_list.append(temp_u)
+            file_list.append(temp_v)
+
+        file_list = list(set(file_list))
+
+        for temp_file in file_list:
+            try:
+                sql = "select * " \
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " % (project_name, temp_file)
+
+                self.cursor.execute(sql)
+                self.conn.commit()
+                print(sql)
+
+                raw_list = self.cursor.fetchall()
+                raw_list = list(raw_list)
+
+                if(raw_list != []):
+                    return True
+            except:
+                self.conn.rollback()
+                print("ERROR : is indirect conflict")
+
+        return False
+
+    ####################################################################
+    '''
     Utility
     '''
     def convert_git_id_to_slack_code(self, git_id):
