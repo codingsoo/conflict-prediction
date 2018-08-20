@@ -160,9 +160,9 @@ def extract_attention_word(sentence):
     intent_type = intent_classifier(sentence)
     print(intent_type)
     if intent_type == 1:
-        file_list = project_parser("UCNLP", "conflict-detector")["file"]
+        i_file_list = project_parser("UCNLP", "conflict-detector")["file"]
         result_file_list = []
-        for fl in file_list:
+        for fl in i_file_list:
             remove_list = []
             approve_set = {}
             r = fl.split("/")[-1]
@@ -170,9 +170,9 @@ def extract_attention_word(sentence):
         for rfl in result_file_list:
             if rfl in sentence:
                 if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
-                    remove_list.append(file_list[result_file_list.index(rfl)])
+                    remove_list.append(i_file_list[result_file_list.index(rfl)])
                 else:
-                    approve_set.add(file_list[result_file_list.index(rfl)])
+                    approve_set.add(i_file_list[result_file_list.index(rfl)])
         if len(remove_list) > 0:
             work_db.remove_approved_list("slack_code", remove_list)
             print(remove_list)
