@@ -130,12 +130,16 @@ def get_file_path(file_list):
 
 def extract_attention_word(sentence, github_email):
     import re
+    work_db = work_database()
     file_list = project_parser("UCNLP", "client")["file"]
 
     name_list = get_slack_name_list()
-    work_db = work_database()
-    recent_data = work_db.get_recent_data(github_email)
-    recent_file = recent_data[0].split('|')[0]
+    try:
+        recent_data = work_db.get_recent_data(github_email)
+        recent_file = recent_data[0].split('|')[0]
+    except:
+        recent_data = "no recent data"
+        recent_file = "no recent file"
     intent_type = intent_classifier(sentence)
     print(intent_type)
 
@@ -165,7 +169,7 @@ def extract_attention_word(sentence, github_email):
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
-
+        work_db.close()
         return 1, approve_set, remove_list
 
 
@@ -199,7 +203,7 @@ def extract_attention_word(sentence, github_email):
 
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
-
+        work_db.close()
         return 2, request_lock_set, remove_lock_list, lock_time
 
 
@@ -216,27 +220,35 @@ def extract_attention_word(sentence, github_email):
 
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
+                work_db.close()
                 return 3, file_path, num_list[0], num_list[1]
             else:
+                work_db.close()
                 return 3, file_path, num_list[1], num_list[0]
         elif len(num_list) == 1:
+            work_db.close()
             return 3, file_path, num_list[0], num_list[0]
 
         else:
+            work_db.close()
             return 3, recent_file, 1, 1
 
 
     elif intent_type == 4:
         if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
             if 'indirect' in sentence:
-                return 4, "indirect off"
+                work_db.close()
+                return 4, 2, 1
             else:
-                return 4, "direct off"
+                work_db.close()
+                return 4, 1, 2
         else:
             if 'indirect' in sentence:
-                return 4, "indirect on"
+                work_db.close()
+                return 4, 2, 0
             else:
-                return 4, "direct on"
+                work_db.close()
+                return 4, 0, 2
 
 
     elif intent_type == 5:
@@ -246,29 +258,25 @@ def extract_attention_word(sentence, github_email):
         for rfl in result_file_list:
             if rfl in sentence:
                 file_path = file_list[result_file_list.index(rfl)]
-
+        work_db.close()
         return 5, file_path
 
 
     elif intent_type == 6:
+
         target_user_name = ""
 
         for name in name_list:
             if name in sentence:
                 target_user_name = name
+                break
 
         if target_user_name == "":
-            print("There's no user")
+            work_db.close()
+            return 6, recent_data[2]
         else:
-            user_db.match_user_git_id_code(target_user_name)
-            #print(remove_list)
-
-        if len(remove_list) > 0:
-            work_db.remove_approved_list(slack_code, remove_list)
-            print(remove_list)
-        elif len(approve_set) > 0:
-            work_db.add_approved_list(slack_code, approve_set)
-            print(approve_set)
+            work_db.close()
+            return 6, work_db.slack_name_to_git_email(target_user_name)
 
 
     elif intent_type == 7:
@@ -337,4 +345,4 @@ def extract_attention_word(sentence, github_email):
 extract_attention_word("Don't ignore File1.py")
 
 if __name__ == '__main__':
-    print(extract_attention_word("can client.py make a conflict?",'a'))
+    print(extract_attention_word("Can you tell me Myron's working status?",'a'))
