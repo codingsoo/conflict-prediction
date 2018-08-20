@@ -155,12 +155,9 @@ def extract_attention_word(sentence):
                 else:
                     approve_set.add(i_file_list[result_file_list.index(rfl)])
 
-        if len(remove_list) > 0:
-            work_db.remove_approved_list("slack_code", remove_list)
-            print(remove_list)
-        elif len(approve_set) > 0:
-            work_db.add_approved_list("slack_code", approve_set)
-            print(approve_set)
+        print("file_list : ", file_list)
+        print("remove_list : ", remove_list)
+        print("approve_set : ", approve_set)
 
         return approve_set, remove_list
 
@@ -315,4 +312,4 @@ def extract_attention_word(sentence):
 extract_attention_word("Don't ignore File1.py")
 
 if __name__ == '__main__':
-    extract_attention_word("Don't alert me about File1.py again.", "jc")
+    extract_attention_word("Can you not notify me about client.py?")
