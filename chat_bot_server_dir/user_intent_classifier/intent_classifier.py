@@ -103,12 +103,13 @@ def get_file_path(file_list):
     return result_file_list
 
 
-def extract_attention_word(sentence):
+def extract_attention_word(sentence, github_email):
     import re
     file_list = project_parser("UCNLP", "client")["file"]
-
     name_list = get_slack_name_list()
     work_db = work_database()
+    recent_data = work_db.get_recent_data(github_email)
+    recent_file = recent_data[0].split('|')[0]
     intent_type = intent_classifier(sentence)
     print(intent_type)
 
@@ -129,15 +130,19 @@ def extract_attention_word(sentence):
                 else:
                     approve_set.add(file_list[result_file_list.index(rfl)])
 
+        if remove_list == [] and approve_set == set():
+            if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
+                remove_list.append(recent_file)
+            else:
+                approve_set.add(recent_file)
+
         print("file_list : ", file_list)
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
 
-        return approve_set, remove_list
-
+        return 1, approve_set, remove_list
 
     elif intent_type == 2:
-        file_list = project_parser("UCNLP", "conflict-detector")["file"]
 
         result_file_list = list()
         request_lock_set = set()
@@ -269,4 +274,4 @@ def extract_attention_word(sentence):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Can you not notify me about client.py?")
+    extract_attention_word("Can you not notify me?",'a')
