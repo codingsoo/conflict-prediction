@@ -238,6 +238,7 @@ def extract_attention_word(sentence, github_email):
             else:
                 return 4, "direct on"
 
+
     elif intent_type == 5:
         result_file_list = get_file_path(file_list)
         file_path = ""
@@ -247,6 +248,7 @@ def extract_attention_word(sentence, github_email):
                 file_path = file_list[result_file_list.index(rfl)]
 
         return 5, file_path
+
 
     elif intent_type == 6:
         target_user_name = ""
@@ -267,6 +269,7 @@ def extract_attention_word(sentence, github_email):
         elif len(approve_set) > 0:
             work_db.add_approved_list(slack_code, approve_set)
             print(approve_set)
+
 
     elif intent_type == 7:
         import re

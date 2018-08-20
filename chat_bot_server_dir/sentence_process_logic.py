@@ -51,8 +51,14 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
     w_db.close()
     return
 
-def ignore_file_logic():
-    pass
+def ignore_file_logic(slack_code, ignore_list):
+    w_db = work_database()
+
+    project_name = w_db.read_project_name(slack_code)
+    w_db.add_update_ignore(project_name, ignore_list, slack_code)
+
+    w_db.close()
+    return
 
 
 def check_conflict_logic():
