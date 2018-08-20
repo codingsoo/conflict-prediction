@@ -5,7 +5,7 @@ from server_dir.slack_message_sender import send_direct_message
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2, param3):
 
-    message = ""
+    message = "default"
 
     if(intent_type == 1):
         message = approved_file_logic(slack_code, param0, param1)
