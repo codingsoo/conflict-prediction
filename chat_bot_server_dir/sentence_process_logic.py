@@ -10,7 +10,10 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
         lock_file_logic(slack_code, param0, param1, param2)
 
     elif(intent_type == 3):
-        code_history_logic()
+        code_history_logic(slack_code, param0, param1, param2)
+
+    elif(intent_type == 4):
+        ignore_file_logic()
 
 
 def approved_file_logic(slack_code, approve_set, remove_list):
