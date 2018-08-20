@@ -73,7 +73,7 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
     return punctuated_text
 
 def model_loading():
-    model_file = '.\\punctuator2\\INTERSPEECH-T-BRNN.pcl'
+    model_file = './punctuator2/INTERSPEECH-T-BRNN.pcl'
 
     x = T.imatrix('x')
 

@@ -2,8 +2,7 @@ import spacy
 
 # https://spacy.io/usage/vectors-similarity
 
-
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/chaeyeon/Desktop/workspace/NLP/venv/lib/python3.7/site-packages/spacy/data/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It is like gitignore. User can customize their ignore files.

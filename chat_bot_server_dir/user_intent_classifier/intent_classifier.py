@@ -1,6 +1,7 @@
 import spacy
-from slacker import Slacker
+
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
+
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.bot_server import get_slack_name_list
 from chat_bot_server_dir.work_database import work_database
@@ -11,7 +12,7 @@ from chat_bot_server_dir.work_database import *
 from server_dir.slack_message_sender import send_channel_message
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.bot_server import get_slack_name_list
-from chat_bot_server_dir.python_logic_parser import *c
+from chat_bot_server_dir.python_logic_parser import *
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 from server_dir.user_database import *
@@ -24,7 +25,8 @@ from server_dir.user_database import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/chaeyeon/Desktop/workspace/NLP/venv/lib/python3.7/site-packages/spacy/data/en_core_web_lg/en_core_web_lg-2.0.0')
+
 
 
 # bot's feature
@@ -72,8 +74,10 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+
 file_list = project_parser("UCNLP", "conflict-detector")["file"]
 user_list = get_slack_name_list()
+
 
 
 def calcue_max(sentence, list):
@@ -94,8 +98,6 @@ def calcue_max(sentence, list):
     return max_idx
 
 
-print(file_list)
-print(user_list)
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent.parent, "all_server_config.ini")
@@ -120,6 +122,7 @@ def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
 
     # Question
+
     if sentence_type == 1 :
         max_idx = calcue_max(sentence, question_sentence_list)
         return max_idx
@@ -148,12 +151,14 @@ def get_file_path(file_list):
         result_file_list.append(" " + r)
     return result_file_list
 
+
 def extract_attention_word(sentence):
     import re
-    work_db = work_database
+    work_db = work_database()
     user_db = user_database
-    intent_type = intent_classifier(sentence)
     name_list = get_slack_name_list()
+    intent_type = intent_classifier(sentence)
+    print(intent_type)
     if intent_type == 1:
         file_list = project_parser("UCNLP", "conflict-detector")["file"]
         result_file_list = []
@@ -177,7 +182,29 @@ def extract_attention_word(sentence):
         pass
 
     elif intent_type == 2:
-        pass
+        file_list = project_parser("UCNLP", "conflict-detector")["file"]
+        result_file_list = []
+        for fl in file_list:
+            request_lock_set = {}
+            remove_lock_list = []
+            r = fl.split("/")[-1]
+            result_file_list.append(" " + r)
+        for rfl in result_file_list:
+            if rfl in sentence:
+                if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+                    remove_lock_list.append(file_list[result_file_list.index(rfl)])
+                else:
+                    try:
+                        lock_time = int(re.findall('\d+', sentence)[0])
+                    except:
+                        lock_time = 1
+                    request_lock_set.add(file_list[result_file_list.index(rfl)])
+        if len(remove_lock_list) >0 :
+            work_db.remove_approved_list(slack_code, remove_lock_list, lock_time)
+            #print(remove_lock_list)
+        elif len(request_lock_set) >0:
+            work_db.remove_approved_list(slack_code, remove_lock_list)
+            #print(remove_lock_list)
     elif intent_type == 3:
         global file_list
         result_file_list = get_file_path(file_list)
@@ -213,8 +240,14 @@ def extract_attention_word(sentence):
             print("There's no user")
         else:
             user_db.match_user_git_id_code(target_user_name)
+                    #print(remove_list)
+        if len(remove_list) > 0:
+            work_db.remove_approved_list(slack_code, remove_list)
+            #print(remove_list)
+        elif len(approve_set) > 0:
+            work_db.add_approved_list(slack_code, approve_set)
+            #print(approve_set)
 
-        pass
     elif intent_type == 7:
         import re
 
@@ -255,4 +288,20 @@ def extract_attention_word(sentence):
         pass
     work_db.close()
 
-extract_attention_word("Send Kathryn Choi the message.")
+
+# similarity test
+# user_input = "I want to stop ignoring File1.py"
+# input1 = nlp(user_input)
+#
+# max = 0
+# for idx in range(len(desire_sentence_list)):
+#     sample = nlp(desire_sentence_list[idx])
+#     rate = input1.similarity(sample)
+#     print(rate)
+#     if rate > max and rate > 0.85:
+#         max_idx = idx+1
+#         max = rate
+# print(max_idx)
+
+extract_attention_word("Don't ignore File1.py")
+
