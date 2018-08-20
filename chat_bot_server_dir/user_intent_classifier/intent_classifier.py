@@ -1,5 +1,5 @@
 import spacy
-
+from slacker import Slacker
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.bot_server import get_slack_name_list
@@ -90,6 +90,24 @@ def calcue_max(sentence, list):
 print(file_list)
 print(user_list)
 
+def load_token() :
+    file_path = os.path.join(Path(os.getcwd()).parent.parent, "all_server_config.ini")
+
+    if not os.path.isfile(file_path) :
+        print("ERROR :: There is no all_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read(file_path)
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is all_server_config.ini")
+            exit(2)
+    return token
+
+token = load_token()
+slack = Slacker(token)
 
 def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
@@ -133,21 +151,20 @@ def extract_attention_word(sentence):
         result_file_list = []
         for fl in file_list:
             remove_list = []
-            approve_set = ()
+            approve_set = {}
             r = fl.split("/")[-1]
             result_file_list.append(" "+r)
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+                if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
                     remove_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     approve_set.add(file_list[result_file_list.index(rfl)])
-
         if len(remove_list) > 0:
-            work_db.remove_approved_list("slackcode", remove_list)
+            work_db.remove_approved_list("slack_code", remove_list)
             print(remove_list)
         elif len(approve_set) > 0:
-            work_db.add_approved_list("slackcode", approve_set)
+            work_db.add_approved_list("slack_code", approve_set)
             print(approve_set)
         pass
     elif intent_type == 2:
@@ -169,10 +186,11 @@ def extract_attention_word(sentence):
             work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[0])
         pass
     elif intent_type == 4:
+        # if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
         if 'direct' in sentence:
-            work_db.add_update_ignore("conflict-detector", [1, 0], slack_code)
+            work_db.add_update_ignore("conflict-detector", [1, 0], "slack_code")
         else:
-            work_db.add_update_ignore("conflict-detector", [0, 1], slack_code)
+            work_db.add_update_ignore("conflict-detector", [0, 1], "slack_code")
         pass
     elif intent_type == 5:
         pass
