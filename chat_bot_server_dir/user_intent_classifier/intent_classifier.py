@@ -294,6 +294,9 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 7:
+        
+        msg = ""
+        channel = ""
 
         to_channel_regex = r'to [a-zA-Z\s]+channel'
         in_channel_regex = r'in [a-zA-Z\s]+channel'
@@ -306,30 +309,29 @@ def extract_attention_word(sentence, github_email):
 
         if in_result != [] and to_result != []:
             if len(in_result[0]) < len(to_result[0]):
-                chaanel = in_result[0][2:-7].strip()
+                channel = in_result[0][2:-7].strip()
                 start_that = sentence.find('that') + 4
-                msg = sentence[start_that:].replace('in {} channel'.format(chaanel), '').strip()
+                msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
             else:
-                chaanel = to_result[0][2:-7].strip()
+                channel = to_result[0][2:-7].strip()
                 start_that = sentence.find('that') + 4
-                msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
-            send_channel_message(chaanel, msg)
+                msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
 
         elif in_result != []:
-            chaanel = in_result[0][2:-7].strip()
+            channel = in_result[0][2:-7].strip()
             start_that = sentence.find('that') + 4
-            msg = sentence[start_that:].replace('in {} channel'.format(chaanel), '').strip()
-            send_channel_message(chaanel, msg)
+            msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
 
         elif to_result != []:
-            chaanel = to_result[0][2:-7].strip()
+            channel = to_result[0][2:-7].strip()
             start_that = sentence.find('that') + 4
-            msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
-            send_channel_message(chaanel, msg)
+            msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
 
         else:
-            pass
-
+            channel = "code-conflict-chatbot"
+            start_that = sentence.find('that') + 4
+            msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        return channel, msg
 
 
 
