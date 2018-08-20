@@ -1,18 +1,15 @@
 import spacy
 
-from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
-from chat_bot_server_dir.project_parser import *
-from chat_bot_server_dir.python_logic_parser import *
+from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import *
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 
-
-# from chat_bot_server_dir.user_intent_classifier.project_parser import *
-# from chat_bot_server_dir.user_intent_classifier.python_logic_parser import *
+# You can download this file : https://spacy.io/usage/vectors-similarity
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load(
-    '/Users/chaeyeon/Desktop/workspace/NLP/venv/lib/python3.7/site-packages/spacy/data/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
+
 
 # bot's feature
 # 1. ignore_file : It is like gitignore. User can customize their ignore files.
@@ -59,102 +56,108 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+def calcue_max(sentence, list):
+    user_input = nlp(sentence)
+    max = 0
+    for idx in range(len(list)):
+        sample_input = nlp(list[idx])
+        rate = user_input.similarity(sample_input)
+        if rate > max and rate > 0.85:
+            max_idx = idx + 1
+            max = rate
+        if max_idx == 1 or max_idx == 4:
+            if 'direct' in sentence or 'indirect' in sentence:
+                max_idx = 4
+            else:
+                max_idx = 1
+
+    return max_idx
+
+
 
 def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
 
     # Question
-    if sentence_type == 1:
-        user_input = nlp(sentence)
-        max = 0
-        for idx in range(0, len(question_sentence_list)):
-            sample_input = nlp(question_sentence_list[idx])
-            rate = user_input.similarity(sample_input)
-            if rate > max and rate > 0.85:
-                max_idx = idx + 1
-                max = rate
+    if sentence_type == 1 :
+        max_idx = calcue_max(sentence, question_sentence_list)
         return max_idx
 
     # Command
-    elif sentence_type == 2:
-        user_input = nlp(sentence)
-        max = 0
-        for idx in range(0, len(command_sentence_list)):
-            sample_input = nlp(command_sentence_list[idx])
-            rate = user_input.similarity(sample_input)
-            if rate > max and rate > 0.85:
-                max_idx = idx + 1
-                max = rate
+    elif sentence_type == 2 :
+        max_idx = calcue_max(sentence, command_sentence_list)
         return max_idx
 
     # Suggestion
-    elif sentence_type == 3:
-        user_input = nlp(sentence)
-        max = 0
-        for idx in range(0, len(suggestion_sentence_list)):
-            sample_input = nlp(suggestion_sentence_list[idx])
-            rate = user_input.similarity(sample_input)
-            if rate > max and rate > 0.85:
-                max_idx = idx + 1
-                max = rate
+    elif sentence_type == 3 :
+        max_idx = calcue_max(sentence, suggestion_sentence_list)
         return max_idx
+
     # Desire
-    elif sentence_type == 4:
-        user_input = nlp(sentence)
-        max = 0
-        for idx in range(0, len(desire_sentence_list)):
-            sample_input = nlp(desire_sentence_list[idx])
-            rate = user_input.similarity(sample_input)
-            if rate > max and rate > 0.85:
-                max_idx = idx + 1
-                max = rate
+    elif sentence_type == 4 :
+        max_idx = calcue_max(sentence, desire_sentence_list)
         return max_idx
     else:
         return 10
 
-#
-# def extract_attention_word(sentence):
-#     #work_db = work_database()
-#     intent_type = intent_classifier(sentence)
-#     print(intent_type)
-#     if intent_type == 1:
-#         file_list = project_parser("UCNLP", "conflict-detector")["file"]
-#         result_file_list = []
-#         for fl in file_list:
-#             remove_list = []
-#             approve_set = ()
-#             r = fl.split("/")[-1]
-#             result_file_list.append(" "+r)
-#         for rfl in result_file_list:
-#             if rfl in sentence:
-#                 if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
-#                     remove_list.append(file_list[result_file_list.index(rfl)])
-#                 else:
-#                     approve_set.add(file_list[result_file_list.index(rfl)])
-#
-#         if len(remove_list) > 0:
-#             #work_db.remove_approved_list("lsebb1007", remove_list)
-#             print(remove_list)
-#         elif len(approve_set) > 0:
-#             #work_db.add_approved_list("lsebb1007", approve_set)
-#             print(approve_set)
-#         pass
-#
-#     elif intent_type == 2:
-#         pass
-#     elif intent_type == 3:
-#
-#         pass
-#     elif intent_type == 4:
-#         pass
-#     elif intent_type == 5:
-#         pass
-#     elif intent_type == 6:
-#         pass
-#     elif intent_type == 7:
-#         pass
-#     elif intent_type == 8:
-#         pass
-#     elif intent_type == 9:
-#         pass
-    #work_db.close()
+def extract_attention_word(sentence):
+    work_db = work_database
+    intent_type = intent_classifier(sentence)
+   #i name_list = get_slack_name_list()
+    if intent_type == 1:
+        file_list = project_parser("UCNLP", "conflict-detector")["file"]
+        result_file_list = []
+        for fl in file_list:
+            remove_list = []
+            approve_set = ()
+            r = fl.split("/")[-1]
+            result_file_list.append(" "+r)
+        for rfl in result_file_list:
+            if rfl in sentence:
+                if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+                    remove_list.append(file_list[result_file_list.index(rfl)])
+                else:
+                    approve_set.add(file_list[result_file_list.index(rfl)])
+
+        if len(remove_list) > 0:
+            #work_db.remove_approved_list("lsebb1007", remove_list)
+            print(remove_list)
+        elif len(approve_set) > 0:
+            #work_db.add_approved_list("lsebb1007", approve_set)
+            print(approve_set)
+
+        pass
+    elif intent_type == 2:
+        pass
+    elif intent_type == 3:
+
+        pass
+    elif intent_type == 4:
+        if 'direct' in sentence:
+            work_db.add_update_ignore("conflict-detector", [1, 0], slack_code)
+        else:
+            work_db.add_update_ignore("conflict-detector", [0, 1], slack_code)
+
+        work_db.close()
+        pass
+    elif intent_type == 5:
+        pass
+    elif intent_type == 6:
+        # target_user_name = ""
+        # for name in name_list:
+        #     if name in sentence:
+        #         target_user_name = name
+        # if target_user_name == "":
+        #     print("There's no user")
+        # else:
+
+
+        pass
+    elif intent_type == 7:
+        pass
+    elif intent_type == 8:
+        pass
+    elif intent_type == 9:
+        pass
+
+
