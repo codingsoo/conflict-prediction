@@ -9,6 +9,8 @@ from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import 
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 
+from server_dir.slack_message_sender import send_channel_message
+
 # recent 작업 파일 및 충돌 대상자 가져오기
 # a = work_database()
 # a.get_recent_data(이메일)
@@ -158,6 +160,40 @@ def extract_attention_word(sentence):
         # else:
         pass
     elif intent_type == 7:
+        import re
+
+        to_channel_regex = r'to [a-zA-Z\s]+channel'
+        in_channel_regex = r'in [a-zA-Z\s]+channel'
+
+        to_channel_p = re.compile(to_channel_regex)
+        in_channel_p = re.compile(in_channel_regex)
+
+        in_result = in_channel_p.findall(sentence)
+        to_result = to_channel_p.findall(sentence)
+        if in_result != [] and to_result != []:
+            if len(in_result[0]) < len(to_result[0]):
+                chaanel = in_result[0][2:-7].strip()
+                start_that = sentence.find('that') + 4
+                msg = sentence[start_that:].replace('in {} channel'.format(chaanel), '').strip()
+            else:
+                chaanel = to_result[0][2:-7].strip()
+                start_that = sentence.find('that') + 4
+                msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
+            send_channel_message(chaanel, msg)
+        elif in_result != []:
+            chaanel = in_result[0][2:-7].strip()
+            start_that = sentence.find('that') + 4
+            msg = sentence[start_that:].replace('in {} channel'.format(chaanel), '').strip()
+            send_channel_message(chaanel, msg)
+        elif to_result != []:
+            chaanel = to_result[0][2:-7].strip()
+            start_that = sentence.find('that') + 4
+            msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
+            send_channel_message(chaanel, msg)
+        else:
+            pass
+
+
         pass
     elif intent_type == 8:
         pass
