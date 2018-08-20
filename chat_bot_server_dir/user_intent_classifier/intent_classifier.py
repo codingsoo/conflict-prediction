@@ -199,12 +199,16 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 4:
-        # if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
-        if 'indirect' in sentence:
-            work_db.add_update_ignore("conflict-detector", [0, 1], "slack_code")
+        if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
+            if 'indirect' in sentence:
+                return 4, "indirect off"
+            else:
+                return 4, "direct off"
         else:
-            work_db.add_update_ignore("conflict-detector", [1, 0], "slack_code")
-
+            if 'indirect' in sentence:
+                return 4, "indirect on"
+            else:
+                return 4, "direct on"
 
     elif intent_type == 5:
         # is conflict
@@ -280,4 +284,4 @@ def extract_attention_word(sentence, github_email):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Can you tell me who wrote line14?",'a')
+    extract_attention_word("Can you not notify me about indirect conflict?",'a')
