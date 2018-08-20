@@ -113,29 +113,25 @@ def extract_attention_word(sentence):
     print(intent_type)
 
     if intent_type == 1:
-        i_file_list = project_parser("UCNLP", "conflict-detector")["file"]
 
         result_file_list = list()
         remove_list = list()
         approve_set = set()
 
-        for fl in i_file_list:
+        for fl in file_list:
             r = fl.split("/")[-1]
             result_file_list.append(" "+r)
 
         for rfl in result_file_list:
             if rfl in sentence:
                 if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
-                    remove_list.append(i_file_list[result_file_list.index(rfl)])
+                    remove_list.append(file_list[result_file_list.index(rfl)])
                 else:
-                    approve_set.add(i_file_list[result_file_list.index(rfl)])
+                    approve_set.add(file_list[result_file_list.index(rfl)])
 
-        if len(remove_list) > 0:
-            work_db.remove_approved_list("slack_code", remove_list)
-            print(remove_list)
-        elif len(approve_set) > 0:
-            work_db.add_approved_list("slack_code", approve_set)
-            print(approve_set)
+        print("file_list : ", file_list)
+        print("remove_list : ", remove_list)
+        print("approve_set : ", approve_set)
 
         return approve_set, remove_list
 
@@ -273,4 +269,4 @@ def extract_attention_word(sentence):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Don't alert me about File1.py again.")
+    extract_attention_word("Can you not notify me about client.py?")
