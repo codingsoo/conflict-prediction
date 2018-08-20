@@ -176,7 +176,6 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 3:
-        file_list
         result_file_list = get_file_path(file_list)
         file_path = ""
 
@@ -189,11 +188,14 @@ def extract_attention_word(sentence, github_email):
 
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
-                work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[1])
+                return 3, file_path, num_list[0], num_list[1]
             else:
-                work_db.get_user_email("conflict-detector", file_path, num_list[1], num_list[0])
+                return 3, file_path, num_list[1], num_list[0]
         elif len(num_list) == 1:
-            work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[0])
+            return 3, file_path, num_list[0], num_list[0]
+
+        else:
+            return 3, recent_file, 1, 1
 
 
     elif intent_type == 4:
@@ -278,4 +280,4 @@ def extract_attention_word(sentence, github_email):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Can you lock",'a')
+    extract_attention_word("Can you tell me who wrote line14?",'a')
