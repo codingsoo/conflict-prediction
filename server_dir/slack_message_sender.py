@@ -1,5 +1,4 @@
 from slacker import Slacker
-import json
 import os
 from pathlib import Path
 import random

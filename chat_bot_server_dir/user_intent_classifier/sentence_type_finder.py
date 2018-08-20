@@ -1,7 +1,5 @@
 from stanfordcorenlp import StanfordCoreNLP
 
-nlp = StanfordCoreNLP('http://localhost', port=9000)
-
 def sentence_preprocess(sentence):
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("Please ", '')
@@ -51,6 +49,7 @@ def is_question(parse_list):
     return False
 
 def require_something_sentence(_sentence):
+    nlp = StanfordCoreNLP('http://localhost', port=9000)
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)

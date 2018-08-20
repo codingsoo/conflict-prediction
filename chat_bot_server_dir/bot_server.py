@@ -161,34 +161,34 @@ def on_open(ws):
 # get_severe_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","get_severe.txt"))
 # approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","approved.txt"))
 # notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
+if __name__ == "__main__":
+    #### MAIN ####
+    nltk.download('punkt')
+    nltk.download('wordnet')
+    model_list = model_loading()
+    tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-#### MAIN ####
-nltk.download('punkt')
-nltk.download('wordnet')
-model_list = model_loading()
-tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-
-res = slack.auth.test().body
+    res = slack.auth.test().body
 
 
 
-msg = [{
-    'fallback': res['user'] + ' is LOG-IN!',
-    'pretext': '*Connected to ' + res['team'] + '(' + channel + ')*',
-    'text': 'Hello! I\'m Sayme. \nIf you need me, please call me with @Sayme first.',
-    'color': '#36a64f',
-    'mrkdwn_in': ['pretext']
-}]
+    msg = [{
+        'fallback': res['user'] + ' is LOG-IN!',
+        'pretext': '*Connected to ' + res['team'] + '(' + channel + ')*',
+        'text': 'Hello! I\'m Sayme. \nIf you need me, please call me with @Sayme first.',
+        'color': '#36a64f',
+        'mrkdwn_in': ['pretext']
+    }]
 
-slack.chat.post_message(channel, '', attachments=msg, as_user=True)
+    slack.chat.post_message(channel, '', attachments=msg, as_user=True)
 
-response = slack.rtm.start()
-endpoint = response.body['url']
+    response = slack.rtm.start()
+    endpoint = response.body['url']
 
-# print(project_structure)
-# print(slack_name_list)
+    # print(project_structure)
+    # print(slack_name_list)
 
-# websocket.enableTrace(True)
-ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
-ws.on_open = on_open
-ws.run_forever()
+    # websocket.enableTrace(True)
+    ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
+    ws.on_open = on_open
+    ws.run_forever()
