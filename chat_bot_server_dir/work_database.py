@@ -73,6 +73,9 @@ class work_database:
 
         return
 
+
+##########################################################
+
     def recommendation(self, user1, user2):
 
         user1_working_amount = "SELECT work_amount " \
@@ -107,6 +110,8 @@ class work_database:
         else :
             return response_list
 
+#################################################################
+
     def user_recognize(self, user):
         last_connection = "SELECT last_connection " \
                           "FROM user_last_connection " \
@@ -129,6 +134,8 @@ class work_database:
         elif (datetime.datetime.now() - last_connection) > datetime.timedelta(days=30) :
             return 3
 
+#######################################################
+
     def get_user_working_status(self, git_email_id):
         sql = "SELECT file_name, logic_name, work_line, work_amount " \
               "FROM working_table " \
@@ -142,6 +149,8 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : get user working status")
+
+#####################################################
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
@@ -409,6 +418,8 @@ class work_database:
         # direct_ignore, indirect_ignore
         # 0 => non-ignore / 1 => ignore
         return raw[2], raw[3]
+
+#############################3
 
     def get_recent_data(self, github_email):
         sql1  =  "SELECT file_name, logic1_name, logic2_name, user1_name, user2_name, log_time " \

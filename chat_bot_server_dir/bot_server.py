@@ -15,6 +15,7 @@ from server_dir.slack_message_sender import send_direct_message
 import nltk
 from server_dir.user_database import user_database
 from pathlib import Path
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import *
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -108,40 +109,21 @@ def on_message(ws, message):
         except:
             rand_text = msg['text']
 
-        # Detect Hash Number
+        # Verifying User : Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
             w_db = user_database()
             w_db.set_slack_id_code(random_number=rand_text,
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
 
-        # Approved list
-        elif '.py' in rand_text:
-            for py_file in rand_text.split(' '):
-                if '.py' in py_file:
-
-
-
-                    approved_list = []
-                    with open('../user_data/approved_list.json', 'r') as f:
-                        approved_list = json.load(f)
-
-                    approved_list.append(py_file)
-                    attachments_dict = dict()
-                    attachments_dict['text'] = 1 #add_ignore[random.randint(0, len(add_ignore)-1)] % (py_file)
-                    attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-                    attachments = [attachments_dict]
-
-                    slack.chat.post_message(channel="#code-conflict-chatbot", text=None, attachments=attachments, as_user=True)
-
-                    with open('../user_data/approved_list.json', 'w') as f:
-                        json.dump(approved_list,f)
-                    break
-
+        # Sentence Processing
         else:
-            content = tokenizer.tokenize(rand_text)
-            for sentence in content:
-                pass
+            # Search Git id
+            u_db = user_database()
+            user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
+            user_slack_id = msg['user']
+
+            intent_type, return_param0, return_param1, return_param2, return_param3 = extract_attention_word(rand_text, user_git_id)
 
 
 def on_error(ws, error):
@@ -158,19 +140,13 @@ def on_open(ws):
 
     _thread.start_new_thread(run, ())
 
-# get_severe_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","get_severe.txt"))
-# approved_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","approved.txt"))
-# notify_conflict_shell = make_shell_list(os.path.join(os.path.pardir,"situation_shell","go_to_same_file.txt"))
+
 if __name__ == "__main__":
-    #### MAIN ####
     nltk.download('punkt')
     nltk.download('wordnet')
     model_list = model_loading()
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-
     res = slack.auth.test().body
-
-
 
     msg = [{
         'fallback': res['user'] + ' is LOG-IN!',
@@ -185,10 +161,6 @@ if __name__ == "__main__":
     response = slack.rtm.start()
     endpoint = response.body['url']
 
-    # print(project_structure)
-    # print(slack_name_list)
-
-    # websocket.enableTrace(True)
     ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
     ws.on_open = on_open
     ws.run_forever()

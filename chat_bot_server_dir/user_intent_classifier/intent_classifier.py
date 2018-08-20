@@ -99,7 +99,6 @@ def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
 
     # Question
-
     if sentence_type == 1 :
         max_idx = calcue_max(sentence, question_sentence_list)
         return max_idx
@@ -132,6 +131,7 @@ def get_file_path(file_list):
 def extract_attention_word(sentence, github_email):
     import re
     file_list = project_parser("UCNLP", "client")["file"]
+
     name_list = get_slack_name_list()
     work_db = work_database()
     recent_data = work_db.get_recent_data(github_email)
@@ -140,22 +140,22 @@ def extract_attention_word(sentence, github_email):
     print(intent_type)
 
     if intent_type == 1:
-        i_file_list = project_parser("UCNLP", "conflict-detector")["file"]
+        file_list = project_parser("UCNLP", "conflict-detector")["file"]
 
         result_file_list = list()
         remove_list = list()
         approve_set = set()
 
-        for fl in i_file_list:
+        for fl in file_list:
             r = fl.split("/")[-1]
             result_file_list.append(" "+r)
 
         for rfl in result_file_list:
             if rfl in sentence:
                 if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
-                    remove_list.append(i_file_list[result_file_list.index(rfl)])
+                    remove_list.append(file_list[result_file_list.index(rfl)])
                 else:
-                    approve_set.add(i_file_list[result_file_list.index(rfl)])
+                    approve_set.add(file_list[result_file_list.index(rfl)])
 
         if remove_list == [] and approve_set == set():
             if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
@@ -168,8 +168,10 @@ def extract_attention_word(sentence, github_email):
 
         return 1, approve_set, remove_list
 
+
     elif intent_type == 2:
 
+        lock_time = 0
         result_file_list = list()
         request_lock_set = set()
         remove_lock_list = list()
