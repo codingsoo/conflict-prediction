@@ -449,7 +449,6 @@ class work_database:
             print("ERROR : Get recent data")
 
 
-
     def read_ignore(self, project_name, slack_code):
         raw_list = list()
         try:
@@ -551,6 +550,3 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
-
-a = work_database()
-a.get_recent_data('a')

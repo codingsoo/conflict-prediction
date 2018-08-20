@@ -11,6 +11,8 @@ import numpy as np
 
 import re
 import os
+from pathlib import Path
+
 
 def to_array(arr, dtype=np.int32):
     # minibatch of 1 sequence as column
@@ -73,7 +75,7 @@ def punctuate(predict, word_vocabulary, punctuation_vocabulary, reverse_punctuat
     return punctuated_text
 
 def model_loading():
-    model_file = './punctuator2/INTERSPEECH-T-BRNN.pcl'
+    model_file = os.path.join(Path(os.getcwd()), "punctuator2", "INTERSPEECH-T-BRNN.pcl")
 
     x = T.imatrix('x')
 

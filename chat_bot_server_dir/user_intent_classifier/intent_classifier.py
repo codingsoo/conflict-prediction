@@ -1,5 +1,4 @@
 import spacy
-
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 
 from chat_bot_server_dir.project_parser import project_parser
@@ -155,40 +154,51 @@ def get_file_path(file_list):
 def extract_attention_word(sentence):
     import re
     work_db = work_database()
-    user_db = user_database
+    user_db = user_database()
     name_list = get_slack_name_list()
     intent_type = intent_classifier(sentence)
     print(intent_type)
+
+
     if intent_type == 1:
         i_file_list = project_parser("UCNLP", "conflict-detector")["file"]
-        result_file_list = []
+
+        result_file_list = list()
+        remove_list = list()
+        approve_set = set()
+
         for fl in i_file_list:
-            remove_list = []
-            approve_set = {}
             r = fl.split("/")[-1]
             result_file_list.append(" "+r)
+
         for rfl in result_file_list:
             if rfl in sentence:
                 if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
                     remove_list.append(i_file_list[result_file_list.index(rfl)])
                 else:
                     approve_set.add(i_file_list[result_file_list.index(rfl)])
+
         if len(remove_list) > 0:
             work_db.remove_approved_list("slack_code", remove_list)
             print(remove_list)
         elif len(approve_set) > 0:
             work_db.add_approved_list("slack_code", approve_set)
             print(approve_set)
-        pass
+
+        return approve_set, remove_list
+
 
     elif intent_type == 2:
         file_list = project_parser("UCNLP", "conflict-detector")["file"]
-        result_file_list = []
+
+        result_file_list = list()
+        request_lock_set = set()
+        remove_lock_list = list()
+
         for fl in file_list:
-            request_lock_set = {}
-            remove_lock_list = []
             r = fl.split("/")[-1]
             result_file_list.append(" " + r)
+
         for rfl in result_file_list:
             if rfl in sentence:
                 if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
@@ -199,20 +209,27 @@ def extract_attention_word(sentence):
                     except:
                         lock_time = 1
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
+
         if len(remove_lock_list) >0 :
-            work_db.remove_approved_list(slack_code, remove_lock_list, lock_time)
-            #print(remove_lock_list)
+            print(remove_lock_list)
         elif len(request_lock_set) >0:
-            work_db.remove_approved_list(slack_code, remove_lock_list)
-            #print(remove_lock_list)
+            print(remove_lock_list)
+
+        return request_lock_set, remove_lock_list
+
+
     elif intent_type == 3:
         global file_list
         result_file_list = get_file_path(file_list)
+        file_path = ""
+
         for rfl in result_file_list:
             if rfl in sentence:
                 file_path = file_list[result_file_list.index(rfl)]
+
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
+
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
                 work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[1])
@@ -220,33 +237,40 @@ def extract_attention_word(sentence):
                 work_db.get_user_email("conflict-detector", file_path, num_list[1], num_list[0])
         elif len(num_list) == 1:
             work_db.get_user_email("conflict-detector", file_path, num_list[0], num_list[0])
-        pass
+
+
     elif intent_type == 4:
         # if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
-        if 'direct' in sentence:
-            work_db.add_update_ignore("conflict-detector", [1, 0], "slack_code")
-        else:
+        if 'indirect' in sentence:
             work_db.add_update_ignore("conflict-detector", [0, 1], "slack_code")
+        else:
+            work_db.add_update_ignore("conflict-detector", [1, 0], "slack_code")
 
-        pass
+
     elif intent_type == 5:
+        # is conflict
         pass
+
+
     elif intent_type == 6:
         target_user_name = ""
+
         for name in name_list:
             if name in sentence:
                 target_user_name = name
+
         if target_user_name == "":
             print("There's no user")
         else:
             user_db.match_user_git_id_code(target_user_name)
-                    #print(remove_list)
+            #print(remove_list)
+
         if len(remove_list) > 0:
             work_db.remove_approved_list(slack_code, remove_list)
-            #print(remove_list)
+            print(remove_list)
         elif len(approve_set) > 0:
             work_db.add_approved_list(slack_code, approve_set)
-            #print(approve_set)
+            print(approve_set)
 
     elif intent_type == 7:
         import re
@@ -259,6 +283,7 @@ def extract_attention_word(sentence):
 
         in_result = in_channel_p.findall(sentence)
         to_result = to_channel_p.findall(sentence)
+
         if in_result != [] and to_result != []:
             if len(in_result[0]) < len(to_result[0]):
                 chaanel = in_result[0][2:-7].strip()
@@ -269,23 +294,30 @@ def extract_attention_word(sentence):
                 start_that = sentence.find('that') + 4
                 msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
             send_channel_message(chaanel, msg)
+
         elif in_result != []:
             chaanel = in_result[0][2:-7].strip()
             start_that = sentence.find('that') + 4
             msg = sentence[start_that:].replace('in {} channel'.format(chaanel), '').strip()
             send_channel_message(chaanel, msg)
+
         elif to_result != []:
             chaanel = to_result[0][2:-7].strip()
             start_that = sentence.find('that') + 4
             msg = sentence[start_that:].replace('to {} channel'.format(chaanel), '').strip()
             send_channel_message(chaanel, msg)
+
         else:
             pass
-        pass
+
+
     elif intent_type == 8:
         pass
+
+
     elif intent_type == 9:
         pass
+
     work_db.close()
 
 
@@ -305,3 +337,5 @@ def extract_attention_word(sentence):
 
 extract_attention_word("Don't ignore File1.py")
 
+if __name__ == '__main__':
+    extract_attention_word("Don't alert me about File1.py again.", "jc")
