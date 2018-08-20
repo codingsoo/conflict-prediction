@@ -99,6 +99,29 @@ class user_database:
         else:
             return "No data", "No data"
 
+    def match_user_git_id_code(self, slack_id):
+        raw_list = list()
+        try:
+            sql = "select git_id " \
+                  "from user_table " \
+                  "where slack_id = '%s' " % slack_id
+
+            # execute sql
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : match user git id code data")
+
+        if (raw_list != []):
+            return raw_list
+        else:
+            return "No data", "No data"
+
     def close(self):
         self.cursor.close()
         self.conn.close()
