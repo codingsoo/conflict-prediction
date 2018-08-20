@@ -1,5 +1,6 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
+from server_dir.slack_message_sender import send_channel_message
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2, param3):
 
@@ -22,6 +23,10 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
 
     elif(intent_type == 6):
         message = other_working_status_logic(slack_code, param0)
+
+    elif(intent_type == 7):
+        message = send_message_channel_logic(param0, param1)
+
 
 
 def approved_file_logic(slack_code, approve_set, remove_list):
@@ -117,8 +122,11 @@ def other_working_status_logic(slack_code, git_id):
     return message
 
 
-def send_message_channel_logic():
-    pass
+def send_message_channel_logic(channel, msg):
+
+    send_channel_message(channel, msg)
+
+    return "message"
 
 
 def send_message_direct_logic():

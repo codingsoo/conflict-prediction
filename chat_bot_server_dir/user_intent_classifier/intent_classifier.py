@@ -340,6 +340,7 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 9:
+
         pass
 
     work_db.close()
