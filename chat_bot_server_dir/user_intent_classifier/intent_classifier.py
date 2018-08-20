@@ -182,7 +182,7 @@ def extract_attention_word(sentence, github_email):
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
         work_db.close()
-        return 1, approve_set, remove_list
+        return 1, approve_set, remove_list, None
 
 
     elif intent_type == 2:
@@ -250,17 +250,17 @@ def extract_attention_word(sentence, github_email):
         if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
             if 'indirect' in sentence:
                 work_db.close()
-                return 4, 2, 1
+                return 4, 2, 1, None
             else:
                 work_db.close()
-                return 4, 1, 2
+                return 4, 1, 2, None
         else:
             if 'indirect' in sentence:
                 work_db.close()
-                return 4, 2, 0
+                return 4, 2, 0, None
             else:
                 work_db.close()
-                return 4, 0, 2
+                return 4, 0, 2, None
 
 
     elif intent_type == 5:
@@ -271,7 +271,7 @@ def extract_attention_word(sentence, github_email):
             if rfl in sentence:
                 file_path = file_list[result_file_list.index(rfl)]
         work_db.close()
-        return 5, file_path
+        return 5, file_path, None, None
 
 
     elif intent_type == 6:
@@ -285,11 +285,11 @@ def extract_attention_word(sentence, github_email):
 
         if target_user_name == "":
             work_db.close()
-            return 6, recent_data[2]
+            return 6, recent_data[2], None, None
         else:
             target_user_email = work_db.slack_name_to_git_email(target_user_name)
             work_db.close()
-            return 6, target_user_email
+            return 6, target_user_email, None, None
 
 
     elif intent_type == 7:
@@ -331,7 +331,7 @@ def extract_attention_word(sentence, github_email):
             start_that = sentence.find('that') + 4
             msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
         work_db.close()
-        return channel, msg
+        return channel, msg, None, None
 
     elif intent_type == 8:
         target_user_name = ""
@@ -348,18 +348,18 @@ def extract_attention_word(sentence, github_email):
         start_that = sentence.find('that') + 4
         msg = sentence[start_that:]
         work_db.close()
-        return slack_code, msg
+        return slack_code, msg, None, None
 
     elif intent_type == 9:
         work_db.close()
-        return github_email, recent_data[2]
+        return github_email, recent_data[2], None, None
     else:
         if "hi" or "Hi" or "Hello" or "hello":
-            return "greeting"
+            return "greeting", None, None, None
         elif "bye" or "Bye" or "See you" or "see you":
-            return "bye"
+            return "bye", None, None, None
         else:
-            return "no_response"
+            return "no_response", None, None, None
 
 if __name__ == '__main__':
     print(extract_attention_word("hi",'a'))
