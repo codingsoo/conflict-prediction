@@ -1,15 +1,21 @@
 import spacy
 
+from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
+from chat_bot_server_dir.project_parser import project_parser
+from chat_bot_server_dir.bot_server import get_slack_name_list
+from chat_bot_server_dir.work_database import work_database
+from chat_bot_server_dir.python_logic_parser import *
 from chat_bot_server_dir.user_intent_classifier.intent_classifier_12case import *
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import *
 from chat_bot_server_dir.work_database import *
 
-# You can download this file : https://spacy.io/usage/vectors-similarity
+# recent 작업 파일 및 충돌 대상자 가져오기
+# a = work_database()
+# a.get_recent_data(이메일)
+# a.close()
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-
-
 
 # bot's feature
 # 1. ignore_file : It is like gitignore. User can customize their ignore files.
@@ -150,8 +156,6 @@ def extract_attention_word(sentence):
         # if target_user_name == "":
         #     print("There's no user")
         # else:
-
-
         pass
     elif intent_type == 7:
         pass
