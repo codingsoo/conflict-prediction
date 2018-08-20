@@ -357,16 +357,35 @@ class work_database:
 
         if(read_ignore == []):
             # First ignore register
-            sql = "insert into ignore_table " \
-                  "(project_name, slack_code, direct_ignore, indirect_ignore) value " \
-                  "('%s', '%s', %d, %d) " % (project_name, slack_code, ignore_list[0], ignore_list[1])
+
+            # Direct ignore On
+            if(ignore_list[0] == 1):
+                sql = "insert into ignore_table " \
+                      "(project_name, slack_code, direct_ignore) value " \
+                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list[0])
+
+            # Indirect ignore On
+            elif(ignore_list[1] == 1):
+                sql = "insert into ignore_table " \
+                      "(project_name, slack_code, indirect_ignore) value " \
+                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list[1])
+
         else:
             # Already exists ignore
-            sql = "update ignore_table " \
-                  "set direct_ignore = %d, indirect_ignore = %d " \
-                  "where project_name = '%s' " \
-                  "and slack_code = '%s' " %(ignore_list[0], ignore_list[1],
-                                             project_name, slack_code)
+
+            # Direct ignore On
+            if(ignore_list[0] == 1):
+                sql = "update ignore_table " \
+                      "set direct_ignore = %d " \
+                      "where project_name = '%s' " \
+                      "and slack_code = '%s' " %(ignore_list[0], project_name, slack_code)
+
+            # Indirect ignore On
+            elif(ignore_list[1] == 1):
+                sql = "update ignore_table " \
+                      "set indirect_ignore = %d " \
+                      "where project_name = '%s' " \
+                      "and slack_code = '%s' " % (ignore_list[0], project_name, slack_code)
 
         # ignore_list : [direct_ignore, indirect_ignore]
         try:
