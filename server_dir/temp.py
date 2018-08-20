@@ -282,10 +282,10 @@ def temp(self, project_name, working_list, user_name):
 if __name__ == "__main__":
 
     content = {
-        'git_id' : 'learnittdeep@gmail.com',
+        'git_id' : 'learnitdeep@gmail.com',
         'git_diff': {
-            'b': {
-                'b/b': [
+            'a': {
+                'a/b': [
                     [
                         'f1',
                         4,
@@ -312,13 +312,13 @@ if __name__ == "__main__":
 
     w_db.delete_user_data(temp.get_user_name())
 
-    w_db.detect_direct_conflict(temp.get_proj_name(),
-                                 temp.get_working_data(),
-                                 temp.get_user_name())
+    # w_db.detect_direct_conflict(temp.get_proj_name(),
+    #                              temp.get_working_data(),
+    #                              temp.get_user_name())
 
-    # iw_db.detect_indirect_conflict(temp.get_proj_name(),
-    #                                temp.get_working_data(),
-    #                                temp.get_user_name())
+    iw_db.detect_indirect_conflict(temp.get_proj_name(),
+                                   temp.get_working_data(),
+                                   temp.get_user_name())
 
     w_db.insert_user_data(temp.get_proj_name(),
                              temp.get_working_data(),

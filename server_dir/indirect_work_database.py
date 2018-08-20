@@ -27,7 +27,10 @@ class indirect_work_database:
     def detect_indirect_conflict(self, project_name, working_list, user_name):
         w_db = work_database()
 
+        w_db.auto_remove_lock_list()
         self.delete_conflict_list()
+
+        w_db.inform_lock_file(project_name, working_list, user_name)
 
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
@@ -66,7 +69,7 @@ class indirect_work_database:
             sql = "delete " \
                   "from indirect_conflict_table " \
                   "where alert_count >= 2 " \
-                  "and TIMEDIFF(now(),log_time) > 24"
+                  "and TIMEDIFF(now(),log_time) > 24*60*60"
             print(sql)
 
             self.cursor.execute(sql)
