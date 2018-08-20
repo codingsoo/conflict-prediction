@@ -354,6 +354,7 @@ class work_database:
     '''
     def add_update_ignore(self, project_name, ignore_list, slack_code):
         read_ignore = self.read_ignore(project_name, slack_code)
+        sql = ""
 
         if(read_ignore == []):
             # First ignore register
