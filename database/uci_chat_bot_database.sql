@@ -93,3 +93,13 @@ CREATE TABLE `lock_list` (
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
+
+/* 9. ignore_table */
+CREATE TABLE `ignore_table` (
+	`project_name` VARCHAR(50) NOT NULL,
+	`slack_code` VARCHAR(50) NOT NULL,
+	`direct_ignore` INT(11) NULL DEFAULT NULL,
+	`indirec_ignore` INT(11) NULL DEFAULT NULL
+)
+ENGINE=InnoDB
+;

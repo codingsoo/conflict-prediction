@@ -6,6 +6,7 @@ import random
 import configparser
 from server_dir.conflict_flag_enum import Conflict_flag
 from server_dir.user_database import user_database
+from chat_bot_server_dir.work_database import work_database
 
 def get_slack():
     token = ''
@@ -65,6 +66,15 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
 
     user1_slack_id_code = get_user_slack_id(user1_name)
     user2_slack_id_code = get_user_slack_id(user2_name)
+
+    w_db = work_database()
+    direct_ignore_flag, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
+    w_db.close()
+
+    if(direct_ignore_flag == 1 or indirect_ignore_flag == 1):
+        print("IGNORE MESSAGE")
+        return
+
     message = ""
 
     # Already conflict

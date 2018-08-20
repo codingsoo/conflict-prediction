@@ -16,7 +16,6 @@ class work_database:
                                     password = password,
                                     db       = db,
                                     charset  = charset)
-
         # get cursor
         self.cursor = self.conn.cursor()
 
@@ -339,6 +338,99 @@ class work_database:
 
         return
 
+
+    ####################################################################
+    '''
+    ignore
+    '''
+    def add_update_ignore(self, project_name, ignore_list, slack_code):
+        read_ignore = self.read_ignore(project_name, slack_code)
+
+        if(read_ignore == []):
+            # First ignore register
+            sql = "insert into ignore_table " \
+                  "(project_name, slack_code, direct_ignore, indirect_ignore) value " \
+                  "('%s', '%s', %d, %d) " % (project_name, slack_code, ignore_list[0], ignore_list[1])
+        else:
+            # Already exists ignore
+            sql = "update ignore_table " \
+                  "set direct_ignore = %d, indirect_ignore = %d " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s' " %(ignore_list[0], ignore_list[1],
+                                             project_name, slack_code)
+
+        # ignore_list : [direct_ignore, indirect_ignore]
+        try:
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : add ignore")
+
+
+    def remove_ignore(self, project_name, slack_code):
+        try:
+            sql = "delete " \
+                  "from ignore_table " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s' " %(project_name, slack_code)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : remove ignore")
+
+
+    def search_ignore(self, project_name, git_id):
+        slack_code = self.convert_git_id_to_slack_code(git_id)[0]
+        raw = tuple()
+
+        try:
+            sql = "select * " \
+                  "from ignore_table " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s' " %(project_name, slack_code)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            # [project_name, slack_code, direct_ignore, indirect_ignore]
+            raw = tuple(self.cursor.fetchone())
+        except:
+            self.conn.rollback()
+            print("ERROR : search ignore")
+
+        # direct_ignore, indirect_ignore
+        # 0 => non-ignore / 1 => ignore
+        return raw[2], raw[3]
+
+
+    def read_ignore(self, project_name, slack_code):
+        raw_list = list()
+        try:
+            sql = "select * " \
+                  "from ignore_table " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s' " % (project_name, slack_code)
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : read project name")
+
+        return raw_list
+
     ####################################################################
     '''
     Utility
@@ -420,6 +512,3 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
-
-a = work_database()
-a.get_user_working_status("learnitdeep@gmail.com")

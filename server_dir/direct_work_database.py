@@ -46,7 +46,6 @@ class direct_work_database:
         w_db = work_database()
 
         w_db.auto_remove_lock_list()
-
         self.delete_direct_conflict_list()
 
         w_db.inform_lock_file(project_name, working_list, user_name)

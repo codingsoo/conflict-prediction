@@ -21,7 +21,7 @@ def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
 
     if not os.path.isfile(file_path) :
-        print("ERROR :: There is no bot_server_config.ini")
+        print("ERROR :: There is no all_server_config.ini")
         exit(2)
     else :
         config = configparser.ConfigParser()
@@ -29,7 +29,7 @@ def load_token() :
         try :
             token=config["SLACK"]["TOKEN"]
         except :
-            print("ERROR :: It is bot_server_config.ini")
+            print("ERROR :: It is all_server_config.ini")
             exit(2)
     return token
 
