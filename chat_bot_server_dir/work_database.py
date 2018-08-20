@@ -440,8 +440,9 @@ class work_database:
             conflict_recent_data = direct_recent_data_mod+indirect_recent_data_mod
 
             sorted(conflict_recent_data, key=lambda s: s[4])
+            conflict_recent_data[-1].remove(github_email)
 
-            print(conflict_recent_data[-1])
+            return conflict_recent_data[-1]
 
         except:
             self.conn.rollback()
