@@ -16,6 +16,7 @@ import nltk
 from server_dir.user_database import user_database
 from pathlib import Path
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import extract_attention_word
+from chat_bot_server_dir.sentence_process_logic import sentence_processing_main
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -123,7 +124,19 @@ def on_message(ws, message):
             user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
             user_slack_id = msg['user']
 
+            # Sentence Processing logic
             intent_type, return_param0, return_param1, return_param2, return_param3 = extract_attention_word(rand_text, user_git_id)
+            return_message = sentence_processing_main(intent_type, return_param0, return_param1, return_param2, return_param3)
+
+            # Send the message to user
+            if(return_message != "message"):
+                attachments_dict = dict()
+                attachments_dict['text'] = "%s" % (return_message)
+                attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+                attachments = [attachments_dict]
+                slack.chat.post_message(channel="" + user_slack_id, text=None, attachments=attachments, as_user=True)
+
+
 
 
 def on_error(ws, error):

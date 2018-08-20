@@ -1,6 +1,7 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
+from server_dir.slack_message_sender import send_direct_message
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2, param3):
 
@@ -27,6 +28,16 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
     elif(intent_type == 7):
         message = send_message_channel_logic(param0, param1)
 
+    elif(intent_type == 8):
+        message = send_message_direct_logic(param0, param1)
+
+    elif(intent_type == 9):
+        message = recommend_solve_conflict_logic(param0, param1)
+
+    else:
+        message = ""
+
+    return message
 
 
 def approved_file_logic(slack_code, approve_set, remove_list):
@@ -123,18 +134,23 @@ def other_working_status_logic(slack_code, git_id):
 
 
 def send_message_channel_logic(channel, msg):
-
     send_channel_message(channel, msg)
-
     return "message"
 
 
-def send_message_direct_logic():
-    pass
+def send_message_direct_logic(slack_code, msg):
+    send_direct_message(slack_code, msg)
+    return "message"
 
 
-def recommend_solve_conflict_logic():
-    pass
+def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
+    w_db = work_database()
+
+    recommend_git_id, recommend_working_amount = w_db.recommendation(user1_git_id, user2_git_id)
+    message = "Recommend user git id : " + str(recommend_git_id) + " / " + "Recommend working amount : " + str(recommend_working_amount)
+
+    w_db.close()
+    return message
 
 
 def recognize_user_logic():
