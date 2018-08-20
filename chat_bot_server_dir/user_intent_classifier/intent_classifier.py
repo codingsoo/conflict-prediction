@@ -8,24 +8,25 @@ from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.work_database import work_database
 
+
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/kahye/desktop/Pycharm_Projects/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
-# 1. ignore_file : It is like gitignore. User can customize their ignore files.
-# 2. lock_file : User can lock their files. If other users try to modify lock_files' related file, chatbot gives them warning.
-# 3. code_history : User can ask about code who wrote.
-# 4. ignore_alarm : User can ignore direct and indirect conflict.
-# 5. check_conflict : Before user works, user can check if he generates conflict or not with user's working file.
-# 6. working_status : User can ask about other user's working status
-# 7. channel_message : User can let chatbot give message to channel.
-# 8. user_message : User can let chatbot give message to other users.
-# 9. recommend : User can ask recommend behavior about conflict.
-# 10. user_recognize : Bot knows when user connected last time, so bot can greet person with time information. ex) It's been a while~
-# 11. greeting : Bot can greet users.
-# 12. complimentary_close : Bot can say good bye.
-# 13. detect_direct_conflict : Bot can detect direct conflict and severity.
-# 14. detect_indirect_conflict : Bot can detect indirect conflict and severity.
+# 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+# 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+# 3. code_history : A user can ask who wrote certain code lines.
+# 4. ignore_alarm : A user can ignore direct and indirect conflicts.
+# 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
+# 6. working_status : A user can ask about other user's working status
+# 7. channel_message : A user can let chatbot give a message to channel.
+# 8. user_message : A user can let chatbot give a message to other users.
+# 9. recommend : A user can ask chatbot to recommend reaction to conflict.
+# 10. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+# 11. greeting : Chatbot can greet users.
+# 12. complimentary_close : Chatbot can say good bye.
+# 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+# 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock hello.py?",
                           "Can you tell me who wrote line14?", "Can you not notify me about indirect conflict?",
