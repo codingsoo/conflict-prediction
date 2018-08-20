@@ -55,6 +55,7 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
     max = 0
+    max_idx = 1
     for idx in range(len(list)):
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
@@ -136,7 +137,6 @@ def extract_attention_word(sentence, github_email):
             else:
                 approve_set.add(recent_file)
 
-        print("file_list : ", file_list)
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
 
@@ -163,12 +163,16 @@ def extract_attention_word(sentence, github_email):
                         lock_time = 1
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
-        if len(remove_lock_list) >0 :
-            print(remove_lock_list)
-        elif len(request_lock_set) >0:
-            print(remove_lock_list)
+        if remove_lock_list == [] and request_lock_set == set():
+            if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+                remove_lock_list.append(recent_file)
+            else :
+                request_lock_set.add(recent_file)
 
-        return request_lock_set, remove_lock_list
+        print("remove_lock_list : ", remove_lock_list)
+        print("request_lock_set : ", request_lock_set)
+
+        return 2, request_lock_set, remove_lock_list
 
 
     elif intent_type == 3:
@@ -274,4 +278,4 @@ def extract_attention_word(sentence, github_email):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Can you not notify me?",'a')
+    extract_attention_word("Can you lock",'a')
