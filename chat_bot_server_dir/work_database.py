@@ -693,6 +693,27 @@ class work_database:
             return raw_list[0]
 
 
+    def convert_slack_code_to_git_id(self, slack_code):
+        # Read git_id
+        raw_list = list()
+        try:
+            sql = "select git_id " \
+                  "from user_table " \
+                  "where slack_code = '%s' " % slack_code
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : convert_slack_code_to_git_id")
+
+        return raw_list[0]
+
+
     def close(self):
         self.cursor.close()
         self.conn.close()
