@@ -330,6 +330,7 @@ def extract_attention_word(sentence, github_email):
             channel = "code-conflict-chatbot"
             start_that = sentence.find('that') + 4
             msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        work_db.close()
         return channel, msg
 
     elif intent_type == 8:
@@ -346,14 +347,12 @@ def extract_attention_word(sentence, github_email):
 
         start_that = sentence.find('that') + 4
         msg = sentence[start_that:]
-
+        work_db.close()
         return slack_code, msg
 
     elif intent_type == 9:
-
-        pass
-
-    work_db.close()
+        work_db.close()
+        return github_email, recent_data[2]
 
 if __name__ == '__main__':
-    print(extract_attention_word("Can you chat to User2 that I will check and solve the problem?",'a'))
+    print(extract_attention_word("Can you recommend what should I do to fix the conflict?",'a'))
