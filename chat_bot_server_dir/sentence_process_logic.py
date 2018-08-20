@@ -171,6 +171,8 @@ def greeting_logic(slack_code):
         message = "Hi!! 일주일만에 방문했네"
     elif(last_connection == 3):
         message = "long time no see"
+    else:
+        message = "default hi"
 
     return message
 
