@@ -172,7 +172,7 @@ def extract_attention_word(sentence, github_email):
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
 
-        return 2, request_lock_set, remove_lock_list
+        return 2, request_lock_set, remove_lock_list, lock_time
 
 
     elif intent_type == 3:
@@ -211,9 +211,14 @@ def extract_attention_word(sentence, github_email):
                 return 4, "direct on"
 
     elif intent_type == 5:
-        # is conflict
-        pass
+        result_file_list = get_file_path(file_list)
+        file_path = ""
 
+        for rfl in result_file_list:
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
+
+        return 5, file_path
 
     elif intent_type == 6:
         target_user_name = ""
@@ -284,4 +289,4 @@ def extract_attention_word(sentence, github_email):
     work_db.close()
 
 if __name__ == '__main__':
-    extract_attention_word("Can you not notify me about indirect conflict?",'a')
+    print(extract_attention_word("can client.py make a conflict?",'a'))
