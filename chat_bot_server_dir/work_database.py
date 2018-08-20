@@ -1,16 +1,21 @@
 import pymysql
 import time
+import datetime
+from server_dir.server_config_loader import *
 
 class work_database:
 
     # Constructor
     def __init__(self):
+        # Load mysql database connection config
+        host, user, password, db, charset = load_database_connection_config()
+
         # get mysql database connection
-        self.conn = pymysql.connect(host     = '127.0.0.1',
-                                    user     = 'root',
-                                    password = 'root',
-                                    db       = 'uci_chat_bot',
-                                    charset  = 'utf8')
+        self.conn = pymysql.connect(host     = host,
+                                    user     = user,
+                                    password = password,
+                                    db       = db,
+                                    charset  = charset)
 
         # get cursor
         self.cursor = self.conn.cursor()
@@ -106,12 +111,38 @@ class work_database:
     def user_recognize(self, user):
         last_connection = "SELECT last_connection " \
                           "FROM user_last_connection " \
-                          "WHERE slack_code = '%s'" % user
+                          "WHERE slack_code = '%s'" % (user)
+        try:
+            self.cursor.execute(last_connection)
+            self.conn.commit()
+            last_connection = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : last_connection")
 
         print (last_connection)
 
-        print(time.localtime() - time.strptime(last_connection))
+        if (datetime.datetime.now() - last_connection) > datetime.timedelta(days=3) :
+            return 1
+        elif (datetime.datetime.now() - last_connection) > datetime.timedelta(days=7) :
+            return 2
+        elif (datetime.datetime.now() - last_connection) > datetime.timedelta(days=30) :
+            return 3
 
+    def get_user_working_status(self, git_email_id):
+        sql = "SELECT file_name, logic_name, work_line, work_amount " \
+              "FROM working_table " \
+              "WHERE user_name = '%s'" % git_email_id
+        try:
+            self.cursor.execute(sql)
+            self.conn.commit()
+            working_status = self.cursor.fetchall()[0]
+            print(working_status)
+            return working_status
+        except:
+            self.conn.rollback()
+            print("ERROR : get user working status")
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
@@ -389,3 +420,6 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
+
+a = work_database()
+a.get_user_working_status("learnitdeep@gmail.com")
