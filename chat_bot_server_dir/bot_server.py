@@ -142,19 +142,7 @@ def on_message(ws, message):
         else:
             content = tokenizer.tokenize(rand_text)
             for sentence in content:
-                if require_something_sentence(sentence):
-                    response = give_intent_return_message(sentence)
-                    if response != None:
-                        send_direct_message(msg["user"], response)
-                    else:
-                        response = chatbot.get_response(sentence)
-                        send_direct_message(msg["user"], response)
-                else:
-                    try:
-                        response = chatbot.get_response(sentence)
-                        send_direct_message(msg["user"], response)
-                    except:
-                        pass
+                pass
 
 
 def on_error(ws, error):

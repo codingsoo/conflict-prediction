@@ -18,7 +18,7 @@ location_list = ["Where","where","location"]
 dependency_catch_list = []
 
 def load_token() :
-    bot_server_config_path = os.path.join(Path(os.getcwd()).parent, "bot_server_config.ini")
+    bot_server_config_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
 
     if not os.path.isfile(bot_server_config_path) :
         print("ERROR :: There is no bot_server_config.ini")
