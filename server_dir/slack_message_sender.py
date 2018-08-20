@@ -9,12 +9,13 @@ from chat_bot_server_dir.work_database import work_database
 
 def get_slack():
     token = ''
-    if not os.path.isfile("server_config.ini"):
+    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+    if not os.path.isfile(file_path):
         print("ERROR :: There is no server_config.ini")
         exit(2)
     else:
         config = configparser.ConfigParser()
-        config.read("server_config.ini")
+        config.read(file_path)
         try:
             token = config["SLACK"]["TOKEN"]
         except:

@@ -3,7 +3,7 @@ from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
 
-def sentence_processing_main(intent_type, slack_code, param0, param1, param2, param3):
+def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     message = "default"
 
@@ -36,6 +36,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2, pa
 
     elif(intent_type == 10):
         message = greeting_logic(slack_code)
+        print("hi")
 
     elif(intent_type == 11):
         message = bye_logic()
@@ -173,6 +174,8 @@ def greeting_logic(slack_code):
         message = "long time no see"
     else:
         message = "default hi"
+
+    w_db.close()
 
     return message
 

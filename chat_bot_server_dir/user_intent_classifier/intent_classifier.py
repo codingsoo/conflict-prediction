@@ -142,17 +142,21 @@ def get_file_path(file_list):
 
 def extract_attention_word(sentence, github_email):
     import re
+
     work_db = work_database()
     file_list = project_parser("UCNLP", "client")["file"]
 
     name_list = get_slack_name_list()
+
     try:
         recent_data = work_db.get_recent_data(github_email)
         recent_file = recent_data[0].split('|')[0]
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
+    print("here")
     intent_type = intent_classifier(sentence)
+    print(sentence)
     print(intent_type)
 
     if intent_type == 1:
@@ -355,6 +359,7 @@ def extract_attention_word(sentence, github_email):
         return 9, github_email, recent_data[2], None
     else:
         if "hi" or "Hi" or "Hello" or "hello":
+            print("greeting shell")
             return 10, "greeting", None, None
         elif "bye" or "Bye" or "See you" or "see you":
             return 11, "bye", None, None

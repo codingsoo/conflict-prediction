@@ -115,7 +115,7 @@ class user_database:
         except:
             self.conn.rollback()
             print("ERROR : convert slack code to git id")
-
+        print(raw[0])
         return raw[0]
 
     def match_user_git_id_code(self, slack_id):
