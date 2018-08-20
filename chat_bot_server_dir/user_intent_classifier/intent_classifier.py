@@ -52,6 +52,11 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+
+file_list = project_parser("UCNLP", "conflict-detector")["file"]
+user_list = get_slack_name_list()
+
+
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
     max = 0
@@ -68,6 +73,26 @@ def calcue_max(sentence, list):
                 max_idx = 1
 
     return max_idx
+
+
+def load_token() :
+    file_path = os.path.join(Path(os.getcwd()).parent.parent, "all_server_config.ini")
+
+    if not os.path.isfile(file_path) :
+        print("ERROR :: There is no all_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read(file_path)
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is all_server_config.ini")
+            exit(2)
+    return token
+
+token = load_token()
+# slack = Slacker(token)
 
 def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
@@ -272,5 +297,22 @@ def extract_attention_word(sentence):
 
     work_db.close()
 
+
+# similarity test
+# user_input = "I want to stop ignoring File1.py"
+# input1 = nlp(user_input)
+#
+# max = 0
+# for idx in range(len(desire_sentence_list)):
+#     sample = nlp(desire_sentence_list[idx])
+#     rate = input1.similarity(sample)
+#     print(rate)
+#     if rate > max and rate > 0.85:
+#         max_idx = idx+1
+#         max = rate
+# print(max_idx)
+
+extract_attention_word("Don't ignore File1.py")
+
 if __name__ == '__main__':
-    extract_attention_word("Don't alert me about File1.py again.")
+    extract_attention_word("Don't alert me about File1.py again.", "jc")
