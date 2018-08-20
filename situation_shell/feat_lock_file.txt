@@ -1,0 +1,9 @@
+As you requested, %s locked.
+%s locked completed.
+Locking %s done!
+Your request completed. Locked %s.
+%s is added on requested lock set.
+
+
+
+
