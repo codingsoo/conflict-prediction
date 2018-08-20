@@ -15,7 +15,7 @@ from server_dir.slack_message_sender import send_direct_message
 import nltk
 from server_dir.user_database import user_database
 from pathlib import Path
-from chat_bot_server_dir.user_intent_classifier.intent_classifier import *
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import extract_attention_word
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")

@@ -1,7 +1,10 @@
 import spacy
+import os
+import configparser
+from slacker import Slacker
+from pathlib import Path
 from server_dir.slack_message_sender import send_channel_message
 from chat_bot_server_dir.project_parser import project_parser
-from chat_bot_server_dir.bot_server import get_slack_name_list
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.work_database import work_database
 
@@ -52,10 +55,39 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to
                         "I want to send a direct message to user1 that don't modify File1.py.",
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
+def load_token() :
+    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
 
-file_list = project_parser("UCNLP", "conflict-detector")["file"]
-user_list = get_slack_name_list()
+    if not os.path.isfile(file_path) :
+        print("ERROR :: There is no all_server_config.ini")
+        exit(2)
+    else :
+        config = configparser.ConfigParser()
+        config.read(file_path)
+        try :
+            token=config["SLACK"]["TOKEN"]
+        except :
+            print("ERROR :: It is all_server_config.ini")
+            exit(2)
+    return token
 
+token = load_token()
+slack = Slacker(token)
+
+def get_slack_name_list():
+    try:
+        user_list = list()
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            if user.get('profile').get('display_name') != '':
+                user_list.append(user.get('profile').get('display_name'))
+            else:
+                user_list.append(user.get('profile').get('real_name'))
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
+    return user_list
 
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
@@ -74,26 +106,6 @@ def calcue_max(sentence, list):
                 max_idx = 1
 
     return max_idx
-
-
-def load_token() :
-    file_path = os.path.join(Path(os.getcwd()).parent.parent, "all_server_config.ini")
-
-    if not os.path.isfile(file_path) :
-        print("ERROR :: There is no all_server_config.ini")
-        exit(2)
-    else :
-        config = configparser.ConfigParser()
-        config.read(file_path)
-        try :
-            token=config["SLACK"]["TOKEN"]
-        except :
-            print("ERROR :: It is all_server_config.ini")
-            exit(2)
-    return token
-
-token = load_token()
-# slack = Slacker(token)
 
 def intent_classifier(sentence):
     sentence_type = require_something_sentence(sentence)
@@ -265,6 +277,7 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 6:
 
         target_user_name = ""
+        work_db.slack_name_to_git_email(target_user_name)
 
         for name in name_list:
             if name in sentence:
@@ -275,12 +288,12 @@ def extract_attention_word(sentence, github_email):
             work_db.close()
             return 6, recent_data[2]
         else:
+            target_user_email = work_db.slack_name_to_git_email(target_user_name)
             work_db.close()
-            return 6, work_db.slack_name_to_git_email(target_user_name)
+            return 6, target_user_email
 
 
     elif intent_type == 7:
-        import re
 
         to_channel_regex = r'to [a-zA-Z\s]+channel'
         in_channel_regex = r'in [a-zA-Z\s]+channel'
@@ -318,6 +331,8 @@ def extract_attention_word(sentence, github_email):
             pass
 
 
+
+
     elif intent_type == 8:
         pass
 
@@ -327,22 +342,5 @@ def extract_attention_word(sentence, github_email):
 
     work_db.close()
 
-
-# similarity test
-# user_input = "I want to stop ignoring File1.py"
-# input1 = nlp(user_input)
-#
-# max = 0
-# for idx in range(len(desire_sentence_list)):
-#     sample = nlp(desire_sentence_list[idx])
-#     rate = input1.similarity(sample)
-#     print(rate)
-#     if rate > max and rate > 0.85:
-#         max_idx = idx+1
-#         max = rate
-# print(max_idx)
-
-extract_attention_word("Don't ignore File1.py")
-
 if __name__ == '__main__':
-    print(extract_attention_word("Can you tell me Myron's working status?",'a'))
+    print(extract_attention_word("Can you tell everyone that I'm working on File1.py?",'a'))
