@@ -410,6 +410,44 @@ class work_database:
         # 0 => non-ignore / 1 => ignore
         return raw[2], raw[3]
 
+    def get_recent_data(self, github_email):
+        sql1  =  "SELECT file_name, logic1_name, logic2_name, user1_name, user2_name, log_time " \
+                "FROM direct_conflict_table " \
+                "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
+
+        sql2 = "SELECT u, v, user1_name, user2_name, log_time " \
+                "FROM indirect_conflict_table " \
+                "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
+
+        try:
+            self.cursor.execute(sql1)
+            self.conn.commit()
+            direct_recent_data = self.cursor.fetchall()
+            direct_recent_data_mod = list()
+            indirect_recent_data_mod = list()
+
+            for conf in direct_recent_data:
+                conf = list(conf)
+                conf[1] = conf[0] + '|' + conf[1]
+                conf[2] = conf[0] + '|' + conf[2]
+                direct_recent_data_mod.append(conf[1:])
+            self.cursor.execute(sql2)
+            self.conn.commit()
+            indirect_recent_data = list(self.cursor.fetchall())
+            for conf in indirect_recent_data:
+                conf = list(conf)
+                indirect_recent_data_mod.append(conf)
+            conflict_recent_data = direct_recent_data_mod+indirect_recent_data_mod
+
+            sorted(conflict_recent_data, key=lambda s: s[4])
+
+            print(conflict_recent_data[-1])
+
+        except:
+            self.conn.rollback()
+            print("ERROR : Get recent data")
+
+
 
     def read_ignore(self, project_name, slack_code):
         raw_list = list()
@@ -512,3 +550,6 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
+
+a = work_database()
+a.get_recent_data('a')
