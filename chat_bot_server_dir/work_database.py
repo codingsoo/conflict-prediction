@@ -1,4 +1,5 @@
 import pymysql
+import time
 
 class work_database:
 
@@ -7,7 +8,7 @@ class work_database:
         # get mysql database connection
         self.conn = pymysql.connect(host     = '127.0.0.1',
                                     user     = 'root',
-                                    password = '99189918',
+                                    password = 'root',
                                     db       = 'uci_chat_bot',
                                     charset  = 'utf8')
 
@@ -64,12 +65,26 @@ class work_database:
         return
 
     def recommendation(self, user1, user2):
+
         user1_working_amount = "SELECT work_amount " \
                                "FROM working_table " \
                                "WHERE user_name= '%s' " % user1
         user2_working_amount = "SELECT work_amount " \
                                "FROM working_table " \
                                "WHERE user_name= '%s' " % user2
+
+        try:
+            self.cursor.execute(user1_working_amount)
+            self.conn.commit()
+            user1_working_amount = self.cursor.fetchall()[0][0]
+            self.cursor.execute(user2_working_amount)
+            self.conn.commit()
+            user2_working_amount = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : recommendation")
+
         response_list = []
 
         if user1_working_amount > user2_working_amount :
@@ -82,6 +97,15 @@ class work_database:
             return response_list
         else :
             return response_list
+
+    def user_recognize(self, user):
+        last_connection = "SELECT last_connection " \
+                          "FROM user_last_connection " \
+                          "WHERE slack_code = '%s'" % user
+
+        print (last_connection)
+
+        print(time.localtime() - time.strptime(last_connection))
 
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
@@ -234,3 +258,5 @@ class work_database:
             return raw_list[0]
 
 
+# a = work_database
+# a.user_recognize(a, "111")
