@@ -1,0 +1,10 @@
+Direct conflict won't be notified from now on.
+As you requested, direct conflict alarm is off.
+I won't notify direct conflict from now on.
+Ignore direct conflict. You can get notify of it anytime.
+I'll not notify about direct conflict.
+From now on, direct conflict alarm will be ignored.
+From now on, alarm about direct conflict will be ignored.
+Direct conflict alarm will be ignored from now on.
+Conflict of direct will be ignored from now on.
+As you said, direct conflict alarm will be ignored.
