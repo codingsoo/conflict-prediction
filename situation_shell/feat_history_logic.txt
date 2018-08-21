@@ -1,3 +1,6 @@
+# 3. code_history : A user can ask who wrote certain code lines.
+# %s %s : (user_name, file_name)
+
 %s edited %s.
 %s worked %s.
 %s wrote %s.

@@ -1,3 +1,6 @@
+# 7. channel_message : A user can let chatbot give a message to channel.
+# %s : channel name
+
 Okay, I'll announce it to %s.
 Sure, I'll let everyone know on %s.
 No problem, your message will announce on %s.
