@@ -1,0 +1,5 @@
+%s won't be notified from now on.
+As you requested, %s moved to ignore file list.
+I won't notify anything related to %s from now on.
+Ignore %s. You can get notify of it anytime.
+%s added to ignore file list.
