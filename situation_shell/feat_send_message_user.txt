@@ -1,0 +1,5 @@
+Okay, sent message to %s.
+Send message to %s is done.
+Sending message to %s.
+Send message to %s is perfectly done!
+%s received your message.
