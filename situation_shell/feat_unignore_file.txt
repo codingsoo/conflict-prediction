@@ -3,3 +3,8 @@ As you requested, %s removed from ignore file list.
 I will notify anything related to %s from now on.
 You can get notify of %s anytime.
 %s removed from ignore file list.
+%s is unignored.
+%s is unignored, so you can get alarm any time.
+As you said, %s is removed from ignored file list.
+%s is removed from ignored file list, so you can get alarm from now on.
+You can get notification about %s from now on.

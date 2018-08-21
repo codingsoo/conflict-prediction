@@ -2,5 +2,9 @@ Because your working amount is less than other user, you should't modify it.
 It'll make a conflict if you work on it.
 I think you shouldn't change it.
 There's possibility that it'll make conflict if you edit it.
-I recommand you to work on others.
-
+I recommend you to work on others.
+I recommend you to not work on here.
+I think you shouldn't work on here.
+I hope that you don't work in here.
+I disagree about working in here.
+You shouldn't modify it. Otherwise, it will make severe conflict.

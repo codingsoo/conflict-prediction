@@ -1,0 +1,6 @@
+I think it'll cause direct conflict.
+Both of conflicts, direct conflict will occur.
+You should not modify it because direct conflict will occur.
+Move on to other file because of direct conflict.
+There will be direct conflict both!
+Be careful of direct conflict.
