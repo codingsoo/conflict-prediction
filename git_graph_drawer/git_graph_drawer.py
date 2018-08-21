@@ -24,6 +24,25 @@ file_name = []
 file_dependency = {}
 file_content_list = dict()
 
+class mysql_conn:
+
+    def __init__(self):
+        # Load mysql database connection config
+        host, user, password, db, charset = load_database_connection_config()
+
+        # get mysql database connection
+        self.conn = pymysql.connect(host=host,
+                                    user=user,
+                                    password=password,
+                                    db=db,
+                                    charset=charset)
+        self.cursor = self.conn.cursor()
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
+
 # Search All Directory And Append simple file name
 def search_directory(url):
     repo = os.path.basename(url)
@@ -368,15 +387,7 @@ def removeDir(root_dir_temp):
 
 def store_graph_to_db(repository_name, graph_list):
 
-    # get mysql database connection
-    conn = pymysql.connect(host     = '127.0.0.1',
-                           user     = 'root',
-                           password = '99189918',
-                           db       = 'uci_chat_bot',
-                           charset  = 'utf8')
-
-    # get cursor
-    cursor = conn.cursor()
+    mysql_conn_obj = mysql_conn()
 
     try:
         sql = "delete " \
@@ -386,11 +397,11 @@ def store_graph_to_db(repository_name, graph_list):
         print(sql)
 
         # execute sql
-        cursor.execute(sql)
-        conn.commit()
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
 
     except:
-        conn.rollback()
+        mysql_conn_obj.conn.rollback()
         print("ERROR : insert graph info")
 
     try:
@@ -404,15 +415,14 @@ def store_graph_to_db(repository_name, graph_list):
         print(sql)
 
         # execute sql
-        cursor.execute(sql)
-        conn.commit()
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
 
     except:
-        conn.rollback()
+        mysql_conn_obj.conn.rollback()
         print("ERROR : insert graph info")
 
-    cursor.close()
-    conn.close()
+    mysql_conn_obj.close()
 
     return
 
@@ -443,6 +453,49 @@ def indirect_logic(git_repository_name):
 
     return
 
+def is_old_git_clone(repository_name):
+    mysql_conn_obj = mysql_conn()
+    raw_list = list()
+
+    try:
+        sql = "select * " \
+              "from logic_dependency " \
+              "where project_name = '%s' " \
+              "and TIMEDIFF(now(),log_time) > 4*60*60" %(repository_name)
+
+        print(sql)
+
+        # execute sql
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
+
+        raw_list = list(mysql_conn_obj.cursor.fetchall())
+
+    except:
+        mysql_conn_obj.conn.rollback()
+        print("ERROR : check git clone time")
+
+    if(raw_list != []):
+        try:
+            sql = "delete " \
+                  "from logic_dependency " \
+                  "where project_name = '%s' "% (repository_name)
+
+            print(sql)
+
+            # execute sql
+            mysql_conn_obj.cursor.execute(sql)
+            mysql_conn_obj.conn.commit()
+
+        except:
+            mysql_conn_obj.conn.rollback()
+            print("ERROR : delete logic dependency")
+
+        return True
+    else:
+        return False
+
+
 @app.route('/repository_name', methods = ["GET", "POST"])
 def repository_name():
 
@@ -451,7 +504,10 @@ def repository_name():
 
     git_repository_name = content['repository_name']
 
-    indirect_logic(git_repository_name)
+    if(is_old_git_clone(git_repository_name)):
+        indirect_logic(git_repository_name)
+    else:
+        pass
 
     return "Success repository name"
 
