@@ -3,4 +3,3 @@ Sure, I'll let everyone know on %s.
 No problem, your message will announce on %s.
 Your request handled. I announced it to %s.
 Okay, now everyone can see your message at %s.
-

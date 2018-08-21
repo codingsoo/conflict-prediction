@@ -3,7 +3,8 @@ As you requested, %s locked.
 Locking %s done!
 Your request completed. Locked %s.
 %s is added on requested lock set.
-
-
-
-
+%s is completely locked.
+Locking %s is completed.
+Hey, %s is locked!
+From now on, %s is locked.s
+As you said, %s is locked.
