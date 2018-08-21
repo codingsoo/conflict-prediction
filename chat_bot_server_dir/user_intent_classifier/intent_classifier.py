@@ -356,7 +356,7 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 9, github_email, recent_data[2], None
     else:
-        if "hi" or "Hi" or "Hello" or "hello":
+        if "hi" in sentence or "Hi" in sentence or "Hello" in sentence or "hello" in sentence :
             print("greeting shell")
             return 10, "greeting", None, None
         elif "bye" or "Bye" or "See you" or "see you":
@@ -366,3 +366,8 @@ def extract_attention_word(sentence, github_email):
 
 if __name__ == '__main__':
     print(extract_attention_word("hi",'a'))
+
+
+token = load_token()
+slack = Slacker(token)
+
