@@ -1,0 +1,5 @@
+%s will be notified from now on.
+As you requested, %s removed from ignore file list.
+I will notify anything related to %s from now on.
+You can get notify of %s anytime.
+%s removed from ignore file list.
