@@ -1,3 +1,5 @@
+#unignore_file : It functions like gitignore. A user can customize his/her ignore files.
+#%s : file
 %s will be notified from now on.
 As you requested, %s removed from ignore file list.
 I will notify anything related to %s from now on.

@@ -1,3 +1,5 @@
+# working_status : A user can ask about other user's working status
+# %s : user, %s : line
 %s is working on %s.
 %s is now on %s.
 I've checked it and %s is on $s.

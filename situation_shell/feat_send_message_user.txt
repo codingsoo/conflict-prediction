@@ -1,3 +1,5 @@
+# user_message : A user can let chatbot give a message to other users.
+# %s : user
 Okay, sent message to %s.
 Send message to %s is done.
 Sending message to %s.

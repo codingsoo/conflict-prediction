@@ -1,3 +1,5 @@
+# check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
+# no conflict
 No problem! Nothing happens!
 There will be no conflict.
 It is fine to modify it.

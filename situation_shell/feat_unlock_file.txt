@@ -1,3 +1,5 @@
+#unlock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+# %s : file
 As you requested, %s unlocked.
 %s unlocked completed.
 Unlocking %s done!

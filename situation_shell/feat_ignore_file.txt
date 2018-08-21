@@ -1,3 +1,5 @@
+# ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+# %s : file
 %s won't be notified from now on.
 As you requested, %s moved to ignore file list.
 I won't notify anything related to %s from now on.
