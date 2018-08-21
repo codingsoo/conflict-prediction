@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load('/Users/kahye/desktop/Pycharm_Projects/conflict-detector/venv/lib/python3.7/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -155,10 +155,7 @@ def extract_attention_word(sentence, github_email):
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
-    print("here")
     intent_type = intent_classifier(sentence)
-    print(sentence)
-    print(intent_type)
 
     if intent_type == 1:
         file_list = project_parser("UCNLP", "conflict-detector")["file"]

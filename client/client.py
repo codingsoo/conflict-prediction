@@ -6,12 +6,19 @@ import requests
 import json
 import threading
 
-IP = "127.0.0.1"
-PORT = "0"
+IP = ""
+PORT = ""
+
+GRAPH_IP = ""
+GRAPH_PORT = ""
 
 def load_config() :
     global IP
     global PORT
+
+    global GRAPH_IP
+    global GRAPH_PORT
+
     if not os.path.isfile("client_settings.ini") :
         print("ERROR :: There is no client_settings.ini")
         exit(2)
@@ -21,9 +28,13 @@ def load_config() :
         try :
             IP=config["CONNECTION"]["IP"]
             PORT=config["CONNECTION"]["Port"]
+
+            GRAPH_IP=config["GRAPH_CONNECTION"]["IP"]
+            GRAPH_PORT=config["GRAPH_CONNECTION"]["PORT"]
         except :
             print("ERROR :: It is client_settings.ini")
             exit(2)
+
 
 def post_to_server(uri, json_data) :
     url = "http://{IP}:{PORT}{URI}".format(IP = IP, PORT = PORT, URI = uri);
@@ -160,14 +171,11 @@ def send_to_server_git_data() :
 
 
 def send_to_graph_server_repository_name():
-    ip_addr = "127.0.0.1"
-    port = "5010"
-
     json_data = dict()
     set_repository_name(json_data)
     print(json_data)
 
-    url = "http://" + ip_addr + ":" + port + "/repository_name"
+    url = "http://" + GRAPH_IP + ":" + GRAPH_PORT + "/repository_name"
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     req = requests.post(url, headers=headers, data=json.dumps(json_data))
     print("Status Code:", req.status_code)

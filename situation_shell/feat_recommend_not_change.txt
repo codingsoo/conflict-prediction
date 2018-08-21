@@ -1,3 +1,4 @@
+# recommend not to change : A user can ask chatbot to recommend reaction to conflict.
 Because your working amount is less than other user, you should't modify it.
 It'll make a conflict if you work on it.
 I think you shouldn't change it.

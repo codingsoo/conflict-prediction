@@ -1,3 +1,5 @@
+# 4. ignore_alarm : A user can ignore direct and indirect conflicts.
+# Indirect conflict
 Indirect conflict won't be notified from now on.
 As you requested, indirect conflict alarm is off.
 I won't notify indirect conflict from now on.

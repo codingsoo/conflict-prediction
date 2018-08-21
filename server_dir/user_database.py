@@ -23,10 +23,9 @@ class user_database:
 
         try:
             # create sql
-            sql = "select *" \
+            sql = "select * " \
                   "from user_table " \
-                  "where git_id = '%s' " \
-                  "and slack_code = 'NULL' " % user_name
+                  "where git_id = '%s' " % user_name
 
             # execute sql
             self.cursor.execute(sql)
@@ -118,8 +117,10 @@ class user_database:
         except:
             self.conn.rollback()
             print("ERROR : convert slack code to git id")
-        print(raw[0])
-        return raw[0]
+        if(raw != ()):
+           return raw[0]
+        else:
+            return "AAAA"
 
     def match_user_git_id_code(self, slack_id):
         raw_list = list()

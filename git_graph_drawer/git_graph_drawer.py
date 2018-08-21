@@ -10,6 +10,7 @@ from pathlib import Path
 from python_floyd import create_indirect_edge_list
 import pymysql
 from server_dir.server_config_loader import *
+import shutil
 
 # Create Server
 app = Flask(__name__)
@@ -377,13 +378,15 @@ def removeDir(root_dir_temp):
 
     print(root_dir_temp)
 
+    shutil.rmtree(root_dir_temp)
+
     # windows
-    cmd_line = 'rmdir /S /Q ' + root_dir_temp
+    # cmd_line = 'rmdir /S /Q ' + root_dir_temp
 
     #linux
     # cmd_line = 'rm -rf ' + root_dir_temp
 
-    subprocess.check_output(cmd_line, shell=True)
+    # subprocess.check_output(cmd_line, shell=True)
 
 def store_graph_to_db(repository_name, graph_list):
 
@@ -490,7 +493,7 @@ def is_old_git_clone(repository_name):
         except:
             mysql_conn_obj.conn.rollback()
             print("ERROR : delete logic dependency")
-
+        indirect_logic(repository_name)
         return True
     else:
         return False
@@ -505,9 +508,9 @@ def repository_name():
     git_repository_name = content['repository_name']
 
     if(is_old_git_clone(git_repository_name)):
-        indirect_logic(git_repository_name)
-    else:
         pass
+    else:
+        indirect_logic(git_repository_name)
 
     return "Success repository name"
 

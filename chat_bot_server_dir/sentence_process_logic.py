@@ -36,7 +36,6 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     elif(intent_type == 10):
         message = greeting_logic(slack_code)
-        print("hi")
 
     elif(intent_type == 11):
         message = bye_logic()

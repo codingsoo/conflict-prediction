@@ -128,11 +128,10 @@ def on_message(ws, message):
 
             intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
             return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
-            print("return message")
+
             # Send the message to user
             if(return_message != "message"):
                 send_direct_message(user_slack_id, return_message)
-                print("send message ")
 
 
 def on_error(ws, error):
