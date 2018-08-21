@@ -282,7 +282,7 @@ Natural Language Processing
 -	stanfordCoreNLP
 -	spacy
 
-	### Preprocessing of the sentence
+### Preprocessing of the sentence
 
 To improve the quality of Natural Language Processing, we simplify the sentence. We omit "please" and "I think" from the sentence, because they are not necessary in understanding the sentence. We also replace "have to" and "don't have to" with "should" and "should not". When we detect if the sentence is suggestion or not, we use "MD" part of speech tag. The two words, "have to" and "dont't have to", have same meaning with "should" and "should not", however, they are not regarded as "MD" part of speech tag.
 
@@ -304,7 +304,7 @@ There are nine functions that chatbot can provide to users. We have four lists o
 
 Based on the classification of the intention, we extract information from the user to provide the output which the user is looking for. After the extraction, we call another function to respond to the user.
 
-### Classification of the intention
+### Sequence diagram(NLP)
 
 <div align="center">
 <img src="images/uci_seq2.JPG" width="100%" height="100%">
