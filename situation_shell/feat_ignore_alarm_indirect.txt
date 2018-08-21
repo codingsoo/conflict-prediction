@@ -1,0 +1,5 @@
+Indirect conflict won't be notified from now on.
+As you requested, indirect conflict alarm is off.
+I won't notify indirect conflict from now on.
+Ignore indirect conflict. You can get notify of it anytime.
+I'll not notify about indirect conflict.

@@ -3,6 +3,5 @@ As you requested, %s moved to ignore file list.
 I won't notify anything related to %s from now on.
 Ignore %s. You can get notify of it anytime.
 %s added to ignore file list.
-
 Adding %s in ignored file list is completed!
 From now on, alarm about conflict in %s will be ignored.
