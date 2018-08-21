@@ -3,3 +3,8 @@ As you requested, indirect conflict alarm is off.
 I won't notify indirect conflict from now on.
 Ignore indirect conflict. You can get notify of it anytime.
 I'll not notify about indirect conflict.
+From now on, indirect conflict alarm will be ignored.
+From now on, alarm about indirect conflict will be ignored.
+Indirect conflict alarm will be ignored from now on.
+Conflict of indirect will be ignored from now on.
+As you said, indirect conflict alarm will be ignored.

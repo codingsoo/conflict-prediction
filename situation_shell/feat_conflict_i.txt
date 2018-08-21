@@ -4,3 +4,7 @@ You should not modify it because indirect conflict will occur.
 Move on to other file because of indirect conflict.
 There will be indirect conflict both!
 Be careful of indirect conflict.
+In my opinion, indirect conflict will occur.
+Indirect conflict will be generated, so be careful.
+I think indirect conflict will occur.
+You should be careful about indirect conflict!

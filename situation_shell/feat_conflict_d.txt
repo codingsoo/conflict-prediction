@@ -2,5 +2,9 @@ I think it'll cause direct conflict.
 Both of conflicts, direct conflict will occur.
 You should not modify it because direct conflict will occur.
 Move on to other file because of direct conflict.
-There will be direct conflict both!
+There will be direct conflict!
 Be careful of direct conflict.
+In my opinion, direct conflict will occur.
+Direct conflict will be generated, so be careful.
+I think direct conflict will occur.
+You should be careful about direct conflict!

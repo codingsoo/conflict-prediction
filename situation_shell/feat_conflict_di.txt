@@ -4,3 +4,7 @@ You should not modify it because both conflicts will occur.
 Move on to other file because of direct and indirect conflicts.
 There will be direct and indirect conflicts both!
 Be careful of direct and indirect conflicts.
+In my opinion, both direct and indirect conflict will occur, so be careful!
+Both direct and indirect conflict will be generated, so be careful.
+I think not only direct conflict, but also indirect conflict will occur.
+You should be careful about both direct and indirect conflict!
