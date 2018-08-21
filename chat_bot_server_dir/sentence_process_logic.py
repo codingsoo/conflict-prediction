@@ -3,6 +3,8 @@ from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
 
+import os, random
+
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     message = "default"
@@ -46,6 +48,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     return message
 
 
+# Finn can not
 def approved_file_logic(slack_code, approve_set, remove_list):
     w_db = work_database()
 
@@ -73,14 +76,21 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     m1 = ""
     m2 = ""
 
-    if(request_lock_set != {}):
+    if(request_lock_set == {}):
+        message = random.choice(shell_dict['feat_lock_file'])
         w_db.add_lock_list(slack_code, request_lock_set, lock_time)
-        m1 = "add lock file : " + str(request_lock_set)
+        #m1 = "add lock file : " + str(request_lock_set)
+        ele = ','.join(list(request_lock_set))
+        message.format(ele)
     if(remove_lock_list != []):
+        message = random.choice(shell_dict['feat_unlock_file'])
         w_db.remove_lock_list(slack_code, remove_lock_list)
-        m2 = "remove lock file : " +str(remove_lock_list)
+        #m2 = "remove lock file : " +str(remove_lock_list)
+        ele = ','.join(remove_lock_list)
+        message.format(request_lock_set)
 
-    message = m1 + " / " + m2
+    # message = m1 + " / " + m2
+
 
     w_db.close()
     return message
@@ -92,8 +102,11 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
     project_name = w_db.read_project_name(slack_code)
     engaging_user_list = get_user_email(project_name, file_path, start_line, end_line)
 
-    message = "This is code history : " + str(engaging_user_list)
+    #message = "This is code history : " + str(engaging_user_list)
 
+    message = random.choice(shell_dict['feat_history_logic'])
+    ele = ','.join(engaging_user_list)
+    message.format(ele)
     w_db.close()
     return message
 
@@ -103,7 +116,9 @@ def ignore_file_logic(slack_code, ignore_list):
     project_name = w_db.read_project_name(slack_code)
     w_db.add_update_ignore(project_name, ignore_list, slack_code)
 
-    message = "Update direct or indirect ignore!"
+    message = random.choice(shell_dict['feat_history_logic'])
+    ele = ','.join(ignore_list)
+    message.format(ele)
 
     w_db.close()
     return message
@@ -117,13 +132,13 @@ def check_conflict_logic(slack_code, file_name):
     direct_conflict_flag, indirect_conflict_flag = w_db.is_conflict(project_name, slack_code, file_name)
 
     if((direct_conflict_flag == True) and (indirect_conflict_flag == True)):
-        message = "Direct conflict O / Indirect conflict O"
+        message = random.choice(shell_dict['feat_conflict_di'])
     elif((direct_conflict_flag == True) and (indirect_conflict_flag == False)):
-        message = "Direct conflict O / Indirect conflict X"
+        message = random.choice(shell_dict['feat_conflict_d'])
     elif((direct_conflict_flag == False) and (indirect_conflict_flag == True)):
-        message = "Direct conflict X / Indirect conflict O"
-    elif((direct_conflict_flag == False) and (indirect_conflict_flag == False)):
-        message = "Direct conflict X / Indirect conflict X"
+        message = random.choice(shell_dict['feat_conflict_i'])
+    else:
+        message = "I think it'll not cause any conflict."
 
     w_db.close()
     return message
@@ -133,7 +148,9 @@ def other_working_status_logic(slack_code, git_id):
     w_db = work_database()
 
     recent_conflict_data = w_db.get_recent_data(git_id)
-    message = "Recent conflict data is : " + str(recent_conflict_data)
+
+    message = random.choice(shell_dict['feat_working_status'])
+    message.format(recent_conflict_data)
 
     w_db.close()
     return message
@@ -141,14 +158,17 @@ def other_working_status_logic(slack_code, git_id):
 
 def send_message_channel_logic(channel, msg):
     send_channel_message(channel, msg)
-    return "message"
+    message = random.choice(shell_dict['feat_send_message_user'])
+    return message.format(channel)
 
 
 def send_message_direct_logic(slack_code, msg):
     send_direct_message(slack_code, msg)
-    return "message"
+    message = random.choice(shell_dict['feat_send_message_user'])
+    return message.format(slack_code)
 
 
+# Finn can not
 def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
     w_db = work_database()
 
@@ -166,7 +186,9 @@ def greeting_logic(slack_code):
     last_connection = w_db.user_recognize(slack_code)
 
     if(last_connection == 1):
-        message = "Hi~~!"
+        message = random.choice(shell_dict['feat_greetings'])
+
+    # Finn can not
     elif(last_connection == 2):
         message = "Hi!! 일주일만에 방문했네"
     elif(last_connection == 3):
@@ -180,5 +202,18 @@ def greeting_logic(slack_code):
 
 
 def bye_logic():
-    message = "bye~~!"
+    message = random.choice(shell_dict['feat_goodbye'])
     return message
+
+
+
+shell_dict = dict()
+
+for path, dirs, files in os.walk('../situation_shell') :
+    for file in files :
+        file_name, ext = os.path.splitext(file)
+        if ext == '.txt' :
+            shell_dict[file_name] = list()
+            with open(os.path.join(path, file) , 'r') as f :
+                for line in f.readlines() :
+                    shell_dict[file_name].append(line.strip())
