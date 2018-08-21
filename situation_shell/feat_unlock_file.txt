@@ -1,10 +1,10 @@
-As you requested, %s unlocked.
-%s unlocked completed.
-Unlocking %s done!
-Your request completed. Unlocked %s.
-%s is removed from requested lock set.
-%s is completely unlocked.
-As you requested, %s is unlocked.
-Hey, %s is unlocked!
-From now on, %s is unlocked.
-As you said, %s is unlocked.
+As you requested, {} unlocked.
+{} unlocked completed.
+Unlocking {} done!
+Your request completed. Unlocked {}.
+{} is removed from requested lock set.
+{} is completely unlocked.
+As you requested, {} is unlocked.
+Hey, {} is unlocked!
+From now on, {} is unlocked.
+As you said, {} is unlocked.
