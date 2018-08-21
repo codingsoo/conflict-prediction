@@ -47,9 +47,10 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     return message
 
-
-# Finn can not
 def approved_file_logic(slack_code, approve_set, remove_list):
+    print(slack_code)
+    print(approve_set)
+    print(remove_list)
     w_db = work_database()
 
     m1 = ""
@@ -214,6 +215,6 @@ for path, dirs, files in os.walk('../situation_shell') :
         file_name, ext = os.path.splitext(file)
         if ext == '.txt' :
             shell_dict[file_name] = list()
-            with open(os.path.join(path, file) , 'r') as f :
+            with open(os.path.join(path, file) , 'r', encoding="UTF-8") as f :
                 for line in f.readlines() :
                     shell_dict[file_name].append(line.strip())

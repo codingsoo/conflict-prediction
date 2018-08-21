@@ -3,11 +3,11 @@ import re
 import requests
 import json
 import subprocess
-import project_analyzer
+from git_graph_draw.project_analyzer import run
 import time
 from flask import Flask, request
 from pathlib import Path
-from python_floyd import create_indirect_edge_list
+from git_graph_draw.python_floyd import create_indirect_edge_list
 import pymysql
 from server_dir.server_config_loader import *
 import shutil
@@ -441,7 +441,7 @@ def indirect_logic(git_repository_name):
 
     # generate_file_dependency()
 
-    graph_data = project_analyzer.run(root_dir_temp)
+    graph_data = run(root_dir_temp)
 
     print(graph_data)
 
@@ -455,7 +455,6 @@ def indirect_logic(git_repository_name):
     removeDir(root_dir_temp)
 
     return
-
 def is_old_git_clone(repository_name):
     mysql_conn_obj = mysql_conn()
     raw_list = list()

@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector2\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
+nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -158,22 +158,32 @@ def extract_attention_word(sentence, github_email):
     intent_type = intent_classifier(sentence)
 
     if intent_type == 1:
-        file_list = project_parser("UCNLP", "conflict-detector")["file"]
 
         result_file_list = list()
         remove_list = list()
         approve_set = set()
 
+        print(file_list)
+
         for fl in file_list:
             r = fl.split("/")[-1]
             result_file_list.append(" "+r)
 
+        print(result_file_list)
+
         for rfl in result_file_list:
+            print(rfl)
             if rfl in sentence:
                 if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
                     remove_list.append(file_list[result_file_list.index(rfl)])
+                    print(rfl)
+                    print(file_list[result_file_list.index(rfl)])
                 else:
+                    print(rfl)
+                    print(file_list[result_file_list.index(rfl)])
                     approve_set.add(file_list[result_file_list.index(rfl)])
+        print(remove_list)
+        print(approve_set)
 
         if remove_list == [] and approve_set == set():
             if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
