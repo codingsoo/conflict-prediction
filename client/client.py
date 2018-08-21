@@ -7,7 +7,7 @@ import json
 import threading
 
 IP = "127.0.0.1"
-PORT = "0"
+PORT = "5009"
 
 def load_config() :
     global IP
@@ -26,7 +26,7 @@ def load_config() :
             exit(2)
 
 def post_to_server(uri, json_data) :
-    url = "http://{IP}:{PORT}{URI}".format(IP = IP, PORT = PORT, URI = uri);
+    url = "http://{IP}:{PORT}{URI}".format(IP = "127.0.0.1", PORT = "5009", URI = uri);
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     req = requests.post(url, headers=headers, data=json.dumps(json_data))
     print("Status Code:", req.status_code)
@@ -57,6 +57,10 @@ def set_user_git_diff(json_data) :
     path_queue.put('.')
     json_data['working_list'] = dict()
     flag = False
+    first_minus = 0
+    first_plus = 0
+    minus_count = 0
+    plus_count = 0
 
     while not path_queue.empty() :
         cur_path = path_queue.get()

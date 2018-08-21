@@ -119,6 +119,7 @@ class work_database:
         try:
             self.cursor.execute(last_connection)
             self.conn.commit()
+            print(last_connection)
             last_connection = self.cursor.fetchall()[0][0]
 
         except:
