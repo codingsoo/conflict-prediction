@@ -1,10 +1,10 @@
-%s and %s, thank you! Conflict has been alleviated!
-%s and %s, good! Conflict has been alleviated!
-%s and %s, cool! Conflict has been alleviated!
-%s and %s, nice! Conflict has been alleviated!
-%s and %s, good news! Conflict has been alleviated!
-%s and %s, thank you! Conflicts get smaller now!
-%s and %s, good! Conflicts get smaller!
-%s and %s, cool! Conflicts get smaller!
-%s and %s, nice job! Conflicts get smaller!
-%s and %s, good news! Conflicts get smaller!
+{} and {}, thank you! Conflict has been alleviated!
+{} and {}, good! Conflict has been alleviated!
+{} and {}, cool! Conflict has been alleviated!
+{} and {}, nice! Conflict has been alleviated!
+{} and {}, good news! Conflict has been alleviated!
+{} and {}, thank you! Conflicts get smaller now!
+{} and {}, good! Conflicts get smaller!
+{} and {}, cool! Conflicts get smaller!
+{} and {}, nice job! Conflicts get smaller!
+{} and {}, good news! Conflicts get smaller!

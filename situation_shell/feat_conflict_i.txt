@@ -1,4 +1,3 @@
-# 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 I think it'll cause indirect conflict.
 Both of conflicts, indirect conflict will occur.
 You should not modify it because indirect conflict will occur.

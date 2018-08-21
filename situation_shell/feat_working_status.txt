@@ -1,12 +1,10 @@
-# working_status : A user can ask about other user's working status
-# %s : user, %s : line
-%s is working on %s.
-%s is now on %s.
-I've checked it and %s is on $s.
-As you asked, %s is editing %s.
-The last time I checked, %s was on the %s.
-Oh, %s is now working on %s.
-From what I know, %s is editing %s.
-Hey, %s is on %s.
-I checked that %s is on %s now.
-I confirmed that %s is now on %s.
+{} is working on {}.
+{} is now on {}.
+I've checked it and {} is on {}.
+As you asked, {} is editing {}.
+The last time I checked, {} was on the {}.
+Oh, {} is now working on {}.
+From what I know, {} is editing {}.
+Hey, {} is on {}.
+I checked that {} is on {} now.
+I confirmed that {} is now on {}.

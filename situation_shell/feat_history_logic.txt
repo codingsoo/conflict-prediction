@@ -1,13 +1,10 @@
-# 3. code_history : A user can ask who wrote certain code lines.
-# %s %s : (user_name, file_name)
-
-%s edited %s.
-%s worked %s.
-%s wrote %s.
-%s handled that code %s.
-I'm certain that %s wrote %s.
-I'm certain that %s edited %s.
-I'm certain that %s worked $s.
-I think %s related to that code, %s.
-I think %s edited that code, %s.
-I found that %s edited %s.
+{} edited {}.
+{} worked {}.
+{} wrote {}.
+{} handled that code {}.
+I'm certain that {} wrote {}.
+I'm certain that {} edited {}.
+I'm certain that {} worked $s.
+I think {} related to that code, {}.
+I think {} edited that code, {}.
+I found that {} edited {}.

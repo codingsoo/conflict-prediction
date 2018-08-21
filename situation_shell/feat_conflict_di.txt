@@ -1,5 +1,3 @@
-# detect_direct & indirect_conflict :
-
 I think it'll cause direct and indirect conflicts.
 Both of conflicts, direct and indirect conflicts will occur.
 You should not modify it because both conflicts will occur.

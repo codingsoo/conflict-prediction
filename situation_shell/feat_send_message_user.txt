@@ -1,12 +1,10 @@
-# user_message : A user can let chatbot give a message to other users.
-# %s : user
-Okay, sent message to %s.
-Send message to %s is done.
-Sending message to %s.
-Send message to %s is perfectly done!
-%s received your message.
-Sending message to %s is completed!
-Send direct message %s completed.
-Direct message to %s is sent.
-Sending Direct message to %s is completed.
-Sending message personally to %s is completed.
+Okay, sent message to {}.
+Send message to {} is done.
+Sending message to {}.
+Send message to {} is perfectly done!
+{} received your message.
+Sending message to {} is completed!
+Send direct message {} completed.
+Direct message to {} is sent.
+Sending Direct message to {} is completed.
+Sending message personally to {} is completed.
