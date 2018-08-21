@@ -8,14 +8,14 @@ class work_database:
     # Constructor
     def __init__(self):
         # Load mysql database connection config
-        # host, user, password, db, charset = load_database_connection_config()
+        host, user, password, db, charset = load_database_connection_config()
 
         # get mysql database connection
-        self.conn = pymysql.connect(host     = '127.0.0.1',
-                                    user     = 'root',
-                                    password = 'root',
-                                    db       = 'uci_chat_bot',
-                                    charset  = 'utf8')
+        self.conn = pymysql.connect(host     = host,
+                                    user     = user,
+                                    password = password,
+                                    db       = db,
+                                    charset  = charset)
         # get cursor
         self.cursor = self.conn.cursor()
 
