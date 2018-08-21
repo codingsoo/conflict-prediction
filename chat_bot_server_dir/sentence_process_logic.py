@@ -190,11 +190,11 @@ def greeting_logic(slack_code):
 
     # Finn can not
     elif(last_connection == 2):
-        message = "Hi!! 일주일만에 방문했네"
+        message = random.choice(shell_dict['feat_greetings2'])
     elif(last_connection == 3):
-        message = "long time no see"
+        message = random.choice(shell_dict['feat_greetings3'])
     else:
-        message = "default hi"
+        message = random.choice(shell_dict['feat_greetings'])
 
     w_db.close()
 
