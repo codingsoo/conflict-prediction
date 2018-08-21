@@ -64,12 +64,17 @@ def get_user_slack_id(git_id):
 
 def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
 
-    user1_slack_id_code = get_user_slack_id(user1_name)
-    user2_slack_id_code = get_user_slack_id(user2_name)
+    user1_slack_id_code = get_user_slack_id(user1_name)[0]
+    user2_slack_id_code = get_user_slack_id(user2_name)[0]
+    direct_ignore_flag = 0
+    indirect_ignore_flag = 0
 
-    w_db = work_database()
-    direct_ignore_flag, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
-    w_db.close()
+    try:
+        w_db = work_database()
+        direct_ignore_flag, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
+        w_db.close()
+    except:
+        print("no ignore list")
 
     if(direct_ignore_flag == 1 or indirect_ignore_flag == 1):
         print("IGNORE MESSAGE")
@@ -86,42 +91,44 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == Conflict_flag.same_severity.value):
         # same server
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)] % (str(user1_slack_id_code[0]), str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
 
     elif(conflict_flag == Conflict_flag.lower_severity.value):
         # lower serverity
         lower_severity = make_lower_severity_list()
-        message = lower_severity[random.randint(0, len(lower_severity) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0])
+        message = lower_severity[random.randint(0, len(lower_severity) - 1)].format("you", user2_slack_id_code[0])
 
     # First conflict
     elif(conflict_flag == Conflict_flag.same_function.value):
         # same function
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", user2_slack_id_code[0], conflict_file, conflict_logic)
 
     elif(conflict_flag == Conflict_flag.same_class.value):
         # same class
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", user2_slack_id_code[0], conflict_file, conflict_logic)
 
     elif(conflict_flag == Conflict_flag.file_in.value):
         # just in
         get_closer = make_same_file_shell_list()
-        message = get_closer[random.randint(0, len(get_closer) - 1)] % (user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, " ")
+        message = get_closer[random.randint(0, len(get_closer) - 1)].format("you", user2_slack_id_code[0], conflict_file, " ")
 
     elif(conflict_flag == Conflict_flag.conflict_finished.value):
         # conflict solved
         conflict_finished = make_conflict_finished_list()
-        message = conflict_finished[random.randint(0, len(conflict_finished) - 1)] % ('you', user2_slack_id_code[0])
+        if user2_slack_id_code[0] == user1_slack_id_code[0]:
+            pass
+        else:
+            message = conflict_finished[random.randint(0, len(conflict_finished) - 1)].format("you", user2_slack_id_code[0])
 
     elif(conflict_flag == Conflict_flag.indirect_conflict.value):
         message = "indirect conflict : your name : %s / your file : %s / your logic : %s " \
                   "/ other name : %s / other file: %s / other logic : %s " \
                   "" %(user1_slack_id_code[0], conflict_file[0], conflict_file[1],
                        user2_slack_id_code[0], conflict_logic[0], conflict_logic[1])
-
-    send_direct_message(user1_slack_id_code[1], message)
-    print(message)
+    if message != "":
+        send_direct_message(user1_slack_id_code[1], message)
 
     return
 

@@ -30,4 +30,4 @@ def get_user_email(project_name, file_path, start_line, end_line) :
     return ret_list
 
 if __name__ == '__main__' :
-    get_user_email('conflict-detector', 'git_graph_drawer\\git_graph_drawer.py', 1, 3)
+    get_user_email('conflict-detector', 'git_graph_draw\\git_graph_draw.py', 1, 3)

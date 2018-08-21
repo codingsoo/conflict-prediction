@@ -1,5 +1,5 @@
 import os, sys
-import py_file_parser
+from git_graph_draw import py_file_parser
 
 def get_file_list( root ) :
     py_list = []
