@@ -3,7 +3,7 @@ import datetime as d
 from server_dir.slack_message_sender import *
 from server_dir.conflict_flag_enum import Conflict_flag
 from chat_bot_server_dir.work_database import work_database
-from server_dir.server_config_loader import *
+from server_dir.server_config_loader import load_database_connection_config
 
 class direct_work_database:
 
