@@ -303,3 +303,9 @@ There are nine functions that chatbot can provide to users. We have four lists o
 ### Extraction of attention words
 
 Based on the classification of the intention, we extract information from the user to provide the output which the user is looking for. After the extraction, we call another function to respond to the user.
+
+### Classification of the intention
+
+<div align="center">
+<img src="images/uci_seq2.JPG" width="100%" height="100%">
+</div>
