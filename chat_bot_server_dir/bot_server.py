@@ -12,6 +12,7 @@ from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
 import nltk
 from server_dir.user_database import user_database
+from chat_bot_server_dir import work_database
 from pathlib import Path
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import extract_attention_word
 from chat_bot_server_dir.sentence_process_logic import sentence_processing_main
@@ -135,6 +136,10 @@ def on_message(ws, message):
             if msg['user'] != "UBP8LHJS1":
                 # Search Git id
                 u_db = user_database()
+                w_db = work_database.work_database()
+
+                w_db.update_last_connection(msg['user'])
+
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
                 user_slack_id = msg['user']
                 print("print_user_id : ", user_slack_id, user_git_id)
@@ -148,6 +153,8 @@ def on_message(ws, message):
                 # Send the message to user
 
                 send_direct_message(user_slack_id, return_message)
+
+                w_db.close()
             else:
                 pass
 
@@ -183,14 +190,8 @@ if __name__ == "__main__":
     }]
 
     slack.chat.post_message(channel, '', attachments=msg, as_user=True)
-    print("slack chat")
     response = slack.rtm.start()
-    print("response")
     endpoint = response.body['url']
-    print("endpoint")
     ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
-    print("ws")
     ws.on_open = on_open
-    print("we.on_open")
     ws.run_forever()
-    print("ws.run_forever")

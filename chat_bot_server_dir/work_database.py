@@ -1,6 +1,7 @@
 import pymysql
 import time
 import datetime
+import timestring
 from server_dir.server_config_loader import *
 
 class work_database:
@@ -116,7 +117,52 @@ class work_database:
 
 #################################################################
 
+    def update_last_connection(self, slack_code):
+
+        select_sql = "SELECT last_connection " \
+                    "FROM user_last_connection " \
+                    "WHERE slack_code = '%s'" % (slack_code)
+
+        try:
+            self.cursor.execute(select_sql)
+            self.conn.commit()
+            if self.cursor.fetchall() == ():
+                insert_sql = "insert into user_last_connection (slack_code, last_connection) values ('%s','%s')" % (
+                    slack_code, time.time())
+
+                try:
+                    self.cursor.execute(insert_sql)
+                    self.conn.commit()
+
+                except:
+                    self.conn.rollback()
+                    print("ERROR : last_connection")
+            else:
+                sql = "update user_last_connection " \
+                      "set last_connection = '%s' " \
+                      "where slack_code = '%s' " % (time.time(), slack_code)
+                try:
+                    self.cursor.execute(sql)
+                    self.conn.commit()
+                    print(sql)
+
+                except:
+                    self.conn.rollback()
+
+        except:
+            insert_sql = "insert into user_last_connection (slack_code, last_connection) values ('%s','%s')" % (
+            slack_code, time.time())
+
+            try:
+                self.cursor.execute(insert_sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : last_connection")
+
     def user_recognize(self, user):
+
         last_connection = "SELECT last_connection " \
                           "FROM user_last_connection " \
                           "WHERE slack_code = '%s'" % (user)
@@ -125,19 +171,24 @@ class work_database:
             self.conn.commit()
             print(last_connection)
             last_connection = self.cursor.fetchall()[0][0]
+            print(last_connection)
+
+            last_conn = int(float(last_connection))
+            now_time = int(float(time.time()))
+
+            if (now_time - last_conn) > 3*60*60*24:
+                return 1
+            elif (now_time - last_conn) > 7*60*60*24:
+                return 2
+            elif (now_time - last_conn) > 30*60*60*24:
+                return 3
+            else:
+                return 4
 
         except:
             self.conn.rollback()
-            print("ERROR : last_connection")
-
-        print (last_connection)
-
-        if (datetime.datetime.now() - last_connection) > datetime.timedelta(days=3) :
-            return 1
-        elif (datetime.datetime.now() - last_connection) > datetime.timedelta(days=7) :
-            return 2
-        elif (datetime.datetime.now() - last_connection) > datetime.timedelta(days=30) :
-            return 3
+            print("Last connection less than 3 days.")
+            return -1
 
 #######################################################
 

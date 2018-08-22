@@ -383,7 +383,7 @@ def extract_attention_word(sentence, github_email):
         if "hi" in sentence or "Hi" in sentence or "Hello" in sentence or "hello" in sentence :
             print("greeting shell")
             return 10, "greeting", None, None
-        elif "bye" or "Bye" or "See you" or "see you":
+        elif "bye" in sentence or "Bye" in sentence or "See you" in sentence or "see you" in sentence:
             return 11, "bye", None, None
         else:
             return 12, "no_response", None, None

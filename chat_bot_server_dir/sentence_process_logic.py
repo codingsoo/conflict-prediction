@@ -42,7 +42,22 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = bye_logic()
 
     elif(intent_type == 12):
-        message = "I don't know what are you talking about"
+        message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
+        #1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+        #2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+        # 3. code_history : A user can ask who wrote certain code lines.
+        # 4. ignore_alarm : A user can ignore direct and indirect conflicts.
+        # 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
+        # 6. working_status : A user can ask about other user's working status
+        # 7. channel_message : A user can let chatbot give a message to channel.
+        # 8. user_message : A user can let chatbot give a message to other users.
+        # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
+        # 10. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+        # 11. greeting : Chatbot can greet users.
+        # 12. complimentary_close : Chatbot can say good bye.
+        # 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+        # 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+"""
 
     return message
 
