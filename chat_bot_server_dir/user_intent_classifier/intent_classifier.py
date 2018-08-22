@@ -8,9 +8,9 @@ from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.work_database import work_database
 
-
 # You can download this file : https://spacy.io/usage/vectors-similarity
-nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
+
+nlp = spacy.load('/Users/chaeyeon/Desktop/workspace/NLP/venv/lib/python3.7/site-packages/spacy/data/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -109,6 +109,8 @@ def calcue_max(sentence, list):
     return max_idx
 
 def intent_classifier(sentence):
+    if "this" in sentence:
+        sentence = sentence.replace("this","xvxv.py")
     sentence_type = require_something_sentence(sentence)
 
     # Question
@@ -172,7 +174,6 @@ def extract_attention_word(sentence, github_email):
             result_file_list.append(str(r))
 
         print(result_file_list)
-
         for rfl in result_file_list:
             print(rfl)
             if rfl in sentence:
@@ -185,6 +186,13 @@ def extract_attention_word(sentence, github_email):
                     print(rfl)
                     print(file_list[result_file_list.index(rfl)])
                     approve_set.add(file_list[result_file_list.index(rfl)])
+            elif "this" in sentence:
+                    recent_file = work_db.get_recent_data(github_email)
+                    approve_set.add(recent_file)
+                    break
+
+
+
         print(remove_list)
         print(approve_set)
 

@@ -482,6 +482,7 @@ class work_database:
             self.cursor.execute(sql1)
             self.conn.commit()
             direct_recent_data = self.cursor.fetchall()
+            print(direct_recent_data)
             direct_recent_data_mod = list()
             indirect_recent_data_mod = list()
 
