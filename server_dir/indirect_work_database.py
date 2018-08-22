@@ -237,9 +237,9 @@ class indirect_work_database:
         sql1 = sql1[:-2]
 
         try:
+            print(sql1)
             self.cursor.execute(sql1)
             self.conn.commit()
-            print(sql1)
         except:
             self.conn.rollback()
             print("ERROR : insert indirect conflict data")

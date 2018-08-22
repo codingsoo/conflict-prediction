@@ -112,6 +112,23 @@ def on_message(ws, message):
             w_db.set_slack_id_code(random_number=rand_text,
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
+        elif msg['channel'] == 'CBNKGMWBH':
+            if (("Sayme" in msg['text']) or ("<@UBP8LHJS1>" in msg['text'])):
+                u_db = user_database()
+                user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
+                user_slack_id = msg['user']
+                print("print_user_id : ", user_slack_id, user_git_id)
+
+                # Sentence Processing logic
+
+                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
+                return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+
+                print("return message : " + str(return_message))
+                send_channel_message("code-conflict-chatbot", return_message)
+            else:
+                pass
+
 
         # Sentence Processing
         else:
@@ -129,10 +146,10 @@ def on_message(ws, message):
 
                 print("return message : " + str(return_message))
                 # Send the message to user
-                if(return_message != "message" and msg['channel'] != 'CBNKGMWBH'):
-                    send_direct_message(user_slack_id, return_message)
-                elif(("Sayme" in msg['text']) or ("<@UBP8LHJS1>" in msg['text']) and msg['channel'] == 'CBNKGMWBH'):
-                    send_channel_message("code-conflict-chatbot", return_message)
+
+                send_direct_message(user_slack_id, return_message)
+            else:
+                pass
 
 
 def on_error(ws, error):

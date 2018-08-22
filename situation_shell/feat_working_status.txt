@@ -1,10 +1,10 @@
-{} is working on {}.
-{} is now on {}.
-I've checked it and {} is on {}.
-As you asked, {} is editing {}.
-The last time I checked, {} was on the {}.
-Oh, {} is now working on {}.
-From what I know, {} is editing {}.
-Hey, {} is on {}.
-I checked that {} is on {} now.
-I confirmed that {} is now on {}.
+{} is working on (Project name, Logic name, working line, working amount){}.
+{} is now on (Project name, Logic name, working line, working amount){}.
+I've checked it and {} is on (Project name, Logic name, working line, working amount){}.
+As you asked, {} is editing (Project name, Logic name, working line, working amount){}.
+The last time I checked, {} was on the (Project name, Logic name, working line, working amount){}.
+Oh, {} is now working on (Project name, Logic name, working line, working amount){}.
+From what I know, {} is editing (Project name, Logic name, working line, working amount){}.
+Hey, {} is on (Project name, Logic name, working line, working amount){}.
+I checked that {} is on (Project name, Logic name, working line, working amount){} now.
+I confirmed that {} is now on (Project name, Logic name, working line, working amount){}.

@@ -24,7 +24,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = check_conflict_logic(slack_code, param0)
 
     elif(intent_type == 6):
-        message = other_working_status_logic(slack_code, param0)
+        message = other_working_status_logic(slack_code, param0, param1)
 
     elif(intent_type == 7):
         message = send_message_channel_logic(param0, param1)
@@ -118,9 +118,10 @@ def ignore_file_logic(slack_code, ignore_list):
     project_name = w_db.read_project_name(slack_code)
     w_db.add_update_ignore(project_name, ignore_list, slack_code)
 
-    message = random.choice(shell_dict['feat_history_logic'])
-    ele = ','.join(ignore_list)
-    message = message.format(ele)
+    if ignore_list == 1:
+        message = random.choice(shell_dict['feat_ignore_alarm_direct'])
+    elif ignore_list == 2:
+        message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
 
     w_db.close()
     return message
@@ -146,13 +147,13 @@ def check_conflict_logic(slack_code, file_name):
     return message
 
 
-def other_working_status_logic(slack_code, git_id):
+def other_working_status_logic(slack_code, slack_name, git_id):
     w_db = work_database()
 
-    recent_conflict_data = w_db.get_recent_data(git_id)
+    working_data = w_db.get_user_working_status(git_id)
 
     message = random.choice(shell_dict['feat_working_status'])
-    message = message.format(recent_conflict_data)
+    message = message.format(slack_name, working_data)
 
     w_db.close()
     return message

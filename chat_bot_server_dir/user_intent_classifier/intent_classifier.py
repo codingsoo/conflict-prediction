@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/kahye/desktop/Pycharm_Projects/conflict-chatbot/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 
 
 # bot's feature
@@ -313,7 +313,7 @@ def extract_attention_word(sentence, github_email):
         else:
             target_user_email = work_db.slack_name_to_git_email(target_user_name)
             work_db.close()
-            return 6, target_user_email, None, None
+            return 6, target_user_name ,target_user_email, None
 
 
     elif intent_type == 7:

@@ -318,7 +318,7 @@ class work_database:
         all_raw_list = list()
 
         # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
-        slack_code = self.convert_git_id_to_slack_code(git_id)[0]
+        slack_code = self.convert_git_id_to_slack_code(git_id)
         if(str(slack_code).isdigit()):
             print("ERROR : NO SLACK CODE")
             return
@@ -361,33 +361,33 @@ class work_database:
             # First ignore register
 
             # Direct ignore On
-            if(ignore_list[0] == 1):
+            if(ignore_list == 1):
                 sql = "insert into ignore_table " \
                       "(project_name, slack_code, direct_ignore) value " \
-                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list[0])
+                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list)
 
             # Indirect ignore On
-            elif(ignore_list[1] == 1):
+            elif(ignore_list == 2):
                 sql = "insert into ignore_table " \
                       "(project_name, slack_code, indirect_ignore) value " \
-                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list[1])
+                      "('%s', '%s', %d) " % (project_name, slack_code, ignore_list)
 
         else:
             # Already exists ignore
 
             # Direct ignore On
-            if(ignore_list[0] == 1):
+            if(ignore_list == 1):
                 sql = "update ignore_table " \
                       "set direct_ignore = %d " \
                       "where project_name = '%s' " \
-                      "and slack_code = '%s' " %(ignore_list[0], project_name, slack_code)
+                      "and slack_code = '%s' " %(ignore_list, project_name, slack_code)
 
             # Indirect ignore On
-            elif(ignore_list[1] == 1):
+            elif(ignore_list == 2):
                 sql = "update ignore_table " \
                       "set indirect_ignore = %d " \
                       "where project_name = '%s' " \
-                      "and slack_code = '%s' " % (ignore_list[0], project_name, slack_code)
+                      "and slack_code = '%s' " % (ignore_list, project_name, slack_code)
 
         # ignore_list : [direct_ignore, indirect_ignore]
         try:
@@ -444,7 +444,7 @@ class work_database:
         return slack_code
 
     def search_ignore(self, project_name, git_id):
-        slack_code = self.convert_git_id_to_slack_code(git_id)[0]
+        slack_code = self.convert_git_id_to_slack_code(git_id)
         raw = tuple()
 
         try:
