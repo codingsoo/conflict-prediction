@@ -436,6 +436,9 @@ def store_graph_to_db(repository_name, graph_list):
 def indirect_logic(git_repository_name):
 
     # git clone from user git url
+    print("git_repository_name : " + str(git_repository_name))
+    git_repository_name_temp = str(git_repository_name).split('/')[0]
+    print("git_repository_name_temp : " + str(git_repository_name_temp))
     root_dir_temp = gitCloneFromURL("https://github.com/" + str(git_repository_name))
     root_dir_temp = root_dir_temp[:len(root_dir_temp)-4]
     print("root_dir_temp: " + str(root_dir_temp))
@@ -444,7 +447,7 @@ def indirect_logic(git_repository_name):
 
     # generate_file_dependency()
 
-    graph_data = run(root_dir_temp)
+    graph_data = run(root_dir_temp, git_repository_name_temp)
 
     print("graph data : " + str(graph_data))
 
