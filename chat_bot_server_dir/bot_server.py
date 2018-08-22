@@ -121,15 +121,15 @@ def on_message(ws, message):
             user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
             user_slack_id = msg['user']
 
-            # Sentence Processing logic
+            if user_slack_id != "UBP8LHJS1":
+                # Sentence Processing logic
 
-            intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
-            return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
+                return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
 
-            # Send the message to user
-            if(return_message != "message"):
-                print("return message : " + str(return_message))
-                send_direct_message(user_slack_id, return_message)
+                # Send the message to user
+                if(return_message != "message"):
+                    send_direct_message(user_slack_id, return_message)
 
 
 def on_error(ws, error):

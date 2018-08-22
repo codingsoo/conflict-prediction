@@ -117,6 +117,8 @@ class direct_work_database:
 
         # ["file_name", "logic_name", "work_line", "work_amount"]
         for temp_work in working_list:
+            if temp_work[3] == -1:
+                temp_work[1] = "in"
             raw_list = list()
             try:
                 sql = "select * " \
@@ -408,7 +410,10 @@ class direct_work_database:
     # Insert User data to working_table
     def insert_user_data(self, project_name, working_list, user_name):
         for temp_work in working_list:
+            print("temp_work : ",temp_work)
             try:
+                if temp_work[3] == -1:
+                    temp_work[1] = "in"
                 sql = "insert into working_table (project_name, file_name, logic_name, user_name, work_line, work_amount) " \
                       "value ('%s', '%s', '%s', '%s', %d, %d)" %(project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
                 print(sql)
