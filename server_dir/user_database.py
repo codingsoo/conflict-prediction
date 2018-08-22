@@ -102,10 +102,12 @@ class user_database:
             return "No data", "No data"
 
     def convert_slack_code_to_git_id(self, slack_code):
-        raw = tuple()
+
+        raw = ""
+
 
         try:
-            sql = "select * " \
+            sql = "select git_id " \
                   "from user_table " \
                   "where slack_code = '%s' " % slack_code
 
@@ -113,15 +115,13 @@ class user_database:
             self.conn.commit()
             print(sql)
 
-            raw = tuple(self.cursor.fetchone())
+            raw = self.cursor.fetchall()[0][0]
+
         except:
             self.conn.rollback()
             print("ERROR : convert slack code to git id")
-        if(raw != ()):
-           return raw[0]
-        else:
-            return "AAAA"
 
+        return raw
     def match_user_git_id_code(self, slack_id):
         raw_list = list()
         try:

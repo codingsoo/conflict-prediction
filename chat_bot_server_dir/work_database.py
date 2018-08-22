@@ -647,7 +647,9 @@ class work_database:
             print(sql)
 
             raw_list = self.cursor.fetchall()
+            print(raw_list)
             slack_code = raw_list[0][0]
+            print(slack_code)
 
         except:
             self.conn.rollback()
@@ -679,7 +681,6 @@ class work_database:
             return -2
         else:
             git_id = raw_list[0]
-            print(git_id)
 
         # Read the project name
         raw_list1 = list()
@@ -703,7 +704,7 @@ class work_database:
             print("ERROR : This user don't have project")
             return -1
         else:
-            return raw_list[0]
+            return raw_list[0][0]
 
 
     def convert_slack_code_to_git_id(self, slack_code):
@@ -730,6 +731,6 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
-
-a = work_database()
-print(a.convert_slack_code_to_git_id("UBG02LZNJ"))
+#
+# a = work_database()
+# print(a.read_project_name("UBET56CN9"))
