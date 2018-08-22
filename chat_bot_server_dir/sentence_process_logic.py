@@ -30,7 +30,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = send_message_channel_logic(param0, param1, param2)
 
     elif(intent_type == 8):
-        message = send_message_direct_logic(param0, param1)
+        message = send_message_direct_logic(param0, param1, param2)
 
     elif(intent_type == 9):
         message = recommend_solve_conflict_logic(param0, param1)
@@ -168,10 +168,16 @@ def send_message_channel_logic(channel, msg, user_name):
     return message
 
 
-def send_message_direct_logic(slack_code, msg):
+def send_message_direct_logic(slack_code, msg, user_name):
+    w_db = work_database()
+
+    target_user = w_db.slack_code_to_slack_name(slack_code)
+    msg = msg.replace("?","")
+    msg = user_name + " gives message : " + msg
     send_direct_message(slack_code, msg)
     message = random.choice(shell_dict['feat_send_message_user'])
-    message = message.format(slack_code)
+    message = message.format(target_user)
+    w_db.close()
     return message
 
 
