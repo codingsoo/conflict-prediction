@@ -6,7 +6,6 @@ import random
 import _thread
 import os
 import configparser
-from chat_bot_server_dir.punctuator2.play_with_model import punctuator
 from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
@@ -105,10 +104,8 @@ def on_message(ws, message):
     if msg['type'] == 'message':
 
         # Message Content Convert
-        try:
-            rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
-        except:
-            rand_text = msg['text']
+
+        rand_text = msg['text']
 
         # Verifying User : Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
@@ -131,6 +128,7 @@ def on_message(ws, message):
 
             # Send the message to user
             if(return_message != "message"):
+                print("return message : " + str(return_message))
                 send_direct_message(user_slack_id, return_message)
 
 
@@ -165,10 +163,14 @@ if __name__ == "__main__":
     }]
 
     slack.chat.post_message(channel, '', attachments=msg, as_user=True)
-
+    print("slack chat")
     response = slack.rtm.start()
+    print("response")
     endpoint = response.body['url']
-
+    print("endpoint")
     ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
+    print("ws")
     ws.on_open = on_open
+    print("we.on_open")
     ws.run_forever()
+    print("ws.run_forever")
