@@ -42,7 +42,6 @@ class direct_work_database:
 
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
-        print("working list : " + str(working_list))
         w_db = work_database()
 
         w_db.auto_remove_lock_list()
@@ -51,10 +50,8 @@ class direct_work_database:
         w_db.inform_lock_file(project_name, working_list, user_name)
 
         file_conflict_list = self.search_working_table(project_name, working_list)
-
         file_conflict_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
         w_db.close()
-        print("file conflict list : " + str(file_conflict_list))
 
         # Conflict
         if(file_conflict_list != []):

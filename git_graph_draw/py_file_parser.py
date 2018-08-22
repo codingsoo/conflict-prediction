@@ -43,9 +43,11 @@ def get_logic_info( node, logic_info, assign_dict = {}):
                         names.append(name.id)
                 stack = []
                 cur = each.value.func
-                while not isinstance(cur, ast.Name) :
+                while isinstance(cur, ast.Attribute)  :
                     stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
                     cur = cur.value
+                if not isinstance(cur, ast.Name) :
+                    continue
                 stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
                 stack = stack[::-1]
                 stack = '.'.join(stack)
@@ -57,9 +59,11 @@ def get_logic_info( node, logic_info, assign_dict = {}):
             if isinstance(each.value, ast.Call) :
                 stack = []
                 cur = each.value.func
-                while not isinstance(cur, ast.Name) :
+                while isinstance(cur, ast.Attribute)  :
                     stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
                     cur = cur.value
+                if not isinstance(cur, ast.Name) :
+                    continue
                 stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
                 stack = stack[::-1]
                 stack = '.'.join(stack)

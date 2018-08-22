@@ -24,14 +24,23 @@ def git_diff_logic(content):
     user_data = user_git_diff(content)
 
     # Create direct and indirect database connection
-    w_db = direct_work_database()
+    dw_db = direct_work_database()
     iw_db = indirect_work_database()
+    w_db = work_database()
+
+    # Remove lock list
+    w_db.auto_remove_lock_list()
+
+    # Inform to the user about lock file
+    w_db.inform_lock_file(user_data.get_proj_name(),
+                          user_data.get_working_data(),
+                          user_data.get_user_name())
 
     # Delete current user data
-    w_db.delete_user_data(user_data.get_user_name())
+    dw_db.delete_user_data(user_data.get_user_name())
 
     # Detect direct conflict
-    w_db.detect_direct_conflict(user_data.get_proj_name(),
+    dw_db.detect_direct_conflict(user_data.get_proj_name(),
                                 user_data.get_working_data(),
                                 user_data.get_user_name())
 
@@ -41,12 +50,12 @@ def git_diff_logic(content):
                                    user_data.get_user_name())
 
     # Insert current user data
-    w_db.insert_user_data(user_data.get_proj_name(),
+    dw_db.insert_user_data(user_data.get_proj_name(),
                           user_data.get_working_data(),
                           user_data.get_user_name())
 
     # Close direct and indirect database connection
-    w_db.close_db()
+    dw_db.close_db()
     iw_db.close_db()
     return
 
