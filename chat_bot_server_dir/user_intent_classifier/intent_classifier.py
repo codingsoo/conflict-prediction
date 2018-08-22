@@ -156,6 +156,7 @@ def extract_attention_word(sentence, github_email):
         recent_data = "no recent data"
         recent_file = "no recent file"
     intent_type = intent_classifier(sentence)
+    print("Intent_type : ", intent_type)
 
     if intent_type == 1:
 
@@ -175,7 +176,8 @@ def extract_attention_word(sentence, github_email):
         for rfl in result_file_list:
             print(rfl)
             if rfl in sentence:
-                if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
+                print (sentence)
+                if (('not' in sentence) or ("n’t" in sentence) or ('un' in sentence)):
                     remove_list.append(file_list[result_file_list.index(rfl)])
                     print(rfl)
                     print(file_list[result_file_list.index(rfl)])
@@ -187,7 +189,7 @@ def extract_attention_word(sentence, github_email):
         print(approve_set)
 
         if remove_list == [] and approve_set == set():
-            if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
+            if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
                 remove_list.append(recent_file)
             else:
                 approve_set.add(recent_file)
@@ -211,7 +213,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+                if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     try:
@@ -221,7 +223,7 @@ def extract_attention_word(sentence, github_email):
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
         if remove_lock_list == [] and request_lock_set == set():
-            if 'not' in sentence or 'nt' in sentence or 'un' in sentence:
+            if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
                 remove_lock_list.append(recent_file)
             else :
                 request_lock_set.add(recent_file)
@@ -260,7 +262,7 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 4:
-        if 'not' in sentence or 'n\'t' in sentence or 'un' in sentence:
+        if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
             if 'indirect' in sentence:
                 work_db.close()
                 return 4, 2, 1, None
