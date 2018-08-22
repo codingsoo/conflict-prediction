@@ -367,8 +367,10 @@ def gitCloneFromURL(git_url):
     git_dir_name = git_url.split('/')[4]
     root_dir_temp = os.path.join(os.getcwd(), git_dir_name)
 
+    print(root_dir_temp)
+
     # git clone from user git url
-    git_clone_return = str(subprocess.check_output(cmd_line, shell=True)).strip()
+    subprocess.check_output(cmd_line, shell=True)
 
     return root_dir_temp
 
@@ -378,15 +380,15 @@ def removeDir(root_dir_temp):
 
     print(root_dir_temp)
 
-    shutil.rmtree(root_dir_temp)
+    # shutil.rmtree(root_dir_temp)
 
     # windows
-    # cmd_line = 'rmdir /S /Q ' + root_dir_temp
+    cmd_line = 'rmdir /S /Q ' + root_dir_temp
 
     #linux
     # cmd_line = 'rm -rf ' + root_dir_temp
 
-    # subprocess.check_output(cmd_line, shell=True)
+    subprocess.check_output(cmd_line, shell=True)
 
 def store_graph_to_db(repository_name, graph_list):
 
@@ -408,6 +410,7 @@ def store_graph_to_db(repository_name, graph_list):
         print("ERROR : insert graph info")
 
     try:
+        print("graph list : " + str(graph_list))
         sql = "insert into logic_dependency (project_name, u, v, length) values"
         for temp_graph in graph_list:
 
@@ -435,7 +438,7 @@ def indirect_logic(git_repository_name):
     # git clone from user git url
     root_dir_temp = gitCloneFromURL("https://github.com/" + str(git_repository_name))
     root_dir_temp = root_dir_temp[:len(root_dir_temp)-4]
-    print(root_dir_temp)
+    print("root_dir_temp: " + str(root_dir_temp))
 
     # search_directory(root_dir_temp)
 
@@ -443,7 +446,7 @@ def indirect_logic(git_repository_name):
 
     graph_data = run(root_dir_temp)
 
-    print(graph_data)
+    print("graph data : " + str(graph_data))
 
     edge_list = create_indirect_edge_list(graph_data)
 
