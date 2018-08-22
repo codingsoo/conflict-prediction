@@ -59,7 +59,7 @@ def run( root ) :
                                     if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                                         pass
                                     elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                                        edges_list.append([full_path + '.py|' + 'function:' + paths[-1], func_id])
+                                        edges_list.append(['UCNLP/' + full_path + '.py|' + 'function:' + paths[-1], 'UCNLP/' + func_id])
                             else:
                                 real_paths = paths[:len(paths) - 2]
                                 full_path = base_path
@@ -67,7 +67,7 @@ def run( root ) :
                                     full_path = full_path + '/' + each
                                 if full_path + '.py' in project_dict:
                                     if 'class:' + paths[-2] + ':' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                                        edges_list.append([full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1], func_id])
+                                        edges_list.append(['UCNLP/' + full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1], 'UCNLP/' + func_id])
                                     pass
                                 else:
                                     full_path = full_path + '/' + paths[-2]
@@ -75,7 +75,7 @@ def run( root ) :
                                         if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                                             pass
                                         elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                                            edges_list.append([full_path + '.py|' + 'function:' + paths[-1]], func_id)
+                                            edges_list.append(['UCNLP/' + full_path + '.py|' + 'function:' + paths[-1]], 'UCNLP/' + func_id)
                                             pass
 
 
@@ -92,7 +92,7 @@ def run( root ) :
                                 if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                                     pass
                                 elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                                    edges_list.append([full_path + '|' + 'function:' + paths[-1], id])
+                                    edges_list.append(['UCNLP/' + full_path + '|' + 'function:' + paths[-1], 'UCNLP/' + id])
                         else :
                             real_paths = paths[:len(paths) - 2]
                             full_path = base_path
@@ -100,7 +100,7 @@ def run( root ) :
                                 full_path = full_path + '/' + each
                             if full_path + '.py' in project_dict :
                                 if 'class:' + paths[-2] + ':' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                                    edges_list.append([full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1], id])
+                                    edges_list.append(['UCNLP/' + full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1], 'UCNLP/' + id])
                                 pass
                             else :
                                 full_path = full_path + '/' + paths[-2]
@@ -108,7 +108,6 @@ def run( root ) :
                                     if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class'] :
                                         pass
                                     elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function'] :
-                                        edges_list.append([full_path + '|' + 'function:' + paths[-1]], id)
+                                        edges_list.append(['UCNLP/' + full_path + '|' + 'function:' + paths[-1]], 'UCNLP/' + id)
 
     return edges_list
-
