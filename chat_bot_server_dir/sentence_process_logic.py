@@ -53,21 +53,25 @@ def approved_file_logic(slack_code, approve_set, remove_list):
     print("remove !! : " + str(remove_list))
     w_db = work_database()
 
-    m1 = ""
-    m2 = ""
-
     if(approve_set != {}):
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
-        m1 = "add approve file : " + str(approve_set)
+        message = random.choice(shell_dict['feat_ignore_file'])
+        print(message)
+        print(type(message))
+        approve_list = list(approve_set)
+        print(approve_list)
+        message = message.format(approve_list[0])
+
     if(remove_list != []):
         w_db.remove_approved_list(slack_code=slack_code,
                                   remove_approve_list=remove_list)
-        m2 = "remove approve file : " + str(remove_list)
 
-    message = m1 + " / " + m2
+        message = random.choice(shell_dict['feat_unignore_file'])
+        message = message.format(remove_list[-1])
 
     w_db.close()
+    print(type(message))
     return message
 
 
@@ -82,13 +86,13 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         w_db.add_lock_list(slack_code, request_lock_set, lock_time)
         #m1 = "add lock file : " + str(request_lock_set)
         ele = ','.join(list(request_lock_set))
-        message.format(ele)
+        message = message.format(ele)
     if(remove_lock_list != []):
         message = random.choice(shell_dict['feat_unlock_file'])
         w_db.remove_lock_list(slack_code, remove_lock_list)
         #m2 = "remove lock file : " +str(remove_lock_list)
         ele = ','.join(remove_lock_list)
-        message.format(request_lock_set)
+        message = message.format(request_lock_set)
 
     # message = m1 + " / " + m2
 
@@ -107,7 +111,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
 
     message = random.choice(shell_dict['feat_history_logic'])
     ele = ','.join(engaging_user_list)
-    message.format(ele)
+    message =message.format(ele)
     w_db.close()
     return message
 
@@ -119,7 +123,7 @@ def ignore_file_logic(slack_code, ignore_list):
 
     message = random.choice(shell_dict['feat_history_logic'])
     ele = ','.join(ignore_list)
-    message.format(ele)
+    message = message.format(ele)
 
     w_db.close()
     return message
@@ -151,7 +155,7 @@ def other_working_status_logic(slack_code, git_id):
     recent_conflict_data = w_db.get_recent_data(git_id)
 
     message = random.choice(shell_dict['feat_working_status'])
-    message.format(recent_conflict_data)
+    message = message.format(recent_conflict_data)
 
     w_db.close()
     return message
@@ -160,13 +164,15 @@ def other_working_status_logic(slack_code, git_id):
 def send_message_channel_logic(channel, msg):
     send_channel_message(channel, msg)
     message = random.choice(shell_dict['feat_send_message_user'])
-    return message.format(channel)
+    message = message.format(channel)
+    return message
 
 
 def send_message_direct_logic(slack_code, msg):
     send_direct_message(slack_code, msg)
     message = random.choice(shell_dict['feat_send_message_user'])
-    return message.format(slack_code)
+    message = message.format(slack_code)
+    return message
 
 
 # Finn can not
