@@ -6,7 +6,6 @@ from server_dir.slack_message_sender import send_direct_message
 import os, random
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
-
     message = "default"
 
     if(intent_type == 1):
@@ -79,7 +78,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     m1 = ""
     m2 = ""
 
-    if(request_lock_set == {}):
+    if(request_lock_set != {}):
         message = random.choice(shell_dict['feat_lock_file'])
         w_db.add_lock_list(slack_code, request_lock_set, lock_time)
         #m1 = "add lock file : " + str(request_lock_set)
@@ -90,7 +89,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         w_db.remove_lock_list(slack_code, remove_lock_list)
         #m2 = "remove lock file : " +str(remove_lock_list)
         ele = ','.join(remove_lock_list)
-        message = message.format(request_lock_set)
+        message = message.format(ele)
 
     # message = m1 + " / " + m2
 

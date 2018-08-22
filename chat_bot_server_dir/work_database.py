@@ -238,16 +238,16 @@ class work_database:
         diff_lock_set = req_lock_set-db_lock_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
-        sql1 = "insert into lock_list (project_name, lock_file, slack_code) values "
+        sql1 = "insert into lock_list (project_name, lock_file, slack_code, delete_time) values "
         for temp_diff_lock in diff_lock_set:
             sql1 += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
 
         sql1 = sql1[:-2]
 
         try:
+            print(sql1)
             self.cursor.execute(sql1)
             self.conn.commit()
-            print(sql1)
         except:
             self.conn.rollback()
             print("ERROR : add lock list")
@@ -267,9 +267,9 @@ class work_database:
                       "where project_name = '%s' " \
                       "and lock_file = '%s' " \
                       "and slack_code = '%s' " %(project_name, temp_remove_file, slack_code)
+                print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
-                print(sql)
             except:
                 self.conn.rollback()
                 print("ERROR : remove lock list")
