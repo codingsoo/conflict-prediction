@@ -42,7 +42,7 @@ def run( root , owner) :
         base_path = os.path.split(file_path)[0]
         for value in values :
             if value['type'] == 'Class' :
-                id = file_path + '.py|' + 'class:' + value['name']
+                id = file_path + '|' + 'class:' + value['name']
                 nexts = []
                 for each in value.get('members', []) :
                     if each['type'] == 'Function' :
@@ -80,7 +80,7 @@ def run( root , owner) :
 
 
             elif value['type'] =='Function' :
-                id = file_path + '.py|' + 'function:' + value['name']
+                id = file_path + '|' + 'function:' + value['name']
                 for each in value.get('members', []) :
                     if each['type'] == 'Call' :
                         if not '.' in each['id'] :
