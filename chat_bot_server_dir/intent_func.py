@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 import re, os, subprocess
 
-BASE_PATH = 'D:\\byeongal'
+BASE_PATH = ''
 
 regex = r'^Author: ([가-힣a-zA-Z\s]+) <[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}>$'
 email_regex = r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}'
@@ -10,7 +10,9 @@ p = re.compile(regex)
 email_p = re.compile(email_regex)
 
 def get_user_email(project_name, file_path, start_line, end_line) :
-    full_base_path = os.path.join(BASE_PATH, project_name)
+
+    BASE_PATH = os.getcwd()
+    full_base_path = os.path.join(BASE_PATH, project_name[:-4])
     if not os.path.exists(full_base_path) :
         return []
     else :

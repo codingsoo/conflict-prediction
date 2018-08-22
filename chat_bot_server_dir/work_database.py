@@ -704,7 +704,7 @@ class work_database:
             print("ERROR : This user don't have project")
             return -1
         else:
-            return raw_list[0][0]
+            return raw_list1[0][0]
 
 
     def convert_slack_code_to_git_id(self, slack_code):

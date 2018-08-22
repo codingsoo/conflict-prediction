@@ -1,10 +1,10 @@
-{} edited {}.
-{} worked {}.
-{} wrote {}.
-{} handled that code {}.
-I'm certain that {} wrote {}.
-I'm certain that {} edited {}.
-I'm certain that {} worked $s.
-I think {} related to that code, {}.
-I think {} edited that code, {}.
-I found that {} edited {}.
+{} edited from line{} to line{}.
+{} worked from line{} to line{}.
+{} wrote from line{} to line{}.
+{} handled that code from line{} to line{}.
+I'm certain that {} wrote from line{} to line{}.
+I'm certain that {} edited from line{} to line{}.
+I'm certain that {} worked from line{} to line{}.
+I think {} related to that code, from line{} to line{}.
+I think {} edited that code, from line{} to line{}.
+I found that {} edited from line{} to line{}.

@@ -29,19 +29,19 @@ nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\venv\\Li
 # 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock hello.py?",
-                          "Can you tell me who wrote line14?", "Can you not notify me about indirect conflict?",
+                          "Can you tell me who wrote line14 to line 18 at file1.py?", "Can you not notify me about indirect conflict?",
                           "Do you think this is gonna make a conflict?", "Can you tell me user2's working status?",
                           "Can you tell everyone that I'm working on File1.py?",
                           "Can you chat to User2 that I will check and solve the problem?",
                           "Can you recommend what should I do to fix the conflict?"]
-command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py file.", "Tell me who wrote def1().",
+command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Don't alert me about indirect conflict.",
                          "Check File1.py whether it will make conflict or not.",
                          "Tell everyone that I'm working on File1.py to conflict detect channel.",
                          "Send user2 a message that I'm working on class1.",
                          "Give me some recommendation about how to solve the conflict of File1.py."]
 suggestion_sentence_list = ["You should not give me notification about File1.py", "You should lock File.py.",
-                            "Sayme, you should let me know who wrote code line 1.",
+                            "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "Sayme, you should check File1.py if this is gonna make a conflict.",
                             "You should tell me user1's working status.",
@@ -49,7 +49,7 @@ suggestion_sentence_list = ["You should not give me notification about File1.py"
                             "You have to send message to User2 that I will check and solve the confilct.",
                             "You would tell me how I can solve the conflict in File1.py"]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to lock File1.py.",
-                        "I want to know who wrote def1 in File1.py.", "I don't want you to alert about direct conflict",
+                        "I want to know who wrote line 70 to line 90 in File1.py.", "I don't want you to alert about direct conflict",
                         "I want to know that this is gonna make a conflict in File1.py.",
                         "I want to know user1's working status.",
                         "I want to send the message in conflict detector channel that don't modify File1.py.",
@@ -93,11 +93,11 @@ def get_slack_name_list():
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
     max = 0
-    max_idx = 1
+    max_idx = 10
     for idx in range(len(list)):
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
-        if rate > max and rate > 0.85:
+        if rate > max and rate > 0.70:
             max_idx = idx + 1
             max = rate
         if max_idx == 1 or max_idx == 4:
@@ -308,7 +308,7 @@ def extract_attention_word(sentence, github_email):
 
 
     elif intent_type == 7:
-        
+
         msg = ""
         channel = ""
 

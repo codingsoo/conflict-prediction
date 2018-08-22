@@ -128,8 +128,10 @@ def on_message(ws, message):
                 return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
 
                 # Send the message to user
-                if(return_message != "message"):
+                if(return_message != "message" and msg['channel'] != 'CBNKGMWBH'):
                     send_direct_message(user_slack_id, return_message)
+                elif(("Sayme" in msg['text']) or ("<@UBP8LHJS1>" in msg['text']) and msg['channel'] == 'CBNKGMWBH'):
+                    send_channel_message("code-conflict-chatbot", return_message)
 
 
 def on_error(ws, error):

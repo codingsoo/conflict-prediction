@@ -15,7 +15,7 @@ def is_command(pos_tag_list):
     for pos_tag in pos_tag_list:
         if pos_tag[1] == "RB" or pos_tag[1] == "MD":
             pass
-        elif pos_tag[1] == "VB":
+        elif pos_tag[1] == "VB" or "VBP":
             return True
         else:
             return False

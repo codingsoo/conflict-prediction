@@ -52,18 +52,17 @@ def approved_file_logic(slack_code, approve_set, remove_list):
     print("approve !! : " + str(approve_set))
     print("remove !! : " + str(remove_list))
     w_db = work_database()
+    approve_list = list(approve_set)
 
-    if(approve_set != {}):
+    if(len(approve_list) != 0):
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
         message = random.choice(shell_dict['feat_ignore_file'])
-        print(message)
-        print(type(message))
-        approve_list = list(approve_set)
+
         print(approve_list)
         message = message.format(approve_list[0])
 
-    if(remove_list != []):
+    if(len(remove_list) != 0):
         w_db.remove_approved_list(slack_code=slack_code,
                                   remove_approve_list=remove_list)
 
@@ -71,7 +70,6 @@ def approved_file_logic(slack_code, approve_set, remove_list):
         message = message.format(remove_list[-1])
 
     w_db.close()
-    print(type(message))
     return message
 
 
@@ -111,7 +109,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
 
     message = random.choice(shell_dict['feat_history_logic'])
     ele = ','.join(engaging_user_list)
-    message =message.format(ele)
+    message =message.format(ele,start_line,end_line)
     w_db.close()
     return message
 
