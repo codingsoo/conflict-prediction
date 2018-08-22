@@ -563,7 +563,7 @@ class work_database:
 
     def is_direct_conflict(self, project_name, file_name):
         raw_list = list()
-
+        file_name = project_name.split(".")[0] +"/" + file_name
         try:
             sql = "select * " \
                   "from working_table " \
@@ -590,12 +590,12 @@ class work_database:
 
     def is_indirect_conflict(self, project_name, file_name):
         raw_list = list()
-
+        file_name = project_name.split(".")[0] + "/" + file_name
         try:
             temp_file_name = str(file_name) + "%"
 
             sql = "select * " \
-                  "from logic_dependency " \
+                  "from uci_chat_bot.logic_dependency " \
                   "where project_name = '%s' " \
                   "and (u like '%s' or v like '%s' )" % (project_name, temp_file_name, temp_file_name)
 
@@ -606,6 +606,7 @@ class work_database:
 
             raw_list = self.cursor.fetchall()
             raw_list = list(raw_list)
+            print(raw_list)
 
         except:
             self.conn.rollback()
@@ -625,7 +626,7 @@ class work_database:
         for temp_file in file_list:
             try:
                 sql = "select * " \
-                "from working_table " \
+                "from uci_chat_bot.working_table " \
                 "where project_name = '%s' " \
                 "and file_name = '%s' " % (project_name, temp_file)
 
@@ -636,6 +637,7 @@ class work_database:
 
                 raw_list = self.cursor.fetchall()
                 raw_list = list(raw_list)
+                print("last raw_lsist : ",raw_list)
 
                 if(raw_list != []):
                     return True

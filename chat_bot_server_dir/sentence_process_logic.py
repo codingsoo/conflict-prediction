@@ -132,6 +132,7 @@ def check_conflict_logic(slack_code, file_name):
     message = ""
 
     project_name = w_db.read_project_name(slack_code)
+    print("project_ name test : ", project_name)
     direct_conflict_flag, indirect_conflict_flag = w_db.is_conflict(project_name, slack_code, file_name)
 
     if((direct_conflict_flag == True) and (indirect_conflict_flag == True)):

@@ -12,7 +12,6 @@ from chat_bot_server_dir.work_database import work_database
 
 nlp = spacy.load('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\venv\\Lib\\site-packages\\en_core_web_lg\\en_core_web_lg-2.0.0')
 
-
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
 # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
