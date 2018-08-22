@@ -720,7 +720,7 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_list = self.cursor.fetchall()
+            raw_list = self.cursor.fetchall()[0][0]
             raw_list = list(raw_list)
         except:
             self.conn.rollback()
