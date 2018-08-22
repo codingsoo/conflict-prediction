@@ -635,7 +635,7 @@ class work_database:
     Utility
     '''
     def convert_git_id_to_slack_code(self, git_id):
-        raw_list = list()
+        slack_code=""
 
         try:
             sql = "select slack_code " \
@@ -647,15 +647,13 @@ class work_database:
             print(sql)
 
             raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
+            slack_code = raw_list[0][0]
+
         except:
             self.conn.rollback()
-            print("ERROR : read project name")
+            print("ERROR : convert_git_id_to_slack_code")
 
-        if(raw_list != []):
-            return raw_list[0]
-        else:
-            return -1
+        return slack_code
 
     def read_project_name(self, slack_code):
         # Read git_id
@@ -710,7 +708,7 @@ class work_database:
 
     def convert_slack_code_to_git_id(self, slack_code):
         # Read git_id
-        raw_list = list()
+        git_id = ""
         try:
             sql = "select git_id " \
                   "from user_table " \
@@ -720,15 +718,18 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_list = self.cursor.fetchall()[0][0]
-            raw_list = list(raw_list)
+            query_result = self.cursor.fetchall()
+            git_id = query_result[0][0]
+
         except:
             self.conn.rollback()
             print("ERROR : convert_slack_code_to_git_id")
 
-        return raw_list[0]
-
+        return git_id
 
     def close(self):
         self.cursor.close()
         self.conn.close()
+
+a = work_database()
+print(a.convert_slack_code_to_git_id("UBG02LZNJ"))
