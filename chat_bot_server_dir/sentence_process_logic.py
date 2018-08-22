@@ -27,7 +27,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = other_working_status_logic(slack_code, param0, param1)
 
     elif(intent_type == 7):
-        message = send_message_channel_logic(param0, param1)
+        message = send_message_channel_logic(param0, param1, param2)
 
     elif(intent_type == 8):
         message = send_message_direct_logic(param0, param1)
@@ -159,8 +159,10 @@ def other_working_status_logic(slack_code, slack_name, git_id):
     return message
 
 
-def send_message_channel_logic(channel, msg):
-    send_channel_message(channel, msg)
+def send_message_channel_logic(channel, msg, user_name):
+    msg = msg.replace("?", "")
+    channel_msg = user_name + " announce : " + msg
+    send_channel_message(channel, channel_msg)
     message = random.choice(shell_dict['feat_send_message_user'])
     message = message.format(channel)
     return message

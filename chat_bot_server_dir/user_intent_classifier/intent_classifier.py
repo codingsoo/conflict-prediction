@@ -318,6 +318,8 @@ def extract_attention_word(sentence, github_email):
 
     elif intent_type == 7:
 
+        user_name = work_db.convert_git_id_to_slack_id(github_email)
+
         msg = ""
         channel = ""
 
@@ -355,7 +357,7 @@ def extract_attention_word(sentence, github_email):
             start_that = sentence.find('that') + 4
             msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
         work_db.close()
-        return 7, channel, msg, None
+        return 7, channel, msg, user_name
 
     elif intent_type == 8:
         target_user_name = ""

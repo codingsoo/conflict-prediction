@@ -429,6 +429,20 @@ class work_database:
             print("ERROR : add ignore")
         return git_email
 
+    def slack_code_to_slack_name(self, slack_code):
+        sql = "SELECT slack_id " \
+              "FROM user_table " \
+              "WHERE slack_code = '%s'" % (slack_code)
+        try:
+            self.cursor.execute(sql)
+            self.conn.commit()
+            slack_id = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : add ignore")
+        return slack_id
+
     def slack_name_to_slack_code(self, slack_name):
         sql = "SELECT slack_code " \
               "FROM user_table " \
@@ -732,6 +746,31 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
-#
-# a = work_database()
-# print(a.read_project_name("UBET56CN9"))
+
+    def convert_git_id_to_slack_id(self, git_id):
+        # Read git_id
+        slack_id = ""
+        try:
+            sql = "select slack_id " \
+                  "from user_table " \
+                  "where git_id = '%s' " % git_id
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            query_result = self.cursor.fetchall()
+            slack_id = query_result[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert_slack_code_to_git_id")
+
+        return slack_id
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+# #
+a = work_database()
+print(a.convert_git_id_to_slack_id("learnitdeep@gmail.com"))
