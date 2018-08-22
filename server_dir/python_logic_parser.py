@@ -89,7 +89,7 @@ def get_py_info_list( py_info, pre_infix = '') :
     ret_func_list, ret_class_list = [], []
     for key, value in py_info.items() :
         if pre_infix :
-            infix = pre_infix + '|' + key + ':'
+            infix = pre_infix + ':'
         else :
             infix = key + ':'
         for logic in value :
