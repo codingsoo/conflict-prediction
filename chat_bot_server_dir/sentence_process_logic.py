@@ -49,8 +49,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
 def approved_file_logic(slack_code, approve_set, remove_list):
     print(slack_code)
-    print(approve_set)
-    print(remove_list)
+    print("approve !! : " + str(approve_set))
+    print("remove !! : " + str(remove_list))
     w_db = work_database()
 
     m1 = ""
@@ -113,7 +113,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
 
 def ignore_file_logic(slack_code, ignore_list):
     w_db = work_database()
-
+    print("ignore : " + str(ignore_list))
     project_name = w_db.read_project_name(slack_code)
     w_db.add_update_ignore(project_name, ignore_list, slack_code)
 

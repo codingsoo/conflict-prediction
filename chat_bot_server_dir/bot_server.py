@@ -6,8 +6,6 @@ import random
 import _thread
 import os
 import configparser
-from chat_bot_server_dir.punctuator2.play_with_model import punctuator
-from chat_bot_server_dir.punctuator2.play_with_model import model_loading
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
@@ -105,10 +103,8 @@ def on_message(ws, message):
     if msg['type'] == 'message':
 
         # Message Content Convert
-        try:
-            rand_text = str(punctuator(msg['text'], model_list[0], model_list[1], model_list[2], model_list[3]))
-        except:
-            rand_text = msg['text']
+
+        rand_text = msg['text']
 
         # Verifying User : Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
@@ -119,19 +115,21 @@ def on_message(ws, message):
 
         # Sentence Processing
         else:
-            # Search Git id
-            u_db = user_database()
-            user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
-            user_slack_id = msg['user']
+            if msg['user'] != "UBP8LHJS1":
+                # Search Git id
+                u_db = user_database()
+                user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
+                user_slack_id = msg['user']
+                print("print_user_id : ", user_slack_id, user_git_id)
 
-            # Sentence Processing logic
+                # Sentence Processing logic
 
-            intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
-            return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
+                return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
 
-            # Send the message to user
-            if(return_message != "message"):
-                send_direct_message(user_slack_id, return_message)
+                # Send the message to user
+                if(return_message != "message"):
+                    send_direct_message(user_slack_id, return_message)
 
 
 def on_error(ws, error):
@@ -150,9 +148,9 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    nltk.download('punkt')
-    nltk.download('wordnet')
-    model_list = model_loading()
+    #nltk.download('punkt')
+    #nltk.download('wordnet')
+
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     res = slack.auth.test().body
 
@@ -165,10 +163,14 @@ if __name__ == "__main__":
     }]
 
     slack.chat.post_message(channel, '', attachments=msg, as_user=True)
-
+    print("slack chat")
     response = slack.rtm.start()
+    print("response")
     endpoint = response.body['url']
-
+    print("endpoint")
     ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
+    print("ws")
     ws.on_open = on_open
+    print("we.on_open")
     ws.run_forever()
+    print("ws.run_forever")

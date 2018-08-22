@@ -63,7 +63,8 @@ def get_user_slack_id(git_id):
 
 
 def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
-
+    if conflict_logic == "in":
+        conflict_logic = ""
     user1_slack_id_code = get_user_slack_id(user1_name)[0]
     user2_slack_id_code = get_user_slack_id(user2_name)[0]
     direct_ignore_flag = 0
@@ -140,8 +141,13 @@ def send_conflict_message_channel(conflict_project, conflict_file, conflict_logi
 
     # same server
     same_shell = make_same_file_shell_list()
-    message = same_shell[random.randint(0, len(same_shell) - 1)] % (
-    user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
+    if conflict_logic == "in":
+        message = same_shell[random.randint(0, len(same_shell) - 1)] % (
+        user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, '')
+    else:
+        send_channel_message("code-conflict-chatbot", message)
+        message = same_shell[random.randint(0, len(same_shell) - 1)] % (
+        user1_slack_id_code[0], user2_slack_id_code[0], conflict_file, conflict_logic)
     send_channel_message("code-conflict-chatbot", message)
     return
 

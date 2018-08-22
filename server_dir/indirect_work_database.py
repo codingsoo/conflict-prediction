@@ -36,7 +36,6 @@ class indirect_work_database:
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)
 
         indirect_conflict_list = w_db.classify_indirect_conflict_approved_list(project_name, indirect_conflict_list)
-        w_db.close()
 
         # Conflict
         if(indirect_conflict_list != []):
@@ -59,6 +58,7 @@ class indirect_work_database:
             print("\n#### Non-Conflict !!! ####")
             self.non_indirect_conflict_logic(project_name, user_name)
 
+        w_db.close()
         return
 
 
