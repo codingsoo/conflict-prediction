@@ -185,8 +185,16 @@ def send_message_direct_logic(slack_code, msg, user_name):
 def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
     w_db = work_database()
 
-    recommend_git_id, recommend_working_amount = w_db.recommendation(user1_git_id, user2_git_id)
-    message = "Recommend user git id : " + str(recommend_git_id) + " / " + "Recommend working amount : " + str(recommend_working_amount)
+    u1, w1, u2, w2 = w_db.recommendation(user1_git_id, user2_git_id)
+    user1_slack_id = w_db.convert_git_id_to_slack_id(u1)
+    user2_slack_id = w_db.convert_git_id_to_slack_id(u2)
+
+    if u1 == user1_git_id:
+        message = random.choice(shell_dict['feat_recommend_change'])
+        message = message.format(user2_slack_id, user2_slack_id)
+    else:
+        message = random.choice(shell_dict['feat_recommend_not_change'])
+        message = message.format(user1_slack_id, user1_slack_id)
 
     w_db.close()
     return message

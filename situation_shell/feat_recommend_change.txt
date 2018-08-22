@@ -1,10 +1,5 @@
-I think you can modify it.
-Based on other user's worked amount, working on it will not be a problem.
-Working on it is okay.
-I think you can go on what you're going to do.
-In my opinion, you can change it.
-I think it won't make conflict if you modify this, so you can keep going.
-In my opinion, you can modify this.
-I think working in here is fine.
-In my suggestion, working in here is fine.
-You can modify this.
+You did much than {}. Better to say {} to not modify it, then you can modify it.
+Based on other user's worked amount, You did much than {}. Better to say {} to not modify it, then working on it will not be a problem.
+You did much than {}. Better to say {} to not modify it, then Working on it is okay I think.
+You did much than {}. Better to say {} to not modify it, then I think you can go on what you're going to do.
+You did much than {}. Better to say {} to not modify it, then In my opinion, you can change it.

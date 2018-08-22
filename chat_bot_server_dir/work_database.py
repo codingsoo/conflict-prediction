@@ -102,10 +102,14 @@ class work_database:
         if user1_working_amount > user2_working_amount :
             response_list.append(user1)
             response_list.append(user1_working_amount)
+            response_list.append(user2)
+            response_list.append(user2_working_amount)
             return response_list
         elif user1_working_amount < user2_working_amount :
             response_list.append(user2)
             response_list.append(user2_working_amount)
+            response_list.append(user1)
+            response_list.append(user1_working_amount)
             return response_list
         else :
             return response_list
@@ -771,6 +775,6 @@ class work_database:
     def close(self):
         self.cursor.close()
         self.conn.close()
-# #
-a = work_database()
-print(a.convert_git_id_to_slack_id("learnitdeep@gmail.com"))
+# # #
+# a = work_database()
+# print(a.convert_git_id_to_slack_id("learnitdeep@gmail.com"))
