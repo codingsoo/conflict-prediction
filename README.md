@@ -29,6 +29,5 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 
 ## Future Work
 
-- Research about how chatbot talks to people in various ways.
-- Increase the recognition rate of chatbot on human language to make better interaction between users and chatbot.
+- Research about the ways of chatbot that human likes(What behaviors should chatbot have?).
 - Adopt voice recognition technology : Chatbot can recognize the voice input from a user, and chatbot can respond to the voice input with its own voice.
