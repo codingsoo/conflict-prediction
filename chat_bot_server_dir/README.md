@@ -45,7 +45,7 @@ User : Can you ignore this file?
       |:----------:|:---:|:------:|:-------:|:---------:|:---------:|
       | Slot     | O | O    | Slot1 | O       | O |
 
-      If any slot is not filled, we fill slot from our recent history data.
+      If any slot is not filled, Sayme(bot) fill slot from our recent history data.
 
 
 ## Sequence diagram(NLP)
