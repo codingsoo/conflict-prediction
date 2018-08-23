@@ -26,13 +26,19 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 14.	Complimentary close : Chatbot can say good bye.
 
 ## Bot's non functional features
+
 1. Chatbot immediately detects the conflict and after first warning, twice rewarning per 30 min.
-2. When the possibility of conflict is getting higher and more severe: The chatbot sends the warning every 30 minutes.
-3. Every time a conflict is solved or solving, the chatbot sends a message one time.
+2. If user keeps ignoring conflict message, chatbot give message to the channel.
+3. Every time a conflict is solved or solving, the chatbot sends a message immediately.
 4. The authentication is needed only one time.
-5. The chatbot sends a message to the project channel publicly only one time.
+5. If user keeps ignoring conflict message, chatbot give message to the channel.
 6. Chatbot should detect user data every 5 minutes. Crawling repository should be done every 4 hours.
-7. Chatbot should respond to user within 3 minutes.
+7. Chatbot should respond to user within 5 seceonds.
+
+## Algorithm
+
+- NLP : You can see the algorithm in [chat_bot_server_dir folder](https://github.com/UCNLP/conflict-detector/tree/py3_server/chat_bot_server_dir)
+- Conflict detection : You can see the algorithm in [server_dir folder](https://github.com/UCNLP/conflict-detector/tree/py3_server/server_dir)
 
 ## Future Work
 
