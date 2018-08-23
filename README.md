@@ -4,7 +4,7 @@
 
 We aim to improve developer's collaboration environment. We develop a chatbot which can detect python code conflicts automatically in real time and send the conflict information to people who are in conflict through slack.
 
-## installation
+## Installation
 
 ## Demo Vedio
 
