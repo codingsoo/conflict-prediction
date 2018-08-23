@@ -50,7 +50,7 @@ def is_question(parse_list):
     return False
 
 def require_something_sentence(_sentence):
-    nlp = StanfordCoreNLP('http://localhost', port=9000)
+    nlp = StanfordCoreNLP('C:\\Users\\learn\\PycharmProjects\\conflict-detector\\stanford-corenlp-full-2018-02-27')
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)

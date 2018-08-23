@@ -2,11 +2,9 @@ from slacker import Slacker
 import websocket
 import time
 import json
-import random
 import _thread
 import os
 import configparser
-from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
@@ -17,6 +15,7 @@ from pathlib import Path
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import extract_attention_word
 from chat_bot_server_dir.sentence_process_logic import sentence_processing_main
 
+print("hi")
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
 
@@ -175,8 +174,9 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    #nltk.download('punkt')
-    #nltk.download('wordnet')
+    print("hi")
+    nltk.download('punkt')
+    nltk.download('wordnet')
 
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     res = slack.auth.test().body
