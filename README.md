@@ -187,7 +187,7 @@ conflict_test/counting_triangle.py : [
 
 ### Algorithm of detecting direct conflict
 
-1.	We delete the direct conflict list from the database when an alarm count is over 2 and 24 hours or more.
+1.	We delete the direct conflict list from the database when an alarm count is over 2 and the amount of time is over 24 hours.
 2.	We check if there is another user whose working status overlaps with a current user using the project name and job information of the current user
 
 	1.	The user information where project name and working file overlap exists (direct conflict)
@@ -244,32 +244,32 @@ conflict_test/counting_triangle.py : [
 
 ### Algorithm of detecting indirect conflict
 
-1.	We delete the indirect conflict list with an alarm count of 2 or more and 24 hours or more from the database.
+1.	We delete the indirect conflict list from the database when an alarm count is over 2 and the amount of time is over 24 hours.
 
 2.	We check if there is another user whose project name is same with the one of the current user from the working table in the database.
 
-3.	Search the database's logic dependency table using the current user's project name, current user's job history and project name, and other user's job history.
+3.	We look up the logic dependency table in the database using the current user's project name, and another user's working history whose project name and working history are same with the current user's.
 
-	1.	The current user's work and other user's jobs are indirectly conflicted by the database's dependency table.
+	1.	The current user's working history and another user's working history are connected by the dependency table in the database (indirect conflict).
 
-		1.	Investigate the in-direct conflict table of the database using the current direct conflict information.
+		1.	We go over the indirect conflict table in the database using the current indirect conflict information.
 
-			1.	In-direct conflict information already exists.
+		2.	Indirect conflict information already exists.
 
-				1.	When the alarm count of current direct conflict information is 1 and is more than 30 minutes, it informs the user of in-direct conflict information.
-				2.	Update the current direct conflict information to the database.
+			1.	If an alarm count of current indirect conflict information is 1 and the amount of time is more than 30 minutes, we let the user know about the indirect conflict information.
+			2.	We update the current indirect conflict information to the database.
 
-			2.	In direct information does not exist. (First indirect conflict)
+		3.	Indirect information does not exist. (First indirect conflict)
 
-				1.	Inform the user of the in-direct conflict information.
-				2.	Update the current direct conflict information to the database.
+			1.	We let the user know about the indirect conflict information.
+			2.	We update the current indirect conflict information to the database.
 
-	2.	The current user's job history and other user's jobs are not linked by the database's dependency table (non-indirect conflict)
+	2.	The current user's working history and another user's working history are not connected by the dependency table in the database (non-indirect conflict).
 
-		1.	Make sure that the direct table contains the current user information.
-		2.	Direct table has current user information
-			1.	Tell the users that the Direct Conflict has been resolved.
-		3.	Delete the current user information data from the direct table.
+		1.	We make it sure if the indirect table contains the information about the current user.
+		2.	Direct table has the information about the current user.
+			1.	We let the users know that the indirect conflict has been resolved.
+		3.	We delete the data of current user from the indirect table.
 
 <br>
 
