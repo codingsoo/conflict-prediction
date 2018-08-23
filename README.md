@@ -4,6 +4,10 @@
 
 We aim to improve developer's collaboration environment. We develop a chatbot which can detect python code conflicts automatically in real time and send the conflict information to people who are in conflict through slack.
 
+## installation
+
+## Demo Vedio
+
 ## Bot's functional features
 
 1.	Detect direct conflict : Sayme can detect direct conflict and three types of severity.
@@ -22,10 +26,6 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 14.	Complimentary close : Chatbot can say good bye.
 
 ## Bot's non functional features
-
-## installation
-
-## Demo Vedio
 
 ## Future Work
 
