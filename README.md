@@ -28,7 +28,9 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 ## Demo Vedio
 
 ## Future Work
-
+1. Research about how chatbot talk to people in various ways.
+2. Increase chatbot's recognition rate about human language to make better interaction between people and chatbot.
+3. Adopt voice Recognition : Chatbot can recognize people's voice, and chatbot can response to voice.
 
 Definition of conflict
 ----------------------
