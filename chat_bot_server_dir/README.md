@@ -29,6 +29,25 @@ We use [spacy vector similarity algorithm](https://spacy.io/usage/vectors-simila
 
 Based on the classification of the intention, we extract information from the user to provide the output which the user is looking for. After the extraction, we fill our slot, and we call another function to respond to the user.
 
+- Scenarios for slot filling
+
+  -  Scenario 1 (All slots are filled)  
+User : Can you ignore hello.py?
+
+      | Sentence | Can | you | ignore  | hello.py  |
+      |:----------:|:---:|:------:|:--------:|:--------:|
+      | Slot     | O | O    | Slot1 | Slot2  |
+
+  - Scenario 2 (There is no Slot2)  
+User : Can you ignore this file?
+
+      | Sentence | Can | you | ignore  | this | file |
+      |:----------:|:---:|:------:|:-------:|:---------:|:---------:|
+      | Slot     | O | O    | Slot1 | O       | O |
+
+      If any slot is not filled, we fill slot from our recent history data.
+
+
 ## Sequence diagram(NLP)
 
 ![nlp_sequence_diagram](https://github.com/UCNLP/conflict-detector/blob/py3_server/images/nlp_sequence_diagram.jpg)
