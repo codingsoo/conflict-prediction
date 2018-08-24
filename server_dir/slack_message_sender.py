@@ -117,12 +117,12 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         for logic in logic_list:
             con_logic_for_class = con_logic_for_class + logic + ' '
         print(con_logic_for_class)
-        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", user2_slack_id_code[0], conflict_file, con_logic_for_class)
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format(user2_slack_id_code[0], conflict_file, con_logic_for_class)
 
     elif(conflict_flag == Conflict_flag.file_in.value):
         # just in
         get_closer = make_same_file_shell_list()
-        message = get_closer[random.randint(0, len(get_closer) - 1)].format("you", user2_slack_id_code[0], conflict_file, "")
+        message = get_closer[random.randint(0, len(get_closer) - 1)].format(user2_slack_id_code[0], conflict_file, "")
 
     elif(conflict_flag == Conflict_flag.conflict_finished.value):
         # conflict solved
