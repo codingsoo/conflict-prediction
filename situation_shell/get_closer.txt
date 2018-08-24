@@ -1,9 +1,9 @@
-Hey, {} and {}! You guys' location is more closer!
-Hey, {} and {}! You guys' location get closer and closer!
-It seems {} and {} are more closer.
-Two developers {} and {} are working too closer!
-{} and {} are working too closer!
-{} and {} are engaging in closer.
-As {} and {} are working continue, it is more closer!
-Hey, {} and {} what you guys doing? You guys get closer and closer!
-Hey, {} and {} what you guys doing? You guys get more closer!
+Hey, you and {}! You guys' location is more closer!
+Hey, you and {}! You guys' location get closer and closer!
+It seems you and {} are more closer.
+Two developers you and {} are working too closer!
+You and {} are working too closer!
+You and {} are engaging in closer.
+As you and {} are working continue, it is more closer!
+Hey, you and {} what you guys doing? You guys get closer and closer!
+Hey, you and {} what you guys doing? You guys get more closer!

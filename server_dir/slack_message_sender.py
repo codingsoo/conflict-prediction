@@ -56,6 +56,10 @@ def make_lower_severity_list():
     lower_severity = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "conflict_alleviated.txt"))
     return lower_severity
 
+def make_indirect_conflict_shell_list():
+    indirect_conflict = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict.txt"))
+    return indirect_conflict
+
 # Get user slack id
 def get_user_slack_id(git_id):
     u_db = user_database()
@@ -92,28 +96,28 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif(conflict_flag == Conflict_flag.same_severity.value):
         # same server
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format(str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
 
     elif(conflict_flag == Conflict_flag.lower_severity.value):
         # lower serverity
         lower_severity = make_lower_severity_list()
-        message = lower_severity[random.randint(0, len(lower_severity) - 1)].format("you", user2_slack_id_code[0])
+        message = lower_severity[random.randint(0, len(lower_severity) - 1)].format(user2_slack_id_code[0])
 
     # First conflict
     elif(conflict_flag == Conflict_flag.same_function.value):
         # same function
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format(user2_slack_id_code[0], conflict_file, conflict_logic)
 
     elif(conflict_flag == Conflict_flag.same_class.value):
         # same class
         same_shell = make_same_file_shell_list()
-        message = same_shell[random.randint(0, len(same_shell) - 1)].format("you", user2_slack_id_code[0], conflict_file, conflict_logic)
+        message = same_shell[random.randint(0, len(same_shell) - 1)].format(str(user2_slack_id_code[0]), str(conflict_file), str(conflict_logic))
 
     elif(conflict_flag == Conflict_flag.file_in.value):
         # just in
         get_closer = make_same_file_shell_list()
-        message = get_closer[random.randint(0, len(get_closer) - 1)].format("you", user2_slack_id_code[0], conflict_file, " ")
+        message = get_closer[random.randint(0, len(get_closer) - 1)].format(user2_slack_id_code[0], conflict_file, " ")
 
     elif(conflict_flag == Conflict_flag.conflict_finished.value):
         # conflict solved
@@ -121,13 +125,13 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         if user2_slack_id_code[0] == user1_slack_id_code[0]:
             pass
         else:
-            message = conflict_finished[random.randint(0, len(conflict_finished) - 1)].format("you", user2_slack_id_code[0])
+            message = conflict_finished[random.randint(0, len(conflict_finished) - 1)].format(user2_slack_id_code[0])
 
     elif(conflict_flag == Conflict_flag.indirect_conflict.value):
-        message = "indirect conflict : your name : %s / your file : %s / your logic : %s " \
-                  "/ other name : %s / other file: %s / other logic : %s " \
-                  "" %(user1_slack_id_code[0], conflict_file[0], conflict_file[1],
-                       user2_slack_id_code[0], conflict_logic[0], conflict_logic[1])
+
+        indirect_shell = make_indirect_conflict_shell_list()
+        message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(conflict_file, user2_slack_id_code[0], conflict_logic)
+
     if message != "":
         send_direct_message(user1_slack_id_code[1], message)
 
