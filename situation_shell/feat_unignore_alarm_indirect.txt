@@ -1,0 +1,10 @@
+Indirect conflict will be notified from now on.
+As you requested, indirect conflict alarm is on.
+I will notify indirect conflict from now on.
+Unignore indirect conflict. You can get notify of it anytime.
+I'll not notify about indirect conflict.
+From now on, indirect conflict alarm will be unignored.
+From now on, alarm about indirect conflict will be unignored.
+Indirect conflict alarm will be unignored from now on.
+Conflict of indirect will be unignored from now on.
+As you said, indirect conflict alarm will be unignored.

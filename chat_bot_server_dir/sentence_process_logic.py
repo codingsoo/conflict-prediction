@@ -140,11 +140,14 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     w_db.add_update_ignore(project_name, ignore_list, slack_code, approval)
     message = ""
 
-    if ignore_list == 1:
+    if approval == 1 and ignore_list == 1:
         message = random.choice(shell_dict['feat_ignore_alarm_direct'])
-    elif ignore_list == 2:
+    elif approval == 1 and ignore_list == 2:
         message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
-
+    elif approval == 0 and ignore_list == 1:
+        message = random.choice(shell_dict['feat_unignore_alarm_direct'])
+    elif approval == 0 and ignore_list == 2:
+        message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
     w_db.close()
     return message
 
