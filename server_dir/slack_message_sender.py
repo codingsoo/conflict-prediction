@@ -128,7 +128,7 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
             message = conflict_finished[random.randint(0, len(conflict_finished) - 1)].format(user2_slack_id_code[0])
 
     elif(conflict_flag == Conflict_flag.indirect_conflict.value):
-
+        # indirect conflict
         indirect_shell = make_indirect_conflict_shell_list()
         message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(conflict_file, user2_slack_id_code[0], conflict_logic)
 
