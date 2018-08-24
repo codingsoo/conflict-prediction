@@ -95,21 +95,24 @@ def calcue_max(sentence, list):
     max = 0
     max_idx = 10
     for idx in range(len(list)):
+
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
-        if rate > max and rate > 0.70:
+        if rate > max and rate > 0.35:
             max_idx = idx + 1
             max = rate
         if max_idx == 1 or max_idx == 4:
-            if 'direct' in sentence or 'indirect' in sentence:
+            if ('direct' in sentence or 'indirect' in sentence) and (".py" not in sentence):
                 max_idx = 4
             else:
                 max_idx = 1
+    if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
+        return 10
 
     return max_idx
 
 def intent_classifier(sentence):
-    if "this" in sentence:
+    if "this" in sentence or "that" in sentence or "it" in sentence:
         sentence = sentence.replace("this","xvxv.py")
     sentence_type = require_something_sentence(sentence)
 
@@ -147,7 +150,7 @@ def extract_attention_word(sentence, github_email):
     import re
 
     work_db = work_database()
-    file_list = project_parser("UCNLP", "client")["file"]
+    file_list = project_parser("UCNLP", "conflict_test")["file"]
 
     name_list = get_slack_name_list()
 
@@ -178,7 +181,7 @@ def extract_attention_word(sentence, github_email):
             print(rfl)
             if rfl in sentence:
                 print (sentence)
-                if (('not' in sentence) or ("n’t" in sentence) or ('un' in sentence)):
+                if (('not' in sentence) or ("n’t" in sentence) or ('un' in sentence) or ("n't" in sentence)):
                     remove_list.append(file_list[result_file_list.index(rfl)])
                     print(rfl)
                     print(file_list[result_file_list.index(rfl)])
@@ -197,7 +200,7 @@ def extract_attention_word(sentence, github_email):
         print(approve_set)
 
         if remove_list == [] and approve_set == set():
-            if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
+            if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
                 remove_list.append(recent_file)
             else:
                 approve_set.add(recent_file)
@@ -221,7 +224,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
+                if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     try:
@@ -231,7 +234,7 @@ def extract_attention_word(sentence, github_email):
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
         if remove_lock_list == [] and request_lock_set == set():
-            if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
+            if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
                 remove_lock_list.append(recent_file)
             else :
                 request_lock_set.add(recent_file)
@@ -247,8 +250,11 @@ def extract_attention_word(sentence, github_email):
         file_path = ""
 
         for rfl in result_file_list:
-            if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
+            name = rfl
+            if str(os.sep) in rfl:
+                name = rfl.split(os.sep)[-1]
+            if name in sentence:
+                file_path = rfl
 
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
@@ -256,34 +262,45 @@ def extract_attention_word(sentence, github_email):
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
                 work_db.close()
+                file_path = file_path.replace(" ","")
                 return 3, file_path, num_list[0], num_list[1]
             else:
                 work_db.close()
+                file_path = file_path.replace(" ", "")
                 return 3, file_path, num_list[1], num_list[0]
         elif len(num_list) == 1:
             work_db.close()
+            file_path = file_path.replace(" ", "")
             return 3, file_path, num_list[0], num_list[0]
 
         else:
+            recent_file = recent_file.split('/')[-1]
+            result_file_list = get_file_path(file_list)
+            file_path = ""
+
+            for rfl in result_file_list:
+                if recent_data in sentence:
+                    file_path = rfl
             work_db.close()
-            return 3, recent_file, 1, 1
+            file_path = file_path.replace(" ", "")
+            return 3, file_path, 1, 1
 
 
     elif intent_type == 4:
-        if 'not' in sentence or "n’t" in sentence or 'un' in sentence:
-            if 'indirect' in sentence:
-                work_db.close()
-                return 4, 2, 1, None
-            else:
-                work_db.close()
-                return 4, 1, 2, None
-        else:
+        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
             if 'indirect' in sentence:
                 work_db.close()
                 return 4, 2, 0, None
             else:
                 work_db.close()
-                return 4, 0, 2, None
+                return 4, 1, 0, None
+        else:
+            if 'indirect' in sentence:
+                work_db.close()
+                return 4, 2, 1, None
+            else:
+                work_db.close()
+                return 4, 1, 1, None
 
 
     elif intent_type == 5:
@@ -308,11 +325,12 @@ def extract_attention_word(sentence, github_email):
 
         if target_user_name == "":
             work_db.close()
-            return 6, recent_data[2], None, None
+            slack_name = work_db.convert_git_id_to_slack_id(recent_data[2])
+            return 6, slack_name, recent_data[2], None
         else:
             target_user_email = work_db.slack_name_to_git_email(target_user_name)
             work_db.close()
-            return 6, target_user_name ,target_user_email, None
+            return 6, target_user_name, target_user_email, None
 
 
     elif intent_type == 7:

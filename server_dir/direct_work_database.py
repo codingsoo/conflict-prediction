@@ -207,7 +207,8 @@ class direct_work_database:
 
                     # Different logic name
                     else:
-                        if(temp_user_work[1][:5] == "class"):
+                        if((temp_user_work[1][:5] == "class") and (temp_other_work[2][:5] == "class")
+                        and (temp_user_work[1].split(':')[1] == temp_other_work[2].split(':')[1])):
                             print("same class direct conflict : 2")
                             severity = 2
                         else:
@@ -345,7 +346,30 @@ class direct_work_database:
                                       user2_name=temp_best[6],
                                       severity=temp_best[0])
 
-            send_conflict_message(conflict_flag=Conflict_flag.same_severity.value,
+            if(temp_best[3] == temp_best[4]
+                and temp_best[3][:5] == "class"
+                and temp_best[4][:5] == "class"):
+                # same class and same function
+                conflict_flag = Conflict_flag.same_function.value
+
+            elif(temp_best[3] == temp_best[4]
+                and temp_best[3][:8] == "function"
+                and temp_best[4][:8] == "function"):
+                # same function
+                conflict_flag = Conflict_flag.same_function.value
+
+            elif(temp_best[3] != temp_best[4]
+                and temp_best[3][:5] == "class"
+                and temp_best[4][:5] == "class"
+                and temp_best[3].split(':')[1] == temp_best[4].split(':')[1]):
+                # just same class
+                conflict_flag = Conflict_flag.same_class.value
+
+            else:
+                # just in
+                conflict_flag = Conflict_flag.file_in.value
+
+            send_conflict_message(conflict_flag=conflict_flag,
                                   conflict_project=temp_best[1],
                                   conflict_file=temp_best[2],
                                   conflict_logic=temp_best[3],
@@ -361,7 +385,7 @@ class direct_work_database:
             sql = "select * " \
                   "from direct_conflict_table " \
                   "where project_name = '%s' " \
-                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
+                  "and user1_name = '%s'" % (project_name, user_name)
             print(sql)
 
             self.cursor.execute(sql)
@@ -425,6 +449,8 @@ class direct_work_database:
     # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
         try:
+            if "in" in logic1_name or "in" in logic2_name:
+                severity = 1
             sql1 = "insert into direct_conflict_table (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity) " \
                    "value ('%s', '%s', '%s', '%s', '%s', '%s', %d)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity)
             self.cursor.execute(sql1)

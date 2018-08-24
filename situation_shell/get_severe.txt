@@ -25,4 +25,3 @@ The severity of the situation is significant
 The severity of the situation is critical.
 The danger of the situation is critical.
 Please be aware of conflict danger!
-Potential conflict detected!

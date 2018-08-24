@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import configparser
 
-def load_server_config() :
+def load_server_config(mode="parent") :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
 
     host = ""
@@ -24,8 +24,9 @@ def load_server_config() :
     return host, port
 
 
-def load_git_graph_server_config() :
-    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+def load_git_graph_server_config(mode="parent") :
+
+    file_path = os.path.join(Path(Path(os.getcwd()).parent).parent, "all_server_config.ini")
 
     host = ""
     port = ""
@@ -37,6 +38,7 @@ def load_git_graph_server_config() :
         config = configparser.ConfigParser()
         config.read(file_path)
         try :
+            print("here")
             host = config["GIT_GRAPH_SERVER"]["IP"]
             port = config["GIT_GRAPH_SERVER"]["PORT"]
             print("SUCCESS LOADING CONFIG")
@@ -46,8 +48,12 @@ def load_git_graph_server_config() :
     return host, port
 
 
-def load_database_connection_config():
-    file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+def load_database_connection_config(mode ="parent"):
+    file_path = ""
+    if mode == "parent":
+        file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
+    elif mode == "grandparent":
+        file_path = os.path.join(Path(Path(os.getcwd()).parent).parent, "all_server_config.ini")
 
     host = ""
     user = ""

@@ -18,7 +18,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = code_history_logic(slack_code, param0, param1, param2)
 
     elif(intent_type == 4):
-        message = ignore_file_logic(slack_code, param0)
+        message = ignore_file_logic(slack_code, param0, param1)
 
     elif(intent_type == 5):
         message = check_conflict_logic(slack_code, param0)
@@ -122,16 +122,23 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
     #message = "This is code history : " + str(engaging_user_list)
 
     message = random.choice(shell_dict['feat_history_logic'])
-    ele = ','.join(engaging_user_list)
-    message =message.format(ele,start_line,end_line)
+    user_name = ""
+    for name in engaging_user_list:
+        nickname = w_db.convert_git_id_to_slack_id(name)
+        user_name = user_name + nickname + ', '
+    user_name = user_name[:-2]
+    nickname = w_db.convert_git_id_to_slack_id(user_name)
+    message =message.format(nickname,start_line,end_line)
+
     w_db.close()
     return message
 
-def ignore_file_logic(slack_code, ignore_list):
+def ignore_file_logic(slack_code, ignore_list, approval):
     w_db = work_database()
     print("ignore : " + str(ignore_list))
     project_name = w_db.read_project_name(slack_code)
-    w_db.add_update_ignore(project_name, ignore_list, slack_code)
+    w_db.add_update_ignore(project_name, ignore_list, slack_code, approval)
+    message = ""
 
     if ignore_list == 1:
         message = random.choice(shell_dict['feat_ignore_alarm_direct'])
@@ -179,7 +186,7 @@ def send_message_channel_logic(channel, msg, user_name):
     msg = msg.replace("?", "")
     channel_msg = user_name + " announce : " + msg
     send_channel_message(channel, channel_msg)
-    message = random.choice(shell_dict['feat_send_message_user'])
+    message = random.choice(shell_dict['feat_announce'])
     message = message.format(channel)
     return message
 

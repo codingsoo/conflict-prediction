@@ -36,7 +36,7 @@ token = load_token()
 slack = Slacker(token)
 
 # add_ignore = []
-project_structure = project_parser('UCNLP', 'client')
+project_structure = project_parser('UCNLP', 'conflict_test')
 
 def make_shell_list(file):
     f = open(file,"rt",encoding="UTF8")
