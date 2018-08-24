@@ -1,0 +1,6 @@
+Hey! Indirect conflict will occur if you keep editing it. You are at {} and {} is working on {}.
+You are now at {} and {} is at {}. I think indirect conflict will occur.
+Indirect conflict alert! You are at {} and {} is at {}.
+What you edited now at {}, it might affect {} 's working status {}.
+Did you know that indirect conflict might occur? You are at {} and {} is working on {}.
+
