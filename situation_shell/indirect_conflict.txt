@@ -1,0 +1,12 @@
+Hey! Indirect conflict will occur if you keep editing it. You are at {} and {} is working on {}.
+You are now at {} and {} is at {}. I think indirect conflict will occur.
+Indirect conflict alert! You are at {} and {} is at {}.
+What you edited now at {}, it might affect {} 's working status {}.
+Did you know that indirect conflict might occur? You are at {} and {} is working on {}.
+You are at {} and {} is working on {}. It will be more serious!
+You are now at {} and {} is working on {}. It will be more dangerous!
+Hey, there is a indirect conflict {}. {} is working on {}.
+You have to check {}. {} is working on {}. I think indirect conflict will occur.
+Hey, I think indirect conflict will occur at {}. {} is working on {} now.
+Indirect conflict will occur! You’d better check {}. {} is working on {} now.
+I think you’d better check {} now. {} is working on {}. It will occur indirect conflict.

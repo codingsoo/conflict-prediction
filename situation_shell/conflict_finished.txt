@@ -1,10 +1,10 @@
-{} and {}, thank you! Conflict has been solved!
-{} and {}, good! Conflict has been solved!
-{} and {}, cool! Conflict has been solved!
-{} and {}, nice! Conflict has been solved!
-{} and {}, good news! Conflict has been solved!
-{} and {}, thank you! No more conflicts!
-{} and {}, good! No more conflicts!
-{} and {}, cool! No more conflicts!
-{} and {}, nice job! No more conflicts!
-{} and {}, good news! No more conflicts!
+You and {}, thank you! Conflict has been solved!
+You and {}, good! Conflict has been solved!
+You and {}, cool! Conflict has been solved!
+You and {}, nice! Conflict has been solved!
+You and {}, good news! Conflict has been solved!
+You and {}, thank you! No more conflicts!
+You and {}, good! No more conflicts!
+You and {}, cool! No more conflicts!
+You and {}, nice job! No more conflicts!
+You and {}, good news! No more conflicts!
