@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/chaeyeon/Desktop/workspace/NLP/venv/lib/python3.7/site-packages/spacy/data/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -37,6 +37,7 @@ question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock
 command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Don't alert me about indirect conflict.",
                          "Check File1.py whether it will make conflict or not.",
+                         "Tell me where user2's working status",
                          "Tell everyone that I'm working on File1.py to conflict detect channel.",
                          "Send user2 a message that I'm working on class1.",
                          "Give me some recommendation about how to solve the conflict of File1.py."]

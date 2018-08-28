@@ -815,9 +815,9 @@ class work_database:
                   "from user_table " \
                   "where git_id = '%s' " % git_id
 
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-            print(sql)
 
             query_result = self.cursor.fetchall()
             print(query_result)

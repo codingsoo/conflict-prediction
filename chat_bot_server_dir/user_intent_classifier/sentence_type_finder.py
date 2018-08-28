@@ -15,7 +15,7 @@ def is_command(pos_tag_list):
     for pos_tag in pos_tag_list:
         if pos_tag[1] == "RB" or pos_tag[1] == "MD":
             pass
-        elif pos_tag[1] == "VB" or "VBP":
+        elif pos_tag[1] == "VB" or pos_tag[1] == "VBP":
             return True
         else:
             return False
@@ -65,5 +65,3 @@ def require_something_sentence(_sentence):
         return 4
     else:
         return 5
-
-print(require_something_sentence('make a conflict'))
