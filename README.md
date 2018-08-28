@@ -6,7 +6,7 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 
 ## Installation
 
-## Demo Vedio
+## Demo Video
 
 ## Bot's functional features
 
