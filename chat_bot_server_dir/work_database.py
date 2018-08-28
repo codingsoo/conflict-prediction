@@ -100,7 +100,7 @@ class work_database:
 
         response_list = []
 
-        if user1_working_amount > user2_working_amount :
+        if user1_working_amount >= user2_working_amount :
             response_list.append(user1)
             response_list.append(user1_working_amount)
             response_list.append(user2)
@@ -111,9 +111,9 @@ class work_database:
             response_list.append(user2_working_amount)
             response_list.append(user1)
             response_list.append(user1_working_amount)
-            return response_list
+            return response_list[0], response_list[1], response_list[2], response_list[3]
         else :
-            return response_list
+            return response_list[0], response_list[1], response_list[2], response_list[3]
 
 #################################################################
 
@@ -809,11 +809,12 @@ class work_database:
 
     def convert_git_id_to_slack_id(self, git_id):
         # Read git_id
+        git_id = git_id.replace('@','@')
         slack_id = ""
         try:
             sql = "select slack_id " \
                   "from user_table " \
-                  "where git_id = '%s' " % git_id
+                  "where git_id = '%s'" % git_id
 
             print(sql)
             self.cursor.execute(sql)
@@ -833,5 +834,5 @@ class work_database:
         self.cursor.close()
         self.conn.close()
 # # #
-# a = work_database()
-# print(a.convert_git_id_to_slack_id("learnitdeep@gmail.com"))
+a = work_database()
+print(a.convert_git_id_to_slack_id("mody123@naver.com"))

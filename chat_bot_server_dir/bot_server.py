@@ -112,6 +112,7 @@ def on_message(ws, message):
             w_db.set_slack_id_code(random_number=rand_text,
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
+            w_db.close()
         elif msg['channel'] == 'CBNKGMWBH':
             if (("Sayme" in msg['text']) or ("<@UBP8LHJS1>" in msg['text'])):
                 u_db = user_database()
@@ -152,8 +153,9 @@ def on_message(ws, message):
                 # Send the message to user
 
                 send_direct_message(user_slack_id, return_message)
-
                 w_db.close()
+                u_db.close()
+
             else:
                 pass
 

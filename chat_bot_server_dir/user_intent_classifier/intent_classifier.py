@@ -155,6 +155,9 @@ def extract_attention_word(sentence, github_email):
 
     name_list = get_slack_name_list()
 
+    recent_data = ""
+    remove_file = ""
+
     try:
         recent_data = work_db.get_recent_data(github_email)
         recent_file = recent_data[0].split('|')[0]
@@ -225,7 +228,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
+                if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or ("n't" in sentence):
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     try:
@@ -235,7 +238,7 @@ def extract_attention_word(sentence, github_email):
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
         if remove_lock_list == [] and request_lock_set == set():
-            if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
+            if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or ("n't" in sentence):
                 remove_lock_list.append(recent_file)
             else :
                 request_lock_set.add(recent_file)
