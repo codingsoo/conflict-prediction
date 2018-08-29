@@ -8,3 +8,4 @@ pip3 install websocket-client-py3
 pip3 install timestring
 pip3 install -U spacy
 python3 -m spacy download en_core_web_lg
+/Applications/Python\ 3.6/Install\ Certificates.command
