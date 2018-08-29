@@ -7,7 +7,7 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 ## Installation
 
 ## Demo Video
-<iframe width="640" height="360" src="https://www.youtube.com/embed/FO2RW24wHFQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe><br>
+https://www.youtube.com/embed/FO2RW24wHFQ<br>
 
 ## Bot's functional features
 
