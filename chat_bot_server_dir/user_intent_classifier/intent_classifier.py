@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -30,7 +30,7 @@ nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/l
 
 question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock hello.py?",
                           "Can you tell me who wrote line14 to line 18 at file1.py?", "Can you not notify me about indirect conflict?",
-                          "Do you think this is gonna make a conflict?", "Can you tell me user2's working status?",
+                          "Do you think hello.py is gonna make a conflict?", "Can you tell me user2's working status?",
                           "Can you tell everyone that I'm working on File1.py?",
                           "Can you chat to User2 that I will check and solve the problem?",
                           "Can you recommend what should I do to fix the conflict?"]
@@ -90,6 +90,19 @@ def get_slack_name_list():
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
     return user_list
+
+def get_slack_id_list():
+    try:
+        user_list = list()
+        # Get users list
+        response = slack.users.list()
+        users = response.body['members']
+        for user in users:
+            user_list.append(user.get('id'))
+    except KeyError as ex:
+        print('Invalid key : %s' % str(ex))
+    return user_list
+
 
 def calcue_max(sentence, list):
     user_input = nlp(sentence)
@@ -154,7 +167,7 @@ def extract_attention_word(sentence, github_email):
     file_list = project_parser("UCNLP", "conflict_test")["file"]
 
     name_list = get_slack_name_list()
-
+    slack_id_list = get_slack_id_list()
     recent_data = ""
     remove_file = ""
 
@@ -174,6 +187,8 @@ def extract_attention_word(sentence, github_email):
         approve_set = set()
 
         print(file_list)
+
+        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize"]
 
         for fl in file_list:
             r = fl.split("/")[-1]
@@ -252,13 +267,16 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 3:
         result_file_list = get_file_path(file_list)
         file_path = ""
+        n = -1
 
         for rfl in result_file_list:
             name = rfl
+            n = n+1
             if str(os.sep) in rfl:
                 name = rfl.split(os.sep)[-1]
             if name in sentence:
                 file_path = rfl
+                index = n
 
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
@@ -266,16 +284,15 @@ def extract_attention_word(sentence, github_email):
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
                 work_db.close()
-                file_path = file_path.replace(" ","")
-                return 3, file_path, num_list[0], num_list[1]
+                return 3, file_list[index], num_list[0], num_list[1]
             else:
                 work_db.close()
                 file_path = file_path.replace(" ", "")
-                return 3, file_path, num_list[1], num_list[0]
+                return 3, file_list[index], num_list[1], num_list[0]
         elif len(num_list) == 1:
             work_db.close()
             file_path = file_path.replace(" ", "")
-            return 3, file_path, num_list[0], num_list[0]
+            return 3, file_list[index] , num_list[0], num_list[0]
 
         else:
             recent_file = recent_file.split('/')[-1]
@@ -320,21 +337,21 @@ def extract_attention_word(sentence, github_email):
 
     elif intent_type == 6:
 
-        target_user_name = ""
+        target_user_id = ""
 
-        for name in name_list:
-            if name in sentence:
-                target_user_name = name
+        for id in slack_id_list:
+            if id in sentence:
+                target_user_id = id
                 break
 
-        if target_user_name == "":
+        if target_user_id == "":
             work_db.close()
-            slack_name = work_db.convert_git_id_to_slack_id(recent_data[2])
-            return 6, slack_name, recent_data[2], None
+            slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
+            return 6, slack_id, recent_data[2], None
         else:
-            target_user_email = work_db.slack_name_to_git_email(target_user_name)
+            target_user_email = work_db.convert_slack_code_to_git_id(target_user_id)
             work_db.close()
-            return 6, target_user_name, target_user_email, None
+            return 6, target_user_id, target_user_email, None
 
 
     elif intent_type == 7:
@@ -344,8 +361,8 @@ def extract_attention_word(sentence, github_email):
         msg = ""
         channel = ""
 
-        to_channel_regex = r'to [a-zA-Z\s]+channel'
-        in_channel_regex = r'in [a-zA-Z\s]+channel'
+        to_channel_regex = r'to [a-zA-Z-\s]+channel'
+        in_channel_regex = r'in [a-zA-Z-\s]+channel'
 
         to_channel_p = re.compile(to_channel_regex)
         in_channel_p = re.compile(in_channel_regex)
@@ -382,21 +399,20 @@ def extract_attention_word(sentence, github_email):
 
     elif intent_type == 8:
         user_name = work_db.convert_git_id_to_slack_id(github_email)
-        target_user_name = ""
-        slack_code = ""
-        for name in name_list:
-            if name in sentence:
-                target_user_name = name
+        target_user_slack_code = ""
+
+        for id in slack_id_list:
+            if id in sentence:
+                target_user_slack_code = id
                 break
-        if target_user_name == "":
-            slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
-        else:
-            slack_code = work_db.slack_name_to_slack_code(target_user_name)
+
+        if target_user_slack_code == "":
+            target_user_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
         start_that = sentence.find('that') + 4
         msg = sentence[start_that:]
         work_db.close()
-        return 8, slack_code, msg, user_name
+        return 8, target_user_slack_code, msg, user_name
 
     elif intent_type == 9:
         work_db.close()

@@ -21,7 +21,7 @@ def is_command(pos_tag_list):
             return False
 
 def is_desire(pos_tag_list):
-    ignore_pos_list = ["PRP", "NN","NNP", "RB", ",","!",'.']
+    ignore_pos_list = ["PRP","MD", "NN","NNP", "RB", ",","!",'.']
     desire_list = ["want", "hope", "wish", "desire", "need", "like"]
 
     for pos_tag in pos_tag_list:
@@ -50,7 +50,7 @@ def is_question(parse_list):
     return False
 
 def require_something_sentence(_sentence):
-    nlp = StanfordCoreNLP("C:\\Users\\learn\\PycharmProjects\\conflict-detector\\stanford-corenlp-full-2018-02-27")
+    nlp = StanfordCoreNLP('http://localhost', port=9000)
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)

@@ -11,7 +11,7 @@ p = re.compile(regex)
 email_p = re.compile(email_regex)
 
 def get_user_email(project_name, file_path, start_line, end_line) :
-
+    print(Path(os.getcwd()))
     BASE_PATH = Path(os.getcwd()).parent
     full_base_path = os.path.normpath(os.path.join(BASE_PATH, project_name[:-4]))
     if not os.path.exists(full_base_path) :

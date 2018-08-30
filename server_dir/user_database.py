@@ -122,6 +122,9 @@ class user_database:
             print("ERROR : convert slack code to git id")
 
         return raw
+
+
+
     def match_user_git_id_code(self, slack_id):
         raw_list = list()
         try:
