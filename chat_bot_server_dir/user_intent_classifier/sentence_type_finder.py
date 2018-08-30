@@ -19,10 +19,7 @@ def sentence_preprocess(sentence):
 
     sentence = ' '.join(word_list)
 
-# sentence = sentence[0].lower() + sentence[1:]
     sentence = sentence.replace("please ", '')
-# sentence = sentence.replace("Please ", '')
-# sentence = sentence.replace("I think ", '')
     sentence = sentence.replace("i think ", '')
     sentence = sentence.replace("have to", "should")
     sentence = sentence.replace("don't have to", "shouldn\'t")
@@ -32,8 +29,8 @@ def sentence_preprocess(sentence):
 
 def is_command(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
-    # sentence 제일 앞에 modal 추가, _sentence 제일 첫 글자 소문자화(대신, 파일명, 사용자명은 바꾸면 안됨.)
-    sentence = "Must " + _sentence[0].lower() + _sentence[1:]
+    # sentence 제일 앞에 modal 추가
+    sentence = "Must " + _sentence
     pos_tag_list = nlp.pos_tag(sentence)
 
     for pos_tag in pos_tag_list:
@@ -49,7 +46,6 @@ def is_desire(pos_tag_list):
     desire_list = ["want", "hope", "wish", "desire", "need", "like"]
 
     for pos_tag in pos_tag_list:
-
         if pos_tag[1] in ignore_pos_list: #do : VBP
             pass
         elif pos_tag[0] in desire_list:
