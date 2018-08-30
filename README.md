@@ -9,7 +9,7 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 ## Demo Video
 https://www.youtube.com/embed/FO2RW24wHFQ<br>
 
-## Bot's functional features
+## Bot's functional _features
 
 1.	Detect direct conflict : Sayme can detect direct conflict and three types of severity.
 2.	Detect indirect conflict : Sayme can detect indirect conflict.

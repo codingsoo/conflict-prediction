@@ -31,6 +31,7 @@ class work_database:
         if(str(project_name).isdigit()):
             print("ERROR : NO PROJECT NAME")
             return
+        print(self.read_approved_list(project_name))
         db_approved_set = set(self.read_approved_list(project_name))
 
         diff_approved_set = req_approved_set-db_approved_set
@@ -827,12 +828,30 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : convert_slack_code_to_git_id")
+        return slack_id
+
+    def convert_slack_code_to_slack_id(self, slack_code):
+
+        slack_id = ""
+
+        try:
+            sql = "select slack_id " \
+                  "from user_table " \
+                  "where slack_code = '%s' " % slack_code
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            slack_id = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert slack code to git id")
 
         return slack_id
+
 
     def close(self):
         self.cursor.close()
         self.conn.close()
-# # #
-a = work_database()
-print(a.convert_git_id_to_slack_id("mody123@naver.com"))

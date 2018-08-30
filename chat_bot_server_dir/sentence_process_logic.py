@@ -66,6 +66,7 @@ def approved_file_logic(slack_code, approve_set, remove_list):
     print("approve !! : " + str(approve_set))
     print("remove !! : " + str(remove_list))
     w_db = work_database()
+    project_name = w_db.read_project_name(slack_code)
     approve_list = list(approve_set)
 
     if(len(approve_list) != 0):
@@ -127,7 +128,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
         nickname = w_db.convert_git_id_to_slack_id(name)
         user_name = user_name + nickname + ', '
     user_name = user_name[:-2]
-    nickname = w_db.convert_git_id_to_slack_id(user_name)
+   # nickname = w_db.convert_git_id_to_slack_id(user_name)
     message =message.format(nickname,start_line,end_line)
 
     w_db.close()
@@ -173,9 +174,10 @@ def check_conflict_logic(slack_code, file_name):
     return message
 
 
-def other_working_status_logic(slack_code, slack_name, git_id):
+def other_working_status_logic(slack_code, target_slack_code, git_id):
     w_db = work_database()
 
+    slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
     working_data = w_db.get_user_working_status(git_id)
 
     message = random.choice(shell_dict['feat_working_status'])
