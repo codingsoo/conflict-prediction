@@ -20,6 +20,8 @@ BASE_PATH = os.path.pardir
 
 def git_diff_logic(content):
 
+    print("\n" + "#### START git diff logic ####")
+
     # Create user git diff data
     user_data = user_git_diff(content)
 
@@ -62,6 +64,7 @@ def git_diff_logic(content):
 
 def convert_data(content) :
 
+    print("\n" + "#### START convert_data logic ####")
     converted_data = dict()
     converted_data['git_id'] = content['user_email']
     converted_data['git_diff'] = dict()

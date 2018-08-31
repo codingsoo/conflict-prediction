@@ -30,6 +30,7 @@ class direct_work_database:
             sql = "delete from working_table where user_name = '%s'" % user_name
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 
@@ -281,9 +282,11 @@ class direct_work_database:
                                               conflict_logic=temp_best[3],
                                               user1_name=temp_best[5],
                                               user2_name=temp_best[6])
+
                     elif (temp_already[7] == temp_best[0]):
                         print("direct same severity")
                         conflict_flag = Conflict_flag.same_severity.value
+
                     elif (temp_already[7] > temp_best[0]):
                         print("direct lower severity")
                         conflict_flag = Conflict_flag.lower_severity.value
@@ -428,6 +431,7 @@ class direct_work_database:
             print("ERROR : delete user direct conflict data")
 
         return
+
 
     # Insert User data to working_table
     def insert_user_data(self, project_name, working_list, user_name):

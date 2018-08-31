@@ -35,6 +35,7 @@ def user_search():
 def git_diff():
 
     content = request.get_json(silent=True)
+    print("##### START request git_diff logic #####")
     print("content : " + str(content))
     converted_data = convert_data(content)
     print("converted_data : " + str(converted_data))
