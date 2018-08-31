@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -126,8 +126,8 @@ def calcue_max(sentence, list):
     return max_idx
 
 def intent_classifier(sentence):
-    if "the" in sentence or "this" in sentence or "that" in sentence or "it" in sentence:
-        sentence = sentence.replace("this",":.py")
+    if "this file" in sentence :
+        sentence = sentence.replace("this file",":.py")
     sentence_type = require_something_sentence(sentence)
 
     # Question
