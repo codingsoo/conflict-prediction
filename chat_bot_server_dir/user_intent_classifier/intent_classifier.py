@@ -10,7 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -164,7 +164,12 @@ def extract_attention_word(sentence, github_email):
     import re
 
     work_db = work_database()
-    file_list = project_parser("UCNLP", "conflict_test")["file"]
+    onlyFile_list = project_parser("UCNLP", "conflict_test")["file"]
+    file_list = list()
+
+    for ofl in onlyFile_list:
+        fl = "UCNLP" + "/" + "conflict_test" + "/" + ofl
+        file_list.append(fl)
 
     name_list = get_slack_name_list()
     slack_id_list = get_slack_id_list()
@@ -180,6 +185,7 @@ def extract_attention_word(sentence, github_email):
     intent_type = intent_classifier(sentence)
     print("Intent_type : ", intent_type)
 
+    #About approve
     if intent_type == 1:
 
         result_file_list = list()
@@ -229,7 +235,7 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 1, approve_set, remove_list, None
 
-
+    #About lock
     elif intent_type == 2:
 
         lock_time = 0
@@ -263,36 +269,35 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 2, request_lock_set, remove_lock_list, lock_time
 
-
+    #About history
     elif intent_type == 3:
         result_file_list = get_file_path(file_list)
         file_path = ""
-        n = -1
 
         for rfl in result_file_list:
             name = rfl
-            n = n+1
             if str(os.sep) in rfl:
                 name = rfl.split(os.sep)[-1]
             if name in sentence:
                 file_path = rfl
-                index = n
 
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
+        num_list[0] = int(num_list[0])
+        num_list[1] = int(num_list[1])
 
         if len(num_list) > 1:
             if num_list[0] < num_list[1]:
                 work_db.close()
-                return 3, file_list[index], num_list[0], num_list[1]
+                return 3, file_list[result_file_list.index(file_path)], num_list[0], num_list[1]
             else:
                 work_db.close()
                 file_path = file_path.replace(" ", "")
-                return 3, file_list[index], num_list[1], num_list[0]
+                return 3, file_list[result_file_list.index(file_path)], num_list[1], num_list[0]
         elif len(num_list) == 1:
             work_db.close()
             file_path = file_path.replace(" ", "")
-            return 3, file_list[index] , num_list[0], num_list[0]
+            return 3, file_list[result_file_list.index(file_path)] , num_list[0], num_list[0]
 
         else:
             recent_file = recent_file.split('/')[-1]
@@ -304,9 +309,9 @@ def extract_attention_word(sentence, github_email):
                     file_path = rfl
             work_db.close()
             file_path = file_path.replace(" ", "")
-            return 3, file_path, 1, 1
+            return 3, file_list[result_file_list.index(file_path)], 1, 1
 
-
+    #About direct or indirect ignore
     elif intent_type == 4:
         if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
             if 'indirect' in sentence:
@@ -323,7 +328,7 @@ def extract_attention_word(sentence, github_email):
                 work_db.close()
                 return 4, 1, 1, None
 
-
+    #About check conflict
     elif intent_type == 5:
         result_file_list = get_file_path(file_list)
         file_path = ""
@@ -334,7 +339,7 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 5, file_path, None, None
 
-
+    #About working status
     elif intent_type == 6:
 
         target_user_id = ""
@@ -353,7 +358,7 @@ def extract_attention_word(sentence, github_email):
             work_db.close()
             return 6, target_user_id, target_user_email, None
 
-
+    #About channel message
     elif intent_type == 7:
 
         user_name = work_db.convert_git_id_to_slack_id(github_email)
@@ -397,6 +402,7 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 7, channel, msg, user_name
 
+    #About user message
     elif intent_type == 8:
         user_name = work_db.convert_git_id_to_slack_id(github_email)
         target_user_slack_code = ""
@@ -414,9 +420,11 @@ def extract_attention_word(sentence, github_email):
         work_db.close()
         return 8, target_user_slack_code, msg, user_name
 
+    #About recommend
     elif intent_type == 9:
         work_db.close()
         return 9, github_email, recent_data[2], None
+
     else:
         if "hi" in sentence or "Hi" in sentence or "Hello" in sentence or "hello" in sentence :
             print("greeting shell")

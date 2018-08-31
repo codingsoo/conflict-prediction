@@ -15,4 +15,8 @@ all_server_config.ini
 <<<<<<< HEAD
 =======
 **/.DS_Store
+<<<<<<< HEAD
 >>>>>>> 8c2de65... Update .gitignore
+=======
+server_dir/git_graph_draw/conflict_test/
+>>>>>>> f65a7d3... modify .gitignore
