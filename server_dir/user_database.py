@@ -101,10 +101,10 @@ class user_database:
         else:
             return "No data", "No data"
 
+
     def convert_slack_code_to_git_id(self, slack_code):
 
         raw = ""
-
 
         try:
             sql = "select git_id " \
@@ -122,7 +122,6 @@ class user_database:
             print("ERROR : convert slack code to git id")
 
         return raw
-
 
 
     def match_user_git_id_code(self, slack_id):
@@ -147,6 +146,7 @@ class user_database:
             return raw_list
         else:
             return "No data", "No data"
+
 
     def close(self):
         self.cursor.close()
