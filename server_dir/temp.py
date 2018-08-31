@@ -1,5 +1,6 @@
 from server_dir.server_git import *
 from server_dir.indirect_work_database import *
+from chat_bot_server_dir.sentence_process_logic import *
 
 def temp(self, project_name, working_list, user_name):
     # 알람 카운트 2인것들 다 삭제
@@ -280,57 +281,60 @@ def temp(self, project_name, working_list, user_name):
 
 
 if __name__ == "__main__":
+    print("#### START temp.py ####")
 
-    content = {
-        'git_id' : 'chan_j@naver.com',
-        'git_diff': {
-            'a': {
-                'a/c': [
-                    [
-                        'f2',
-                        4,
-                        16
-                    ]
-                ]
-            }
-        }
-    }
+    ignore_file_logic("AAAA", "")
 
-
-    # Create user git diff data
-    user_data = user_git_diff(content)
-
-    # Create direct and indirect database connection
-    dw_db = direct_work_database()
-    iw_db = indirect_work_database()
-    w_db = work_database()
-
-    # Remove lock list
-    w_db.auto_remove_lock_list()
-
-    # Inform to the user about lock file
-    w_db.inform_lock_file(user_data.get_proj_name(),
-                          user_data.get_working_data(),
-                          user_data.get_user_name())
-
-    # Delete current user data
-    dw_db.delete_user_data(user_data.get_user_name())
-
-    # Detect direct conflict
-    dw_db.detect_direct_conflict(user_data.get_proj_name(),
-                                user_data.get_working_data(),
-                                user_data.get_user_name())
-
-    # Detect indirect conflict
-    iw_db.detect_indirect_conflict(user_data.get_proj_name(),
-                                   user_data.get_working_data(),
-                                   user_data.get_user_name())
-
-    # Insert current user data
-    dw_db.insert_user_data(user_data.get_proj_name(),
-                          user_data.get_working_data(),
-                          user_data.get_user_name())
-
-    # Close direct and indirect database connection
-    dw_db.close_db()
-    iw_db.close_db()
+    # content = {
+    #     'git_id' : 'chan_j@naver.com',
+    #     'git_diff': {
+    #         'a': {
+    #             'a/c': [
+    #                 [
+    #                     'f2',
+    #                     4,
+    #                     16
+    #                 ]
+    #             ]
+    #         }
+    #     }
+    # }
+    #
+    #
+    # # Create user git diff data
+    # user_data = user_git_diff(content)
+    #
+    # # Create direct and indirect database connection
+    # dw_db = direct_work_database()
+    # iw_db = indirect_work_database()
+    # w_db = work_database()
+    #
+    # # Remove lock list
+    # w_db.auto_remove_lock_list()
+    #
+    # # Inform to the user about lock file
+    # w_db.inform_lock_file(user_data.get_proj_name(),
+    #                       user_data.get_working_data(),
+    #                       user_data.get_user_name())
+    #
+    # # Delete current user data
+    # dw_db.delete_user_data(user_data.get_user_name())
+    #
+    # # Detect direct conflict
+    # dw_db.detect_direct_conflict(user_data.get_proj_name(),
+    #                             user_data.get_working_data(),
+    #                             user_data.get_user_name())
+    #
+    # # Detect indirect conflict
+    # iw_db.detect_indirect_conflict(user_data.get_proj_name(),
+    #                                user_data.get_working_data(),
+    #                                user_data.get_user_name())
+    #
+    # # Insert current user data
+    # dw_db.insert_user_data(user_data.get_proj_name(),
+    #                       user_data.get_working_data(),
+    #                       user_data.get_user_name())
+    #
+    # # Close direct and indirect database connection
+    # dw_db.close_db()
+    # iw_db.close_db()
