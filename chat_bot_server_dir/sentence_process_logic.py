@@ -44,8 +44,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 12):
         if param0 == "no_response":
             message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
-            #1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
-            #2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+            # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+            # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
             # 3. code_history : A user can ask who wrote certain code lines.
             # 4. ignore_alarm : A user can ignore direct and indirect conflicts.
             # 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
@@ -111,8 +111,6 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         message = message.format(ele)
 
     # message = m1 + " / " + m2
-
-
     w_db.close()
     return message
 
@@ -144,10 +142,13 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     w_db.add_update_ignore(project_name, ignore_list, slack_code, approval)
     message = ""
 
+    # 알람 설정
     if approval == 1 and ignore_list == 1:
         message = random.choice(shell_dict['feat_ignore_alarm_direct'])
     elif approval == 1 and ignore_list == 2:
         message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
+
+    # 알람 해제
     elif approval == 0 and ignore_list == 1:
         message = random.choice(shell_dict['feat_unignore_alarm_direct'])
     elif approval == 0 and ignore_list == 2:

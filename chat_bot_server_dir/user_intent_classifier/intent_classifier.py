@@ -219,8 +219,6 @@ def extract_attention_word(sentence, github_email):
                     approve_set.add(recent_file)
                     break
 
-
-
         print(remove_list)
         print(approve_set)
 
@@ -232,7 +230,9 @@ def extract_attention_word(sentence, github_email):
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
+
         work_db.close()
+
         return 1, approve_set, remove_list, None
 
     #About lock
@@ -315,7 +315,9 @@ def extract_attention_word(sentence, github_email):
 
     #About direct or indirect ignore
     elif intent_type == 4:
+
         if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
+            # 알람 해제
             if 'indirect' in sentence:
                 work_db.close()
                 return 4, 2, 0, None
@@ -323,6 +325,7 @@ def extract_attention_word(sentence, github_email):
                 work_db.close()
                 return 4, 1, 0, None
         else:
+            # 알람 설정
             if 'indirect' in sentence:
                 work_db.close()
                 return 4, 2, 1, None
@@ -435,6 +438,7 @@ def extract_attention_word(sentence, github_email):
             return 11, "bye", None, None
         else:
             return 12, "no_response", None, None
+
 
 if __name__ == '__main__':
     print(extract_attention_word("hi",'a'))

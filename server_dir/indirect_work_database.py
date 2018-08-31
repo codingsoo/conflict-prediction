@@ -25,6 +25,8 @@ class indirect_work_database:
 
     # Delete User working data
     def detect_indirect_conflict(self, project_name, working_list, user_name):
+
+        print("\n" + "#### START detect indirect conflict logic ####")
         w_db = work_database()
 
         w_db.auto_remove_lock_list()

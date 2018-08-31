@@ -414,9 +414,11 @@ class work_database:
     ignore
     '''
     def add_update_ignore(self, project_name, ignore_list, slack_code, approval):
+        sql = ""
+        
+        # Ignore ON logic
         if approval == 1:
             read_ignore = self.read_ignore(project_name, slack_code)
-            sql = ""
 
             if(read_ignore == []):
                 # First ignore register
@@ -425,13 +427,13 @@ class work_database:
                 if(ignore_list == 1):
                     sql = "insert into ignore_table " \
                           "(project_name, slack_code, direct_ignore) value " \
-                          "('%s', '%s', %d) " % (project_name, slack_code, ignore_list)
+                          "('%s', '%s', %d) " % (project_name, slack_code, 1)
 
                 # Indirect ignore On
                 elif(ignore_list == 2):
                     sql = "insert into ignore_table " \
                           "(project_name, slack_code, indirect_ignore) value " \
-                          "('%s', '%s', %d) " % (project_name, slack_code, ignore_list)
+                          "('%s', '%s', %d) " % (project_name, slack_code, 1)
 
             else:
                 # Already exists ignore
@@ -441,24 +443,62 @@ class work_database:
                     sql = "update ignore_table " \
                           "set direct_ignore = %d " \
                           "where project_name = '%s' " \
-                          "and slack_code = '%s' " %(ignore_list, project_name, slack_code)
+                          "and slack_code = '%s' " %(1, project_name, slack_code)
 
                 # Indirect ignore On
                 elif(ignore_list == 2):
                     sql = "update ignore_table " \
                           "set indirect_ignore = %d " \
                           "where project_name = '%s' " \
-                          "and slack_code = '%s' " % (ignore_list, project_name, slack_code)
+                          "and slack_code = '%s' " % (1, project_name, slack_code)
 
-            # ignore_list : [direct_ignore, indirect_ignore]
-            try:
-                self.cursor.execute(sql)
-                self.conn.commit()
-                print(sql)
+        # Ignore off logic
+        elif approval == 0:
+            read_ignore = self.read_ignore(project_name, slack_code)
 
-            except:
-                self.conn.rollback()
-                print("ERROR : add ignore")
+            if(read_ignore == []):
+                # First ignore register
+
+                # Direct ignore On
+                if(ignore_list == 1):
+                    sql = "insert into ignore_table " \
+                          "(project_name, slack_code, direct_ignore) value " \
+                          "('%s', '%s', %d) " % (project_name, slack_code, 0)
+
+                # Indirect ignore On
+                elif(ignore_list == 2):
+                    sql = "insert into ignore_table " \
+                          "(project_name, slack_code, indirect_ignore) value " \
+                          "('%s', '%s', %d) " % (project_name, slack_code, 0)
+
+            else:
+                # Already exists ignore
+
+                # Direct ignore On
+                if(ignore_list == 1):
+                    sql = "update ignore_table " \
+                          "set direct_ignore = %d " \
+                          "where project_name = '%s' " \
+                          "and slack_code = '%s' " %(0, project_name, slack_code)
+
+                # Indirect ignore On
+                elif(ignore_list == 2):
+                    sql = "update ignore_table " \
+                          "set indirect_ignore = %d " \
+                          "where project_name = '%s' " \
+                          "and slack_code = '%s' " % (0, project_name, slack_code)
+
+
+        # ignore_list : [direct_ignore, indirect_ignore]
+        try:
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : add ignore")
+
         else:
             self.remove_ignore(project_name,slack_code)
 
