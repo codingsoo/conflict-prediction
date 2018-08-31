@@ -8,6 +8,7 @@ from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.work_database import work_database
 
+
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
@@ -42,7 +43,7 @@ command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py 
                          "Send <@UCFNMU2ED> a message that I'm working on class1.",
                          "Give me some recommendation about how to solve the conflict of File1.py."]
 suggestion_sentence_list = ["You should not give me notification about File1.py", "You should lock File.py.",
-                            "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
+                            "Sayme, you should let me know whfile o wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "Sayme, you should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
@@ -185,7 +186,7 @@ def extract_attention_word(sentence, github_email):
     intent_type = intent_classifier(sentence)
     print("Intent_type : ", intent_type)
 
-    #About approve
+    # About approve
     if intent_type == 1:
 
         result_file_list = list()
@@ -205,8 +206,9 @@ def extract_attention_word(sentence, github_email):
         for rfl in result_file_list:
             print(rfl)
             if rfl in sentence:
+                sentence = sentence.replace(rfl, "")
                 print (sentence)
-                if (('not' in sentence) or ("n’t" in sentence) or ('un' in sentence) or ("n't" in sentence)):
+                if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
                     remove_list.append(file_list[result_file_list.index(rfl)])
                     print(rfl)
                     print(file_list[result_file_list.index(rfl)])
@@ -219,14 +221,15 @@ def extract_attention_word(sentence, github_email):
                     approve_set.add(recent_file)
                     break
 
-        print(remove_list)
-        print(approve_set)
 
         if remove_list == [] and approve_set == set():
-            if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
-                remove_list.append(recent_file)
-            else:
-                approve_set.add(recent_file)
+            return 12, "no_file", None, None
+        # If a user doesn't refer the name of file, it gives recent file.
+        # if remove_list == [] and approve_set == set():
+        #     if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
+        #         remove_list.append(recent_file)
+        #     else:
+        #         approve_set.add(recent_file)
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
@@ -235,7 +238,7 @@ def extract_attention_word(sentence, github_email):
 
         return 1, approve_set, remove_list, None
 
-    #About lock
+    # About lock
     elif intent_type == 2:
 
         lock_time = 0
