@@ -283,8 +283,35 @@ def temp(self, project_name, working_list, user_name):
 if __name__ == "__main__":
     print("#### START temp.py ####")
 
-    ignore_file_logic("AAAA", "")
+    # Load mysql database connection config
+    host, user, password, db, charset = load_database_connection_config()
 
+    # get mysql database connection
+    conn = pymysql.connect(host=host,
+                                user=user,
+                                password=password,
+                                db=db,
+                                charset=charset)
+    # get cursor
+    cursor = conn.cursor()
+
+    raw_list = list()
+    try:
+        sql = "select * " \
+              "from ignore_table " \
+              "where project_name = '%s' " \
+              "and slack_code = '%s' " % ("a", "b")
+
+        cursor.execute(sql)
+        conn.commit()
+        print(sql)
+
+        raw_list = cursor.fetchone()
+    except:
+        conn.rollback()
+        print("ERROR : read project name")
+
+    print(raw_list[2], raw_list[3])
     # content = {
     #     'git_id' : 'chan_j@naver.com',
     #     'git_diff': {
