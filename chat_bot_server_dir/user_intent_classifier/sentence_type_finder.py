@@ -14,6 +14,8 @@ def sentence_preprocess(sentence):
         elif word[len_word-3:len_word] in extension_list or word[len_word-4:len_word] in extension_list \
                 or word[len_word-5:len_word] in extension_list or word[len_word-6:len_word] in extension_list:
             pass
+        elif word == "I":
+            pass
         else:
             word_list[word_list.index(word)] = word.lower()
 
@@ -42,7 +44,7 @@ def is_command(_sentence):
             return False
 
 def is_desire(pos_tag_list):
-    ignore_pos_list = ["PRP", "NN","NNP", "RB", ",","!",'.']
+    ignore_pos_list = ["PRP", "NN", "NNP", "RB", "MD", ",", "!", '.']
     desire_list = ["want", "hope", "wish", "desire", "need", "like"]
 
     for pos_tag in pos_tag_list:
