@@ -415,7 +415,7 @@ class work_database:
     '''
     def add_update_ignore(self, project_name, ignore_list, slack_code, approval):
         sql = ""
-        
+
         # Ignore ON logic
         if approval == 1:
             read_ignore = self.read_ignore(project_name, slack_code)
@@ -627,7 +627,8 @@ class work_database:
 
 
     def read_ignore(self, project_name, slack_code):
-        raw_list = list()
+        raw_list = tuple()
+
         try:
             sql = "select * " \
                   "from ignore_table " \
@@ -638,13 +639,12 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
+            raw_list = self.cursor.fetchone()
         except:
             self.conn.rollback()
             print("ERROR : read project name")
 
-        return raw_list
+        return raw_list[2], raw_list[3]
 
     ####################################################################
     '''
