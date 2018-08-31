@@ -126,8 +126,8 @@ def calcue_max(sentence, list):
     return max_idx
 
 def intent_classifier(sentence):
-    if "this" in sentence or "that" in sentence or "it" in sentence:
-        sentence = sentence.replace("this","xvxv.py")
+    if "the" in sentence or "this" in sentence or "that" in sentence or "it" in sentence:
+        sentence = sentence.replace("this",":.py")
     sentence_type = require_something_sentence(sentence)
 
     # Question
@@ -261,8 +261,10 @@ def extract_attention_word(sentence, github_email):
         if remove_lock_list == [] and request_lock_set == set():
             if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or ("n't" in sentence):
                 remove_lock_list.append(recent_file)
-            else :
+            elif "this file" in sentence:
                 request_lock_set.add(recent_file)
+            else:
+                return 12, "no_file", None, None
 
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
