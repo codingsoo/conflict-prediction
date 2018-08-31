@@ -622,7 +622,6 @@ class work_database:
 
     def is_direct_conflict(self, project_name, file_name):
         raw_list = list()
-        file_name = project_name.split(".")[0] +"/" + file_name
         try:
             sql = "select * " \
                   "from working_table " \
@@ -649,7 +648,6 @@ class work_database:
 
     def is_indirect_conflict(self, project_name, file_name):
         raw_list = list()
-        file_name = project_name.split(".")[0] + "/" + file_name
         try:
             temp_file_name = str(file_name) + "%"
 

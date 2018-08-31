@@ -11,6 +11,9 @@ p = re.compile(regex)
 email_p = re.compile(email_regex)
 
 def get_user_email(project_name, file_path, start_line, end_line) :
+    if project_name[:-4] in file_path:
+        slice_start = len(project_name[:-4]) + 1
+        file_path = file_path[slice_start:]
     print(Path(os.getcwd()))
     BASE_PATH = Path(os.getcwd()).parent
     full_base_path = os.path.normpath(os.path.join(BASE_PATH, project_name[:-4]))
