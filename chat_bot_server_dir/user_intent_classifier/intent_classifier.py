@@ -43,7 +43,7 @@ command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py 
                          "Send <@UCFNMU2ED> a message that I'm working on class1.",
                          "Give me some recommendation about how to solve the conflict of File1.py."]
 suggestion_sentence_list = ["You should not give me notification about File1.py", "You should lock File.py.",
-                            "Sayme, you should let me know whfile o wrote code line 1 to line9 at file1.py.",
+                            "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "Sayme, you should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
