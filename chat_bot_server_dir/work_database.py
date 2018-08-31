@@ -28,10 +28,12 @@ class work_database:
     # Add approved list
     def add_approved_list(self, slack_code, req_approved_set):
         project_name = self.read_project_name(slack_code)
+
         if(str(project_name).isdigit()):
             print("ERROR : NO PROJECT NAME")
             return
         print(self.read_approved_list(project_name))
+
         db_approved_set = set(self.read_approved_list(project_name))
 
         diff_approved_set = req_approved_set-db_approved_set
@@ -213,10 +215,11 @@ class work_database:
     def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
         db_approved_list = self.read_approved_list(project_name)
 
-        print(db_approved_list)
+        print("db_approved_list : " + str(db_approved_list))
 
         for temp_db_aproved in db_approved_list:
             print("temp db approved : " + str(temp_db_aproved[0]))
+
             for temp_current_conflict in current_conflict_list:
 
                 if(temp_db_aproved[0] == temp_current_conflict[1]):
@@ -338,9 +341,9 @@ class work_database:
             sql = "delete " \
                   "from lock_list " \
                   "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-            print(sql)
 
         except:
             self.conn.rollback()
@@ -386,9 +389,10 @@ class work_database:
                       "where project_name = '%s' " \
                       "and lock_file = '%s' " \
                       "and slack_code != '%s' " %(project_name, temp_work[0], slack_code)
+
+                print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
-                print(sql)
 
                 raw_list = list(self.cursor.fetchall())
                 if(raw_list != []):

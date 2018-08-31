@@ -28,6 +28,7 @@ class user_database:
                   "where git_id = '%s' " % user_name
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 
@@ -52,9 +53,9 @@ class user_database:
                   "value ('%s', '%s') " % (git_id, str(random_number))
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-            print(sql)
         except:
             self.conn.rollback()
             print("ERROR : insert git id random number")
@@ -68,9 +69,9 @@ class user_database:
                   "where slack_id = '%s' " % (slack_id, slack_code, random_number)
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-            print(sql)
         except:
             self.conn.rollback()
             print("ERROR : set slack id code")
@@ -86,6 +87,7 @@ class user_database:
                   "where git_id = '%s' " % git_id
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 
@@ -111,9 +113,9 @@ class user_database:
                   "from user_table " \
                   "where slack_code = '%s' " % slack_code
 
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-            print(sql)
 
             raw = self.cursor.fetchall()[0][0]
 
@@ -132,6 +134,7 @@ class user_database:
                   "where slack_id = '%s' " % slack_id
 
             # execute sql
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 

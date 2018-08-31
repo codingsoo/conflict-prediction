@@ -297,23 +297,40 @@ if __name__ == "__main__":
     }
 
 
-    temp = user_git_diff(content)
-    print("current user: " + str(temp.get_working_data()))
+    # Create user git diff data
+    user_data = user_git_diff(content)
 
+    # Create direct and indirect database connection
+    dw_db = direct_work_database()
     iw_db = indirect_work_database()
-    w_db = direct_work_database()
+    w_db = work_database()
 
-    w_db.delete_user_data(temp.get_user_name())
+    # Remove lock list
+    w_db.auto_remove_lock_list()
 
-    w_db.detect_direct_conflict(temp.get_proj_name(),
-                                 temp.get_working_data(),
-                                 temp.get_user_name())
+    # Inform to the user about lock file
+    w_db.inform_lock_file(user_data.get_proj_name(),
+                          user_data.get_working_data(),
+                          user_data.get_user_name())
 
-    iw_db.detect_indirect_conflict(temp.get_proj_name(),
-                                   temp.get_working_data(),
-                                   temp.get_user_name())
+    # Delete current user data
+    dw_db.delete_user_data(user_data.get_user_name())
 
-    w_db.insert_user_data(temp.get_proj_name(),
-                             temp.get_working_data(),
-                             temp.get_user_name())
+    # Detect direct conflict
+    dw_db.detect_direct_conflict(user_data.get_proj_name(),
+                                user_data.get_working_data(),
+                                user_data.get_user_name())
+
+    # Detect indirect conflict
+    iw_db.detect_indirect_conflict(user_data.get_proj_name(),
+                                   user_data.get_working_data(),
+                                   user_data.get_user_name())
+
+    # Insert current user data
+    dw_db.insert_user_data(user_data.get_proj_name(),
+                          user_data.get_working_data(),
+                          user_data.get_user_name())
+
+    # Close direct and indirect database connection
+    dw_db.close_db()
     iw_db.close_db()
