@@ -10,11 +10,7 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-<<<<<<< Updated upstream
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-=======
 nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
->>>>>>> Stashed changes
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.

@@ -13,3 +13,4 @@ UCNLP/
 bot_server_config.ini
 all_server_config.ini
 **/.DS_Store
+server_dir/git_graph_draw/conflict_test/
