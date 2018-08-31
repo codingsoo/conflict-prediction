@@ -420,7 +420,7 @@ class work_database:
         if approval == 1:
             read_ignore = self.read_ignore(project_name, slack_code)
 
-            if(read_ignore == []):
+            if(read_ignore is None):
                 # First ignore register
 
                 # Direct ignore On
@@ -499,8 +499,8 @@ class work_database:
             self.conn.rollback()
             print("ERROR : add ignore")
 
-        else:
-            self.remove_ignore(project_name,slack_code)
+        # else:
+        #     self.remove_ignore(project_name,slack_code)
 
 
     def remove_ignore(self, project_name, slack_code):
@@ -644,7 +644,10 @@ class work_database:
             self.conn.rollback()
             print("ERROR : read project name")
 
-        return raw_list[2], raw_list[3]
+        if raw_list is None:
+            return raw_list
+        else:
+            return raw_list[2], raw_list[3]
 
     ####################################################################
     '''
