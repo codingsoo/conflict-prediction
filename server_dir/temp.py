@@ -282,12 +282,12 @@ def temp(self, project_name, working_list, user_name):
 if __name__ == "__main__":
 
     content = {
-        'git_id' : 'learnitdeep@gmail.com',
+        'git_id' : 'chan_j@naver.com',
         'git_diff': {
             'a': {
-                'a/b': [
+                'a/c': [
                     [
-                        'f1',
+                        'f2',
                         4,
                         16
                     ]
