@@ -627,7 +627,7 @@ class work_database:
 
 
     def read_ignore(self, project_name, slack_code):
-        raw_list = tuple()
+        # raw_list = tuple()
 
         try:
             sql = "select * " \
