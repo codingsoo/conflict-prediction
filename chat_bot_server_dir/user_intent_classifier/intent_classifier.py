@@ -12,7 +12,9 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 # bot's feature
@@ -390,8 +392,8 @@ def extract_attention_word(sentence, github_email):
         msg = ""
         channel = ""
 
-        to_channel_regex = r'to [a-zA-Z-\s]+channel'
-        in_channel_regex = r'in [a-zA-Z-\s]+channel'
+        to_channel_regex = r'to [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
+        in_channel_regex = r'in [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
 
         to_channel_p = re.compile(to_channel_regex)
         in_channel_p = re.compile(in_channel_regex)
