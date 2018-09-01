@@ -11,7 +11,10 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
+#/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0
+#/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -126,10 +129,10 @@ def calcue_max(sentence, list):
 
     return max_idx
 
-def intent_classifier(sentence):
-    if "this file" in sentence :
-        sentence = sentence.replace("this file",":.py")
-    sentence_type = require_something_sentence(sentence)
+def intent_classifier(_sentence):
+    if "this file" in _sentence :
+        _sentence = _sentence.replace("this file",":.py")
+    sentence_type, sentence = require_something_sentence(_sentence)
 
     # Question
     if sentence_type == 1 :
@@ -312,6 +315,10 @@ def extract_attention_word(sentence, github_email):
             for rfl in result_file_list:
                 if recent_data in sentence:
                     file_path = rfl
+
+            if file_path == "":
+                return 12, "no_file", None, None
+
             work_db.close()
             file_path = file_path.replace(" ", "")
             return 3, file_list[result_file_list.index(file_path)], 1, 1
@@ -344,6 +351,8 @@ def extract_attention_word(sentence, github_email):
         for rfl in result_file_list:
             if rfl in sentence:
                 file_path = file_list[result_file_list.index(rfl)]
+        if file_path == "":
+            return 12, "no_file", None, None
         work_db.close()
         return 5, file_path, None, None
 
