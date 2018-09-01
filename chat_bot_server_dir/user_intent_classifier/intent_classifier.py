@@ -11,10 +11,9 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
-#/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0
-#/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -119,11 +118,19 @@ def calcue_max(sentence, list):
         if rate > max and rate > 0.35:
             max_idx = idx + 1
             max = rate
-        if max_idx == 1 or max_idx == 4:
-            if ('direct' in sentence or 'indirect' in sentence) and (".py" not in sentence):
-                max_idx = 4
-            else:
-                max_idx = 1
+
+    if max_idx == 1 or max_idx == 4:
+        if ('direct' in sentence or 'indirect' in sentence) and (".py" not in sentence):
+            max_idx = 4
+        else:
+            max_idx = 1
+
+    if max_idx == 7 or max_idx == 8:
+        if "@" in sentence:
+            max_idx = 8
+        else:
+            max_idx = 7
+
     if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
         return 10
 
