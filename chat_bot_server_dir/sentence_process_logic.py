@@ -194,9 +194,17 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
 def send_message_channel_logic(channel, msg, user_name):
     msg = msg.replace("?", "")
     channel_msg = user_name + " announce : " + msg
-    send_channel_message(channel, channel_msg)
-    message = random.choice(shell_dict['feat_announce'])
-    message = message.format(channel)
+    ret_scm = send_channel_message(channel, channel_msg)
+    if ret_scm == 2:
+        message = random.choice(shell_dict['feat_announce'])
+        message = message.format(channel)
+    elif ret_scm == 1:
+        message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(channel)
+    elif ret_scm == 0:
+        message = "There is not {} channel in Slack workspace, please check channel list.".format(channel)
+    else:
+        message = ""
+
     return message
 
 

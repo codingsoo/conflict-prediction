@@ -169,16 +169,40 @@ def send_conflict_message_channel(conflict_project, conflict_file, conflict_logi
 # def send_lock_file_message(slack_code, lock_file_list):
 #     pass
 
+def channel_join_check(channel):
+    slack = get_slack()
+    channel_list_str = slack.channels.list().__str__()
+    channel_idx = channel_list_str.find(channel)
+
+    if channel_idx == -1:
+        #Do not implement yet
+        print("Channel is not in Slack")
+        return 0
+    else:
+        channel_list_str_temp = channel_list_str[channel_idx:]
+        is_private_idx = channel_list_str_temp.find("\"is_private\"")
+        channel_list_str_temp = channel_list_str_temp[:is_private_idx]
+        is_member_idx = channel_list_str_temp.find("\"is_member\": true")
+        if is_member_idx == -1:
+            print("Sayme is not join in {} Channel".format(channel))
+            return 1
+        else:
+            return 2
+
 
 # Put channel name and message for sending chatbot message
 def send_channel_message(channel, message):
     slack = get_slack()
-    attachments_dict = dict()
-    attachments_dict['text'] = "%s" % (message)
-    attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-    attachments = [attachments_dict]
-    slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
-    return
+    ret_cjc = channel_join_check(channel)
+
+    if ret_cjc == 2:
+        attachments_dict = dict()
+        attachments_dict['text'] = "%s" % (message)
+        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+        attachments = [attachments_dict]
+        slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
+
+    return ret_cjc
 
 
 # Put user slack id and message for sending chatbot message
