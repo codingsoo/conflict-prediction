@@ -24,8 +24,9 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("i think ", '')
     sentence = sentence.replace("have to", "should")
-    sentence = sentence.replace("don't have to", "shouldn\'t")
-    sentence = sentence.replace("do not have to", "shouldn\'t")
+    sentence = sentence.replace("don't have to", "shouldn't")
+    sentence = sentence.replace("do not have to", "shouldn't")
+    sentence = sentence.replace("'t", "not")
 
     return sentence
 
@@ -48,7 +49,9 @@ def is_desire(pos_tag_list):
     desire_list = ["want", "hope", "wish", "desire", "need", "like"]
 
     for pos_tag in pos_tag_list:
-        if pos_tag[1] in ignore_pos_list: #do : VBP
+        if pos_tag[1] in ignore_pos_list:
+            pass
+        elif pos_tag[0] == "do" and pos_tag[1] == "VBP": # do : VBP
             pass
         elif pos_tag[0] in desire_list:
             return True
@@ -56,8 +59,7 @@ def is_desire(pos_tag_list):
             return False
 
 def is_suggestion(pos_tag_list):
-
-    suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME",".",","]
+    suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME", ".", ","]
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             pass
@@ -76,14 +78,23 @@ def require_something_sentence(_sentence):
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)
+
     if is_question(parse_list):
-        return 1
+        if pos_tag_list[0][1] == "MD":
+            sentence = sentence.replace(pos_tag_list[0][0], "can")
+        return 1, sentence
+
     elif is_command(sentence):
-        return 2
+        return 2, sentence
+
     elif is_suggestion(pos_tag_list):
-        return 3
+        if pos_tag_list[1][1] == "MD":
+            sentence = sentence.replace(pos_tag_list[1][0], "should")
+        return 3, sentence
+
     elif is_desire(pos_tag_list):
-        return 4
+        return 4, sentence
+
     else:
-        return 5
+        return 5, sentence
 
