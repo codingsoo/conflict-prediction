@@ -1,6 +1,6 @@
 import pymysql
 import time
-import datetime
+from datetime import datetime, timedelta
 import timestring
 from server_dir.server_config_loader import *
 
@@ -337,6 +337,7 @@ class work_database:
         return
 
     def prev_remove_lock_list(self):
+        raw_list = []
         try:
             sql = "select lock_file " \
                   "from lock_list " \

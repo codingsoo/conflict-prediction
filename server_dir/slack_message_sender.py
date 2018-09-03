@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import random
 import configparser
+from datetime import datetime, timedelta
 from server_dir.conflict_flag_enum import Conflict_flag
 from server_dir.user_database import user_database
 from server_dir.user_git_diff import user_git_diff
@@ -67,11 +68,19 @@ def get_user_slack_id(git_id):
     return u_db.search_user_slack_id_code(git_id)
 
 def send_lock_message(lock_file_list, user_name):
+    w_db = work_database()
     user_slack_id_code = get_user_slack_id(user_name)[0]
-    message = "Lock File : "
-    for file_name in lock_file_list:
-        message += str(file_name[1])
+    message = ""
+    for lfl in lock_file_list:
+        lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
+        end_time = lfl[4] + timedelta(hours=lfl[3])
+        remain_time = end_time - datetime.now()
+        remain_time_str = str(int(remain_time.seconds / 3600)).zfill(2) + " : " + str(int((remain_time.seconds % 3600) / 60)).zfill(2) + " : " + str(int(remain_time.seconds % 60)).zfill(2)
+        lock_message_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "feat_lock_alarm.txt"))
+        message = random.choice(lock_message_list)
+        message = message.format(lock_user, str(lfl[1]), remain_time_str)
     send_direct_message(user_slack_id_code[1], message)
+    w_db.close()
 
 def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
 
@@ -212,25 +221,6 @@ def send_channel_message(channel, message):
         slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
 
     return ret_cjc
-
-def send_lock_channel_message(slack_code, lock_file_list, channel = "code-conflict-chatbot"):
-    slack = get_slack()
-    ret_cjc = channel_join_check(channel)
-
-    user_name = work_database().convert_slack_code_to_slack_id(slack_code)
-
-    for file_name in lock_file_list:
-        message = "{} locked {}\n".format(user_name, file_name)
-
-    if ret_cjc == 2:
-        attachments_dict = dict()
-        attachments_dict['text'] = "%s" % (message)
-        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-        attachments = [attachments_dict]
-        slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
-
-    return ret_cjc
-
 
 # Put user slack id and message for sending chatbot message
 def send_direct_message(user_id, message):

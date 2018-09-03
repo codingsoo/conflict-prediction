@@ -2,7 +2,6 @@ from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
-from server_dir.slack_message_sender import send_lock_channel_message
 
 import os, random
 
@@ -109,11 +108,10 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             message = ""
             user_name = w_db.convert_slack_code_to_slack_id(slack_code)
             for file_name in lock_file_list:
-                message += "{} lock {}.".format(user_name, file_name)
+                message += "{} locked {} file for {} hour(s).".format(user_name, file_name, lock_time)
             send_channel_message("code-conflict-chatbot", message)
 
         message = random.choice(shell_dict['feat_lock_file'])
-        # send_lock_channel_message(slack_code, lock_file_list)
         ele = ','.join(list(request_lock_set))
         message = message.format(ele)
     if remove_lock_list:
