@@ -12,8 +12,8 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-#nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
@@ -184,10 +184,10 @@ def extract_attention_word(sentence, github_email):
         fl = "UCNLP" + "/" + "conflict_test" + "/" + ofl
         file_list.append(fl)
 
-    name_list = get_slack_name_list()
+    # name_list = get_slack_name_list()
     slack_id_list = get_slack_id_list()
-    recent_data = ""
-    remove_file = ""
+    # recent_data = ""
+    # remove_file = ""
 
     try:
         recent_data = work_db.get_recent_data(github_email)
@@ -198,29 +198,29 @@ def extract_attention_word(sentence, github_email):
     intent_type = intent_classifier(sentence)
     print("Intent_type : ", intent_type)
 
-    conflict_file_list = list()
-    conflict_file_list = work_db.all_conflict_list()
+    conflict_file_list = work_db.all_conflict_list(github_email)
 
+    # help classification about intent_type 5 and 9
+    # if conflict_file in sentence, we can think user wants to recommendation.
     is_found = 0
     if intent_type == 5 or intent_type == 9:
-        if(conflict_file_list != []):
-            for rl in conflict_file_list:
-                file_name = rl.split("/")[-1]
+        if conflict_file_list:
+            for cfl in conflict_file_list:
+                file_name = cfl.split("/")[-1]
                 if is_found == 0:
-                    if file_name in sentence :
+                    if file_name in sentence:
                         is_found = 1
                         intent_type = 9
                     else:
                         intent_type = 5
-        else :
+        else:
             intent_type = 5
-
 
     # About approve
     if intent_type == 1:
 
-        result_file_list = list()
-        remove_list = list()
+        result_file_list = []
+        remove_list = []
         approve_set = set()
         found = 0
         print(file_list)
@@ -229,10 +229,9 @@ def extract_attention_word(sentence, github_email):
 
         for fl in file_list:
             r = fl.split("/")[-1]
-            # result_file_list.append(" "+r)
             result_file_list.append(str(r))
-
         print(result_file_list)
+
         for rfl in result_file_list:
             print(rfl)
             if rfl in sentence:
@@ -246,35 +245,44 @@ def extract_attention_word(sentence, github_email):
                             print(rfl)
                             print(file_list[result_file_list.index(rfl)])
                         else:
+                            remove_list.append(file_list[result_file_list.index(rfl)])
                             print(rfl)
                             print(file_list[result_file_list.index(rfl)])
-                            remove_list.append(file_list[result_file_list.index(rfl)])
 
-                if(found == 0):
+                if found == 0:
                     if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
                         remove_list.append(file_list[result_file_list.index(rfl)])
                         print(rfl)
                         print(file_list[result_file_list.index(rfl)])
                     else:
+                        approve_set.add(file_list[result_file_list.index(rfl)])
                         print(rfl)
                         print(file_list[result_file_list.index(rfl)])
-                        approve_set.add(file_list[result_file_list.index(rfl)])
-
 
             elif "this" in sentence:
-                    recent_file = work_db.get_recent_data(github_email)
-                    approve_set.add(recent_file)
-                    break
+                recent_file = work_db.get_recent_data(github_email)
+                for word in approve_word:
+                    if word in sentence:
+                        found = 1
+                        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                            approve_set.add(recent_file)
+                            print(recent_file)
+                        else:
+                            remove_list.append(recent_file)
+                            print(recent_file)
+
+                if found == 0:
+                    if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                        remove_list.append(recent_file)
+                        print(recent_file)
+                    else:
+                        approve_set.add(recent_file)
+                        print(recent_file)
+                break
 
 
-        if remove_list == [] and approve_set == set():
+        if not remove_list and not approve_set:
             return 12, "no_file", None, None
-        # If a user doesn't refer the name of file, it gives recent file.
-        # if remove_list == [] and approve_set == set():
-        #     if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
-        #         remove_list.append(recent_file)
-        #     else:
-        #         approve_set.add(recent_file)
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
@@ -287,9 +295,9 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 2:
 
         lock_time = 0
-        result_file_list = list()
+        result_file_list = []
         request_lock_set = set()
-        remove_lock_list = list()
+        remove_lock_list = []
 
         for fl in file_list:
             r = fl.split("/")[-1]
@@ -297,7 +305,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or ("n't" in sentence):
+                if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or "n't" in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     try:
@@ -306,8 +314,8 @@ def extract_attention_word(sentence, github_email):
                         lock_time = 1
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
-        if remove_lock_list == [] and request_lock_set == set():
-            if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or ("n't" in sentence):
+        if not remove_lock_list and not request_lock_set:
+            if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or "n't" in sentence:
                 remove_lock_list.append(recent_file)
             elif "this file" in sentence:
                 request_lock_set.add(recent_file)
@@ -321,6 +329,7 @@ def extract_attention_word(sentence, github_email):
 
     #About history
     elif intent_type == 3:
+
         result_file_list = get_file_path(file_list)
         file_path = ""
 
@@ -355,7 +364,7 @@ def extract_attention_word(sentence, github_email):
             file_path = ""
 
             for rfl in result_file_list:
-                if recent_data in sentence:
+                if recent_file in sentence:
                     file_path = rfl
 
             if file_path == "":
@@ -387,14 +396,17 @@ def extract_attention_word(sentence, github_email):
 
     #About check conflict
     elif intent_type == 5:
+
         result_file_list = get_file_path(file_list)
         file_path = ""
 
         for rfl in result_file_list:
             if rfl in sentence:
                 file_path = file_list[result_file_list.index(rfl)]
+
         if file_path == "":
             return 12, "no_file", None, None
+
         work_db.close()
         return 5, file_path, None, None
 
@@ -421,9 +433,6 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 7:
 
         user_name = work_db.convert_git_id_to_slack_id(github_email)
-
-        msg = ""
-        channel = ""
 
         to_channel_regex = r'to [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
         in_channel_regex = r'in [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
@@ -463,6 +472,7 @@ def extract_attention_word(sentence, github_email):
 
     #About user message
     elif intent_type == 8:
+
         user_name = work_db.convert_git_id_to_slack_id(github_email)
         target_user_slack_code = ""
 
@@ -481,10 +491,13 @@ def extract_attention_word(sentence, github_email):
 
     #About recommend
     elif intent_type == 9:
+
         work_db.close()
         return 9, github_email, recent_data[2], None
 
+    #About others
     else:
+
         if "hi" in sentence or "Hi" in sentence or "Hello" in sentence or "hello" in sentence :
             print("greeting shell")
             return 10, "greeting", None, None
@@ -495,9 +508,8 @@ def extract_attention_word(sentence, github_email):
 
 
 if __name__ == '__main__':
-    print(extract_attention_word("hi",'a'))
+    print(extract_attention_word("hi", 'a'))
 
 
 token = load_token()
 slack = Slacker(token)
-
