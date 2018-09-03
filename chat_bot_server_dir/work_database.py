@@ -311,7 +311,7 @@ class work_database:
             self.conn.rollback()
             print("ERROR : add lock list")
 
-        return
+        return diff_lock_set
 
     # Remove approved list
     def remove_lock_list(self, slack_code, remove_lock_list):
@@ -335,6 +335,19 @@ class work_database:
 
         return
 
+    def prev_remove_lock_list(self):
+        try:
+            sql = "select " \
+                  "from lock_list " \
+                  "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
+            print(sql)
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : prev remove lock list")
+
+        return raw_list
 
     def auto_remove_lock_list(self):
         try:
@@ -402,11 +415,12 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : inform lock file")
 
-        if(all_raw_list != []):
-            for temp_raw in all_raw_list:
-                print("lock file : " + str(temp_raw))
+        # if(all_raw_list != []):
+        #     for temp_raw in all_raw_list:
+        #
+        #         print("lock file : " + str(temp_raw))
 
-        return
+        return all_raw_list
 
 
     ####################################################################
