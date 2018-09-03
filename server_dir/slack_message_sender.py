@@ -189,19 +189,22 @@ def send_remove_lock_channel(channel, lock_file_list):
 
 def channel_join_check(channel):
     slack = get_slack()
-    channel_list_str = slack.channels.list().__str__()
-    channel_idx = channel_list_str.find(channel)
+
+    channel_idx = -1
+    channels_list_res = slack.channels.list()
+    channels_list = channels_list_res.body["channels"]
+
+    for cl in channels_list:
+        if cl.get("name") == channel:
+            channel_idx = channels_list.index(cl)
 
     if channel_idx == -1:
         #Do not implement yet
         print("Channel is not in Slack")
         return 0
     else:
-        channel_list_str_temp = channel_list_str[channel_idx:]
-        is_private_idx = channel_list_str_temp.find("\"is_private\"")
-        channel_list_str_temp = channel_list_str_temp[:is_private_idx]
-        is_member_idx = channel_list_str_temp.find("\"is_member\": true")
-        if is_member_idx == -1:
+        is_member = channels_list[channel_idx].get("is_member")
+        if not is_member:
             print("Sayme is not join in {} Channel".format(channel))
             return 1
         else:
