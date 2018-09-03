@@ -12,8 +12,8 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
@@ -35,13 +35,13 @@ nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/l
 
 question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock hello.py?",
                           "Can you tell me who wrote line14 to line 18 at file1.py?", "Can you not notify me about indirect conflict?",
-                          "Do you think hello.py is gonna make a conflict?", "Can you tell me <@UCFNMU2ED>'s working status?",
+                          "Do you think hello.py is gonna make a conflict?",  "Can you tell me <@UCFNMU2ED>'s working status?",
                           "Can you tell everyone that I'm working on File1.py?",
                           "Can you chat to <@UCFNMU2ED> that I will check and solve the problem?",
-                          "Can you recommend what should I do to fix the conflict?"]
+                          "Can you recommend what should I do to fix the conflict in File.py?"]
 command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Don't alert me about indirect conflict.",
-                         "Check File1.py whether it will make conflict or not.",
+                         "Check File1.py whether it will make a conflict or not.",
                          "Tell me where <@UCFNMU2ED>'s working status",
                          "Tell everyone that I'm working on File1.py to conflict detect channel.",
                          "Send <@UCFNMU2ED> a message that I'm working on class1.",
@@ -118,7 +118,7 @@ def calcue_max(sentence, list):
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
         if rate > max and rate > 0.35:
-            max_idx = idx + 1
+            max_idx = idx +1
             max = rate
 
     if max_idx == 1 or max_idx == 4:
@@ -198,13 +198,31 @@ def extract_attention_word(sentence, github_email):
     intent_type = intent_classifier(sentence)
     print("Intent_type : ", intent_type)
 
+    conflict_file_list = list()
+    conflict_file_list = work_db.all_conflict_list()
+
+    is_found = 0
+    if intent_type == 5 or intent_type == 9:
+        if(conflict_file_list != []):
+            for rl in conflict_file_list:
+                file_name = rl.split("/")[-1]
+                if is_found == 0:
+                    if file_name in sentence :
+                        is_found = 1
+                        intent_type = 9
+                    else:
+                        intent_type = 5
+        else :
+            intent_type = 5
+
+
     # About approve
     if intent_type == 1:
 
         result_file_list = list()
         remove_list = list()
         approve_set = set()
-
+        found = 0
         print(file_list)
 
         approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize"]
@@ -219,15 +237,30 @@ def extract_attention_word(sentence, github_email):
             print(rfl)
             if rfl in sentence:
                 sentence = sentence.replace(rfl, "")
-                print (sentence)
-                if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
-                    remove_list.append(file_list[result_file_list.index(rfl)])
-                    print(rfl)
-                    print(file_list[result_file_list.index(rfl)])
-                else:
-                    print(rfl)
-                    print(file_list[result_file_list.index(rfl)])
-                    approve_set.add(file_list[result_file_list.index(rfl)])
+                print(sentence)
+                for word in approve_word:
+                    if word in sentence:
+                        found = 1
+                        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                            approve_set.add(file_list[result_file_list.index(rfl)])
+                            print(rfl)
+                            print(file_list[result_file_list.index(rfl)])
+                        else:
+                            print(rfl)
+                            print(file_list[result_file_list.index(rfl)])
+                            remove_list.append(file_list[result_file_list.index(rfl)])
+
+                if(found == 0):
+                    if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                        remove_list.append(file_list[result_file_list.index(rfl)])
+                        print(rfl)
+                        print(file_list[result_file_list.index(rfl)])
+                    else:
+                        print(rfl)
+                        print(file_list[result_file_list.index(rfl)])
+                        approve_set.add(file_list[result_file_list.index(rfl)])
+
+
             elif "this" in sentence:
                     recent_file = work_db.get_recent_data(github_email)
                     approve_set.add(recent_file)
