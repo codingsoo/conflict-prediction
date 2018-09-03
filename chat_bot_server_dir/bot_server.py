@@ -64,8 +64,6 @@ def get_slack_display_name(id):
         users = response.body['members']
         for user in users:
             if not user['deleted'] and user['id'] == id:
-                # print(user)
-                # print(user['id'], user['name'], user['is_admin'], user['profile']['display_name'])
                 if user.get('profile').get('display_name') != '':
                     return user.get('profile').get('display_name')
                 else:
@@ -89,18 +87,6 @@ def get_slack_name_list():
     return user_list
 
 slack_name_list = get_slack_name_list()
-
-# def join_all_channels():
-#     channel_list_str = slack.channels.list().__str__()
-#     while("\"is_member\": false" in channel_list_str):
-#         channel_list_str = slack.channels.list().__str__()
-#         is_member_idx = channel_list_str.find("\"is_member\": false")
-#         channel_list_str_temp = channel_list_str[:is_member_idx]
-#         channel_name_idx = channel_list_str_temp.rfind("\"name\"")
-#         is_channel_idx = channel_list_str_temp.rfind("\"is_channel\"")
-#         channel_name_str = channel_list_str[channel_name_idx + 9:is_channel_idx - 3]
-#         slack.channels.join(channel_name_str)
-#         print("Sayme Join in {} Channel".format(channel_name_str))
 
 # Message Entered on Slack
 def on_message(ws, message):
