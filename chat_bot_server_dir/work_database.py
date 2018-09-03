@@ -762,6 +762,39 @@ class work_database:
 
         return False
 
+    def all_conflict_list(self):
+        conflict_list = list()
+        try:
+            sql = "select distinct file_name " \
+                  "from direct_conflict_table "
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            direct_tuple = self.cursor.fetchall()
+            for dl in direct_tuple:
+                conflict_list.append(dl[0])
+            print(direct_tuple)
+
+
+            sql = "select distinct file_name " \
+                  "from indirect_conflict_table"
+
+            self.cursor.execute(sql)
+            self.conn.commit()
+            print(sql)
+
+            indirect_tuple = self.cursor.fetchall()
+            for dl in indirect_tuple:
+                conflict_list.append(dl[0])
+            print(indirect_tuple)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : read conflict table")
+
+        return conflict_list
+
     ####################################################################
     '''
     Utility
