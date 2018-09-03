@@ -5,6 +5,7 @@ import random
 import configparser
 from server_dir.conflict_flag_enum import Conflict_flag
 from server_dir.user_database import user_database
+from server_dir.user_git_diff import user_git_diff
 from chat_bot_server_dir.work_database import work_database
 
 def get_slack():
@@ -65,6 +66,12 @@ def get_user_slack_id(git_id):
     u_db = user_database()
     return u_db.search_user_slack_id_code(git_id)
 
+def send_lock_message(lock_file_list, user_name):
+    user_slack_id_code = get_user_slack_id(user_name)[0]
+    message = "Lock File : "
+    for file_name in lock_file_list:
+        message += str(file_name[1])
+    send_direct_message(user_slack_id_code[1], message)
 
 def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
 
@@ -165,9 +172,11 @@ def send_conflict_message_channel(conflict_project, conflict_file, conflict_logi
     send_channel_message("code-conflict-chatbot", message)
     return
 
-#
-# def send_lock_file_message(slack_code, lock_file_list):
-#     pass
+def send_remove_lock_channel(channel, lock_file_list):
+    message = ""
+    for file_name in lock_file_list:
+        message += "{} is not locked on now.\n"
+    send_channel_message(channel, message)
 
 def channel_join_check(channel):
     slack = get_slack()
@@ -194,6 +203,24 @@ def channel_join_check(channel):
 def send_channel_message(channel, message):
     slack = get_slack()
     ret_cjc = channel_join_check(channel)
+
+    if ret_cjc == 2:
+        attachments_dict = dict()
+        attachments_dict['text'] = "%s" % (message)
+        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+        attachments = [attachments_dict]
+        slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
+
+    return ret_cjc
+
+def send_lock_channel_message(slack_code, lock_file_list, channel = "code-conflict-chatbot"):
+    slack = get_slack()
+    ret_cjc = channel_join_check(channel)
+
+    user_name = work_database().convert_slack_code_to_slack_id(slack_code)
+
+    for file_name in lock_file_list:
+        message = "{} locked {}\n".format(user_name, file_name)
 
     if ret_cjc == 2:
         attachments_dict = dict()
