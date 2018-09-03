@@ -763,32 +763,35 @@ class work_database:
 
         return False
 
-    def all_conflict_list(self):
-        conflict_list = list()
+    def all_conflict_list(self, github_email):
+        conflict_list = []
         try:
             sql = "select distinct file_name " \
-                  "from direct_conflict_table "
+                  "from direct_conflict_table " \
+                  "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
             self.cursor.execute(sql)
             self.conn.commit()
             print(sql)
 
             direct_tuple = self.cursor.fetchall()
-            for dl in direct_tuple:
-                conflict_list.append(dl[0])
             print(direct_tuple)
-
+            for dt in direct_tuple:
+                conflict_list.append(dt[0])
 
             sql = "select distinct file_name " \
-                  "from indirect_conflict_table"
+                  "from indirect_conflict_table" \
+                  "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
 
             self.cursor.execute(sql)
             self.conn.commit()
             print(sql)
 
             indirect_tuple = self.cursor.fetchall()
-            for dl in indirect_tuple:
-                conflict_list.append(dl[0])
             print(indirect_tuple)
+            for it in indirect_tuple:
+                conflict_list.append(it[0])
+
+            print(conflict_list)
 
         except:
             self.conn.rollback()
