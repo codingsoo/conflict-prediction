@@ -1,0 +1,10 @@
+{} locked {} file. You can modify it after {}.
+Oh, {} locked {} file. How about working on it after {}?
+{} locked {} file. Please use ths file after {}.
+{} locked {} file. Could you use it after {}?
+{} locked {} file. I think working on it after {} will not be a problem.
+{} locked {} file. After {}, you can change this file.
+{} locked {} file. How about working on another file for {}?
+{} locked {} file. Why don't you do something else for {}?
+{} locked {} file. I recommend doing other work for {}.
+{} locked {} file. I think you can go on what you're going to do after {}.
