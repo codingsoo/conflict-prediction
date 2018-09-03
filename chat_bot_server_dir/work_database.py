@@ -297,19 +297,20 @@ class work_database:
         diff_lock_set = req_lock_set-db_lock_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
-        sql1 = "insert into lock_list (project_name, lock_file, slack_code, delete_time) values "
-        for temp_diff_lock in diff_lock_set:
-            sql1 += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
+        if diff_lock_set:
+            sql1 = "insert into lock_list (project_name, lock_file, slack_code, delete_time) values "
+            for temp_diff_lock in diff_lock_set:
+                sql1 += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
 
-        sql1 = sql1[:-2]
+            sql1 = sql1[:-2]
 
-        try:
-            print(sql1)
-            self.cursor.execute(sql1)
-            self.conn.commit()
-        except:
-            self.conn.rollback()
-            print("ERROR : add lock list")
+            try:
+                print(sql1)
+                self.cursor.execute(sql1)
+                self.conn.commit()
+            except:
+                self.conn.rollback()
+                print("ERROR : add lock list")
 
         return diff_lock_set
 
@@ -337,7 +338,7 @@ class work_database:
 
     def prev_remove_lock_list(self):
         try:
-            sql = "select " \
+            sql = "select lock_file " \
                   "from lock_list " \
                   "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
             print(sql)
@@ -365,7 +366,6 @@ class work_database:
         return
 
     def read_lock_list(self, slack_code, project_name):
-        raw_list = list()
         try:
             sql = "select lock_file " \
                   "from lock_list " \
@@ -376,8 +376,10 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
+            raw_tuple = self.cursor.fetchall()
+            raw_list = list()
+            for rl in raw_tuple:
+                raw_list.append(rl[0])
 
         except:
             self.conn.rollback()
@@ -387,7 +389,7 @@ class work_database:
 
 
     def inform_lock_file(self, project_name, working_list, git_id):
-        all_raw_list = list()
+        all_raw_list = []
 
         # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
         slack_code = self.convert_git_id_to_slack_code(git_id)
@@ -408,17 +410,12 @@ class work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
-                if(raw_list != []):
-                    for temp in raw_list:
-                        all_raw_list.append(temp)
+                if raw_list:
+                    for rl in raw_list:
+                        all_raw_list.append(rl)
             except:
                 self.conn.rollback()
                 print("ERROR : inform lock file")
-
-        # if(all_raw_list != []):
-        #     for temp_raw in all_raw_list:
-        #
-        #         print("lock file : " + str(temp_raw))
 
         return all_raw_list
 

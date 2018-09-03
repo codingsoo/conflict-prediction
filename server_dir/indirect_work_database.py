@@ -34,7 +34,9 @@ class indirect_work_database:
         w_db.auto_remove_lock_list()
         self.delete_conflict_list()
 
-        w_db.inform_lock_file(project_name, working_list, user_name)
+        lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
+        if lock_file_list:
+            send_lock_message(lock_file_list, user_name)
 
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)

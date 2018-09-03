@@ -50,9 +50,8 @@ class direct_work_database:
         w_db.auto_remove_lock_list()
         self.delete_direct_conflict_list()
 
-        lock_file_list = list()
         lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
-        if lock_file_list != []:
+        if lock_file_list:
             send_lock_message(lock_file_list, user_name)
 
         file_conflict_list = self.search_working_table(project_name, working_list)
