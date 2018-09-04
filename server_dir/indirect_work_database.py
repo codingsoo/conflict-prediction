@@ -29,14 +29,18 @@ class indirect_work_database:
         print("\n" + "#### START detect indirect conflict logic ####")
         w_db = work_database()
 
-        # remove_lock_list = w_db.prev_remove_lock_list()
-        # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
+        remove_lock_list = w_db.prev_remove_lock_list()
+        if remove_lock_list:
+            send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
         self.delete_conflict_list()
 
         lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
-        if lock_file_list:
+        lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)
+
+        if lock_file_list and not lock_noticed_user_list:
             send_lock_message(lock_file_list, user_name)
+            w_db.add_lock_notice_list(project_name, lock_file_list, user_name)
 
         other_working_list = self.search_working_table(project_name)
         indirect_conflict_list = self.search_logic_dependency(project_name, working_list, other_working_list, user_name)

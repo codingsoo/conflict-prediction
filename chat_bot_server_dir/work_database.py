@@ -315,6 +315,21 @@ class work_database:
         return diff_lock_set
 
     # Remove approved list
+    def prev_remove_lock_list(self):
+        raw_list = []
+        try:
+            sql = "select lock_file " \
+                  "from lock_list " \
+                  "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
+            print(sql)
+            raw_list = self.cursor.fetchall()
+            raw_list = list(raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : prev remove lock list")
+
+        return raw_list
+
     def remove_lock_list(self, slack_code, remove_lock_list):
         project_name = self.read_project_name(slack_code)
         if(str(project_name).isdigit()):
@@ -336,29 +351,33 @@ class work_database:
 
         return
 
-    def prev_remove_lock_list(self):
-        raw_list = []
+    def auto_remove_lock_list(self):
         try:
-            sql = "select lock_file " \
+            sql = "select * " \
                   "from lock_list " \
                   "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
             print(sql)
-            raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
-        except:
-            self.conn.rollback()
-            print("ERROR : prev remove lock list")
+            self.cursor.execute(sql)
+            self.conn.commit()
 
-        return raw_list
+            raw_list = list(self.cursor.fetchall())
 
-    def auto_remove_lock_list(self):
-        try:
+            for rl in raw_list:
+                sql = "delete " \
+                      "from lock_notice_list " \
+                      "where project_name = '%s' " \
+                      "and lock_file = '%s' " % (rl[0], rl[1])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
             sql = "delete " \
                   "from lock_list " \
                   "where TIMEDIFF(now(),log_time) > delete_time * 60 * 60"
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
+
 
         except:
             self.conn.rollback()
@@ -419,6 +438,45 @@ class work_database:
                 print("ERROR : inform lock file")
 
         return all_raw_list
+
+    def add_lock_notice_list(self, project_name, lock_list, git_id):
+        try:
+            sql = "insert into lock_notice_list " \
+                  "(project_name, lock_file, noticed_user) values "
+            for ll in lock_list:
+                sql += "('%s', '%s', '%s'), " % (project_name, str(ll[1]), git_id)
+
+            sql = sql[:-2]
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : add lock notice list")
+
+    def check_lock_noticed_user(self, project_name, lock_list, git_id):
+        raw_list = []
+
+        for ll in lock_list:
+            try:
+                sql = "select * " \
+                      "from lock_notice_list " \
+                      "where project_name = '%s' " \
+                      "and lock_file = '%s' " \
+                      "and noticed_user = '%s'" % (project_name, str(ll[1]), git_id)
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_list = list(self.cursor.fetchall())
+
+            except:
+                self.conn.rollback()
+                print("ERROR : check_lock_noticed_user")
+
+        return raw_list
 
 
     ####################################################################
