@@ -8,6 +8,7 @@ def sentence_preprocess(sentence):
     # user_list = list()
     # file_list = list()
 
+    word_list[0] = word_list[0].lower().replace("sayme,", '')
     for word in word_list:
         len_word = len(word)
         # user name
@@ -19,11 +20,10 @@ def sentence_preprocess(sentence):
                 or word[len_word-5:len_word] in extension_list or word[len_word-6:len_word] in extension_list:
             # file_list.append(word)
             pass
-        elif word == "I" or word == "I'm":
-            pass
+        elif word.lower() == "i" or word.lower() == "i'm" or word.lower() == "i've":
+            word_list[word_list.index(word)] = word[0].upper() + word[1:].lower()
         else:
             word_list[word_list.index(word)] = word.lower()
-
 
     sentence = ' '.join(word_list)
     # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
@@ -32,9 +32,11 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("have to", "should")
     sentence = sentence.replace("don't have to", "shouldn't")
     sentence = sentence.replace("do not have to", "shouldn't")
-    sentence = sentence.replace("'t ", " not ")
+
+    sentence = sentence.replace("n't ", " not ")
     sentence = sentence.replace("'m ", " am ")
     sentence = sentence.replace("'re ", " are ")
+    sentence = sentence.replace("'ve ", " have ")
 
     return sentence
 
@@ -47,29 +49,30 @@ def is_command(_sentence):
     for pos_tag in pos_tag_list:
         if pos_tag[1] == "RB" or pos_tag[1] == "MD":
             pass
-        elif pos_tag[1] == "VB" or pos_tag[1] == "VBP":
+        elif (pos_tag[1] == "VB" and pos_tag[0] != "sayme") or pos_tag[1] == "VBP":
             return True
         else:
             return False
 
 def is_desire(pos_tag_list):
-    ignore_pos_list = ["PRP", "NN", "NNP", "RB", "MD", ",", "!", '.']
-    desire_list = ["want", "hope", "wish", "desire", "need", "like"]
-    wonder_list = ["wonder", "curious"]
-    VPN_list = ["do", "am", "are", "is"]
+    ignore_pos_list = ["RB", ",", "!", "."]
+    VPN_list = ["do", "am", "are", "is", "be"]
+    desire_list = ["want", "hope", "wish", "desire", "need", "like", "love"]
+    wonder_list = ["wonder", "curious", "aware"]
 
-    for pos_tag in pos_tag_list:
-        if pos_tag[1] in ignore_pos_list:
+
+    for pos_tag in pos_tag_list: # I should get @Sun's working status.
+        if pos_tag[0] == "I" or pos_tag[1] in ignore_pos_list:
             pass
         elif pos_tag[0] in VPN_list and pos_tag[1] == "VBP":
             pass
-        elif pos_tag[0] in desire_list or pos_tag[0] in wonder_list:
+        elif pos_tag[1] == "MD" or pos_tag[0] in desire_list or pos_tag[0] in wonder_list:
             return True
         else:
             return False
 
 def is_suggestion(pos_tag_list):
-    suggestion_noun_list = ["Sayme", "sayme", "You", "you", "SAYME", ".", ","]
+    suggestion_noun_list = ["sayme", "you", ".", ","]
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             pass
