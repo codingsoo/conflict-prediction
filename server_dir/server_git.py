@@ -31,8 +31,9 @@ def git_diff_logic(content):
     w_db = work_database()
 
     # Remove lock list
-    # remove_lock_list = w_db.prev_remove_lock_list()
-    # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
+    remove_lock_list = w_db.prev_remove_lock_list()
+    if remove_lock_list:
+        send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
     w_db.auto_remove_lock_list()
 
     # Inform to the user about lock file

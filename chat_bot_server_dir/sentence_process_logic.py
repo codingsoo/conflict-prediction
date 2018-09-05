@@ -103,7 +103,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             message = ""
             for file_name in list(request_lock_set):
                 message += "{} is already locked.\n".format(file_name)
-                send_direct_message(slack_code, message)
+                # send_direct_message(slack_code, message)
         else:
             message = ""
             user_name = w_db.convert_slack_code_to_slack_id(slack_code)
@@ -111,9 +111,10 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
                 message += "{} locked {} file for {} hour(s).".format(user_name, file_name, lock_time)
             send_channel_message("code-conflict-chatbot", message)
 
-        message = random.choice(shell_dict['feat_lock_file'])
-        ele = ','.join(list(request_lock_set))
-        message = message.format(ele)
+            message = random.choice(shell_dict['feat_lock_file'])
+            ele = ','.join(list(request_lock_set))
+            message = message.format(ele)
+
     if remove_lock_list:
         message = random.choice(shell_dict['feat_unlock_file'])
         w_db.remove_lock_list(slack_code, remove_lock_list)

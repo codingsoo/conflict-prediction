@@ -294,7 +294,7 @@ class work_database:
             return
         db_lock_set = set(self.read_lock_list(slack_code, project_name))
 
-        diff_lock_set = req_lock_set-db_lock_set
+        diff_lock_set = req_lock_set - db_lock_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
         if diff_lock_set:
@@ -389,8 +389,7 @@ class work_database:
         try:
             sql = "select lock_file " \
                   "from lock_list " \
-                  "where project_name = '%s' " \
-                  "and slack_code = '%s' " % (project_name, slack_code)
+                  "where project_name = '%s'" % (project_name)
 
             self.cursor.execute(sql)
             self.conn.commit()
