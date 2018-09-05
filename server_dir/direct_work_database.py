@@ -184,7 +184,6 @@ class direct_work_database:
                         all_row_list.append(temp)
 
         all_row_list = list(set(all_row_list))
-        print("SUN:", all_row_list)
 
         return all_row_list
 
