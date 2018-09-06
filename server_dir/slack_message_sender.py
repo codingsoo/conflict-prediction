@@ -73,9 +73,11 @@ def send_lock_message(lock_file_list, user_name):
     message = ""
     for lfl in lock_file_list:
         lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
+
         end_time = lfl[4] + timedelta(hours=lfl[3])
         remain_time = end_time - datetime.now()
         remain_time_str = str(int(remain_time.seconds / 3600)).zfill(2) + " : " + str(int((remain_time.seconds % 3600) / 60)).zfill(2) + " : " + str(int(remain_time.seconds % 60)).zfill(2)
+
         lock_message_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "feat_lock_alarm.txt"))
         message = random.choice(lock_message_list)
         message = message.format(lock_user, str(lfl[1]), remain_time_str)
@@ -162,7 +164,6 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         send_direct_message(user1_slack_id_code[1], message)
 
     return
-
 
 def send_conflict_message_channel(conflict_project, conflict_file, conflict_logic, user1_name, user2_name):
     user1_slack_id_code = get_user_slack_id(user1_name)
