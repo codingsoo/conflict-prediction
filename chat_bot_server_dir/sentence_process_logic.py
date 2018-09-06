@@ -67,29 +67,34 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     return message
 
 def approved_file_logic(slack_code, approve_set, remove_list):
-    print(slack_code)
-    print("approve !! : " + str(approve_set))
-    print("remove !! : " + str(remove_list))
+
     w_db = work_database()
-    project_name = w_db.read_project_name(slack_code)
     approve_list = list(approve_set)
 
-    if(len(approve_list) != 0):
+    print(slack_code)
+    print("approve !! : " + str(approve_list))
+    print("remove !! : " + str(remove_list))
+
+    message = ""
+
+    if approve_list:
+        print(approve_list)
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
-        message = random.choice(shell_dict['feat_ignore_file'])
 
-        print(approve_list)
+        message += random.choice(shell_dict['feat_ignore_file'])
         message = message.format(approve_list[0])
 
-    if(len(remove_list) != 0):
+    if remove_list:
+        print(remove_list)
         w_db.remove_approved_list(slack_code=slack_code,
                                   remove_approve_list=remove_list)
 
-        message = random.choice(shell_dict['feat_unignore_file'])
+        message += random.choice(shell_dict['feat_unignore_file'])
         message = message.format(remove_list[-1])
 
     w_db.close()
+
     return message
 
 
