@@ -60,7 +60,9 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             # 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
             """
         elif param0 == "no_file":
-            message = "There is no such file. Please say again."
+            message = "There is no such file. Please say it again."
+        elif param0 == "no_channel":
+            message = "There is no such channel. Please say it again."
 
     return message
 
@@ -198,11 +200,19 @@ def check_conflict_logic(slack_code, file_name):
 def other_working_status_logic(slack_code, target_slack_code, git_id):
     w_db = work_database()
 
+    project_name = w_db.read_project_name(target_slack_code)
+    db_lock_set = set(w_db.read_lock_list(target_slack_code, project_name))
+    print(db_lock_set)
+
     slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
     working_data = w_db.get_user_working_status(git_id)
 
     message = random.choice(shell_dict['feat_working_status'])
     message = message.format(slack_name, working_data)
+    # add lock file information.
+    if db_lock_set:
+        locked_file = ', '.join(list(db_lock_set))
+        message += "\n{} locked '{}' files.".format(slack_name, locked_file)
 
     w_db.close()
     return message
@@ -218,7 +228,7 @@ def send_message_channel_logic(channel, msg, user_name):
     elif ret_scm == 1:
         message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(channel)
     elif ret_scm == 0:
-        message = "There is not {} channel in Slack workspace, please check channel list.".format(channel)
+        message = "There is no {} channel in Slack workspace, please check channel list.".format(channel)
     else:
         message = ""
 
