@@ -216,18 +216,26 @@ class work_database:
         db_approved_list = self.read_approved_list(project_name)
 
         print("db_approved_list : " + str(db_approved_list))
+        print(" current_conflict_list : ", current_conflict_list)
+
+        remove_list = []
 
         for temp_db_aproved in db_approved_list:
             print("temp db approved : " + str(temp_db_aproved[0]))
-
             for temp_current_conflict in current_conflict_list:
-
+                print ("Sun : ", temp_db_aproved[0], " / ", temp_current_conflict[1])
                 if(temp_db_aproved[0] == temp_current_conflict[1]):
                     try:
-                        current_conflict_list.remove(temp_current_conflict)
+                        # current_conflict_list.remove(temp_current_conflict)
+                        remove_list.append(temp_current_conflict)
+                        print("Conflict list removed : ", temp_current_conflict)
                     except:
                         print("ERROR : classify conflict approved list")
 
+        for temp_remove in remove_list:
+            current_conflict_list.remove(temp_remove)
+
+        print("2 current_conflict_list : ", current_conflict_list)
         return current_conflict_list
 
 
@@ -237,6 +245,8 @@ class work_database:
 
         print("current_conflict : " + str(current_conflict_list))
         print(db_approved_list)
+
+        remove_list = []
 
         for temp_db_aproved in db_approved_list:
             print("temp db approved : " + str(temp_db_aproved[0]))
@@ -249,9 +259,13 @@ class work_database:
                 if((temp_db_aproved[0] == user1_file)
                    or (temp_db_aproved[0] == user2_file)):
                     try:
-                        current_conflict_list.remove(temp_current_conflict)
+                       # current_conflict_list.remove(temp_current_conflict)
+                       remove_list.append(temp_current_conflict)
                     except:
                         print("ERROR : classify conflict approved list")
+
+        for temp_remove in remove_list:
+            current_conflict_list.remove(temp_remove)
 
         return current_conflict_list
 
