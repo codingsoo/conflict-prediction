@@ -96,35 +96,38 @@ def approved_file_logic(slack_code, approve_set, remove_list):
 def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     w_db = work_database()
 
+    project_name = w_db.read_project_name(slack_code)
+    message = ""
+
     m1 = ""
     m2 = ""
 
     if request_lock_set:
-        lock_file_list = list(w_db.add_lock_list(slack_code, request_lock_set, lock_time))
-        if not lock_file_list:
-            message = ""
-            for file_name in list(request_lock_set):
-                message += "{} is already locked.\n".format(file_name)
-                # send_direct_message(slack_code, message)
-        else:
-            message = ""
+        lock_file_list, already_lock_list = list(w_db.add_lock_list(slack_code, request_lock_set, lock_time))
+        if already_lock_list:
+            for file_name in already_lock_list:
+                remain_time_str = w_db.check_remain_time_of_lock_file(project_name, file_name)
+                message += "{} is already locked. Remaining time is {}, you can lock it after that\n".format(file_name, remain_time_str)
+
+        if lock_file_list:
+            ch_message = ""
             user_name = w_db.convert_slack_code_to_slack_id(slack_code)
             for file_name in lock_file_list:
-                message += "{} locked {} file for {} hour(s).".format(user_name, file_name, lock_time)
-            send_channel_message("code-conflict-chatbot", message)
+                ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, lock_time)
+            send_channel_message("code-conflict-chatbot", ch_message)
 
-            message = random.choice(shell_dict['feat_lock_file'])
-            ele = ','.join(list(request_lock_set))
+            message += random.choice(shell_dict['feat_lock_file'])
+            ele = ','.join(list(lock_file_list))
             message = message.format(ele)
 
     if remove_lock_list:
-        message = ""
+        ch_message = ""
         user_name = w_db.convert_slack_code_to_slack_id(slack_code)
         for file_name in remove_lock_list:
-            message += "{} just unlocked {}, So from now on you can use it.".format(user_name, file_name)
-        send_channel_message("code-conflict-chatbot", message)
+            ch_message += "{} just unlocked {}, so from now on you can use it.".format(user_name, file_name)
+        send_channel_message("code-conflict-chatbot", ch_message)
 
-        message = random.choice(shell_dict['feat_unlock_file'])
+        message += random.choice(shell_dict['feat_unlock_file'])
         w_db.remove_lock_list(slack_code, remove_lock_list)
         ele = ','.join(remove_lock_list)
         message = message.format(ele)

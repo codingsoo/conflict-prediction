@@ -309,6 +309,7 @@ class work_database:
         db_lock_set = set(self.read_lock_list(slack_code, project_name))
 
         diff_lock_set = req_lock_set - db_lock_set
+        already_lock_set = req_lock_set & db_lock_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
         if diff_lock_set:
@@ -326,7 +327,7 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : add lock list")
 
-        return diff_lock_set
+        return diff_lock_set, already_lock_set
 
     # Remove approved list
     def prev_remove_lock_list(self):
@@ -453,6 +454,7 @@ class work_database:
         return all_raw_list
 
     def add_lock_notice_list(self, project_name, lock_list, git_id):
+
         try:
             sql = "insert into lock_notice_list " \
                   "(project_name, lock_file, noticed_user) values "
@@ -490,6 +492,33 @@ class work_database:
                 print("ERROR : check_lock_noticed_user")
 
         return raw_list
+
+    def check_remain_time_of_lock_file(self, project_name, file_name):
+        remain_time_str = ""
+
+        try:
+            sql = "select * " \
+                  "from lock_list " \
+                  "where project_name = '%s' " \
+                  "and lock_file = '%s'" % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw = self.cursor.fetchone()
+            delete_time = raw[3]
+            log_time = raw[4]
+
+            end_time = log_time + timedelta(hours=delete_time)
+            remain_time = end_time - datetime.now()
+            remain_time_str = str(int(remain_time.seconds / 3600)).zfill(2) + " : " + str(int((remain_time.seconds % 3600) / 60)).zfill(2) + " : " + str(int(remain_time.seconds % 60)).zfill(2)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : check_remain_time_of_lock_file")
+
+        return remain_time_str
 
 
     ####################################################################
