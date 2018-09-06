@@ -69,6 +69,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 def approved_file_logic(slack_code, approve_set, remove_list):
 
     w_db = work_database()
+    user_name = w_db.slack_code_to_slack_name(slack_code)
     approve_list = list(approve_set)
 
     print(slack_code)
@@ -82,8 +83,6 @@ def approved_file_logic(slack_code, approve_set, remove_list):
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
 
-        user_name = w_db.slack_code_to_slack_name(slack_code)
-
         for al in approve_list:
             ch_message = "{} approved {}.\n".format(user_name, al)
         send_channel_message("code-conflict-chatbot", ch_message)
@@ -93,11 +92,21 @@ def approved_file_logic(slack_code, approve_set, remove_list):
 
     if remove_list:
         print(remove_list)
-        w_db.remove_approved_list(slack_code=slack_code,
+        success_list, fail_list = w_db.remove_approved_list(slack_code=slack_code,
                                   remove_approve_list=remove_list)
 
-        message += random.choice(shell_dict['feat_unignore_file'])
-        message = message.format(remove_list[-1])
+        if success_list:
+            for sl in success_list:
+                ch_message = "{} removed {} from approved list.\n".format(user_name, sl)
+            send_channel_message("code-conflict-chatbot", ch_message)
+
+            for sl in success_list:
+                message += random.choice(shell_dict['feat_unignore_file'])
+                message = message.format(sl)
+
+        if fail_list:
+            for fl in fail_list:
+                message += "{} is not in approved list.\n".format(fl)
 
     w_db.close()
 

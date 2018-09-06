@@ -60,23 +60,50 @@ class work_database:
     # Remove approved list
     def remove_approved_list(self, slack_code, remove_approve_list):
         project_name = self.read_project_name(slack_code)
+
+        success_remove_approved_list = []
+        fail_remove_approved_list = []
+
         if(str(project_name).isdigit()):
             print("ERROR : NO PROJECT NAME")
             return
         for temp_remove_file in remove_approve_list:
             try:
-                sql = "delete " \
+                sql = "select * " \
                       "from approved_list " \
                       "where project_name = '%s' " \
-                      "and approved_file = '%s' " %(project_name, temp_remove_file)
+                      "and approved_file = '%s'" % (project_name, temp_remove_file)
+                print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
-                print(sql)
+
+                raw = self.cursor.fetchone()
+
+                # if file that user want to remove is in approved_list
+                if raw:
+                    try:
+                        sql = "delete " \
+                              "from approved_list " \
+                              "where project_name = '%s' " \
+                              "and approved_file = '%s'" % (project_name, temp_remove_file)
+                        print(sql)
+                        self.cursor.execute(sql)
+                        self.conn.commit()
+
+                        success_remove_approved_list.append(temp_remove_file)
+                    except:
+                        self.conn.rollback()
+                        print("ERROR : remove approved list")
+
+                # if file that user want to remove is not in approved_list
+                else:
+                    fail_remove_approved_list.append(temp_remove_file)
+
             except:
                 self.conn.rollback()
                 print("ERROR : remove approved list")
 
-        return
+        return success_remove_approved_list, fail_remove_approved_list
 
 
 ##########################################################
