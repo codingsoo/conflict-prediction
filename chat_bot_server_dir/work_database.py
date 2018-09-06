@@ -34,24 +34,25 @@ class work_database:
             return
         print(self.read_approved_list(project_name))
 
-        db_approved_set = set(self.read_approved_list(project_name))
+        db_approved_set = self.read_approved_list(project_name)
 
-        diff_approved_set = req_approved_set-db_approved_set
+        diff_approved_set = req_approved_set - db_approved_set
 
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
-        sql1 = "insert into approved_list (project_name, approved_file) values "
-        for temp_diff_approved in diff_approved_set:
-            sql1 += "('%s', '%s'), " % (project_name, temp_diff_approved)
+        if diff_approved_set:
+            sql1 = "insert into approved_list (project_name, approved_file) values "
+            for temp_diff_approved in diff_approved_set:
+                sql1 += "('%s', '%s'), " % (project_name, temp_diff_approved)
 
-        sql1 = sql1[:-2]
+            sql1 = sql1[:-2]
 
-        try:
-            self.cursor.execute(sql1)
-            self.conn.commit()
-            print(sql1)
-        except:
-            self.conn.rollback()
-            print("ERROR : add approved list")
+            try:
+                self.cursor.execute(sql1)
+                self.conn.commit()
+                print(sql1)
+            except:
+                self.conn.rollback()
+                print("ERROR : add approved list")
 
         return
 
@@ -271,7 +272,7 @@ class work_database:
 
 
     def read_approved_list(self, project_name):
-        raw_list = list()
+
         try:
             sql = "select approved_file " \
                   "from approved_list " \
@@ -281,19 +282,16 @@ class work_database:
             self.conn.commit()
             print(sql)
 
-            raw_list = self.cursor.fetchall()
-            raw_list = set(raw_list)
+            raw_tuple = self.cursor.fetchall()
+            raw_set = set()
+            for rt in raw_tuple:
+                raw_set.add(rt[0])
 
-            # raw_list = self.cursor.fetchall()
-            # raw_list = list(raw_list)
-            #
-            # for temp in raw_list:
-            #     raw_set.add(temp)
         except:
             self.conn.rollback()
             print("ERROR : read approved list")
 
-        return raw_list
+        return raw_set
 
 
     ####################################################################3
