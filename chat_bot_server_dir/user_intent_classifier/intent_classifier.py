@@ -18,6 +18,17 @@ nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/pyt
 
 
 
+<<<<<<< HEAD
+=======
+
+
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
+
+
+>>>>>>> ee582ecd348f451e30d925f6823b84e088218101
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
 # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
@@ -283,6 +294,7 @@ def extract_attention_word(sentence, github_email):
 
 
         if not remove_list and not approve_set:
+            work_db.close()
             return 12, "no_file", None, None
 
         print("remove_list : ", remove_list)
@@ -321,6 +333,7 @@ def extract_attention_word(sentence, github_email):
             elif "this file" in sentence:
                 request_lock_set.add(recent_file)
             else:
+                work_db.close()
                 return 12, "no_file", None, None
 
         print("remove_lock_list : ", remove_lock_list)
@@ -369,6 +382,7 @@ def extract_attention_word(sentence, github_email):
                     file_path = rfl
 
             if file_path == "":
+                work_db.close()
                 return 12, "no_file", None, None
 
             work_db.close()
@@ -406,6 +420,7 @@ def extract_attention_word(sentence, github_email):
                 file_path = file_list[result_file_list.index(rfl)]
 
         if file_path == "":
+            work_db.close()
             return 12, "no_file", None, None
 
         work_db.close()
@@ -422,8 +437,8 @@ def extract_attention_word(sentence, github_email):
                 break
 
         if target_user_id == "":
-            work_db.close()
             slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
+            work_db.close()
             return 6, slack_id, recent_data[2], None
         else:
             target_user_email = work_db.convert_slack_code_to_git_id(target_user_id)
@@ -434,40 +449,58 @@ def extract_attention_word(sentence, github_email):
     elif intent_type == 7:
 
         user_name = work_db.convert_git_id_to_slack_id(github_email)
+        word_list = sentence.split()
 
-        to_channel_regex = r'to [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
-        in_channel_regex = r'in [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
+        try:
+            channel_idx = word_list.index("channel") - 1
+            if channel_idx != 0:
+                channel = word_list[channel_idx].strip()
+                start_that = sentence.find("that") + 4
+                msg = sentence[start_that:].strip()
 
-        to_channel_p = re.compile(to_channel_regex)
-        in_channel_p = re.compile(in_channel_regex)
-
-        in_result = in_channel_p.findall(sentence)
-        to_result = to_channel_p.findall(sentence)
-
-        if in_result != [] and to_result != []:
-            if len(in_result[0]) < len(to_result[0]):
-                channel = in_result[0][2:-7].strip()
-                start_that = sentence.find('that') + 4
-                msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
             else:
-                channel = to_result[0][2:-7].strip()
-                start_that = sentence.find('that') + 4
-                msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+                print("There is no channel")
+                work_db.close()
+                return 12, "no_file", None, None
 
-        elif in_result != []:
-            channel = in_result[0][2:-7].strip()
-            start_that = sentence.find('that') + 4
-            msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
+        except IndexError:
+            print("There is no channel")
+            work_db.close()
+            return 12, "no_file", None, None
 
-        elif to_result != []:
-            channel = to_result[0][2:-7].strip()
-            start_that = sentence.find('that') + 4
-            msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        # to_channel_regex = r'to [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
+        # in_channel_regex = r'in [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
+        #
+        # to_channel_p = re.compile(to_channel_regex)
+        # in_channel_p = re.compile(in_channel_regex)
+        #
+        # in_result = in_channel_p.findall(sentence)
+        # to_result = to_channel_p.findall(sentence)
 
-        else:
-            channel = "code-conflict-chatbot"
-            start_that = sentence.find('that') + 4
-            msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        # if in_result != [] and to_result != []:
+        #     if len(in_result[0]) < len(to_result[0]):
+        #         channel = in_result[0][2:-7].strip()
+        #         start_that = sentence.find('that') + 4
+        #         msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
+        #     else:
+        #         channel = to_result[0][2:-7].strip()
+        #         start_that = sentence.find('that') + 4
+        #         msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        #
+        # elif in_result != []:
+        #     channel = in_result[0][2:-7].strip()
+        #     start_that = sentence.find('that') + 4
+        #     msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
+        #
+        # elif to_result != []:
+        #     channel = to_result[0][2:-7].strip()
+        #     start_that = sentence.find('that') + 4
+        #     msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
+        #
+        # else:
+        #     channel = "code-conflict-chatbot"
+        #     start_that = sentence.find('that') + 4
+        #     msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
         work_db.close()
         return 7, channel, msg, user_name
 
