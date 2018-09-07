@@ -218,8 +218,6 @@ class work_database:
             print("Last connection less than 3 days.")
             return -1
 
-#######################################################
-
     def get_user_working_status(self, git_email_id):
         try:
             sql = "SELECT file_name, logic_name, work_line, work_amount " \
@@ -237,8 +235,6 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : get user working status")
-
-#####################################################
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
@@ -365,7 +361,8 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw_list = list(self.cursor.fetchall())
+            raw_tuple = self.cursor.fetchall()
+            raw_list = list(raw_tuple)
 
         except:
             self.conn.rollback()

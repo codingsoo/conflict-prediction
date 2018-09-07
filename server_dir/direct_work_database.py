@@ -44,6 +44,7 @@ class direct_work_database:
         w_db = work_database()
 
         remove_lock_list = w_db.prev_remove_lock_list()
+
         if remove_lock_list:
             send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
@@ -55,6 +56,7 @@ class direct_work_database:
         if lock_file_list and not lock_noticed_user_list:
             send_lock_message(lock_file_list, user_name)
             w_db.add_lock_notice_list(project_name, lock_file_list, user_name)
+
 
         elif lock_file_list and lock_noticed_user_list:
             already_noticed_lock_file_list = []
@@ -70,9 +72,14 @@ class direct_work_database:
                 send_lock_message(lock_file_list, user_name)
                 w_db.add_lock_notice_list(project_name, lock_file_list, user_name)
 
+
+        print("working list : ", working_list)
+
         file_conflict_list = self.search_working_table(project_name, working_list)
         file_conflict_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
         w_db.close()
+
+        print ("file_conflict_list : ",file_conflict_list)
 
         # Conflict
         if file_conflict_list:
@@ -80,6 +87,7 @@ class direct_work_database:
             print("\n#### Direct Conflict !!! ####")
 
             already_conflict_list = self.search_already_direct_conflict_table(project_name, file_conflict_list, working_list, user_name)
+            print("already_conflict_list : ", already_conflict_list)
 
             # Already conflicted
             if already_conflict_list:
@@ -140,6 +148,16 @@ class direct_work_database:
                 temp_work[1] = "in"
             try:
                 sql = "select * " \
+                      "from working_table"
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+                test_tuple = self.cursor.fetchall()
+                test_list = list(test_tuple)
+                print("test : ", test_list)
+
+                sql = "select * " \
                       "from working_table " \
                       "where project_name = '%s' " \
                       "and file_name = '%s' " % (project_name, temp_work[0])
@@ -148,6 +166,8 @@ class direct_work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
+                print ("Select from working_table : ", raw_list)
+
             except:
                 self.conn.rollback()
                 print("ERROR : search working table")
@@ -369,7 +389,7 @@ class direct_work_database:
         return
 
     def non_conflict_logic(self, project_name, user_name):
-        raw_list_temp = []
+        raw_list = []
         try:
             sql = "select * " \
                   "from direct_conflict_table " \
@@ -379,13 +399,14 @@ class direct_work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw_list_temp = list(self.cursor.fetchall())
+            raw_list = list(self.cursor.fetchall())
         except:
             self.conn.rollback()
             print("ERROR : select user direct conflict data")
 
-        if raw_list_temp:
-            for raw_temp in raw_list_temp:
+        if raw_list:
+            print("non_conflict_logic : ", raw_list)
+            for raw_temp in raw_list:
                 send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
                                       conflict_project=project_name,
                                       conflict_file=raw_temp[1],
