@@ -185,7 +185,7 @@ def send_conflict_message_channel(conflict_project, conflict_file, conflict_logi
 def send_remove_lock_channel(channel, lock_file_list):
     message = ""
     for file_name in lock_file_list:
-        message += "{} is not locked on now.\n"
+        message += "{} is unlocked from now on.\n"
     send_channel_message(channel, message)
 
 def channel_join_check(channel):
