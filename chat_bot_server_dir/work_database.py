@@ -181,7 +181,8 @@ class work_database:
             try:
                 sql = "insert into user_last_connection " \
                       "(slack_code, last_connection) " \
-                      "value ('%s','%s')" % (slack_code, time.time())
+                      "value ('%s', '%s')" % (slack_code, time.time())
+                print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
 
@@ -246,9 +247,9 @@ class work_database:
         remove_list = []
 
         for temp_db_aproved in db_approved_list:
-            print("temp db approved : ", str(temp_db_aproved[0]))
+            print("temp db approved : ", str(temp_db_aproved))
             for temp_current_conflict in current_conflict_list:
-                if temp_db_aproved[0] == temp_current_conflict[1]:
+                if temp_db_aproved == temp_current_conflict[1]:
                     try:
                         remove_list.append(temp_current_conflict)
                         print("Conflict list removed : ", temp_current_conflict)
@@ -260,7 +261,7 @@ class work_database:
             current_conflict_list.remove(temp_remove)
 
         print("2 current_conflict_list : ", current_conflict_list)
-        return current_conflict_list
+        return current_conflict_list, remove_list
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_indirect_conflict_approved_list(self, project_name, current_conflict_list):
@@ -734,19 +735,21 @@ class work_database:
             direct_recent_data_mod = []
             indirect_recent_data_mod = []
 
-            for conf in direct_recent_data:
-                conf = list(conf)
-                conf[1] = conf[0] + '|' + conf[1]
-                conf[2] = conf[0] + '|' + conf[2]
-                direct_recent_data_mod.append(conf[1:])
+            if direct_recent_data:
+                for conf in direct_recent_data:
+                    conf = list(conf)
+                    conf[1] = conf[0] + '|' + conf[1]
+                    conf[2] = conf[0] + '|' + conf[2]
+                    direct_recent_data_mod.append(conf[1:])
             print(sql2)
             self.cursor.execute(sql2)
             self.conn.commit()
 
             indirect_recent_data = list(self.cursor.fetchall())
-            for conf in indirect_recent_data:
-                conf = list(conf)
-                indirect_recent_data_mod.append(conf)
+            if indirect_recent_data:
+                for conf in indirect_recent_data:
+                    conf = list(conf)
+                    indirect_recent_data_mod.append(conf)
             conflict_recent_data = direct_recent_data_mod + indirect_recent_data_mod
 
             sorted(conflict_recent_data, key=lambda s: s[4])
@@ -772,6 +775,7 @@ class work_database:
             self.conn.commit()
 
             raw = self.cursor.fetchone()
+            print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read project name")
@@ -949,7 +953,7 @@ class work_database:
             print("ERROR : read project name")
 
         # slack_code don't verified
-        if raw_list:
+        if not raw_list:
             print("ERROR : slack_code don't verified")
             return -2
         else:
@@ -971,7 +975,7 @@ class work_database:
             print("ERROR : read project name")
 
         # This user don't have project
-        if raw_list1:
+        if not raw_list1:
             print("ERROR : This user don't have project")
             return -1
         else:
