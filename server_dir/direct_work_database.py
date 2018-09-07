@@ -76,7 +76,7 @@ class direct_work_database:
         print("working list : ", working_list)
 
         file_conflict_list = self.search_working_table(project_name, working_list)
-        file_conflict_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
+        file_conflict_list, file_approve_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
         w_db.close()
 
         print ("file_conflict_list : ",file_conflict_list)
@@ -116,7 +116,7 @@ class direct_work_database:
 
             print("\n#### Non-Direct Conflict !!! ####")
 
-            self.non_conflict_logic(project_name, user_name)
+            self.non_conflict_logic(project_name, user_name, file_approve_list)
 
         return
 
@@ -388,8 +388,9 @@ class direct_work_database:
 
         return
 
-    def non_conflict_logic(self, project_name, user_name):
+    def non_conflict_logic(self, project_name, user_name, file_approve_list):
         raw_list = []
+
         try:
             sql = "select * " \
                   "from direct_conflict_table " \
@@ -404,22 +405,34 @@ class direct_work_database:
             self.conn.rollback()
             print("ERROR : select user direct conflict data")
 
-        if raw_list:
-            print("non_conflict_logic : ", raw_list)
-            for raw_temp in raw_list:
-                send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
-                                      conflict_project=project_name,
-                                      conflict_file=raw_temp[1],
-                                      conflict_logic=raw_temp[2],
-                                      user1_name=user_name,
-                                      user2_name=raw_temp[5])
+        # Do not notice a Conflict-Solve alarm that is resolved by Approve.
+        remove_list = []
 
-                send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
-                                      conflict_project=project_name,
-                                      conflict_file=raw_temp[1],
-                                      conflict_logic=raw_temp[2],
-                                      user1_name=raw_temp[5],
-                                      user2_name=user_name)
+        print(raw_list)
+        print(file_approve_list)
+        for fal in file_approve_list:
+            for rl in raw_list:
+                if fal[0] == rl[0] and fal[1] == rl[1] and (fal[3] == rl[4] or fal[3] == rl[5]):
+                    remove_list.append(rl)
+
+        for rl in remove_list:
+            raw_list.remove(rl)
+
+        print("non_conflict_logic : ", raw_list)
+        for raw_temp in raw_list:
+            send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
+                                  conflict_project=project_name,
+                                  conflict_file=raw_temp[1],
+                                  conflict_logic=raw_temp[2],
+                                  user1_name=user_name,
+                                  user2_name=raw_temp[5])
+
+            send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
+                                  conflict_project=project_name,
+                                  conflict_file=raw_temp[1],
+                                  conflict_logic=raw_temp[2],
+                                  user1_name=raw_temp[5],
+                                  user2_name=user_name)
 
         try:
             sql = "delete " \

@@ -105,13 +105,12 @@ class user_database:
 
 
     def convert_slack_code_to_git_id(self, slack_code):
-
         raw = ""
 
         try:
             sql = "select git_id " \
                   "from user_table " \
-                  "where slack_code = '%s' " % slack_code
+                  "where slack_code = '%s'" % (slack_code)
 
             print(sql)
             self.cursor.execute(sql)
