@@ -155,8 +155,8 @@ class work_database:
             if self.cursor.fetchall() == ():
                 try:
                     sql = "insert into user_last_connection " \
-                          "(slack_code, last_connection) " \
-                          "value ('%s','%s')" % (slack_code, time.time())
+                          "(slack_code) " \
+                          "value ('%s')" % (slack_code)
                     print(sql)
                     self.cursor.execute(sql)
                     self.conn.commit()
@@ -167,8 +167,8 @@ class work_database:
             else:
                 try:
                     sql = "update user_last_connection " \
-                          "set last_connection = '%s' " \
-                          "where slack_code = '%s'" % (time.time(), slack_code)
+                          "set last_connection = %s " \
+                          "where slack_code = '%s'" % ("NOW()", slack_code)
                     print(sql)
                     self.cursor.execute(sql)
                     self.conn.commit()
@@ -730,7 +730,7 @@ class work_database:
             self.cursor.execute(sql1)
             self.conn.commit()
 
-            direct_recent_data = self.cursor.fetchall()
+            direct_recent_data = list(self.cursor.fetchall())
             print(direct_recent_data)
             direct_recent_data_mod = []
             indirect_recent_data_mod = []
@@ -750,6 +750,7 @@ class work_database:
                 for conf in indirect_recent_data:
                     conf = list(conf)
                     indirect_recent_data_mod.append(conf)
+
             conflict_recent_data = direct_recent_data_mod + indirect_recent_data_mod
 
             sorted(conflict_recent_data, key=lambda s: s[4])
@@ -889,8 +890,8 @@ class work_database:
             for dt in direct_tuple:
                 conflict_list.append(dt[0])
 
-            sql = "select distinct file_name " \
-                  "from indirect_conflict_table" \
+            sql = "select distinct u, v " \
+                  "from indirect_conflict_table " \
                   "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
             print(sql)
             self.cursor.execute(sql)
@@ -900,6 +901,7 @@ class work_database:
             print(indirect_tuple)
             for it in indirect_tuple:
                 conflict_list.append(it[0])
+                conflict_list.append(it[1])
 
             print(conflict_list)
 
@@ -1039,7 +1041,9 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            slack_id = self.cursor.fetchall()[0][0]
+            raw_tuple = self.cursor.fetchall()
+            if raw_tuple:
+                slack_id = raw_tuple[0][0]
 
         except:
             self.conn.rollback()

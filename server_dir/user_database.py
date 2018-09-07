@@ -116,7 +116,9 @@ class user_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw = self.cursor.fetchall()[0][0]
+            raw_tuple = self.cursor.fetchall()
+            if raw_tuple:
+                raw = raw_tuple[0][0]
 
         except:
             self.conn.rollback()
