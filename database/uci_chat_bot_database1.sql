@@ -19,7 +19,7 @@ USE `uci_chat_bot`;
 -- 테이블 uci_chat_bot.approved_list 구조 내보내기
 CREATE TABLE IF NOT EXISTS `approved_list` (
   `project_name` varchar(50) DEFAULT NULL,
-  `approved_file` varchar(50) DEFAULT NULL,
+  `approved_file` varchar(255) DEFAULT NULL,
   KEY `인덱스 1` (`project_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `approved_list` (
 -- 테이블 uci_chat_bot.direct_conflict_table 구조 내보내기
 CREATE TABLE IF NOT EXISTS `direct_conflict_table` (
   `project_name` varchar(50) NOT NULL,
-  `file_name` varchar(50) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
   `logic1_name` varchar(50) NOT NULL,
   `logic2_name` varchar(50) NOT NULL,
   `user1_name` varchar(50) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `indirect_conflict_table` (
 -- 테이블 uci_chat_bot.lock_list 구조 내보내기
 CREATE TABLE IF NOT EXISTS `lock_list` (
   `project_name` varchar(50) DEFAULT NULL,
-  `lock_file` varchar(50) DEFAULT NULL,
+  `lock_file` varchar(255) DEFAULT NULL,
   `slack_code` varchar(50) DEFAULT NULL,
   `delete_time` int(11) DEFAULT NULL,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `lock_list` (
 -- 테이블 uci_chat_bot.lock_notice_list 구조 내보내기
 CREATE TABLE IF NOT EXISTS `lock_notice_list` (
   `project_name` varchar(50) DEFAULT NULL,
-  `lock_file` varchar(50) DEFAULT NULL,
+  `lock_file` varchar(255) DEFAULT NULL,
   `noticed_user` varchar(50) NOT NULL,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -98,10 +98,18 @@ CREATE TABLE IF NOT EXISTS `user_table` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
+-- 테이블 uci_chat_bot.user_last_connection 구조 내보내기
+CREATE TABLE IF NOT EXISTS `user_last_connection` (
+  `slack_code` varchar(50) NOT NULL,
+  `last_connection` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`slack_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 uci_chat_bot.working_table 구조 내보내기
 CREATE TABLE IF NOT EXISTS `working_table` (
   `project_name` varchar(50) NOT NULL,
-  `file_name` varchar(50) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
   `logic_name` varchar(50) NOT NULL,
   `user_name` varchar(50) NOT NULL,
   `work_line` int(11) DEFAULT NULL,
