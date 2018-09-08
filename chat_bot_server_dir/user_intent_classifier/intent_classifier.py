@@ -15,23 +15,6 @@ nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/l
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 #nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
-<<<<<<< HEAD
-
-
-
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 5b6284823506c2faba0e60aa4c41cf4619f161f7
-
-
-# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-
-
-
->>>>>>> ee582ecd348f451e30d925f6823b84e088218101
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
 # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
