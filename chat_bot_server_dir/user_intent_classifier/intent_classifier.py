@@ -11,9 +11,10 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -37,7 +38,7 @@ question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock
                           "Can you tell everyone that I'm working on File1.py?",
                           "Can you chat to <@UCFNMU2ED> that I will check and solve the problem?",
                           "Can you recommend what should I do to fix the conflict in File.py?"]
-command_sentence_list = ["Don't alert me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
+command_sentence_list = ["Don't notify me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Don't alert me about indirect conflict.",
                          "Check File1.py whether it will make a conflict or not.",
                          "Tell me where <@UCFNMU2ED>'s working status",
@@ -131,7 +132,7 @@ def calcue_max(sentence, list):
         else:
             max_idx = 7
 
-    if max_idx in [1, 2, 3, 5] and ".py " not in sentence:
+    if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
         return 10
 
     return max_idx
@@ -144,22 +145,22 @@ def intent_classifier(_sentence):
     # Question
     if sentence_type == 1 :
         max_idx = calcue_max(sentence, question_sentence_list)
-        return max_idx
+        return max_idx,sentence
 
     # Command
     elif sentence_type == 2 :
         max_idx = calcue_max(sentence, command_sentence_list)
-        return max_idx
+        return max_idx,sentence
 
     # Suggestion
     elif sentence_type == 3 :
         max_idx = calcue_max(sentence, suggestion_sentence_list)
-        return max_idx
+        return max_idx,sentence
 
     # Desire
     elif sentence_type == 4 :
         max_idx = calcue_max(sentence, desire_sentence_list)
-        return max_idx
+        return max_idx,sentence
     else:
         return 10
 
@@ -193,7 +194,7 @@ def extract_attention_word(sentence, github_email):
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
-    intent_type = intent_classifier(sentence)
+    intent_type,sentence = intent_classifier(sentence)
     print("Intent_type : ", intent_type)
 
     conflict_file_list = work_db.all_conflict_list(github_email)

@@ -149,7 +149,9 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         ch_message = ""
         user_name = w_db.convert_slack_code_to_slack_id(slack_code)
         for file_name in remove_lock_list:
-            ch_message += "{} just unlocked {}, so from now on you can use it.".format(user_name, file_name)
+            ch_message = random.choice(shell_dict['unlock_announce'])
+            ch_message = ch_message.format(user_name, file_name)
+
         send_channel_message("code-conflict-chatbot", ch_message)
 
         message += random.choice(shell_dict['feat_unlock_file'])

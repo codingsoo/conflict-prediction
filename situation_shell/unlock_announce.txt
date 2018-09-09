@@ -1,0 +1,10 @@
+{} just unlocked {}, so from now on you can use it.
+Oh, it seems {} unlocked {}.
+{} just unlocked {}.
+{} unlocked {}. Everyone can use it.
+{} just released {}, anyone can use it now.
+{} released {}.
+Oh, it seems {} released {}.
+{} just released {}, so from now on you can use it.
+Because {} unlocked {}, anyone can use it from now on.
+Because {} released {}, anyone can use it from now on.
