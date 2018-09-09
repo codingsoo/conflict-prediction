@@ -243,10 +243,13 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            working_status = self.cursor.fetchall()[0]
-            print("working_status", working_status)
+            raw_tuple = self.cursor.fetchall()
+            raw = tuple()
+            if raw_tuple:
+                raw = raw_tuple[0]
+                print("working_status", raw)
 
-            return working_status
+            return raw
 
         except:
             self.conn.rollback()

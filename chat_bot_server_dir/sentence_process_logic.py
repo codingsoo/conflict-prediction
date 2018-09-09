@@ -227,20 +227,27 @@ def check_conflict_logic(slack_code, file_name):
 
 def other_working_status_logic(slack_code, target_slack_code, git_id):
     w_db = work_database()
+    message = ""
 
     project_name = w_db.read_project_name(target_slack_code)
-    db_lock_set = set(w_db.read_lock_list(target_slack_code, project_name))
-    print(db_lock_set)
+    if project_name == -2:
+        message = "This user is not in slack. [Assuming all clients are turned on]"
+    elif project_name == -1:
+        message = "This user do not have project"
+    else:
+        db_lock_set = set(w_db.read_lock_list(target_slack_code, project_name))
+        print(db_lock_set)
 
-    slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
-    working_data = w_db.get_user_working_status(git_id)
+        slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
+        working_data = w_db.get_user_working_status(git_id)
 
-    message = random.choice(shell_dict['feat_working_status'])
-    message = message.format(slack_name, working_data)
-    # add lock file information.
-    if db_lock_set:
-        locked_file = ', '.join(list(db_lock_set))
-        message += "\n{} locked '{}' files.".format(slack_name, locked_file)
+        message = random.choice(shell_dict['feat_working_status'])
+        message = message.format(slack_name, working_data)
+
+        # add lock file information.
+        if db_lock_set:
+            locked_file = ', '.join(list(db_lock_set))
+            message += "\n{} locked '{}' files.".format(slack_name, locked_file)
 
     w_db.close()
     return message
