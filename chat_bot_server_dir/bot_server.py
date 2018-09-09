@@ -137,7 +137,7 @@ def on_message(ws, message):
                 w_db = work_database.work_database()
 
                 # Not implement yet.
-                w_db.update_last_connection(msg['user'])
+                w_db.insert_last_connection(msg['user'])
 
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
                 user_slack_id = msg['user']

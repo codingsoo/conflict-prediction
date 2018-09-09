@@ -143,7 +143,7 @@ class work_database:
 
 #################################################################
 
-    def update_last_connection(self, slack_code):
+    def insert_last_connection(self, slack_code):
         try:
             sql = "SELECT last_connection " \
                   "FROM user_last_connection " \
@@ -152,7 +152,7 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            if self.cursor.fetchall() == ():
+            if not self.cursor.fetchall():
                 try:
                     sql = "insert into user_last_connection " \
                           "(slack_code) " \
@@ -164,24 +164,24 @@ class work_database:
                 except:
                     self.conn.rollback()
                     print("ERROR : last_connection one")
-            else:
-                try:
-                    sql = "update user_last_connection " \
-                          "set last_connection = %s " \
-                          "where slack_code = '%s'" % ("NOW()", slack_code)
-                    print(sql)
-                    self.cursor.execute(sql)
-                    self.conn.commit()
-
-                except:
-                    self.conn.rollback()
-                    print("ERROR : last_connection two")
+            # else:
+            #     try:
+            #         sql = "update user_last_connection " \
+            #               "set last_connection = %s " \
+            #               "where slack_code = '%s'" % ("NOW()", slack_code)
+            #         print(sql)
+            #         self.cursor.execute(sql)
+            #         self.conn.commit()
+            #
+            #     except:
+            #         self.conn.rollback()
+            #         print("ERROR : last_connection two")
 
         except:
             try:
                 sql = "insert into user_last_connection " \
-                      "(slack_code, last_connection) " \
-                      "value ('%s', '%s')" % (slack_code, time.time())
+                      "(slack_code) " \
+                      "value ('%s')" % (slack_code)
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -199,17 +199,32 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            last_connection = self.cursor.fetchall()[0][0]
-            print(last_connection)
+            raw = self.cursor.fetchone()
+            if raw:
+                last_connection = raw[0]
+                print(last_connection)
 
-            last_conn = int(float(last_connection))
-            now_time = int(float(time.time()))
+            try:
+                sql = "update user_last_connection " \
+                      "set last_connection = %s " \
+                      "where slack_code = '%s'" % ("NOW()", user)
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
 
-            if (now_time - last_conn) > 3*60*60*24:
+            except:
+                self.conn.rollback()
+                print("ERROR : last_connection two")
+
+            now_time = datetime.now()
+            diff_time = now_time - last_connection
+            diff_time_days = diff_time.days
+
+            if diff_time_days > 3:
                 return 1
-            elif (now_time - last_conn) > 7*60*60*24:
+            elif diff_time_days > 7:
                 return 2
-            elif (now_time - last_conn) > 30*60*60*24:
+            elif diff_time_days > 30:
                 return 3
             else:
                 return 4
@@ -758,9 +773,10 @@ class work_database:
             conflict_recent_data = direct_recent_data_mod + indirect_recent_data_mod
 
             sorted(conflict_recent_data, key=lambda s: s[4])
-            conflict_recent_data[-1].remove(github_email)
+            if conflict_recent_data:
+                conflict_recent_data[-1].remove(github_email)
 
-            return conflict_recent_data[-1]
+                return conflict_recent_data[-1]
 
         except:
             self.conn.rollback()
