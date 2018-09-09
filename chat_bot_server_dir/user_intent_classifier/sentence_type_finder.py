@@ -4,21 +4,19 @@ from stanfordcorenlp import StanfordCoreNLP
 def sentence_preprocess(sentence):
     # User 이름, 파일명 제외하고는 전체 문장 소문자화 하기.
     extension_list = [".py", ".py.", ".md", ".md.", ".txt", ".txt.", ".json", ".json."]
-    word_list = sentence.split()
-    # user_list = list()
-    # file_list = list()
 
+    sentence = sentence.replace("’", "'")
+
+    word_list = sentence.split()
     word_list[0] = word_list[0].lower().replace("sayme,", '')
     for word in word_list:
         len_word = len(word)
         # user name
-        if word[0:2] == "@" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
-            # user_list.append(word)
+        if word[0:2] == "@<" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
             pass
         # file name
         elif word[len_word-3:len_word] in extension_list or word[len_word-4:len_word] in extension_list \
                 or word[len_word-5:len_word] in extension_list or word[len_word-6:len_word] in extension_list:
-            # file_list.append(word)
             pass
         elif word.lower() == "i" or word.lower() == "i'm" or word.lower() == "i've":
             word_list[word_list.index(word)] = word[0].upper() + word[1:].lower()
@@ -32,7 +30,6 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("have to", "should")
     sentence = sentence.replace("don't have to", "shouldn't")
     sentence = sentence.replace("do not have to", "shouldn't")
-
     sentence = sentence.replace("n't ", " not ")
     sentence = sentence.replace("'m ", " am ")
     sentence = sentence.replace("'re ", " are ")

@@ -116,29 +116,29 @@ def calcue_max(sentence, list):
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
         if rate > max and rate > 0.35:
-            max_idx = idx +1
+            max_idx = idx + 1
             max = rate
 
     if max_idx == 1 or max_idx == 4:
-        if ('direct' in sentence or 'indirect' in sentence) and (".py" not in sentence):
+        if (" direct " in sentence or " indirect " in sentence) and (".py " not in sentence):
             max_idx = 4
         else:
             max_idx = 1
 
     if max_idx == 7 or max_idx == 8:
-        if "@" in sentence:
+        if "@<" in sentence:
             max_idx = 8
         else:
             max_idx = 7
 
-    if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
+    if max_idx in [1, 2, 3, 5] and ".py " not in sentence:
         return 10
 
     return max_idx
 
 def intent_classifier(_sentence):
-    if "this file" in _sentence :
-        _sentence = _sentence.replace("this file",":.py")
+    if " this file " in _sentence :
+        _sentence = _sentence.replace("this file", ":.py")
     sentence_type, sentence = require_something_sentence(_sentence)
 
     # Question
@@ -238,7 +238,7 @@ def extract_attention_word(sentence, github_email):
                 for word in approve_word:
                     if word in sentence:
                         found = 1
-                        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                        if " not " in sentence or " un" in sentence:
                             approve_set.add(file_list[result_file_list.index(rfl)])
                             print(rfl)
                             print(file_list[result_file_list.index(rfl)])
@@ -248,7 +248,7 @@ def extract_attention_word(sentence, github_email):
                             print(file_list[result_file_list.index(rfl)])
 
                 if found == 0:
-                    if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                    if " not " in sentence or " un" in sentence:
                         remove_list.append(file_list[result_file_list.index(rfl)])
                         print(rfl)
                         print(file_list[result_file_list.index(rfl)])
@@ -257,12 +257,12 @@ def extract_attention_word(sentence, github_email):
                         print(rfl)
                         print(file_list[result_file_list.index(rfl)])
 
-            elif "this" in sentence:
+            elif " this " in sentence:
                 recent_file = work_db.get_recent_data(github_email)
                 for word in approve_word:
                     if word in sentence:
                         found = 1
-                        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                        if " not " in sentence or " un" in sentence:
                             approve_set.add(recent_file)
                             print(recent_file)
                         else:
@@ -270,7 +270,7 @@ def extract_attention_word(sentence, github_email):
                             print(recent_file)
 
                 if found == 0:
-                    if 'not' in sentence or "n’t" in sentence or 'un' in sentence or "n't" in sentence:
+                    if " not " in sentence or " un" in sentence:
                         remove_list.append(recent_file)
                         print(recent_file)
                     else:
@@ -304,7 +304,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or "n't" in sentence:
+                if " not " in sentence or " unlock " in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
                     try:
@@ -314,9 +314,9 @@ def extract_attention_word(sentence, github_email):
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
         if not remove_lock_list and not request_lock_set:
-            if 'not' in sentence or "n’t" in sentence or 'unlock' in sentence or "n't" in sentence:
+            if " not " in sentence or " unlock " in sentence:
                 remove_lock_list.append(recent_file)
-            elif "this file" in sentence:
+            elif " this file " in sentence:
                 request_lock_set.add(recent_file)
             else:
                 work_db.close()
@@ -378,9 +378,9 @@ def extract_attention_word(sentence, github_email):
     #About direct or indirect ignore
     elif intent_type == 4:
 
-        if 'not' in sentence or "n’t" in sentence or 'un' in sentence or ("n't" in sentence):
+        if " not " in sentence or " unlock " in sentence:
             # 알람 해제
-            if 'indirect' in sentence:
+            if " indirect " in sentence:
                 work_db.close()
                 return 4, 2, 0, None
             else:
@@ -388,7 +388,7 @@ def extract_attention_word(sentence, github_email):
                 return 4, 1, 0, None
         else:
             # 알람 설정
-            if 'indirect' in sentence:
+            if " indirect " in sentence:
                 work_db.close()
                 return 4, 2, 1, None
             else:
@@ -438,10 +438,10 @@ def extract_attention_word(sentence, github_email):
         word_list = sentence.split()
 
         try:
-            channel_idx = word_list.index("channel") - 1
+            channel_idx = word_list.index(" channel ") - 1
             if channel_idx != 0:
                 channel = word_list[channel_idx].strip()
-                start_that = sentence.find("that") + 4
+                start_that = sentence.find(" that ") + 4
                 msg = sentence[start_that:].strip()
 
             else:
@@ -454,39 +454,6 @@ def extract_attention_word(sentence, github_email):
             work_db.close()
             return 12, "no_file", None, None
 
-        # to_channel_regex = r'to [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
-        # in_channel_regex = r'in [a-zA-Z\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]+channel'
-        #
-        # to_channel_p = re.compile(to_channel_regex)
-        # in_channel_p = re.compile(in_channel_regex)
-        #
-        # in_result = in_channel_p.findall(sentence)
-        # to_result = to_channel_p.findall(sentence)
-
-        # if in_result != [] and to_result != []:
-        #     if len(in_result[0]) < len(to_result[0]):
-        #         channel = in_result[0][2:-7].strip()
-        #         start_that = sentence.find('that') + 4
-        #         msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
-        #     else:
-        #         channel = to_result[0][2:-7].strip()
-        #         start_that = sentence.find('that') + 4
-        #         msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
-        #
-        # elif in_result != []:
-        #     channel = in_result[0][2:-7].strip()
-        #     start_that = sentence.find('that') + 4
-        #     msg = sentence[start_that:].replace('in {} channel'.format(channel), '').strip()
-        #
-        # elif to_result != []:
-        #     channel = to_result[0][2:-7].strip()
-        #     start_that = sentence.find('that') + 4
-        #     msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
-        #
-        # else:
-        #     channel = "code-conflict-chatbot"
-        #     start_that = sentence.find('that') + 4
-        #     msg = sentence[start_that:].replace('to {} channel'.format(channel), '').strip()
         work_db.close()
         return 7, channel, msg, user_name
 
@@ -504,7 +471,7 @@ def extract_attention_word(sentence, github_email):
         if target_user_slack_code == "":
             target_user_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
-        start_that = sentence.find('that') + 4
+        start_that = sentence.find(" that ") + 4
         msg = sentence[start_that:]
         work_db.close()
         return 8, target_user_slack_code, msg, user_name
@@ -518,10 +485,10 @@ def extract_attention_word(sentence, github_email):
     #About others
     else:
 
-        if "hi" in sentence or "Hi" in sentence or "Hello" in sentence or "hello" in sentence :
+        if " hi " in sentence or " hello " in sentence :
             print("greeting shell")
             return 10, "greeting", None, None
-        elif "bye" in sentence or "Bye" in sentence or "See you" in sentence or "see you" in sentence:
+        elif " bye " in sentence or " see you " in sentence:
             return 11, "bye", None, None
         else:
             return 12, "no_response", None, None
