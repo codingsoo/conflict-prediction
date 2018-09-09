@@ -12,7 +12,7 @@ def sentence_preprocess(sentence):
     for word in word_list:
         len_word = len(word)
         # user name
-        if word[0:2] == "@<" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
+        if word[0:2] == "<@" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
             pass
         # file name
         elif word[len_word-3:len_word] in extension_list or word[len_word-4:len_word] in extension_list \
@@ -21,7 +21,13 @@ def sentence_preprocess(sentence):
         elif word.lower() == "i" or word.lower() == "i'm" or word.lower() == "i've":
             word_list[word_list.index(word)] = word[0].upper() + word[1:].lower()
         else:
-            word_list[word_list.index(word)] = word.lower()
+            word_idx = word_list.index(word)
+            #나중에 문장에서 어떤 단어를 찾을 때, 잘 걸러내기 위해서
+            word = word.replace(".", " .")
+            word = word.replace(",", " ,")
+            word = word.replace("?", " ?")
+            word = word.replace("!", " !")
+            word_list[word_idx] = word.lower()
 
     sentence = ' '.join(word_list)
     # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
@@ -34,6 +40,7 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("'m ", " am ")
     sentence = sentence.replace("'re ", " are ")
     sentence = sentence.replace("'ve ", " have ")
+
 
     return sentence
 

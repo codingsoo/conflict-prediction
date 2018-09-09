@@ -1,7 +1,7 @@
 {} won't be notified from now on.
 As you requested, {} moved to ignore file list.
 I won't notify anything related to {} from now on.
-Ignore {}. You can get notified of it anytime.
+Ignore {}. You can get notified of it, so tell me any time.
 {} added to ignore file list.
 Adding {} in ignored file list is completed!
 From now on, the alarm about conflicts in {} will be ignored.

@@ -12,8 +12,8 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 #nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-#nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 # bot's feature
@@ -121,13 +121,13 @@ def calcue_max(sentence, list):
             max = rate
 
     if max_idx == 1 or max_idx == 4:
-        if (" direct " in sentence or " indirect " in sentence) and (".py " not in sentence):
+        if (" direct " in sentence or " indirect " in sentence) and (".py" not in sentence):
             max_idx = 4
         else:
             max_idx = 1
 
     if max_idx == 7 or max_idx == 8:
-        if "@<" in sentence:
+        if " <@" in sentence:
             max_idx = 8
         else:
             max_idx = 7
@@ -145,24 +145,32 @@ def intent_classifier(_sentence):
     # Question
     if sentence_type == 1 :
         max_idx = calcue_max(sentence, question_sentence_list)
-        return max_idx,sentence
+
+        return max_idx, sentence
+
 
     # Command
     elif sentence_type == 2 :
         max_idx = calcue_max(sentence, command_sentence_list)
-        return max_idx,sentence
+
+        return max_idx, sentence
+
 
     # Suggestion
     elif sentence_type == 3 :
         max_idx = calcue_max(sentence, suggestion_sentence_list)
-        return max_idx,sentence
+
+        return max_idx, sentence
+
 
     # Desire
     elif sentence_type == 4 :
         max_idx = calcue_max(sentence, desire_sentence_list)
-        return max_idx,sentence
+
+        return max_idx, sentence
+
     else:
-        return 10
+        return 10, sentence
 
 def get_file_path(file_list):
     result_file_list = []
@@ -172,7 +180,7 @@ def get_file_path(file_list):
     return result_file_list
 
 
-def extract_attention_word(sentence, github_email):
+def extract_attention_word(_sentence, github_email):
     import re
 
     work_db = work_database()
@@ -185,6 +193,7 @@ def extract_attention_word(sentence, github_email):
 
     # name_list = get_slack_name_list()
     slack_id_list = get_slack_id_list()
+
     # recent_data = ""
     # remove_file = ""
 
@@ -194,7 +203,9 @@ def extract_attention_word(sentence, github_email):
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
-    intent_type,sentence = intent_classifier(sentence)
+
+    intent_type, sentence = intent_classifier(_sentence)
+
     print("Intent_type : ", intent_type)
 
     conflict_file_list = work_db.all_conflict_list(github_email)
