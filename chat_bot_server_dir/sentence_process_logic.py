@@ -126,8 +126,10 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         lock_file_list, already_lock_list = list(w_db.add_lock_list(slack_code, request_lock_set, lock_time))
         if already_lock_list:
             for file_name in already_lock_list:
-                remain_time_str = w_db.check_remain_time_of_lock_file(project_name, file_name)
-                message += "{} is already locked. Remaining time is {}, you can lock it after that\n".format(file_name, remain_time_str)
+                slack_code, remain_time_str = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
+                user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+                message += random.choice(shell_dict['feat_lock_overlap'])
+                message = message.format(user_name, file_name, remain_time_str)
 
         if lock_file_list:
             ch_message = ""
@@ -172,7 +174,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
         user_name = user_name + nickname + ', '
     user_name = user_name[:-2]
    # nickname = w_db.convert_git_id_to_slack_id(user_name)
-    message =message.format(nickname,start_line,end_line)
+    message =message.format(nickname, start_line, end_line)
 
     w_db.close()
     return message

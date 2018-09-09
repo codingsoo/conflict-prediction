@@ -1,0 +1,11 @@
+Oh, {} has already locked {} file. Try it again after {}!
+Oh, {} has already locked {} file. So I recommend you to do it after {}.
+{} has already locked {} file. You can lock it after {}.
+{} has already locked {} file. After {}, you can lock this file.
+{} has already locked {} file. How about locking this file after {}?
+I'm sorry but, {} has already locked {} file. Please lock this file after {}.
+I'm sorry but, {} has already locked {} file. Could you lock this file after {}?
+You can't lock this file, because {} has already locked {} file. Try it after {}!
+{} has already locked {} file. I think you should do something else for {}.
+{} has already locked {} file. How about working on it after {}?
+{} has already locked {} file. Remaining time is {}, so you can lock it after that.

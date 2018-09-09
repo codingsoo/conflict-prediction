@@ -229,7 +229,7 @@ class work_database:
             self.conn.commit()
 
             working_status = self.cursor.fetchall()[0]
-            print(working_status)
+            print("working_status", working_status)
 
             return working_status
 
@@ -442,6 +442,7 @@ class work_database:
             for rt in raw_tuple:
                 raw_list.append(rt[0])
 
+
         except:
             self.conn.rollback()
             print("ERROR : read lock list")
@@ -515,9 +516,10 @@ class work_database:
 
         return raw_list
 
-    def check_remain_time_of_lock_file(self, project_name, file_name):
-        remain_time_str = ""
 
+    def check_user_and_remain_time_of_lock_file(self, project_name, file_name):
+        remain_time_str = ""
+        slack_code = ""
         try:
             sql = "select * " \
                   "from lock_list " \
@@ -528,6 +530,8 @@ class work_database:
             self.conn.commit()
 
             raw = self.cursor.fetchone()
+
+            slack_code = raw[2]
             delete_time = raw[3]
             log_time = raw[4]
 
@@ -539,7 +543,7 @@ class work_database:
             self.conn.rollback()
             print("ERROR : check_remain_time_of_lock_file")
 
-        return remain_time_str
+        return slack_code, remain_time_str
 
     ####################################################################
     '''
