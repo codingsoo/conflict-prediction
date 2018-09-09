@@ -82,7 +82,6 @@ def approved_file_logic(slack_code, approve_set, remove_list):
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
 
-        print("1")
         for al in approve_list:
             ch_message += random.choice(shell_dict['feat_ignore_channel'])
             ch_message = ch_message.format(user_name, al)

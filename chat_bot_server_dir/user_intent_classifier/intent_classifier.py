@@ -304,6 +304,7 @@ def extract_attention_word(sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
+                sentence = sentence.replace(rfl, "")
                 if " not " in sentence or " unlock " in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
@@ -438,7 +439,7 @@ def extract_attention_word(sentence, github_email):
         word_list = sentence.split()
 
         try:
-            channel_idx = word_list.index(" channel ") - 1
+            channel_idx = word_list.index("channel") - 1
             if channel_idx != 0:
                 channel = word_list[channel_idx].strip()
                 start_that = sentence.find(" that ") + 4
