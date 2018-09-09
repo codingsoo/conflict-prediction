@@ -77,14 +77,16 @@ def approved_file_logic(slack_code, approve_set, remove_list):
     print("remove !! : " + str(remove_list))
 
     message = ""
-
+    ch_message = ""
     if approve_list:
-        print(approve_list)
         w_db.add_approved_list(slack_code=slack_code,
                                req_approved_set=approve_set)
 
+        print("1")
         for al in approve_list:
-            ch_message = "{} approved {}.\n".format(user_name, al)
+            ch_message += random.choice(shell_dict['feat_ignore_channel'])
+            ch_message = ch_message.format(user_name, al)
+
         send_channel_message("code-conflict-chatbot", ch_message)
 
         message += random.choice(shell_dict['feat_ignore_file'])
@@ -97,7 +99,8 @@ def approved_file_logic(slack_code, approve_set, remove_list):
 
         if success_list:
             for sl in success_list:
-                ch_message = "{} removed {} from approved list.\n".format(user_name, sl)
+                ch_message += random.choice(shell_dict['feat_unignore_channel'])
+                ch_message = ch_message.format(user_name, sl)
             send_channel_message("code-conflict-chatbot", ch_message)
 
             for sl in success_list:
@@ -128,6 +131,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             for file_name in already_lock_list:
                 slack_code, remain_time_str = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
                 user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+
                 message += random.choice(shell_dict['feat_lock_overlap'])
                 message = message.format(user_name, file_name, remain_time_str)
 

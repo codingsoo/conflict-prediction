@@ -1,7 +1,7 @@
-{} will be notified from now on.
+{} will notified to you from now on.
 As you requested, {} removed from ignore file list.
 I will notify anything related to {} from now on.
-You can get notify of {} anytime.
+You can get notified of {} anytime.
 {} removed from ignore file list.
 {} is unignored.
 {} is unignored, so you can get alarm any time.
