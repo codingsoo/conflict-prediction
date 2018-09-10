@@ -69,6 +69,7 @@ class work_database:
                       "from approved_list " \
                       "where project_name = '%s' " \
                       "and approved_file = '%s'" % (project_name, temp_remove_file)
+
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()

@@ -40,7 +40,7 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("'re ", " are ")
     sentence = sentence.replace("'ve ", " have ")
 
-    sentence = " " + sentence
+    sentence = " " + sentence + " "
 
     return sentence
 
@@ -98,6 +98,7 @@ def require_something_sentence(_sentence):
     pos_tag_list = nlp.pos_tag(sentence)
     parse_list = nlp.parse(sentence)
 
+    print("sentence", sentence)
     if is_question(parse_list, pos_tag_list):
         if pos_tag_list[0][1] == "MD":
             sentence = sentence.replace(pos_tag_list[0][0], "can")

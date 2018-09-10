@@ -142,6 +142,7 @@ def intent_classifier(_sentence):
         _sentence = _sentence.replace("this file", ":.py")
     sentence_type, sentence = require_something_sentence(_sentence)
 
+    print("sentence_type", sentence_type)
     # Question
     if sentence_type == 1 :
         max_idx = calcue_max(sentence, question_sentence_list)
@@ -245,7 +246,7 @@ def extract_attention_word(_sentence, github_email):
         for rfl in result_file_list:
             print(rfl)
             if rfl in sentence:
-                sentence = sentence.replace(rfl, "")
+                sentence = sentence.replace(rfl, " ")
                 print(sentence)
                 for word in approve_word:
                     if word in sentence:
@@ -316,7 +317,7 @@ def extract_attention_word(_sentence, github_email):
 
         for rfl in result_file_list:
             if rfl in sentence:
-                sentence = sentence.replace(rfl, "")
+                sentence = sentence.replace(rfl, " ")
                 if " not " in sentence or " unlock " in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
