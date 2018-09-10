@@ -41,11 +41,11 @@ question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock
 command_sentence_list = ["Don't notify me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Don't alert me about indirect conflict.",
                          "Check File1.py whether it will make a conflict or not.",
-                         "Tell me where <@UCFNMU2ED>'s working status",
+                         "Tell me where <@UCFNMU2ED>'s working status.",
                          "Tell everyone that I'm working on File1.py to conflict detect channel.",
                          "Send <@UCFNMU2ED> a message that I'm working on class1.",
                          "Give me some recommendation about how to solve the conflict of File1.py."]
-suggestion_sentence_list = ["You should not give me notification about File1.py", "You should lock File.py.",
+suggestion_sentence_list = ["You should not give me notification about File1.py.", "You should lock File.py.",
                             "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "Sayme, you should check File1.py if this is gonna make a conflict.",
@@ -54,7 +54,7 @@ suggestion_sentence_list = ["You should not give me notification about File1.py"
                             "You have to send message to <@UCFNMU2ED> that I will check and solve the confilct.",
                             "You would tell me how I can solve the conflict in File1.py"]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to lock File1.py.",
-                        "I want to know who wrote line 70 to line 90 in File1.py.", "I don't want you to alert about direct conflict",
+                        "I want to know who wrote line 70 to line 90 in File1.py.", "I don't want you to alert about direct conflict.",
                         "I want to know that this is gonna make a conflict in File1.py.",
                         "I want to know <@UCFNMU2ED>'s working status.",
                         "I want to send the message in conflict detector channel that don't modify File1.py.",

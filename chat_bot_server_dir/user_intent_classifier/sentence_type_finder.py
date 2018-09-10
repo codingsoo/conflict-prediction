@@ -1,18 +1,21 @@
 import nltk
 from stanfordcorenlp import StanfordCoreNLP
+import re
 
 def sentence_preprocess(sentence):
     # User 이름, 파일명 제외하고는 전체 문장 소문자화 하기.
-    extension_list = [".py", ".py.", ".md", ".md.", ".txt", ".txt.", ".json", ".json."]
 
     sentence = sentence.replace("’", "'")
+    sentence = sentence.replace(",", " , ")
+    sentence = sentence.replace("?", " ? ")
+    sentence = sentence.replace("!", " ! ")
 
     word_list = sentence.split()
     word_list[0] = word_list[0].lower().replace("sayme,", '')
     for word in word_list:
-        len_word = len(word)
         # user name
-        if word[0:2] == "<@" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
+        slack_code_idx = word.find("<@")
+        if slack_code_idx != -1 and word[slack_code_idx + 11] == ">":
             pass
         # file name
         elif ".py" in word or ".md" in word or ".txt" in word or ".json" in word:
@@ -23,9 +26,6 @@ def sentence_preprocess(sentence):
             word_idx = word_list.index(word)
             #나중에 문장에서 어떤 단어를 찾을 때, 잘 걸러내기 위해서
             word = word.replace(".", " .")
-            word = word.replace(",", " ,")
-            word = word.replace("?", " ?")
-            word = word.replace("!", " !")
             word_list[word_idx] = word.lower()
 
     sentence = ' '.join(word_list)
@@ -40,6 +40,7 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("'re ", " are ")
     sentence = sentence.replace("'ve ", " have ")
 
+    sentence = " " + sentence
 
     return sentence
 
