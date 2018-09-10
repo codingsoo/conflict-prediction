@@ -15,8 +15,7 @@ def sentence_preprocess(sentence):
         if word[0:2] == "<@" and (word[len_word-1] == ">" or word[len_word-3:len_word] == ">'s"):
             pass
         # file name
-        elif word[len_word-3:len_word] in extension_list or word[len_word-4:len_word] in extension_list \
-                or word[len_word-5:len_word] in extension_list or word[len_word-6:len_word] in extension_list:
+        elif ".py" in word or ".md" in word or ".txt" in word or ".json" in word:
             pass
         elif word.lower() == "i" or word.lower() == "i'm" or word.lower() == "i've":
             word_list[word_list.index(word)] = word[0].upper() + word[1:].lower()

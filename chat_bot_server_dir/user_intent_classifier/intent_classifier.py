@@ -235,7 +235,7 @@ def extract_attention_word(_sentence, github_email):
         found = 0
         print(file_list)
 
-        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize"]
+        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", 'see']
 
         for fl in file_list:
             r = fl.split("/")[-1]
