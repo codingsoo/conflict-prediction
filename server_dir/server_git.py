@@ -7,7 +7,6 @@ import os
 import subprocess
 import time
 import shutil
-import threading
 
 """
 git diff logic
@@ -22,9 +21,6 @@ BASE_PATH = os.path.pardir
 def git_diff_logic(content):
 
     print("\n" + "#### START git diff logic ####")
-
-    threadLock = threading.Lock()
-    threadLock.acquire()
 
     # Create user git diff data
     user_data = user_git_diff(content)
@@ -67,7 +63,6 @@ def git_diff_logic(content):
     dw_db.close_db()
     iw_db.close_db()
 
-    threadLock.release()
     return
 
 

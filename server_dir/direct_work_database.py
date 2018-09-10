@@ -148,16 +148,6 @@ class direct_work_database:
                 temp_work[1] = "in"
             try:
                 sql = "select * " \
-                      "from working_table"
-
-                print(sql)
-                self.cursor.execute(sql)
-                self.conn.commit()
-                test_tuple = self.cursor.fetchall()
-                test_list = list(test_tuple)
-                print("test : ", test_list)
-
-                sql = "select * " \
                       "from working_table " \
                       "where project_name = '%s' " \
                       "and file_name = '%s' " % (project_name, temp_work[0])
