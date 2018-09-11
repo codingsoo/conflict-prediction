@@ -64,6 +64,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         elif param0 == "no_channel":
             message = "There is no such channel. Please say it again."
 
+
     return message
 
 def approved_file_logic(slack_code, approve_set, remove_list):
@@ -263,9 +264,14 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
 
 
 def send_message_channel_logic(channel, msg, user_name):
-    msg = msg.replace("?", "")
+
+    if msg == '':
+        message = 'You must write your message between two double quotations like "message"'
+        return message
+
     channel_msg = user_name + " announce : " + msg
     ret_scm = send_channel_message(channel, channel_msg)
+
     if ret_scm == 2:
         message = random.choice(shell_dict['feat_announce'])
         message = message.format(channel)
@@ -274,16 +280,19 @@ def send_message_channel_logic(channel, msg, user_name):
     elif ret_scm == 0:
         message = "There is no {} channel in Slack workspace, please check channel list.".format(channel)
     else:
-        message = ""
-
+        message = ''
     return message
 
 
 def send_message_direct_logic(slack_code, msg, user_name):
-    w_db = work_database()
 
+    if msg == '':
+        message = 'You must write your message between two double quotations like "message"'
+        return message
+
+    w_db = work_database()
     target_user = w_db.slack_code_to_slack_name(slack_code)
-    msg = msg.replace("?","")
+
     msg = user_name + " gives message : " + msg
     send_direct_message(slack_code, msg)
     message = random.choice(shell_dict['feat_send_message_user'])

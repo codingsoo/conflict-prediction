@@ -12,8 +12,8 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 #nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-#nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -36,31 +36,33 @@ nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/pyt
 question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock hello.py?",
                           "Can you tell me who wrote line14 to line 18 at file1.py?", "Can you not notify me about indirect conflict?",
                           "Do you think hello.py is gonna make a conflict?",  "Can you tell me <@UCFNMU2ED>'s working status?",
-                          "Can you tell everyone that “I'm working on File1.py”?",
-                          "Can you chat to <@UCFNMU2ED> that “I will check and solve the problem”?",
+                          'Can you tell all channel that "I am working on File1.py"?',
+                          'Can you chat to <@UCFNMU2ED> "I will check and solve the problem"?',
                           "Can you recommend what should I do to fix the conflict in File.py?"]
-command_sentence_list = ["Don't notify me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
-                         "Don't alert me about indirect conflict.",
+command_sentence_list = ["Do not notify me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
+                         "Do not alert me about indirect conflict.",
                          "Check File1.py whether it will make a conflict or not.",
                          "Tell me where <@UCFNMU2ED>'s working status. ",
                          "Tell everyone that “I'm working on File1.py” to conflict detect channel.",
                          "Send <@UCFNMU2ED> a message that “I'm working on class1.”",
-
+                         "Tell me where <@UCFNMU2ED>'s working status.",
+                         'Tell all channel that "I am working on File1.py to conflict detect channel.".',
+                         'Send a message to <@UCFNMU2ED> "I am working on class1".',
                          "Give me some recommendation about how to solve the conflict of File1.py."]
 suggestion_sentence_list = ["You should not give me notification about File1.py.", "You should lock File.py.",
                             "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "Sayme, you should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
-                            "You should announce that “don't touch File1.py” to conflict detect channel.",
-                            "You have to send message to <@UCFNMU2ED> that “I will check and solve the confilct.”.",
+                            'You should announce all channel that "Do not touch File1.py to conflict detect channel".',
+                            'You have to send message to <@UCFNMU2ED> "I will check and solve the conflict".',
                             "You would tell me how I can solve the conflict in File1.py"]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to lock File1.py.",
-                        "I want to know who wrote line 70 to line 90 in File1.py.", "I don't want you to alert about direct conflict.",
+                        "I want to know who wrote line 70 to line 90 in File1.py.", "I do not want you to alert about direct conflict.",
                         "I want to know that this is gonna make a conflict in File1.py.",
                         "I want to know <@UCFNMU2ED>'s working status.",
-                        "I want to send the message in conflict detector channel that “don't modify File1.py.”.",
-                        "I want to send a direct message to <@UCFNMU2ED> that “don't modify File1.py.”.",
+                        'I want to send the message to conflict detector channel that "Do not modify File1.py".',
+                        'I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".',
                         "I want to get recommendation how I can solve the conflict in File1.py."]
 
 def load_token() :
@@ -146,28 +148,28 @@ def intent_classifier(_sentence):
 
     print("sentence_type", sentence_type)
     # Question
-    if sentence_type == 1 :
+    if sentence_type == 1:
         max_idx = calcue_max(sentence, question_sentence_list)
 
         return max_idx, sentence
 
 
     # Command
-    elif sentence_type == 2 :
+    elif sentence_type == 2:
         max_idx = calcue_max(sentence, command_sentence_list)
 
         return max_idx, sentence
 
 
     # Suggestion
-    elif sentence_type == 3 :
+    elif sentence_type == 3:
         max_idx = calcue_max(sentence, suggestion_sentence_list)
 
         return max_idx, sentence
 
 
     # Desire
-    elif sentence_type == 4 :
+    elif sentence_type == 4:
         max_idx = calcue_max(sentence, desire_sentence_list)
 
         return max_idx, sentence
@@ -202,14 +204,16 @@ def extract_attention_word(_sentence, github_email):
 
     try:
         recent_data = work_db.get_recent_data(github_email)
+        print("recent_data", recent_data)
         recent_file = recent_data[0].split('|')[0]
+        print("recent file", recent_file)
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
 
     intent_type, sentence = intent_classifier(_sentence)
 
-    print("Intent_type : ", intent_type)
+    print("Intent_type", intent_type)
 
     conflict_file_list = work_db.all_conflict_list(github_email)
 
@@ -344,7 +348,7 @@ def extract_attention_word(_sentence, github_email):
         work_db.close()
         return 2, request_lock_set, remove_lock_list, lock_time
 
-    #About history
+    # About history
     elif intent_type == 3:
 
         result_file_list = get_file_path(file_list)
@@ -392,7 +396,7 @@ def extract_attention_word(_sentence, github_email):
             file_path = file_path.replace(" ", "")
             return 3, file_list[result_file_list.index(file_path)], 1, 1
 
-    #About direct or indirect ignore
+    # About direct or indirect ignore
     elif intent_type == 4:
 
         if " not " in sentence or " unlock " in sentence:
@@ -412,7 +416,7 @@ def extract_attention_word(_sentence, github_email):
                 work_db.close()
                 return 4, 1, 1, None
 
-    #About check conflict
+    # About check conflict
     elif intent_type == 5:
 
         result_file_list = get_file_path(file_list)
@@ -429,7 +433,7 @@ def extract_attention_word(_sentence, github_email):
         work_db.close()
         return 5, file_path, None, None
 
-    #About working status
+    # About working status
     elif intent_type == 6:
 
         target_user_id = ""
@@ -448,21 +452,29 @@ def extract_attention_word(_sentence, github_email):
             work_db.close()
             return 6, target_user_id, target_user_email, None
 
-    #About channel message
+    # About channel message
     elif intent_type == 7:
 
         user_name = work_db.convert_git_id_to_slack_id(github_email)
-        word_list = sentence.split()
 
+        # We should use unmodified sentence.
+        _sentence = _sentence.replace('“','"')
+        _sentence = _sentence.replace('”','"')
+        word_list = _sentence.split(" ")
+
+        print("word_list", word_list)
         try:
-            channel_idx = word_list.index("channel") - 1
+            channel_idx = word_list.index("channel")
             if channel_idx != 0:
-                channel = word_list[channel_idx].strip()
-                start_msg = sentence.find('“') + 1
-                end_msg = sentence.find('”', start_msg + 1)
-                msg = sentence[start_msg:end_msg].strip()
-
-
+                channel = word_list[channel_idx - 1].strip()
+                msg = " ".join(word_list[channel_idx + 1:]).strip()
+                start_quot_idx = msg.find('"')
+                end_quot_idx = msg.rfind('"')
+                if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
+                    print('You must write your message between two double quotation like "message"')
+                    msg = ""
+                else:
+                    msg = msg[start_quot_idx + 1:end_quot_idx].strip()
             else:
                 print("There is no channel")
                 work_db.close()
@@ -476,23 +488,38 @@ def extract_attention_word(_sentence, github_email):
         work_db.close()
         return 7, channel, msg, user_name
 
-    #About user message
+    # About user message
     elif intent_type == 8:
 
         user_name = work_db.convert_git_id_to_slack_id(github_email)
         target_user_slack_code = ""
 
+        # We should use unmodified sentence
+
+        _sentence = _sentence.replace('“','"')
+        _sentence = _sentence.replace('”','"')
+
         for id in slack_id_list:
-            if id in sentence:
+            if id in _sentence:
                 target_user_slack_code = id
                 break
 
         if target_user_slack_code == "":
             target_user_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
-        start_msg = sentence.find('“') + 1
-        end_msg = sentence.find('”', start_msg + 1)
-        msg = sentence[start_msg:end_msg]
+        target_user_slack_code_idx = _sentence.find(target_user_slack_code)
+        msg = _sentence[target_user_slack_code_idx + 10:]
+
+        _sentence = _sentence.replace('“','"')
+        _sentence = _sentence.replace('”','"')
+        start_quot_idx = msg.find('"')
+        end_quot_idx = msg.rfind('"')
+        if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
+            print('You must write your message between two double quotation like "message"')
+            msg = ''
+        else:
+            msg = msg[start_quot_idx + 1:end_quot_idx].strip()
+
         work_db.close()
         return 8, target_user_slack_code, msg, user_name
 

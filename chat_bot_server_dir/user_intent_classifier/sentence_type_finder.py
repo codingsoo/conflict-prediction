@@ -31,10 +31,10 @@ def sentence_preprocess(sentence):
     sentence = ' '.join(word_list)
     # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
     sentence = sentence.replace("please ", '')
-    sentence = sentence.replace("i think ", '')
+    sentence = sentence.replace("I think ", '')
     sentence = sentence.replace("have to", "should")
-    sentence = sentence.replace("don't have to", "shouldn't")
-    sentence = sentence.replace("do not have to", "shouldn't")
+    sentence = sentence.replace("don't have to", "should not")
+    sentence = sentence.replace("do not have to", "should not")
     sentence = sentence.replace("n't ", " not ")
     sentence = sentence.replace("'m ", " am ")
     sentence = sentence.replace("'re ", " are ")
@@ -99,6 +99,7 @@ def require_something_sentence(_sentence):
     parse_list = nlp.parse(sentence)
 
     print("sentence", sentence)
+
     if is_question(parse_list, pos_tag_list):
         if pos_tag_list[0][1] == "MD":
             sentence = sentence.replace(pos_tag_list[0][0], "can")

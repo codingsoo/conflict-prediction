@@ -796,7 +796,7 @@ class work_database:
             self.conn.commit()
 
             direct_recent_data = list(self.cursor.fetchall())
-            print(direct_recent_data)
+            print("direct_recent_data", direct_recent_data)
             direct_recent_data_mod = []
             indirect_recent_data_mod = []
 
@@ -806,6 +806,7 @@ class work_database:
                     conf[1] = conf[0] + '|' + conf[1]
                     conf[2] = conf[0] + '|' + conf[2]
                     direct_recent_data_mod.append(conf[1:])
+
             print(sql2)
             self.cursor.execute(sql2)
             self.conn.commit()
