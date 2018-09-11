@@ -156,6 +156,13 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
 
         message += random.choice(shell_dict['feat_unlock_file'])
         w_db.remove_lock_list(slack_code, remove_lock_list)
+
+        inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
+
+        for file in inform_unlock_list:
+            msg = "{} just unlocked. Do you want me to lock it for {} hours?".format(file[1], file[3])
+            send_direct_message(file[2], msg)
+
         ele = ','.join(remove_lock_list)
         message = message.format(ele)
 
@@ -235,7 +242,7 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
     if project_name == -2:
         message = "This user is not in slack. [Assuming all clients are turned on]"
     elif project_name == -1:
-        message = "This user do not have project"
+        message = "This user is not working on the project"
     else:
         db_lock_set = set(w_db.read_lock_list(target_slack_code, project_name))
         print(db_lock_set)

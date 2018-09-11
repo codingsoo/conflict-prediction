@@ -127,6 +127,17 @@ CREATE TABLE IF NOT EXISTS `user_last_connection` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
+-- 테이블 uci_chat_bot.user_last_connection 구조 내보내기
+CREATE TABLE IF NOT EXISTS `lock_try_history` (
+  `project_name` varchar(50) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `slack_code` varchar(50) NOT NULL,
+  `delete_time` int(11) DEFAULT NULL,
+  `lock_try_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`slack_code`, `project_name`,`file_name` )
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

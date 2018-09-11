@@ -344,7 +344,7 @@ class work_database:
             print("ERROR : NO PROJECT NAME")
             return
 
-        db_lock_set = set(self.read_lock_list(slack_code, project_name))
+        db_lock_set = set(self.read_lock_list(project_name))
 
         diff_lock_set = req_lock_set - db_lock_set
         already_lock_set = req_lock_set & db_lock_set
@@ -367,6 +367,24 @@ class work_database:
             except:
                 self.conn.rollback()
                 print("ERROR : add lock list")
+
+        if already_lock_set:
+            sql = "insert into lock_try_history " \
+                  "(project_name, file_name, slack_code, delete_time) " \
+                  "values "
+            for temp_diff_lock in already_lock_set:
+                sql += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
+
+            sql = sql[:-2]
+
+            try:
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : add lock try history list")
 
         return diff_lock_set, already_lock_set
 
@@ -446,7 +464,7 @@ class work_database:
 
         return
 
-    def read_lock_list(self, slack_code, project_name):
+    def read_lock_list(self, project_name):
         raw_list = []
 
         try:
@@ -460,6 +478,30 @@ class work_database:
             raw_tuple = self.cursor.fetchall()
             for rt in raw_tuple:
                 raw_list.append(rt[0])
+
+
+        except:
+            self.conn.rollback()
+            print("ERROR : read lock list")
+
+        return raw_list
+
+    def read_oldest_lock_history_list(self, unlock_file):
+        raw_list = []
+
+        try:
+            for file in unlock_file:
+                sql = "select * " \
+                      "from lock_try_history " \
+                      "where file_name = '%s'" \
+                      "ORDER BY lock_try_time ASC LIMIT 1 " % (file)
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_tuple = self.cursor.fetchall()
+                for rt in raw_tuple:
+                    raw_list.append(list(rt))
 
 
         except:

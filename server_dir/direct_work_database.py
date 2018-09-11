@@ -48,6 +48,14 @@ class direct_work_database:
         if remove_lock_list:
             send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
+
+        inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
+
+        for file in inform_unlock_list:
+            msg = file[1] + "/" + file[2] + " just unlocked. Do you want me to lock it for " + file[3] + " hours?"
+            user_slack_id = w_db.convert_slack_code_to_git_id(file[0])
+            send_direct_message(user_slack_id, msg)
+
         self.delete_direct_conflict_list()
 
         lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
