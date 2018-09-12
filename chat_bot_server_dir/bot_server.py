@@ -92,7 +92,9 @@ slack_name_list = get_slack_name_list()
 def on_message(ws, message):
 
     # JSON Data To Message
+    print("5")
     msg = json.loads(message)
+    print("6")
     print(msg)
 
     # Import User Data
@@ -136,7 +138,6 @@ def on_message(ws, message):
                 u_db = user_database()
                 w_db = work_database.work_database()
 
-                # Not implement yet.
                 w_db.insert_last_connection(msg['user'])
 
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
@@ -182,6 +183,7 @@ if __name__ == "__main__":
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     res = slack.auth.test().body
 
+    print("1")
     msg = [{
         'fallback': res['user'] + ' is LOG-IN!',
         'pretext': '*Connected to ' + res['team'] + '(' + channel + ')*',
@@ -190,9 +192,12 @@ if __name__ == "__main__":
         'mrkdwn_in': ['pretext']
     }]
 
+    print("2")
     slack.chat.post_message(channel, '', attachments=msg, as_user=True)
     response = slack.rtm.start()
     endpoint = response.body['url']
+    print("3")
     ws = websocket.WebSocketApp(endpoint, on_message=on_message, on_error=on_error, on_close=on_close)
+    print("4")
     ws.on_open = on_open
     ws.run_forever()

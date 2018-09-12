@@ -8,13 +8,15 @@ def get_file_list( root ) :
         for file in files :
             if os.path.splitext(file)[-1] == '.py' :
                 py_list.append(os.path.join(path, file))
+
+    print("Get file list : ", py_list)
     return py_list
 
 def run( root , owner) :
     project_dict = dict()
     project_name = os.path.basename(root)
     file_list = get_file_list(root)
-    print("Project Nmae : {}".format(project_name))
+    print("Project Name : {}".format(project_name))
     print("Code Amount : {}".format(len(file_list)))
 
     for file_path in file_list :

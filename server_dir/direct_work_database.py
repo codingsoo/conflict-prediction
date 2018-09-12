@@ -54,9 +54,8 @@ class direct_work_database:
         inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
 
         for file in inform_unlock_list:
-            msg = file[1] + "/" + file[2] + " just unlocked. Do you want me to lock it for " + file[3] + " hours?"
-            user_slack_id = w_db.convert_slack_code_to_git_id(file[0])
-            send_direct_message(user_slack_id, msg)
+            msg = "{} just unlocked. Do you want me to lock it for {} hours?".format(file[1], file[3])
+            send_direct_message(file[2], msg)
 
         self.delete_direct_conflict_list()
 

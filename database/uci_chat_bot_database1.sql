@@ -133,8 +133,7 @@ CREATE TABLE IF NOT EXISTS `lock_try_history` (
   `file_name` varchar(255) NOT NULL,
   `slack_code` varchar(50) NOT NULL,
   `delete_time` int(11) DEFAULT NULL,
-  `lock_try_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`slack_code`, `project_name`,`file_name` )
+  `lock_try_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

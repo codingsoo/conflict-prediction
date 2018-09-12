@@ -319,9 +319,9 @@ class work_database:
     def read_approved_list(self, project_name):
         raw_set = set()
         try:
-            sql = "select approved_file " \
+            sql = "SELECT approved_file " \
                   "from approved_list " \
-                  "where project_name = '%s'" % (project_name)
+                  "where project_name = '%s' " % (project_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -507,13 +507,51 @@ class work_database:
                 raw_tuple = self.cursor.fetchall()
                 for rt in raw_tuple:
                     raw_list.append(list(rt))
+        except:
+            self.conn.rollback()
+            print("ERROR : read oldest lock history list")
 
+        return raw_list
+
+    def read_lock_history_list(self, project_name):
+        raw_list = []
+
+        try:
+            sql = "select file_name " \
+                  "from lock_try_history "\
+                  "where project_name = '%s'" % (project_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for rt in raw_tuple:
+                raw_list.append(rt[0])
+        except:
+            self.conn.rollback()
+            print("ERROR : read lock history list")
+
+        return raw_list
+
+    def delete_lock_history(self, delete_file, slack_code):
+        try:
+
+            sql = "delete "\
+                  "from lock_try_history "\
+                  "where file_name = '%s' "\
+                  "and slack_code = '%s'" %(delete_file, slack_code)
+
+            # execute sql
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
 
         except:
             self.conn.rollback()
-            print("ERROR : read lock list")
+            print("ERROR : delete user data")
 
-        return raw_list
+        return
 
 
     def inform_lock_file(self, project_name, working_list, git_id):

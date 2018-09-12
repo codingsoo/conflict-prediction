@@ -5,6 +5,7 @@ from server_dir.slack_message_sender import send_direct_message
 
 import os, random
 
+
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     message = "default"
 
@@ -40,6 +41,9 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     elif(intent_type == 11):
         message = bye_logic()
+
+    elif (intent_type == 12):
+        message = response_logic(slack_code, param0)
 
     elif(intent_type == 12):
         if param0 == "no_response":
@@ -161,8 +165,11 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
 
         for file in inform_unlock_list:
-            msg = "{} just unlocked. Do you want me to lock it for {} hours?".format(file[1], file[3])
+            msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
             send_direct_message(file[2], msg)
+
+
+
 
         ele = ','.join(remove_lock_list)
         message = message.format(ele)
@@ -350,8 +357,47 @@ def bye_logic():
     return message
 
 
+def response_logic(slack_code, msg_type):
+    w_db = work_database()
+
+    request_lock_set = set()
+
+    message = ""
+    project_name = w_db.read_project_name(slack_code)
+    remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
+
+
+    target_list = w_db.read_oldest_lock_history_list(remove_file_list)
+    for target_file in target_list:
+        if(target_file[2] == slack_code):
+            if(msg_type == "yes"):
+                request_lock_set.add(target_file[1])
+                lock_file_list, already_lock_set = list(w_db.add_lock_list(slack_code, request_lock_set, target_file[3]))
+                ch_message = ""
+                user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+
+                for file_name in lock_file_list:
+                    ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, target_file[3])
+                send_channel_message("code-conflict-chatbot", ch_message)
+
+                message += random.choice(shell_dict['feat_lock_file'])
+                ele = ','.join(list(lock_file_list))
+                message = message.format(ele)
+
+                w_db.delete_lock_history(target_file[1], slack_code)
+            else:
+                w_db.delete_lock_history(target_file[1], slack_code)
+                message = "Okay, I'll not lock it"
+        else:
+            message = "I think you enter the wrong one."
+
+    w_db.close()
+
+    return message
+
 
 shell_dict = dict()
+
 
 for path, dirs, files in os.walk('../situation_shell') :
     for file in files :

@@ -11,8 +11,8 @@ from chat_bot_server_dir.work_database import work_database
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
@@ -210,6 +210,17 @@ def extract_attention_word(_sentence, github_email):
     except:
         recent_data = "no recent data"
         recent_file = "no recent file"
+    sentence = " " + _sentence + " "
+    yes_list = ["y","yes","affirmative", "amen","fine","good","okay","true","yea","all right","aye","beyond a doubt","by all means","certainly","definitely","even so","exctly","gladly","good enough","granted","indubitably","just so","most assuredly","naturally","of course","positively","precisely","sure thing","surely","undoubtedly","unquestionably","very well","willingly","without fail","yep"]
+    no_list = ["n","no", "nay", "nix", "never"]
+    yes_check = 0
+
+    for yes in yes_list:
+        if " " + yes + " " in sentence:
+            return 12, "yes", None, None
+    for no in no_list:
+        if " " + no + " " in sentence:
+            return 12, "no", None, None
 
     intent_type, sentence = intent_classifier(_sentence)
 
@@ -538,7 +549,7 @@ def extract_attention_word(_sentence, github_email):
         elif " bye " in sentence or " see you " in sentence:
             return 11, "bye", None, None
         else:
-            return 12, "no_response", None, None
+            return 13, "no_response", None, None
 
 
 if __name__ == '__main__':
