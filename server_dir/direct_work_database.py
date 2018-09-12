@@ -152,7 +152,7 @@ class direct_work_database:
     # Search same project and same file from working table
     def search_working_table(self, project_name, working_list):
 
-        raw_list = []
+        all_raw_list = []
 
         # ["file_name", "logic_name", "work_line", "work_amount"]
         for temp_work in working_list:
@@ -168,13 +168,15 @@ class direct_work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
-                print ("Select from working_table : ", raw_list)
+                for raw in raw_list:
+                    all_raw_list.append(raw)
+                print ("select from working_table : ", raw_list)
 
             except:
                 self.conn.rollback()
                 print("ERROR : search working table")
 
-        return raw_list
+        return all_raw_list
 
     def search_already_direct_conflict_list(self, project_name, conflict_list, working_list, user_name):
         all_raw_list = []

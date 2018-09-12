@@ -123,6 +123,7 @@ class indirect_work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
+            print("select from working_table : ", raw_list)
         except:
             self.conn.rollback()
             print("ERROR : search indirect working table")
