@@ -257,59 +257,64 @@ class work_database:
             print("ERROR : get user working status")
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
-    def classify_direct_conflict_approved_list(self, project_name, current_conflict_list):
+    def classify_direct_conflict_approved_list(self, project_name, whole_direct_conflict_list):
+        # set으로 반환.
         db_approved_list = self.read_approved_list(project_name)
 
-        print("db_approved_list : ", db_approved_list)
-        print("1 current_conflict_list : ", current_conflict_list)
+        print("db_approved_list(set) : ", db_approved_list)
+        print("whole_direct_conflict_list : ", whole_direct_conflict_list)
 
         remove_list = []
 
-        for temp_db_aproved in db_approved_list:
-            print("temp db approved : ", str(temp_db_aproved))
-            for temp_current_conflict in current_conflict_list:
-                if temp_db_aproved == temp_current_conflict[1]:
+        # ( file_name )
+        for temp_db_aproved_list in db_approved_list:
+            print("temp db approved : ", str(temp_db_aproved_list))
+            # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
+            for temp_whole_direct_conflict_list in whole_direct_conflict_list:
+                if temp_db_aproved_list == temp_whole_direct_conflict_list[1]:
                     try:
-                        remove_list.append(temp_current_conflict)
-                        print("Conflict list removed : ", temp_current_conflict)
+                        remove_list.append(temp_whole_direct_conflict_list)
+                        print("removed by approved list : ", temp_whole_direct_conflict_list)
 
                     except:
-                        print("ERROR : classify conflict approved list")
+                        print("ERROR : classify direct conflict approved list")
 
         for temp_remove in remove_list:
-            current_conflict_list.remove(temp_remove)
+            whole_direct_conflict_list.remove(temp_remove)
 
-        print("2 current_conflict_list : ", current_conflict_list)
-        return current_conflict_list, remove_list
+        print("after classify approved list : ", whole_direct_conflict_list)
+        return whole_direct_conflict_list, remove_list
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
-    def classify_indirect_conflict_approved_list(self, project_name, current_conflict_list):
+    def classify_indirect_conflict_approved_list(self, project_name, whole_indirect_conflict_list):
         db_approved_list = self.read_approved_list(project_name)
 
         print("db_approved_list : ", db_approved_list)
-        print("1 current_conflict_list : ", current_conflict_list)
+        print("whole_indirect_conflict_list : ", whole_indirect_conflict_list)
 
         remove_list = []
 
-        for temp_db_aproved in db_approved_list:
-            print("temp db approved : ", str(temp_db_aproved[0]))
-            for temp_current_conflict in current_conflict_list:
-                # [user_name, user_logic, other_name, other_logic]
-                user1_file = str(temp_current_conflict[1]).split('|')[0]
-                user2_file = str(temp_current_conflict[3]).split('|')[0]
+        # [ approved_file ]
+        for temp_db_aproved_list in db_approved_list:
+            print("temp db approved : ", str(temp_db_aproved_list[0]))
+            # [ user_name, user_logic, other_name, other_logic ]
+            for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
+                user1_file = str(temp_whole_indirect_conflict_list[1]).split('|')[0]
+                user2_file = str(temp_whole_indirect_conflict_list[3]).split('|')[0]
 
-                if (temp_db_aproved[0] == user1_file) or (temp_db_aproved[0] == user2_file):
+                if (temp_db_aproved_list[0] == user1_file) or (temp_db_aproved_list[0] == user2_file):
                     try:
-                       # current_conflict_list.remove(temp_current_conflict)
-                       remove_list.append(temp_current_conflict)
+                       remove_list.append(temp_whole_indirect_conflict_list)
+                       print("removed by approved list : ", temp_whole_indirect_conflict_list)
+
                     except:
-                        print("ERROR : classify conflict approved list")
+                        print("ERROR : classify indirect conflict approved list")
 
         for temp_remove in remove_list:
-            current_conflict_list.remove(temp_remove)
+            whole_indirect_conflict_list.remove(temp_remove)
 
-        print("2 current_conflict_list : ", current_conflict_list)
-        return current_conflict_list
+        print("after classify approved list : ", whole_indirect_conflict_list)
+        return whole_indirect_conflict_list, remove_list
 
     def read_approved_list(self, project_name):
         raw_set = set()

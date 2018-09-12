@@ -41,10 +41,12 @@ class direct_work_database:
 
     # Detect Direct Conflict
     def detect_direct_conflict(self, project_name, working_list, user_name):
+        print("\n" + "#### START detect direct conflict logic ####")
         w_db = work_database()
 
-        remove_lock_list = w_db.prev_remove_lock_list()
+        self.delete_direct_conflict_list()
 
+        remove_lock_list = w_db.prev_remove_lock_list()
         if remove_lock_list:
             send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
@@ -61,10 +63,10 @@ class direct_work_database:
         lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
         lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)
 
+        # final lock_file_list 뽑아내는거 함수로 구현하기. / indirect도
         if lock_file_list and not lock_noticed_user_list:
             send_lock_message(lock_file_list, user_name)
             w_db.add_lock_notice_list(project_name, lock_file_list, user_name)
-
 
         elif lock_file_list and lock_noticed_user_list:
             already_noticed_lock_file_list = []
@@ -80,51 +82,53 @@ class direct_work_database:
                 send_lock_message(lock_file_list, user_name)
                 w_db.add_lock_notice_list(project_name, lock_file_list, user_name)
 
-
         print("working list : ", working_list)
 
-        file_conflict_list = self.search_working_table(project_name, working_list)
-        file_conflict_list, file_approve_list = w_db.classify_direct_conflict_approved_list(project_name, file_conflict_list)
+        direct_conflict_list = self.search_working_table(project_name, working_list)
+        direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(project_name, direct_conflict_list)
         w_db.close()
 
-        print ("file_conflict_list : ",file_conflict_list)
+        print("direct_conflict_list : ", direct_conflict_list)
 
         # Conflict
-        if file_conflict_list:
+        if direct_conflict_list:
 
             print("\n#### Direct Conflict !!! ####")
 
-            already_conflict_list = self.search_already_direct_conflict_table(project_name, file_conflict_list, working_list, user_name)
-            print("already_conflict_list : ", already_conflict_list)
+            already_direct_conflict_table = self.search_already_direct_conflict_list(project_name, direct_conflict_list, working_list, user_name)
+            first_direct_conflict_list, already_direct_conflict_list = self.classify_direct_conflict_list(direct_conflict_list, already_direct_conflict_table)
+            print("already_direct_conflict_table : ", already_direct_conflict_table)
+            print("first_direct_conflict_list : ", first_direct_conflict_list)
+            print("already_direct_conflict_list : ", already_direct_conflict_list)
 
             # Already conflicted
-            if already_conflict_list:
+            if already_direct_conflict_table:
 
                 print("\n#### Already Direct Conflict !!! ####")
 
                 # Search the best value of severity and return list
-                best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
+                best_direct_conflict_list = self.search_best_direct_conflict(project_name, already_direct_conflict_list, working_list, user_name)
 
                 # Compare current conflict and database conflict
                 # Send the conflict message
                 # Update conflict database
-                self.compare_current_conflict_and_db_conflict(already_conflict_list, best_conflict_list)
+                self.compare_current_direct_conflict_and_db(already_direct_conflict_table, best_direct_conflict_list)
 
             # First conflict
-            else:
+            if first_direct_conflict_list:
 
                 print("\n#### First Direct Conflict !!! ####")
 
                 # Search the best value of severity and return list
-                best_conflict_list = self.search_best_conflict(project_name, file_conflict_list, working_list, user_name)
-                self.update_first_best_conflict_list(best_conflict_list)
+                best_direct_conflict_list = self.search_best_direct_conflict(project_name, first_direct_conflict_list, working_list, user_name)
+                self.update_first_best_conflict_list(best_direct_conflict_list)
 
         # Non-conflict
         else:
 
             print("\n#### Non-Direct Conflict !!! ####")
 
-            self.non_conflict_logic(project_name, user_name, file_approve_list)
+            self.non_direct_conflict_logic(project_name, user_name, approve_file_list)
 
         return
 
@@ -172,8 +176,8 @@ class direct_work_database:
 
         return raw_list
 
-    def search_already_direct_conflict_table(self, project_name, conflict_list, working_list, user_name):
-        raw_list = list()
+    def search_already_direct_conflict_list(self, project_name, conflict_list, working_list, user_name):
+        all_raw_list = []
 
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
         for temp_other_work in conflict_list:
@@ -185,26 +189,49 @@ class direct_work_database:
                           "where project_name = '%s' " \
                           "and file_name = '%s' " \
                           "and user1_name = '%s' " \
-                          "and user2_name = '%s' " % (project_name, temp_user_work[0], user_name, temp_other_work[3])
+                          "and user2_name = '%s'" % (project_name, temp_user_work[0], user_name, temp_other_work[3])
                     print(sql)
                     self.cursor.execute(sql)
                     self.conn.commit()
 
                     raw_list = list(set(self.cursor.fetchall()))
+                    if raw_list:
+                        for raw in raw_list:
+                            all_raw_list.append(raw)
                 except:
                     self.conn.rollback()
                     print("ERROR : search already direct conflict table")
 
-        return raw_list
+        return all_raw_list
 
+    def classify_direct_conflict_list(self, whole_direct_conflict_list, already_direct_conflict_table):
+        # first_direct_conflict_list = whole_direct_conflict_list - already_direct_conflict_list
+        first_direct_conflict_list = whole_direct_conflict_list
+        already_direct_conflict_list = []
+        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
+        for temp_whole_direct_conflict_list in whole_direct_conflict_list:
+            # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
+            for temp_already_direct_conflict_table in already_direct_conflict_table:
+                if (temp_whole_direct_conflict_list[0] == temp_already_direct_conflict_table[0] and
+                        temp_whole_direct_conflict_list[1] == temp_already_direct_conflict_table[1] and
+                        temp_whole_direct_conflict_list[2] == temp_already_direct_conflict_table[3] and
+                        temp_whole_direct_conflict_list[3] == temp_already_direct_conflict_table[5]):
+                    already_direct_conflict_list.append(temp_whole_direct_conflict_list)
 
-    def search_best_conflict(self, project_name, conflict_list, working_list, user_name):
-        best_conflict_dict = dict()
+        for temp_already_direct_conflict_list in already_direct_conflict_list:
+            first_direct_conflict_list.remove(temp_already_direct_conflict_list)
+
+        return first_direct_conflict_list, already_direct_conflict_list
+
+    def search_best_direct_conflict(self, project_name, conflict_list, working_list, user_name):
+        best_direct_conflict_dict = dict()
         all_severity_list = []
 
-        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
+        # working_list == this user's work.
+        # conflict_list == other users' work.
+        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
         for temp_other_work in conflict_list:
-            # ["file_name", "logic_name", "work_line", "work_amount"]
+            # [ file_name, logic_name, work_line, work_amount ]
             for temp_user_work in working_list:
                 # Same file name
                 if temp_other_work[1] == temp_user_work[0]:
@@ -230,55 +257,49 @@ class direct_work_database:
                             print("just in direct conflict : 1")
                             severity = 1
 
-                    # key: file name / value: severity conflict list
-                    if temp_user_work[0] in best_conflict_dict:
-                        temp_conflict_list = []
-                        temp_conflict_list.append(severity)
-                        temp_conflict_list.append(project_name)         # project_name
-                        temp_conflict_list.append(temp_user_work[0])    # file_name
-                        temp_conflict_list.append(temp_user_work[1])    # logic1_name
-                        temp_conflict_list.append(temp_other_work[2])   # logic2_name
-                        temp_conflict_list.append(user_name)            # user1_name
-                        temp_conflict_list.append(temp_other_work[3])   # user2_name
+                    # key: file name / key: other user's name / value: severity conflict list
+                    temp_conflict_list = []
+                    temp_conflict_list.append(severity)
+                    temp_conflict_list.append(project_name)  # project_name
+                    temp_conflict_list.append(temp_user_work[0])  # file_name
+                    temp_conflict_list.append(temp_user_work[1])  # logic1_name
+                    temp_conflict_list.append(temp_other_work[2])  # logic2_name
+                    temp_conflict_list.append(user_name)  # user1_name
+                    temp_conflict_list.append(temp_other_work[3])  # user2_name
 
-                        temp_all_list = []
+                    if temp_user_work[0] in best_direct_conflict_dict:
+                        if temp_other_work[3] in best_direct_conflict_dict[temp_user_work[0]]:
+                            best_direct_conflict_dict[temp_user_work[0]][temp_other_work[3]].append(temp_conflict_list)
 
-                        for t_list in best_conflict_dict[temp_user_work[0]]:
-                            temp_all_list.append(t_list)
-                        temp_all_list.append(temp_conflict_list)
-
-                        best_conflict_dict[temp_user_work[0]] = temp_all_list
+                        else:
+                            best_direct_conflict_dict[temp_user_work[0]][temp_other_work[3]] = []
+                            best_direct_conflict_dict[temp_user_work[0]][temp_other_work[3]].append(temp_conflict_list)
 
                     else:
-                        best_conflict_dict[temp_user_work[0]] = []
+                        best_direct_conflict_dict[temp_user_work[0]] = dict()
+                        best_direct_conflict_dict[temp_user_work[0]][temp_other_work[3]] = []
+                        best_direct_conflict_dict[temp_user_work[0]][temp_other_work[3]].append(temp_conflict_list)
 
-                        temp_conflict_list = []
-                        temp_conflict_list.append(severity)
-                        temp_conflict_list.append(project_name)         # project_name
-                        temp_conflict_list.append(temp_user_work[0])    # file_name
-                        temp_conflict_list.append(temp_user_work[1])    # logic1_name
-                        temp_conflict_list.append(temp_other_work[2])   # logic2_name
-                        temp_conflict_list.append(user_name)            # user1_name
-                        temp_conflict_list.append(temp_other_work[3])   # user2_name
+        print("best_direct_conflict_dict : ", best_direct_conflict_dict)
 
-                        best_conflict_dict[temp_user_work[0]].append(temp_conflict_list)
-
-        for temp_key in best_conflict_dict.keys():
-            temp_best_conflict = max(best_conflict_dict[temp_key])
-            all_severity_list.append(temp_best_conflict)
+        for temp_key in best_direct_conflict_dict.keys():
+            for user_key in best_direct_conflict_dict[temp_key].keys():
+                temp_best_conflict = max(best_direct_conflict_dict[temp_key][user_key])
+                print("temp_key : ", temp_key, "\nuser_key : ", user_key, "\nmax : ", temp_best_conflict)
+                all_severity_list.append(temp_best_conflict)
 
         return all_severity_list
 
-    def compare_current_conflict_and_db_conflict(self, already_conflict_list, best_conflict_list):
+    def compare_current_direct_conflict_and_db(self, already_direct_conflict_list, best_direct_conflict_list):
         # [project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time]
-        for temp_already in already_conflict_list:
+        for temp_already in already_direct_conflict_list:
             # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
-            for temp_best in best_conflict_list:
+            for temp_best in best_direct_conflict_list:
                 conflict_flag = 0
 
                 # Compare severity
-                # same project and same logic
-                if temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2]:
+                # same user and same project and same logic
+                if temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2] and temp_already[5] == temp_best[6]:
                     if temp_already[7] < temp_best[0]:
                         print("direct : getting severity")
                         conflict_flag = Conflict_flag.getting_severity.value
@@ -382,11 +403,10 @@ class direct_work_database:
                                   conflict_logic=temp_best[3],
                                   user1_name=temp_best[5],
                                   user2_name=temp_best[6])
-            return
 
         return
 
-    def non_conflict_logic(self, project_name, user_name, file_approve_list):
+    def non_direct_conflict_logic(self, project_name, user_name, approve_file_list):
         raw_list = []
 
         try:
@@ -399,6 +419,7 @@ class direct_work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
+
         except:
             self.conn.rollback()
             print("ERROR : select user direct conflict data")
@@ -406,17 +427,21 @@ class direct_work_database:
         # Do not notice a Conflict-Solve alarm that is resolved by Approve.
         remove_list = []
 
-        print(raw_list)
-        print(file_approve_list)
-        for fal in file_approve_list:
+        print("direct_conflict_table : ", raw_list)
+        print("approve_file_list : ", approve_file_list)
+
+        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
+        for afl in approve_file_list:
+            # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
+            # 아래 조건문 중 (afl[3] == rl[4] or afl[3] == rl[5]) 가 꼭 필요한가?
             for rl in raw_list:
-                if fal[0] == rl[0] and fal[1] == rl[1] and (fal[3] == rl[4] or fal[3] == rl[5]):
+                if afl[0] == rl[0] and afl[1] == rl[1] and (afl[3] == rl[4] or afl[3] == rl[5]):
                     remove_list.append(rl)
 
-        for rl in remove_list:
-            raw_list.remove(rl)
+        for temp_remove_list in remove_list:
+            raw_list.remove(temp_remove_list)
 
-        print("non_conflict_logic : ", raw_list)
+        print("non_direct_conflict_logic : ", raw_list)
         for raw_temp in raw_list:
             send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
                                   conflict_project=project_name,

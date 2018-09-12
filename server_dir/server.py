@@ -34,6 +34,8 @@ def user_search():
 @app.route("/git_diff", methods = ["POST"])
 def git_diff():
 
+    print(git_diff_ip)
+
     # This condition logic is for prevent deleting working table simultaneously
     if not git_diff_ip:
         git_diff_ip.append(str(request.remote_addr))
