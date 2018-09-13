@@ -220,9 +220,6 @@ class direct_work_database:
                     first_direct_conflict_list.remove(temp_whole_direct_conflict_list)
                     break
 
-        # for temp_already_direct_conflict_list in already_direct_conflict_list:
-        #     first_direct_conflict_list.remove(temp_already_direct_conflict_list)
-
         return first_direct_conflict_list, already_direct_conflict_list
 
     def search_best_direct_conflict(self, project_name, conflict_list, working_list, user_name):
