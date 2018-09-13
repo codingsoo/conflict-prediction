@@ -45,7 +45,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif (intent_type == 12):
         message = response_logic(slack_code, param0)
 
-    elif(intent_type == 12):
+    elif(intent_type == 13):
         if param0 == "no_response":
             message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
             # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -152,27 +152,30 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
 
     if remove_lock_list:
         ch_message = ""
-        user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-        for file_name in remove_lock_list:
-            ch_message = random.choice(shell_dict['unlock_announce'])
-            ch_message = ch_message.format(user_name, file_name)
 
-        send_channel_message("code-conflict-chatbot", ch_message)
+        lock_list = w_db.read_lock_list_of_slack_code(slack_code, project_name)
+        if lock_list:
+            user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+            for file_name in remove_lock_list:
+                ch_message = random.choice(shell_dict['unlock_announce'])
+                ch_message = ch_message.format(user_name, file_name)
 
-        message += random.choice(shell_dict['feat_unlock_file'])
-        w_db.remove_lock_list(slack_code, remove_lock_list)
+            send_channel_message("code-conflict-chatbot", ch_message)
 
-        inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
+            message += random.choice(shell_dict['feat_unlock_file'])
+            w_db.remove_lock_list(slack_code, remove_lock_list)
 
-        for file in inform_unlock_list:
-            msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
-            send_direct_message(file[2], msg)
+            inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
 
+            for file in inform_unlock_list:
+                msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
+                send_direct_message(file[2], msg)
 
+            ele = ','.join(remove_lock_list)
+            message = message.format(ele)
 
-
-        ele = ','.join(remove_lock_list)
-        message = message.format(ele)
+        else:
+            message = "You didn't lock this file, so you cannot lock this file"
 
     # message = m1 + " / " + m2
     w_db.close()
@@ -252,7 +255,7 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
     elif project_name == -1:
         message = "This user is not working on the project"
     else:
-        db_lock_set = set(w_db.read_lock_list(target_slack_code, project_name))
+        db_lock_set = set(w_db.read_lock_list(project_name))
         print(db_lock_set)
 
         slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)

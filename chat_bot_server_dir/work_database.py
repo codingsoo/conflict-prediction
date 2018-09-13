@@ -348,7 +348,6 @@ class work_database:
         if str(project_name).isdigit():
             print("ERROR : NO PROJECT NAME")
             return
-
         db_lock_set = set(self.read_lock_list(project_name))
 
         diff_lock_set = req_lock_set - db_lock_set
@@ -436,6 +435,7 @@ class work_database:
 
         return
 
+
     def auto_remove_lock_list(self):
         try:
             sql = "select * " \
@@ -484,12 +484,34 @@ class work_database:
             for rt in raw_tuple:
                 raw_list.append(rt[0])
 
-
         except:
             self.conn.rollback()
             print("ERROR : read lock list")
 
         return raw_list
+
+    def read_lock_list_of_slack_code(self, slack_code, project_name):
+        raw_list = []
+
+        try:
+            sql = "select lock_file " \
+                  "from lock_list " \
+                  "where slack_code = '%s'" \
+                  "and project_name = '%s'" % (slack_code, project_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for rt in raw_tuple:
+                raw_list.append(rt[0])
+        except:
+            self.conn.rollback()
+            print("ERROR :read lock list of slack code")
+
+        return raw_list
+
+        return
 
     def read_oldest_lock_history_list(self, unlock_file):
         raw_list = []
@@ -1082,6 +1104,7 @@ class work_database:
             self.conn.commit()
 
             raw_list1 = list(self.cursor.fetchall())
+            print("raw_list",raw_list)
         except:
             self.conn.rollback()
             print("ERROR : read project name")

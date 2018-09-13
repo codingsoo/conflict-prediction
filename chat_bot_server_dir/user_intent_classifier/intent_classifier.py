@@ -218,10 +218,10 @@ def extract_attention_word(_sentence, github_email):
 
     for yes in yes_list:
         if " " + yes + " " in sentence:
-            return 12, "yes", None, None
+            return 13, "yes", None, None
     for no in no_list:
         if " " + no + " " in sentence:
-            return 12, "no", None, None
+            return 13, "no", None, None
 
     intent_type, sentence = intent_classifier(_sentence)
 
@@ -312,7 +312,7 @@ def extract_attention_word(_sentence, github_email):
 
         if not remove_list and not approve_set:
             work_db.close()
-            return 12, "no_file", None, None
+            return 13, "no_file", None, None
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
@@ -353,7 +353,7 @@ def extract_attention_word(_sentence, github_email):
                 request_lock_set.add(recent_file)
             else:
                 work_db.close()
-                return 12, "no_file", None, None
+                return 13, "no_file", None, None
 
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
@@ -402,7 +402,7 @@ def extract_attention_word(_sentence, github_email):
 
             if file_path == "":
                 work_db.close()
-                return 12, "no_file", None, None
+                return 13, "no_file", None, None
 
             work_db.close()
             file_path = file_path.replace(" ", "")
@@ -440,14 +440,13 @@ def extract_attention_word(_sentence, github_email):
 
         if file_path == "":
             work_db.close()
-            return 12, "no_file", None, None
+            return 13, "no_file", None, None
 
         work_db.close()
         return 5, file_path, None, None
 
     # About working status
     elif intent_type == 6:
-
         target_user_id = ""
 
         for id in slack_id_list:
@@ -490,12 +489,12 @@ def extract_attention_word(_sentence, github_email):
             else:
                 print("There is no channel")
                 work_db.close()
-                return 12, "no_file", None, None
+                return 13, "no_file", None, None
 
         except IndexError:
             print("There is no channel")
             work_db.close()
-            return 12, "no_file", None, None
+            return 13, "no_file", None, None
 
         work_db.close()
         return 7, channel, msg, user_name

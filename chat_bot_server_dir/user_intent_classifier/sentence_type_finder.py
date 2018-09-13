@@ -8,8 +8,26 @@ def sentence_preprocess(_sentence):
 
     sentence = _sentence.lstrip("!,.? ").lower()
 
+    for punc in punc_list:
+        if punc != ".":
+            sentence = sentence.replace(punc, " " + punc + " ")
+
+    sentence = " " + sentence + " "
+    # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
+    sentence = sentence.replace(" please ", ' ')
+    sentence = sentence.replace(" hey ", ' ')
+    sentence = sentence.replace(" i think ", ' ')
+    sentence = sentence.replace(" have to ", " should ")
+    sentence = sentence.replace("n't ", " not ")
+    sentence = sentence.replace(" don't have to ", " should not ")
+    sentence = sentence.replace(" do not have to ", " should not ")
+    sentence = sentence.replace("'m ", " am ")
+    sentence = sentence.replace("'re ", " are ")
+    sentence = sentence.replace("'ve ", " have ")
+
     # Sayme preprocessing
     # sayme 다음에 동사가 나오지 않을 경우 sayme 다 빼냄. (ex : Sayme,.!? Sayme,?.! Could you help me?)
+    sentence = sentence.lstrip("!.,? ")
     if sentence.startswith("sayme"):
         without_sayme_st = sentence.replace("sayme","").lstrip()
         count = 0
@@ -19,9 +37,6 @@ def sentence_preprocess(_sentence):
         if count != 4:
             sentence = without_sayme_st.lstrip("!?,. ")
 
-    for punc in punc_list:
-        if punc != ".":
-           sentence = sentence.replace(punc, " "+punc+" ")
 
     word_list = sentence.split()
     for word in word_list:
@@ -42,16 +57,6 @@ def sentence_preprocess(_sentence):
 
     sentence = ' '.join(word_list)
 
-    # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
-    sentence = sentence.replace("please ", '')
-    sentence = sentence.replace("I think ", '')
-    sentence = sentence.replace("have to", "should")
-    sentence = sentence.replace("don't have to", "should not")
-    sentence = sentence.replace("do not have to", "should not")
-    sentence = sentence.replace("n't ", " not ")
-    sentence = sentence.replace("'m ", " am ")
-    sentence = sentence.replace("'re ", " are ")
-    sentence = sentence.replace("'ve ", " have ")
     sentence = sentence.strip()
     sentence = " " + sentence + " "
 
@@ -90,7 +95,7 @@ def is_desire(pos_tag_list):
             return False
 
 def is_suggestion(pos_tag_list):
-    suggestion_noun_list = ["sayme", "you", ".", ","]
+    suggestion_noun_list = ["you"]
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             pass
