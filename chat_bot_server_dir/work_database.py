@@ -296,13 +296,13 @@ class work_database:
 
         # [ approved_file ]
         for temp_db_aproved_list in db_approved_list:
-            print("temp db approved : ", str(temp_db_aproved_list[0]))
+            print("temp db approved : ", str(temp_db_aproved_list))
             # [ user_name, user_logic, other_name, other_logic ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
                 user1_file = str(temp_whole_indirect_conflict_list[1]).split('|')[0]
                 user2_file = str(temp_whole_indirect_conflict_list[3]).split('|')[0]
 
-                if (temp_db_aproved_list[0] == user1_file) or (temp_db_aproved_list[0] == user2_file):
+                if (temp_db_aproved_list == user1_file) or (temp_db_aproved_list == user2_file):
                     try:
                        remove_list.append(temp_whole_indirect_conflict_list)
                        print("removed by approved list : ", temp_whole_indirect_conflict_list)

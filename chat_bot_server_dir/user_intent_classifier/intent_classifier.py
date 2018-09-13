@@ -13,8 +13,8 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+#nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -214,14 +214,13 @@ def extract_attention_word(_sentence, github_email):
     sentence = " " + _sentence + " "
     yes_list = ["y","yes","affirmative", "amen","fine","good","okay","true","yea","all right","aye","beyond a doubt","by all means","certainly","definitely","even so","exctly","gladly","good enough","granted","indubitably","just so","most assuredly","naturally","of course","positively","precisely","sure thing","surely","undoubtedly","unquestionably","very well","willingly","without fail","yep"]
     no_list = ["n","no", "nay", "nix", "never"]
-    yes_check = 0
 
     for yes in yes_list:
         if " " + yes + " " in sentence:
-            return 13, "yes", None, None
+            return 12, "yes", None, None
     for no in no_list:
         if " " + no + " " in sentence:
-            return 13, "no", None, None
+            return 12, "no", None, None
 
     intent_type, sentence = intent_classifier(_sentence)
 
