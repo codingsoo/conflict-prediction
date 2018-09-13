@@ -344,8 +344,7 @@ class direct_work_database:
                     elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
                         and (temp_already[6] == 2)
                         and (conflict_flag == Conflict_flag.same_severity.value)):
-                        send_conflict_message_channel(conflict_project=temp_best[1],
-                                                      conflict_file=temp_best[2],
+                        send_conflict_message_channel(conflict_file=temp_best[2],
                                                       conflict_logic=temp_best[3],
                                                       user1_name=temp_best[5],
                                                       user2_name=temp_best[6])
