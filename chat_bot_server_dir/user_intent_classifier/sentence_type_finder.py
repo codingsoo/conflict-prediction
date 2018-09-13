@@ -95,7 +95,7 @@ def is_desire(pos_tag_list):
             return False
 
 def is_suggestion(pos_tag_list):
-    suggestion_noun_list = ["you"]
+    suggestion_noun_list = ["you", "sayme"]
     for pos_tag in pos_tag_list:
         if pos_tag[0] in suggestion_noun_list:
             pass
@@ -107,33 +107,43 @@ def is_suggestion(pos_tag_list):
 def is_question(parse_list, pos_tag_list):
     if "SBARQ" in parse_list or "SQ" in parse_list:
         return True
-    elif (pos_tag_list[0][0] == "how" or pos_tag_list[0][0] == "what") and pos_tag_list[1][0] == "about":
-        return True
+    else:
+        for pos_tag in pos_tag_list:
+            if pos_tag[0] == "how" or pos_tag[0] == "what":
+                pass
+            elif pos_tag[0] == "about":
+                return True
+
+                # pos_idx = pos_tag_list.index((pos_tag[0], pos_tag[1]))
+                # if pos_tag_list[pos_idx + 1][0] == "about":
+                #     return True
     return False
 
 def require_something_sentence(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
-
-    print("pos_tag_list", pos_tag_list)
-
     parse_list = nlp.parse(sentence)
-    print("parse_list",parse_list)
 
     print("sentence", sentence)
+    print("pos_tag_list", pos_tag_list)
+    print("parse_list", parse_list)
 
     if is_question(parse_list, pos_tag_list):
-        if pos_tag_list[0][1] == "MD":
-            sentence = sentence.replace(pos_tag_list[0][0], "can")
+        for pos_tag in pos_tag_list:
+            if pos_tag[1] == "MD":
+                sentence = sentence.replace(pos_tag[0], "can")
+                break
         return 1, sentence
 
     elif is_command(sentence):
         return 2, sentence
 
     elif is_suggestion(pos_tag_list):
-        if pos_tag_list[1][1] == "MD":
-            sentence = sentence.replace(pos_tag_list[1][0], "should")
+        for pos_tag in pos_tag_list:
+            if pos_tag[1] == "MD":
+                sentence = sentence.replace(pos_tag[0], "should")
+                break
         return 3, sentence
 
     elif is_desire(pos_tag_list):

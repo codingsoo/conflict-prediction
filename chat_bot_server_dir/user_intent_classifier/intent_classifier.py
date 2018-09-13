@@ -51,9 +51,9 @@ command_sentence_list = ["Do not notify me about File1.py again.", "Lock hello.p
                          'Send a message to <@UCFNMU2ED> "I am working on class1".',
                          "Give me some recommendation about how to solve the conflict of File1.py."]
 suggestion_sentence_list = ["You should not give me notification about File1.py.", "You should lock File.py.",
-                            "Sayme, you should let me know who wrote code line 1 to line9 at file1.py.",
+                            "You should let me know who wrote code line 1 to line9 at file1.py.",
                             "You should not alert me about direct conflict.",
-                            "Sayme, you should check File1.py if this is gonna make a conflict.",
+                            "You should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
                             'You should announce all channel that "Do not touch File1.py to conflict detect channel".',
                             'You have to send message to <@UCFNMU2ED> "I will check and solve the conflict".',
