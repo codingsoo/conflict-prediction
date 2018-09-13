@@ -21,7 +21,7 @@ def sentence_preprocess(_sentence):
 
     for punc in punc_list:
         if punc != ".":
-           sentence = sentence.replace(punc, "")
+           sentence = sentence.replace(punc, " "+punc+" ")
 
     word_list = sentence.split()
     for word in word_list:
@@ -41,6 +41,7 @@ def sentence_preprocess(_sentence):
         word_list[word_idx] = modified_word
 
     sentence = ' '.join(word_list)
+
     # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
     sentence = sentence.replace("please ", '')
     sentence = sentence.replace("I think ", '')
