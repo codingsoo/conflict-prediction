@@ -2,31 +2,43 @@ import nltk
 from stanfordcorenlp import StanfordCoreNLP
 import re
 
-def sentence_preprocess(sentence):
+def sentence_preprocess(_sentence):
     # User 이름, 파일명 제외하고는 전체 문장 소문자화 하기.
+    punc_list = {"!", "?", ",", ".", "’"}
 
-    sentence = sentence.replace("’", "'")
-    sentence = sentence.replace(",", " , ")
-    sentence = sentence.replace("?", " ? ")
-    sentence = sentence.replace("!", " ! ")
+    sentence = _sentence.lstrip("!,.? ").lower()
+
+    # Sayme preprocessing
+    # sayme 다음에 동사가 나오지 않을 경우 sayme 다 빼냄. (ex : Sayme,.!? Sayme,?.! Could you help me?)
+    if sentence.startswith("sayme"):
+        without_sayme_st = sentence.replace("sayme","").lstrip()
+        count = 0
+        for punc in punc_list:
+            if without_sayme_st.startswith(punc) == False and punc != "’":
+                count = count + 1
+        if count != 4:
+            sentence = without_sayme_st.lstrip("!?,. ")
+
+    for punc in punc_list:
+        if punc != ".":
+           sentence = sentence.replace(punc, "")
 
     word_list = sentence.split()
-    word_list[0] = word_list[0].lower().replace("sayme,", '')
     for word in word_list:
-        # user name
-        slack_code_idx = word.find("<@")
-        if slack_code_idx != -1 and word[slack_code_idx + 11] == ">":
-            pass
-        # file name
+        word_idx = word_list.index(word)
+        if word.find("<@") != -1 and word[word.find("<@") + 11] == ">":
+            modified_word = word.upper()
         elif ".py" in word or ".md" in word or ".txt" in word or ".json" in word:
-            pass
-        elif word.lower() == "i" or word.lower() == "i'm" or word.lower() == "i've":
-            word_list[word_list.index(word)] = word[0].upper() + word[1:].lower()
+            file_idx = _sentence.lower().find(word)
+            modified_word = _sentence[file_idx:file_idx + len(word)]
         else:
-            word_idx = word_list.index(word)
-            #나중에 문장에서 어떤 단어를 찾을 때, 잘 걸러내기 위해서
-            word = word.replace(".", " .")
-            word_list[word_idx] = word.lower()
+            if word == "i" or word == "i'm" or word == "i've":
+                modified_word = word[0].upper() + word[1:]
+            elif word == "sayme":
+                modified_word = "you"
+            else:
+                modified_word = word.replace(".", " .") #for detecting word
+        word_list[word_idx] = modified_word
 
     sentence = ' '.join(word_list)
     # User 이름, 파일명 제외하고 전체 문장에서 replace하기.
@@ -39,10 +51,11 @@ def sentence_preprocess(sentence):
     sentence = sentence.replace("'m ", " am ")
     sentence = sentence.replace("'re ", " are ")
     sentence = sentence.replace("'ve ", " have ")
-
+    sentence = sentence.strip()
     sentence = " " + sentence + " "
 
     return sentence
+
 
 def is_command(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
@@ -96,7 +109,11 @@ def require_something_sentence(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
+
+    print("pos_tag_list", pos_tag_list)
+
     parse_list = nlp.parse(sentence)
+    print("parse_list",parse_list)
 
     print("sentence", sentence)
 
