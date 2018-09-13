@@ -176,7 +176,7 @@ class direct_work_database:
         return all_raw_list
 
     def search_already_direct_conflict_list(self, project_name, conflict_list, working_list, user_name):
-        all_raw_list = []
+        all_raw_set = set()
 
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
         for temp_other_work in conflict_list:
@@ -194,18 +194,20 @@ class direct_work_database:
                     self.conn.commit()
 
                     raw_list = list(set(self.cursor.fetchall()))
-                    if raw_list:
-                        for raw in raw_list:
-                            all_raw_list.append(raw)
+                    for raw in raw_list:
+                        all_raw_set.add(raw)
+
                 except:
                     self.conn.rollback()
                     print("ERROR : search already direct conflict table")
+
+        all_raw_list = list(all_raw_set)
 
         return all_raw_list
 
     def classify_direct_conflict_list(self, whole_direct_conflict_list, already_direct_conflict_table):
         # first_direct_conflict_list = whole_direct_conflict_list - already_direct_conflict_list
-        first_direct_conflict_list = whole_direct_conflict_list
+        first_direct_conflict_list = whole_direct_conflict_list[:]
         already_direct_conflict_list = []
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
         for temp_whole_direct_conflict_list in whole_direct_conflict_list:
@@ -213,12 +215,13 @@ class direct_work_database:
             for temp_already_direct_conflict_table in already_direct_conflict_table:
                 if (temp_whole_direct_conflict_list[0] == temp_already_direct_conflict_table[0] and
                         temp_whole_direct_conflict_list[1] == temp_already_direct_conflict_table[1] and
-                        temp_whole_direct_conflict_list[2] == temp_already_direct_conflict_table[3] and
                         temp_whole_direct_conflict_list[3] == temp_already_direct_conflict_table[5]):
                     already_direct_conflict_list.append(temp_whole_direct_conflict_list)
+                    first_direct_conflict_list.remove(temp_whole_direct_conflict_list)
+                    break
 
-        for temp_already_direct_conflict_list in already_direct_conflict_list:
-            first_direct_conflict_list.remove(temp_already_direct_conflict_list)
+        # for temp_already_direct_conflict_list in already_direct_conflict_list:
+        #     first_direct_conflict_list.remove(temp_already_direct_conflict_list)
 
         return first_direct_conflict_list, already_direct_conflict_list
 
