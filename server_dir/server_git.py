@@ -36,13 +36,15 @@ def git_diff_logic(content):
         send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
     w_db.auto_remove_lock_list()
 
-    # Inform to the user about lock file
-    w_db.inform_lock_file(user_data.get_proj_name(),
-                          user_data.get_working_data(),
-                          user_data.get_user_name())
+    # Remove previous user data
+    w_db.remove_user_data(user_data.get_proj_name(),
+                           user_data.get_working_data(),
+                           user_data.get_user_name())
 
-    # Delete current user data
-    dw_db.delete_user_data(user_data.get_user_name())
+    # Update current user data
+    w_db.update_user_data(user_data.get_proj_name(),
+                           user_data.get_working_data(),
+                           user_data.get_user_name())
 
     # Detect direct conflict
     dw_db.detect_direct_conflict(user_data.get_proj_name(),
@@ -54,14 +56,10 @@ def git_diff_logic(content):
                                    user_data.get_working_data(),
                                    user_data.get_user_name())
 
-    # Insert current user data
-    dw_db.insert_user_data(user_data.get_proj_name(),
-                          user_data.get_working_data(),
-                          user_data.get_user_name())
-
     # Close direct and indirect database connection
     dw_db.close_db()
     iw_db.close_db()
+    w_db.close()
 
     return
 

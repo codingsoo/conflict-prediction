@@ -81,7 +81,7 @@ class direct_work_database:
 
         print("working list : ", working_list)
 
-        direct_conflict_list = self.search_working_table(project_name, working_list)
+        direct_conflict_list = self.search_working_table(project_name, working_list, user_name)
         direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(project_name, direct_conflict_list)
         w_db.close()
 
@@ -147,7 +147,7 @@ class direct_work_database:
         return
 
     # Search same project and same file from working table
-    def search_working_table(self, project_name, working_list):
+    def search_working_table(self, project_name, working_list, user_name):
 
         all_raw_list = []
 
@@ -159,7 +159,8 @@ class direct_work_database:
                 sql = "select * " \
                       "from working_table " \
                       "where project_name = '%s' " \
-                      "and file_name = '%s' " % (project_name, temp_work[0])
+                      "and file_name = '%s' " \
+                      "and user_name != '%s'" % (project_name, temp_work[0], user_name)
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()

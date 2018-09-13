@@ -21,6 +21,101 @@ class work_database:
 
     ####################################################
     '''
+    Working_Table
+    '''
+
+    # Update User data to working_table
+    def update_user_data(self, project_name, working_list, user_name):
+        for temp_work in working_list:
+            print("temp_work : ", temp_work)
+            try:
+                if temp_work[3] == -1:
+                    temp_work[1] = "in"
+
+                sql = "replace into working_table " \
+                      "(project_name, file_name, logic_name, user_name, work_line, work_amount) " \
+                      "value ('%s', '%s', '%s', '%s', %d, %d)" % (
+                      project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+            except:
+                self.conn.rollback()
+                print("ERROR : update_user_data")
+
+        return
+
+    # Remove User data to working_table
+    def remove_user_data(self, project_name, working_list, user_name):
+        user_working_db = set()
+
+        try:
+            sql = "select * " \
+                  "from working_table " \
+                  "where user_name = '%s'" % (user_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for raw in raw_tuple:
+                user_working_db.add(raw)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : remove_user_data")
+
+        current_working_db = set()
+
+        for temp_work in working_list:
+            try:
+                sql = "select * " \
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and logic_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and work_line = %d " \
+                      "and work_amount = %d" % (
+                      project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_tuple = self.cursor.fetchall()
+                for raw in raw_tuple:
+                    current_working_db.add(raw)
+
+            except:
+                self.conn.rollback()
+                print("ERROR : remove_user_data")
+
+        remove_working_db = user_working_db - current_working_db
+
+        for temp_remove in remove_working_db:
+            try:
+                sql = "delete " \
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and logic_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and work_line = %d " \
+                      "and work_amount = %d" % (
+                      temp_remove[0], temp_remove[1], temp_remove[2], temp_remove[3], temp_remove[4], temp_remove[5])
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : remove_user_data")
+
+        return
+
+    ####################################################
+    '''
     Approved list
     '''
 
@@ -1047,28 +1142,6 @@ class work_database:
     '''
     Utility
     '''
-    def convert_git_id_to_slack_code(self, git_id):
-        slack_code = ""
-
-        try:
-            sql = "select slack_code " \
-                  "from user_table " \
-                  "where git_id = '%s'" % (git_id)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_tuple = self.cursor.fetchall()
-            print(raw_tuple)
-            slack_code = raw_tuple[0][0]
-            print(slack_code)
-
-        except:
-            self.conn.rollback()
-            print("ERROR : convert_git_id_to_slack_code")
-
-        return slack_code
-
     def read_project_name(self, slack_code):
         # Read git_id
         raw_list = []
@@ -1116,30 +1189,27 @@ class work_database:
         else:
             return raw_list1[0][0]
 
+    def convert_git_id_to_slack_code(self, git_id):
+        slack_code = ""
 
-    def convert_slack_code_to_git_id(self, slack_code):
-        # Read git_id
-        git_id = ""
         try:
-            sql = "select git_id " \
+            sql = "select slack_code " \
                   "from user_table " \
-                  "where slack_code = '%s'" % (slack_code)
+                  "where git_id = '%s'" % (git_id)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 
-            query_result = self.cursor.fetchall()
-            git_id = query_result[0][0]
+            raw_tuple = self.cursor.fetchall()
+            print(raw_tuple)
+            slack_code = raw_tuple[0][0]
+            print(slack_code)
 
         except:
             self.conn.rollback()
-            print("ERROR : convert_slack_code_to_git_id")
+            print("ERROR : convert_git_id_to_slack_code")
 
-        return git_id
-
-    def close(self):
-        self.cursor.close()
-        self.conn.close()
+        return slack_code
 
     def convert_git_id_to_slack_id(self, git_id):
         # Read git_id
@@ -1162,6 +1232,26 @@ class work_database:
             print("ERROR : convert_git_id_to_slack_id")
 
         return slack_id
+
+    def convert_slack_code_to_git_id(self, slack_code):
+        # Read git_id
+        git_id = ""
+        try:
+            sql = "select git_id " \
+                  "from user_table " \
+                  "where slack_code = '%s'" % (slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            query_result = self.cursor.fetchall()
+            git_id = query_result[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert_slack_code_to_git_id")
+
+        return git_id
 
     def convert_slack_code_to_slack_id(self, slack_code):
         slack_id = ""
