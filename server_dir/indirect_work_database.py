@@ -98,7 +98,7 @@ class indirect_work_database:
         try:
             sql = "delete " \
                   "from indirect_conflict_table " \
-                  "where alert_count >= 2 " \
+                  "where alert_count >= 3 " \
                   "and TIMEDIFF(now(),log_time) > 24*60*60"
             print(sql)
             self.cursor.execute(sql)
@@ -239,6 +239,29 @@ class indirect_work_database:
                                           v=temp_already[2],
                                           user1_name=temp_already[4],
                                           user2_name=temp_already[5])
+
+            # After 60 minutes => send channel message
+            if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
+
+                temp_file_logic1 = temp_already[1].split('|')
+                temp_file_logic2 = temp_already[2].split('|')
+
+                send_conflict_message_channel(conflict_file=temp_file_logic1,
+                                              conflict_logic=temp_file_logic2,
+                                              user1_name=user_name,
+                                              user2_name=temp_already[5])
+
+                self.increase_alert_count(project_name=project_name,
+                                          u=temp_already[1],
+                                          v=temp_already[2],
+                                          user1_name=temp_already[4],
+                                          user2_name=temp_already[5])
+
+                self.increase_alert_count(project_name=project_name,
+                                          u=temp_already[2],
+                                          v=temp_already[1],
+                                          user1_name=temp_already[5],
+                                          user2_name=temp_already[4])
 
         return
 

@@ -78,7 +78,7 @@ class user_database:
 
 
     def search_user_slack_id_code(self, git_id):
-        raw_list = list()
+        raw = tuple()
 
         try:
             # create sql
@@ -91,15 +91,14 @@ class user_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw_list = self.cursor.fetchall()
-            raw_list = list(raw_list)
+            raw = self.cursor.fetchone()
 
         except:
             self.conn.rollback()
             print("ERROR : search user slack id code data")
 
-        if(raw_list != []):
-            return raw_list
+        if raw is not None:
+            return raw
         else:
             return "No data", "No data"
 

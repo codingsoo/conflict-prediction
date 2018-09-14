@@ -134,7 +134,7 @@ class direct_work_database:
         try:
             sql = "delete " \
                   "from direct_conflict_table " \
-                  "where alert_count >= 2 " \
+                  "where alert_count >= 3 " \
                   "and TIMEDIFF(now(),log_time) > 24*60*60"
             print(sql)
             self.cursor.execute(sql)
@@ -348,6 +348,19 @@ class direct_work_database:
                                                       conflict_logic=temp_best[3],
                                                       user1_name=temp_best[5],
                                                       user2_name=temp_best[6])
+                        self.increase_alert_count(project_name=temp_best[1],
+                                                  file_name=temp_best[2],
+                                                  logic1_name=temp_best[3],
+                                                  logic2_name=temp_best[4],
+                                                  user1_name=temp_best[5],
+                                                  user2_name=temp_best[6])
+
+                        self.increase_alert_count(project_name=temp_best[1],
+                                                  file_name=temp_best[2],
+                                                  logic1_name=temp_best[4],
+                                                  logic2_name=temp_best[3],
+                                                  user1_name=temp_best[6],
+                                                  user2_name=temp_best[5])
 
 
                     self.update_conflict_data(project_name=temp_best[1],

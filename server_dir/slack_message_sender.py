@@ -73,7 +73,7 @@ def get_user_slack_id(git_id):
 
 def send_lock_message(lock_file_list, user_name):
     w_db = work_database()
-    user_slack_id_code = get_user_slack_id(user_name)[0]
+    user_slack_id_code = get_user_slack_id(user_name)
     message = ""
     for lfl in lock_file_list:
         lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
@@ -94,8 +94,8 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         conflict_logic = ""
 
     # Get user slack nickname
-    user1_slack_id_code = get_user_slack_id(user1_name)[0]
-    user2_slack_id_code = get_user_slack_id(user2_name)[0]
+    user1_slack_id_code = get_user_slack_id(user1_name)
+    user2_slack_id_code = get_user_slack_id(user2_name)
 
     # Initialize ignore flag
     direct_ignore_flag = 0
