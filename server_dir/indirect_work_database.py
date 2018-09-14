@@ -138,36 +138,37 @@ class indirect_work_database:
         for temp_user_work in user_working_list:
             # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time]
             for temp_other_work in other_working_list:
-                temp_user_logic = temp_user_work[0] + "|" + temp_user_work[1]
-                temp_other_logic = temp_other_work[1] + "|" + temp_other_work[2]
+                if temp_user_work[0] != temp_other_work[1]:
+                    temp_user_logic = temp_user_work[0] + "|" + temp_user_work[1]
+                    temp_other_logic = temp_other_work[1] + "|" + temp_other_work[2]
 
-                try:
-                    sql = "select * " \
-                          "from logic_dependency " \
-                          "where project_name = '%s' " \
-                          "and ((u = '%s' or v = '%s') and (u = '%s' or v = '%s'))" \
-                          % (project_name, temp_user_logic, temp_user_logic, temp_other_logic, temp_other_logic)
-                    print(sql)
-                    self.cursor.execute(sql)
-                    self.conn.commit()
+                    try:
+                        sql = "select * " \
+                              "from logic_dependency " \
+                              "where project_name = '%s' " \
+                              "and ((u = '%s' and v = '%s') or (u = '%s' and v = '%s'))" \
+                              % (project_name, temp_user_logic, temp_other_logic, temp_other_logic, temp_user_logic)
+                        print(sql)
+                        self.cursor.execute(sql)
+                        self.conn.commit()
 
-                    raw_list = list(self.cursor.fetchall())
+                        raw = self.cursor.fetchone()
 
-                    if raw_list and (temp_user_logic != temp_other_logic):
-                        temp_raw = []
+                        if raw:
+                            temp_raw = []
 
-                        temp_raw.append(user_name)          # user name
-                        temp_raw.append(temp_user_logic)    # user logic
-                        temp_raw.append(temp_other_work[3]) # other name
-                        temp_raw.append(temp_other_logic)   # other logic
-                        temp_raw.append(raw_list[0][3])        # length
+                            temp_raw.append(user_name)          # user name
+                            temp_raw.append(temp_user_logic)    # user logic
+                            temp_raw.append(temp_other_work[3]) # other name
+                            temp_raw.append(temp_other_logic)   # other logic
+                            temp_raw.append(raw[3])        # length
 
-                        # [user_name, user_logic, other_name, other_logic]
-                        all_raw_list.append(temp_raw)
+                            # [user_name, user_logic, other_name, other_logic]
+                            all_raw_list.append(temp_raw)
 
-                except:
-                    self.conn.rollback()
-                    print("ERROR : search logic dependency")
+                    except:
+                        self.conn.rollback()
+                        print("ERROR : search logic dependency")
 
         return all_raw_list
 
