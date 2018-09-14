@@ -197,20 +197,17 @@ def extract_attention_word(_sentence, github_email):
         fl = "UCNLP" + "/" + "conflict_test" + "/" + ofl
         file_list.append(fl)
 
-    # name_list = get_slack_name_list()
     slack_id_list = get_slack_id_list()
 
-    # recent_data = ""
-    # remove_file = ""
-
-    try:
-        recent_data = work_db.get_recent_data(github_email)
-        print("recent_data", recent_data)
+    recent_data = work_db.get_recent_data(github_email)
+    if recent_data:
         recent_file = recent_data[0].split('|')[0]
-        print("recent file", recent_file)
-    except:
+    else:
         recent_data = "no recent data"
         recent_file = "no recent file"
+    print("recent_data", recent_data)
+    print("recent file", recent_file)
+
     sentence = " " + _sentence + " "
     yes_list = ["y","yes","affirmative", "amen","fine","good","okay","true","yea","all right","aye","beyond a doubt","by all means","certainly","definitely","even so","exctly","gladly","good enough","granted","indubitably","just so","most assuredly","naturally","of course","positively","precisely","sure thing","surely","undoubtedly","unquestionably","very well","willingly","without fail","yep"]
     no_list = ["n","no", "nay", "nix", "never"]
@@ -289,24 +286,25 @@ def extract_attention_word(_sentence, github_email):
 
             elif " this " in sentence:
                 recent_file = work_db.get_recent_data(github_email)
-                for word in approve_word:
-                    if word in sentence:
-                        found = 1
+                if recent_file:
+                    for word in approve_word:
+                        if word in sentence:
+                            found = 1
+                            if " not " in sentence or " un" in sentence:
+                                approve_set.add(recent_file)
+                                print(recent_file)
+                            else:
+                                remove_list.append(recent_file)
+                                print(recent_file)
+
+                    if found == 0:
                         if " not " in sentence or " un" in sentence:
-                            approve_set.add(recent_file)
-                            print(recent_file)
-                        else:
                             remove_list.append(recent_file)
                             print(recent_file)
-
-                if found == 0:
-                    if " not " in sentence or " un" in sentence:
-                        remove_list.append(recent_file)
-                        print(recent_file)
-                    else:
-                        approve_set.add(recent_file)
-                        print(recent_file)
-                break
+                        else:
+                            approve_set.add(recent_file)
+                            print(recent_file)
+                    break
 
 
         if not remove_list and not approve_set:

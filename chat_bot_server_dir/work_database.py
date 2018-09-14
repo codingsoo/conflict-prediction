@@ -984,6 +984,8 @@ class work_database:
                 conflict_recent_data[-1].remove(github_email)
 
                 return conflict_recent_data[-1]
+            else:
+                conflict_recent_data
 
         except:
             self.conn.rollback()
