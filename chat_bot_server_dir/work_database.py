@@ -119,15 +119,29 @@ class work_database:
     Approved list
     '''
 
+    # Read approved list
+    def read_approved_list(self, project_name):
+        raw_set = set()
+        try:
+            sql = "SELECT approved_file " \
+                  "from approved_list " \
+                  "where project_name = '%s' " % (project_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for rt in raw_tuple:
+                raw_set.add(rt[0])
+
+        except:
+            self.conn.rollback()
+            print("ERROR : read approved list")
+
+        return raw_set
+
     # Add approved list
-    def add_approved_list(self, slack_code, req_approved_set):
-        project_name = self.read_project_name(slack_code)
-
-        if str(project_name).isdigit():
-            print("ERROR : NO PROJECT NAME")
-            return
-
-        print(self.read_approved_list(project_name))
+    def add_approved_list(self, project_name, req_approved_set):
         db_approved_set = self.read_approved_list(project_name)
 
         diff_approved_set = req_approved_set - db_approved_set
@@ -146,24 +160,19 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : add approved list")
 
-        return
+        return diff_approved_set
 
     # Remove approved list
-    def remove_approved_list(self, slack_code, remove_approve_list):
-        project_name = self.read_project_name(slack_code)
-
+    def remove_approved_list(self, project_name, remove_approved_list):
         success_remove_approved_list = []
         fail_remove_approved_list = []
 
-        if str(project_name).isdigit():
-            print("ERROR : NO PROJECT NAME")
-            return
-        for temp_remove_file in remove_approve_list:
+        for temp_removed_file in remove_approved_list:
             try:
                 sql = "select * " \
                       "from approved_list " \
                       "where project_name = '%s' " \
-                      "and approved_file = '%s'" % (project_name, temp_remove_file)
+                      "and approved_file = '%s'" % (project_name, temp_removed_file)
 
                 print(sql)
                 self.cursor.execute(sql)
@@ -177,19 +186,19 @@ class work_database:
                         sql = "delete " \
                               "from approved_list " \
                               "where project_name = '%s' " \
-                              "and approved_file = '%s'" % (project_name, temp_remove_file)
+                              "and approved_file = '%s'" % (project_name, temp_removed_file)
                         print(sql)
                         self.cursor.execute(sql)
                         self.conn.commit()
 
-                        success_remove_approved_list.append(temp_remove_file)
+                        success_remove_approved_list.append(temp_removed_file)
                     except:
                         self.conn.rollback()
                         print("ERROR : remove approved list one")
 
                 # if file that user want to remove is not in approved_list
                 else:
-                    fail_remove_approved_list.append(temp_remove_file)
+                    fail_remove_approved_list.append(temp_removed_file)
 
             except:
                 self.conn.rollback()
@@ -353,20 +362,19 @@ class work_database:
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_direct_conflict_approved_list(self, project_name, whole_direct_conflict_list):
-        # set으로 반환.
-        db_approved_list = self.read_approved_list(project_name)
+        db_approved_set = self.read_approved_list(project_name)
 
-        print("db_approved_list(set) : ", db_approved_list)
+        print("db_approved_list(set) : ", db_approved_set)
         print("whole_direct_conflict_list : ", whole_direct_conflict_list)
 
         remove_list = []
 
         # ( file_name )
-        for temp_db_aproved_list in db_approved_list:
-            print("temp db approved : ", str(temp_db_aproved_list))
+        for temp_db_approved_list in db_approved_set:
+            print("temp db approved : ", str(temp_db_approved_list))
             # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
             for temp_whole_direct_conflict_list in whole_direct_conflict_list:
-                if temp_db_aproved_list == temp_whole_direct_conflict_list[1]:
+                if temp_db_approved_list == temp_whole_direct_conflict_list[1]:
                     try:
                         remove_list.append(temp_whole_direct_conflict_list)
                         print("removed by approved list : ", temp_whole_direct_conflict_list)
@@ -382,15 +390,15 @@ class work_database:
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
     def classify_indirect_conflict_approved_list(self, project_name, whole_indirect_conflict_list):
-        db_approved_list = self.read_approved_list(project_name)
+        db_approved_set = self.read_approved_list(project_name)
 
-        print("db_approved_list : ", db_approved_list)
+        print("db_approved_set : ", db_approved_set)
         print("whole_indirect_conflict_list : ", whole_indirect_conflict_list)
 
         remove_list = []
 
         # [ approved_file ]
-        for temp_db_aproved_list in db_approved_list:
+        for temp_db_aproved_list in db_approved_set:
             print("temp db approved : ", str(temp_db_aproved_list))
             # [ user_name, user_logic, other_name, other_logic ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
@@ -411,25 +419,6 @@ class work_database:
         print("after classify approved list : ", whole_indirect_conflict_list)
         return whole_indirect_conflict_list, remove_list
 
-    def read_approved_list(self, project_name):
-        raw_set = set()
-        try:
-            sql = "SELECT approved_file " \
-                  "from approved_list " \
-                  "where project_name = '%s' " % (project_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_tuple = self.cursor.fetchall()
-            for rt in raw_tuple:
-                raw_set.add(rt[0])
-
-        except:
-            self.conn.rollback()
-            print("ERROR : read approved list")
-
-        return raw_set
 
 
     ####################################################################3

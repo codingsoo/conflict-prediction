@@ -71,35 +71,40 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     return message
 
-def approved_file_logic(slack_code, approve_set, remove_list):
-
+def approved_file_logic(slack_code, approved_set, removed_list):
     w_db = work_database()
     user_name = w_db.slack_code_to_slack_name(slack_code)
-    approve_list = list(approve_set)
+    project_name = w_db.read_project_name(slack_code)
+
+    approved_list = list(approved_set)
 
     print(slack_code)
-    print("approve !! : " + str(approve_list))
-    print("remove !! : " + str(remove_list))
+    print("approve !! : " + str(approved_list))
+    print("remove !! : " + str(removed_list))
 
     message = ""
     ch_message = ""
-    if approve_list:
-        w_db.add_approved_list(slack_code=slack_code,
-                               req_approved_set=approve_set)
+    if approved_list:
+        diff_approved_set = w_db.add_approved_list(project_name=project_name,
+                               req_approved_set=approved_set)
 
-        for al in approve_list:
-            ch_message += random.choice(shell_dict['feat_ignore_channel'])
-            ch_message = ch_message.format(user_name, al)
+        if diff_approved_set:
+            for al in approved_list:
+                ch_message += random.choice(shell_dict['feat_ignore_channel'])
+                ch_message = ch_message.format(user_name, al)
 
-        send_channel_message("code-conflict-chatbot", ch_message)
+            send_channel_message("code-conflict-chatbot", ch_message)
 
-        message += random.choice(shell_dict['feat_ignore_file'])
-        message = message.format(approve_list[0])
+            message += random.choice(shell_dict['feat_ignore_file'])
+            message = message.format(approved_list[0])
 
-    if remove_list:
-        print(remove_list)
-        success_list, fail_list = w_db.remove_approved_list(slack_code=slack_code,
-                                  remove_approve_list=remove_list)
+        else:
+            for al in approved_list:
+                message += "You already ignored {} file!".format(al)
+
+    if removed_list:
+        success_list, fail_list = w_db.remove_approved_list(project_name=project_name,
+                                 remove_approved_list=removed_list)
 
         if success_list:
             for sl in success_list:
@@ -368,7 +373,6 @@ def response_logic(slack_code, msg_type):
     message = ""
     project_name = w_db.read_project_name(slack_code)
     remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
-
 
     target_list = w_db.read_oldest_lock_history_list(remove_file_list)
     for target_file in target_list:
