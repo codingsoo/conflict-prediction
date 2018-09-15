@@ -64,8 +64,13 @@ def get_logic_info( node, logic_info, assign_dict = {}):
             if isinstance(each.value, ast.Call) :
                 stack = []
                 cur = each.value.func
+                check = 0
                 while isinstance(cur, ast.Attribute)  :
-                    stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
+                    if (check == 0):
+                        stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
+                        check = 1
+                    else:
+                        stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr,import_from_table.get(cur.attr,cur.attr))))
                     cur = cur.value
                 if not isinstance(cur, ast.Name) :
                     continue
