@@ -24,7 +24,6 @@ def run( root , owner) :
 
     logic_dict = dict()
     for file_path, values in project_dict.items() :
-        base_path = os.path.split(file_path)[0]
         logic_dict[file_path] = { "Class" : set(), "Function" : set() }
         for value in values :
             if value['type'] == 'Class' :
@@ -41,8 +40,8 @@ def run( root , owner) :
 
 
     edges_list = []
+
     for file_path, values in project_dict.items() :
-        base_path = os.path.split(file_path)[0]
         for value in values :
             if value['type'] == 'Class' :
                 id = file_path + '|' + 'class:' + value['name']
@@ -57,7 +56,7 @@ def run( root , owner) :
                                 continue
                             paths = each['id'].split('.')
                             if len(paths) == 2:
-                                full_path = base_path + '/' + paths[0]
+                                full_path = project_name + '/' + paths[0]
                                 if full_path + '.py' in project_dict:
                                     if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                                         pass
@@ -65,7 +64,7 @@ def run( root , owner) :
                                         edges_list.append([owner + '/' + full_path + '.py|' + 'function:' + paths[-1], owner + '/' + func_id])
                             else:
                                 real_paths = paths[:len(paths) - 2]
-                                full_path = base_path
+                                full_path = project_name
                                 for each in real_paths:
                                     full_path = full_path + '/' + each
                                 if full_path + '.py' in project_dict:
@@ -90,7 +89,7 @@ def run( root , owner) :
                             continue
                         paths = each['id'].split('.')
                         if len(paths) == 2 :
-                            full_path = base_path + '/' + paths[0]
+                            full_path = project_name + '/' + paths[0]
                             if full_path + '.py' in project_dict :
                                 if 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                                     pass
@@ -98,7 +97,7 @@ def run( root , owner) :
                                     edges_list.append([owner + '/' + full_path + '|' + 'function:' + paths[-1], owner + '/' + id])
                         else :
                             real_paths = paths[:len(paths) - 2]
-                            full_path = base_path
+                            full_path = project_name
                             for each in real_paths :
                                 full_path = full_path + '/' + each
                             if full_path + '.py' in project_dict :

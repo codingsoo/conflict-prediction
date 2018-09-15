@@ -500,7 +500,6 @@ class direct_work_database:
                 self.conn.rollback()
                 print("ERROR : insert user data")
 
-        return
 
     # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
