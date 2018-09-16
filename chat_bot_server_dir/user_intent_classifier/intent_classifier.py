@@ -86,22 +86,33 @@ def load_token() :
 token = load_token()
 slack = Slacker(token)
 
-def get_slack_name_list():
+def convert_git_id_to_slack_id_from_slack(git_id):
+    user_list = get_slack_id_and_git_email_list()
+    slack_id = ""
+    for user in user_list:
+        if user[1] == git_id:
+            slack_id = user[0]
+
+    return slack_id
+
+def get_slack_id_and_git_email_list():
     try:
         user_list = list()
         # Get users list
         response = slack.users.list()
         users = response.body['members']
         for user in users:
-            if user.get('profile').get('display_name') != '':
-                user_list.append(user.get('profile').get('display_name'))
+            display_name = user.get('profile').get('display_name')
+            git_email = user.get('profile').get('email')
+            if display_name != '':
+                user_list.append((display_name, git_email))
             else:
-                user_list.append(user.get('profile').get('real_name'))
+                user_list.append((user.get('profile').get('real_name'), git_email))
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
     return user_list
 
-def get_slack_id_list():
+def get_slack_code_list():
     try:
         user_list = list()
         # Get users list
@@ -198,7 +209,7 @@ def extract_attention_word(_sentence, github_email):
         fl = "UCNLP" + "/" + "conflict_test" + "/" + ofl
         file_list.append(fl)
 
-    slack_id_list = get_slack_id_list()
+    slack_code_list = get_slack_code_list()
 
     recent_data = work_db.get_recent_data(github_email)
     if recent_data:
@@ -360,7 +371,6 @@ def extract_attention_word(_sentence, github_email):
 
     # About history
     elif intent_type == 3:
-
         result_file_list = get_file_path(file_list)
         file_path = ""
 
@@ -371,40 +381,33 @@ def extract_attention_word(_sentence, github_email):
             if name in sentence:
                 file_path = rfl
 
+        if file_path == "":
+            work_db.close()
+            return 13, "no_file", None, None
+
+        file_path_idx = result_file_list.index(file_path)
+
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
-        num_list[0] = int(num_list[0])
-        num_list[1] = int(num_list[1])
 
-        if len(num_list) > 1:
+        if len(num_list) >= 2:
+            num_list[0] = int(num_list[0])
+            num_list[1] = int(num_list[1])
             if num_list[0] < num_list[1]:
-                work_db.close()
-                return 3, file_list[result_file_list.index(file_path)], num_list[0], num_list[1]
+                start_line = num_list[0]
+                end_line = num_list[1]
             else:
-                work_db.close()
-                file_path = file_path.replace(" ", "")
-                return 3, file_list[result_file_list.index(file_path)], num_list[1], num_list[0]
+                start_line = num_list[1]
+                end_line = num_list[0]
+
         elif len(num_list) == 1:
-            work_db.close()
-            file_path = file_path.replace(" ", "")
-            return 3, file_list[result_file_list.index(file_path)] , num_list[0], num_list[0]
+            start_line = end_line = int(num_list[0])
 
         else:
-            recent_file = recent_file.split('/')[-1]
-            result_file_list = get_file_path(file_list)
-            file_path = ""
+            start_line = end_line = 1
 
-            for rfl in result_file_list:
-                if recent_file in sentence:
-                    file_path = rfl
-
-            if file_path == "":
-                work_db.close()
-                return 13, "no_file", None, None
-
-            work_db.close()
-            file_path = file_path.replace(" ", "")
-            return 3, file_list[result_file_list.index(file_path)], 1, 1
+        work_db.close()
+        return 3, file_list[file_path_idx], start_line, end_line
 
     # About direct or indirect ignore
     elif intent_type == 4:
@@ -445,21 +448,21 @@ def extract_attention_word(_sentence, github_email):
 
     # About working status
     elif intent_type == 6:
-        target_user_id = ""
+        target_user_slack_code = ""
 
-        for id in slack_id_list:
-            if id in sentence:
-                target_user_id = id
+        for code in slack_code_list:
+            if code in sentence:
+                target_user_code = code
                 break
 
-        if target_user_id == "":
+        if target_user_slack_code == "":
             slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
             work_db.close()
             return 6, slack_id, recent_data[2], None
         else:
             target_user_email = work_db.convert_slack_code_to_git_id(target_user_id)
             work_db.close()
-            return 6, target_user_id, target_user_email, None
+            return 6, target_user_slack_code, target_user_email, None
 
     # About channel message
     elif intent_type == 7:
@@ -508,9 +511,9 @@ def extract_attention_word(_sentence, github_email):
         _sentence = _sentence.replace('“','"')
         _sentence = _sentence.replace('”','"')
 
-        for id in slack_id_list:
-            if id in _sentence:
-                target_user_slack_code = id
+        for code in slack_code_list:
+            if code in _sentence:
+                target_user_slack_code = code
                 break
 
         if target_user_slack_code == "":

@@ -17,18 +17,18 @@ def get_user_email(project_name, file_path, start_line, end_line) :
     print(Path(os.getcwd()))
     BASE_PATH = Path(os.getcwd()).parent
     full_base_path = os.path.normpath(os.path.join(BASE_PATH, project_name[:-4]))
-    if not os.path.exists(full_base_path) :
+    if not os.path.exists(full_base_path):
         return []
     else :
         full_file_path = os.path.join(full_base_path, file_path)
-        if not os.path.exists(full_file_path) :
+        if not os.path.exists(full_file_path):
             return []
-        else :
+        else:
             ret_list = []
             command = 'git log -L {},{}:{}'.format(start_line, end_line, file_path.replace(os.sep, '/'))
             lines = subprocess.check_output(command, shell=True, universal_newlines=True, cwd=full_base_path, encoding='UTF-8').splitlines()
-            for line in lines :
-                if p.match(line) != None :
+            for line in lines:
+                if p.match(line) != None:
                     ret_list.extend(email_p.findall(line))
 
     ret_list = list(set(ret_list))

@@ -856,57 +856,6 @@ class work_database:
             self.conn.rollback()
             print("ERROR : remove ignore")
 
-    def slack_name_to_git_email(self, slack_name):
-        try:
-            sql = "SELECT git_id " \
-                  "FROM user_table " \
-                  "WHERE slack_id = '%s'" % (slack_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            git_email = self.cursor.fetchall()[0][0]
-
-        except:
-            self.conn.rollback()
-            print("ERROR : slack name to git email")
-
-        return git_email
-
-    def slack_code_to_slack_name(self, slack_code):
-        try:
-            sql = "SELECT slack_id " \
-                  "FROM user_table " \
-                  "WHERE slack_code = '%s'" % (slack_code)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            slack_id = self.cursor.fetchall()[0][0]
-
-        except:
-            self.conn.rollback()
-            print("ERROR : slack code to slack name")
-
-        return slack_id
-
-    def slack_name_to_slack_code(self, slack_name):
-        try:
-            sql = "SELECT slack_code " \
-                  "FROM user_table " \
-                  "WHERE slack_id = '%s'" % (slack_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            slack_code = self.cursor.fetchall()[0][0]
-
-        except:
-            self.conn.rollback()
-            print("ERROR : slack name to slack code")
-
-        return slack_code
-
     def search_ignore(self, project_name, git_id):
         slack_code = self.convert_git_id_to_slack_code(git_id)
         raw = tuple()
@@ -1179,6 +1128,41 @@ class work_database:
             return -1
         else:
             return raw_list1[0][0]
+
+    # Ex) git_id = "qortndud97@naver.com", slack_code = "<@UCFNMU2EM>", slack_id = "Sooyoung Baek"
+    def convert_slack_id_to_git_id(self, slack_name):
+        try:
+            sql = "SELECT git_id " \
+                  "FROM user_table " \
+                  "WHERE slack_id = '%s'" % (slack_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            git_email = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : slack name to git email")
+
+        return git_email
+
+    def convert_slack_id_to_slack_code(self, slack_name):
+        try:
+            sql = "SELECT slack_code " \
+                  "FROM user_table " \
+                  "WHERE slack_id = '%s'" % (slack_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            slack_code = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : slack name to slack code")
+
+        return slack_code
 
     def convert_git_id_to_slack_code(self, git_id):
         slack_code = ""

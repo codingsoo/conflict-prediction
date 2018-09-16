@@ -2,9 +2,8 @@ from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
-
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
 import os, random
-
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     message = "default"
@@ -73,7 +72,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
 def approved_file_logic(slack_code, approved_set, removed_list):
     w_db = work_database()
-    user_name = w_db.slack_code_to_slack_name(slack_code)
+    user_name = w_db.convert_slack_code_to_slack_id(slack_code)
     project_name = w_db.read_project_name(slack_code)
 
     approved_list = list(approved_set)
@@ -191,18 +190,27 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
     w_db = work_database()
 
     project_name = w_db.read_project_name(slack_code)
-    engaging_user_list = get_user_email(project_name, file_path, start_line, end_line)
+    engaging_user_email_list = get_user_email(project_name, file_path, start_line, end_line)
 
-    #message = "This is code history : " + str(engaging_user_list)
+    message = ""
+    user_name_list = []
+    user_name_fail_list = []
 
-    message = random.choice(shell_dict['feat_history_logic'])
-    user_name = ""
-    for name in engaging_user_list:
-        nickname = w_db.convert_git_id_to_slack_id(name)
-        user_name = user_name + nickname + ', '
-    user_name = user_name[:-2]
-   # nickname = w_db.convert_git_id_to_slack_id(user_name)
-    message =message.format(nickname, start_line, end_line)
+    for user_email in engaging_user_email_list:
+        user_name = w_db.convert_git_id_to_slack_id(git_id=user_email)
+        if user_name == "":
+            print("{} is not in db.".format(user_email))
+            user_name = convert_git_id_to_slack_id_from_slack(git_id=user_email)
+        if user_name == "":
+            user_name_fail_list.append(user_email)
+        else:
+            user_name_list.append(user_name)
+
+    if user_name_list:
+        message = random.choice(shell_dict['feat_history_logic']).format(",".join(user_name_list), start_line, end_line)
+
+    if user_name_fail_list:
+        message += random.choice(shell_dict['feat_history_fail']).format(user_name, ",".join(user_name_fail_list))
 
     w_db.close()
     return message
@@ -306,7 +314,7 @@ def send_message_direct_logic(slack_code, msg, user_name):
         return message
 
     w_db = work_database()
-    target_user = w_db.slack_code_to_slack_name(slack_code)
+    target_user = w_db.convert_slack_code_to_slack_id(slack_code)
 
     msg = user_name + " gives message : " + msg
     send_direct_message(slack_code, msg)
