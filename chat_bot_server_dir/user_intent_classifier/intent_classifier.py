@@ -12,9 +12,9 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -41,7 +41,7 @@ question_sentence_list = ["Can you not notify me about hello.py?", "Can you lock
                           'Can you tell all channel that "I am working on File1.py"?',
                           'Can you chat to <@UCFNMU2ED> "I will check and solve the problem"?',
                           "Can you recommend what should I do to fix the conflict in File.py?"]
-command_sentence_list = ["Do not notify me about File1.py again.", "Lock hello.py file.", "Tell me who wrote line 70 to line 90 in file1.py.",
+command_sentence_list = ["Do not notify me about File1.py again.", "Don't lock hello.py.", "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Do not alert me about indirect conflict.",
                          "Check File1.py whether it will make a conflict or not.",
                          "Tell me where <@UCFNMU2ED>'s working status. ",
@@ -226,9 +226,11 @@ def extract_attention_word(_sentence, github_email):
 
     for yes in yes_list:
         if " " + yes + " " in sentence:
+            work_db.close()
             return 12, "yes", None, None
     for no in no_list:
         if " " + no + " " in sentence:
+            work_db.close()
             return 12, "no", None, None
 
     intent_type, sentence = intent_classifier(_sentence)
@@ -452,15 +454,16 @@ def extract_attention_word(_sentence, github_email):
 
         for code in slack_code_list:
             if code in sentence:
-                target_user_code = code
+                target_user_slack_code = code
                 break
+
 
         if target_user_slack_code == "":
             slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
             work_db.close()
             return 6, slack_id, recent_data[2], None
         else:
-            target_user_email = work_db.convert_slack_code_to_git_id(target_user_id)
+            target_user_email = work_db.convert_slack_code_to_git_id(target_user_slack_code)
             work_db.close()
             return 6, target_user_slack_code, target_user_email, None
 
@@ -543,7 +546,7 @@ def extract_attention_word(_sentence, github_email):
 
     #About others
     else:
-
+        work_db.close()
         if " hi " in sentence or " hello " in sentence :
             print("greeting shell")
             return 10, "greeting", None, None

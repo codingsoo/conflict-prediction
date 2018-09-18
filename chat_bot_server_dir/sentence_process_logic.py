@@ -268,7 +268,7 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
     elif project_name == -1:
         message = "This user is not working on the project"
     else:
-        db_lock_set = set(w_db.read_lock_list(project_name))
+        db_lock_set = set(w_db.read_lock_list_of_slack_code(target_slack_code, project_name))
         print(db_lock_set)
 
         slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
@@ -343,6 +343,7 @@ def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
         w_db.close()
         return message
     else:
+        w_db.close()
         return "There was no conflict before."
 
 
@@ -422,3 +423,4 @@ for path, dirs, files in os.walk('../situation_shell') :
             with open(os.path.join(path, file) , 'r', encoding="UTF-8") as f :
                 for line in f.readlines() :
                     shell_dict[file_name].append(line.strip())
+

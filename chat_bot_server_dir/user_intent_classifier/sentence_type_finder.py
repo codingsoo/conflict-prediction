@@ -155,4 +155,3 @@ def require_something_sentence(_sentence):
 
     else:
         return 5, sentence
-
