@@ -61,7 +61,7 @@ suggestion_sentence_list = ["You should not give me notification about File1.py.
                             "You would tell me how I can solve the conflict in File1.py"]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to lock File1.py.",
                         "I want to know who wrote line 70 to line 90 in File1.py.", "I do not want you to alert about direct conflict.",
-                        "I want to know that this is gonna make a conflict in File1.py.",
+                        "I want to know that this is gonna  a conflict in File1.py.",
                         "I want to know <@UCFNMU2ED>'s working status.",
                         'I want to send the message to conflict detector channel that "Do not modify File1.py".',
                         'I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".',

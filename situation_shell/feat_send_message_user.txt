@@ -1,6 +1,6 @@
 Okay, sent message to {}.
 Send message to {} is done.
-Sending message to {}.
+Sending message to {} is successful!
 Send message to {} is perfectly done!
 {} received your message.
 Sending message to {} is completed!
