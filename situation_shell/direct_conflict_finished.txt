@@ -1,0 +1,10 @@
+You and {}, thank you! Direct conflict has been solved!
+You and {}, good! Direct conflict has been solved!
+You and {}, cool! Direct conflict has been solved!
+You and {}, nice! Direct conflict has been solved!
+You and {}, good news! Direct conflict has been solved!
+You and {}, thank you! No more direct conflict!
+You and {}, good! No more direct conflict!
+You and {}, cool! No more direct conflict!
+You and {}, nice job! No more direct conflict!
+You and {}, good news! No more direct conflict!

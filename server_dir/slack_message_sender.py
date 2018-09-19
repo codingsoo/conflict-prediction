@@ -50,8 +50,12 @@ def make_server_shell_list():
     server_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe.txt"))
     return server_shell_list
 
-def make_conflict_finished_list():
-    conflict_finished_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "conflict_finished.txt"))
+def make_direct_conflict_finished_list():
+    conflict_finished_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "direct_conflict_finished.txt"))
+    return conflict_finished_list
+
+def make_indirect_conflict_finished_list():
+    conflict_finished_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict_finished.txt"))
     return conflict_finished_list
 
 def make_get_closer_list():
@@ -151,9 +155,17 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         get_closer = make_same_file_shell_list()
         message = get_closer[random.randint(0, len(get_closer) - 1)].format(user2_slack_id_code[0], conflict_file, "")
 
-    elif(conflict_flag == Conflict_flag.conflict_finished.value):
+    elif(conflict_flag == Conflict_flag.direct_conflict_finished.value):
         # conflict solved
-        conflict_finished = make_conflict_finished_list()
+        conflict_finished = make_direct_conflict_finished_list()
+        if user2_slack_id_code[0] == user1_slack_id_code[0]:
+            pass
+        else:
+            message = conflict_finished[random.randint(0, len(conflict_finished) - 1)].format(user2_slack_id_code[0])
+
+    elif (conflict_flag == Conflict_flag.indirect_conflict_finished.value):
+        # conflict solved
+        conflict_finished = make_indirect_conflict_finished_list()
         if user2_slack_id_code[0] == user1_slack_id_code[0]:
             pass
         else:

@@ -21,4 +21,5 @@ class Conflict_flag(Enum):
     file_in = 0
 
     # Conflict solved
-    conflict_finished = -1
+    direct_conflict_finished = -1
+    indirect_conflict_finished = -2

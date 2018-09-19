@@ -332,21 +332,21 @@ class indirect_work_database:
                         (afl[3] == rl[1] or afl[3] == rl[2])):
                     remove_list.append(rl)
 
-            for temp_remove_list in remove_list:
-                raw_list.remove(temp_remove_list)
+        for temp_remove_list in remove_list:
+            raw_list.remove(temp_remove_list)
 
         print("non_indifrect_conflict_logic : ", raw_list)
 
         # Send to the user about indirect solved message
         for raw_temp in raw_list:
-            send_conflict_message(conflict_flag=-1,
+            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
                                   conflict_project=project_name,
                                   conflict_file=raw_temp[1],
                                   conflict_logic=raw_temp[2],
                                   user1_name=user_name,
                                   user2_name=raw_temp[5])
 
-            send_conflict_message(conflict_flag=-1,
+            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
                                   conflict_project=project_name,
                                   conflict_file=raw_temp[1],
                                   conflict_logic=raw_temp[2],

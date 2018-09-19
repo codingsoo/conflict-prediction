@@ -455,14 +455,14 @@ class direct_work_database:
 
         print("non_direct_conflict_logic : ", raw_list)
         for raw_temp in raw_list:
-            send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
+            send_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
                                   conflict_project=project_name,
                                   conflict_file=raw_temp[1],
                                   conflict_logic=raw_temp[2],
                                   user1_name=user_name,
                                   user2_name=raw_temp[5])
 
-            send_conflict_message(conflict_flag=Conflict_flag.conflict_finished.value,
+            send_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
                                   conflict_project=project_name,
                                   conflict_file=raw_temp[1],
                                   conflict_logic=raw_temp[2],
