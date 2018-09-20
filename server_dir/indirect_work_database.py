@@ -85,9 +85,12 @@ class indirect_work_database:
                 self.first_indirect_logic(project_name, user_name, first_indirect_conflict_list)
 
         # Non-conflict
-        else:
+        non_indirect_conflict_list = self.search_non_indirect_conflict_list(project_name, user_name, indirect_conflict_list)
+        print("non_indirect_conflict_list : ", non_indirect_conflict_list)
+
+        if non_indirect_conflict_list:
             print("\n#### Non-Indirect Conflict !!! ####")
-            self.non_indirect_conflict_logic(project_name, user_name, file_approve_list)
+            self.non_indirect_conflict_logic(project_name, user_name, file_approve_list, non_indirect_conflict_list)
 
         w_db.close()
         return
@@ -172,6 +175,36 @@ class indirect_work_database:
 
         return all_raw_list
 
+    def search_non_indirect_conflict_list(self, project_name, user_name, indirect_conflict_list):
+        non_indirect_conflict_list = []
+
+        try:
+            sql = "select * " \
+                  "from indirect_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and user1_name = '%s'" \
+                  % (project_name, user_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+            non_indirect_conflict_list = raw_list[:]
+
+            # [ project_name, logic1_name, logic2_name, length, user1_name, user2_name, alert_count, log_time]
+            for rl in raw_list:
+                # [user1_name, user1_logic, user2_name, user2_logic]
+                for icl in indirect_conflict_list:
+                    if rl[1] == icl[1] and rl[2] == icl[3] and rl[4] == icl[0] and rl[5] == icl[2]:
+                        non_indirect_conflict_list.remove(rl)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : search non indirect conflict list")
+
+        return non_indirect_conflict_list
+
     def search_already_indirect_conflict_table(self, project_name, indirect_conflict_list):
         all_raw_list = []
 
@@ -202,7 +235,7 @@ class indirect_work_database:
 
     def classify_indirect_conflict_list(self, whole_indirect_conflict_list, already_indirect_conflict_table):
         # first_indirect_conflict_list = whole_indirect_conflict_list - already_indirect_conflict_list
-        first_indirect_conflict_list = whole_indirect_conflict_list
+        first_indirect_conflict_list = whole_indirect_conflict_list[:]
         already_indirect_conflict_list = []
         # [ user1_name, user1_logic, user2_name, user2_logic ]
         for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
@@ -213,9 +246,7 @@ class indirect_work_database:
                         temp_whole_indirect_conflict_list[2] == temp_already_indirect_conflict_table[5] and
                         temp_whole_indirect_conflict_list[3] == temp_already_indirect_conflict_table[2]):
                     already_indirect_conflict_list.append(temp_whole_indirect_conflict_list)
-
-        for temp_already_indirect_conflict_list in already_indirect_conflict_list:
-            first_indirect_conflict_list.remove(temp_already_indirect_conflict_list)
+                    first_indirect_conflict_list.remove(temp_whole_indirect_conflict_list)
 
         return first_indirect_conflict_list, already_indirect_conflict_list
 
@@ -299,41 +330,23 @@ class indirect_work_database:
         return
 
 
-    def non_indirect_conflict_logic(self, project_name, user_name, approve_file_list):
-        raw_list = []
-        try:
-            sql = "select * " \
-                  "from indirect_conflict_table " \
-                  "where project_name = '%s' " \
-                  "and (user1_name = '%s' or user2_name = '%s') " % (project_name, user_name, user_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
+    def non_indirect_conflict_logic(self, project_name, user_name, approve_file_list, non_indirect_conflict_list):
+        raw_list = non_indirect_conflict_list
 
-            raw_list = list(self.cursor.fetchall())
-
-        except:
-            self.conn.rollback()
-            print("ERROR : select user indirect conflict data")
+        print("non_indifrect_conflict_logic : ", raw_list)
+        print("approve_file_list : ", approve_file_list)
 
         # Do not notice a Conflict-Solve alarm that is resolved by Approve.
-        remove_list = []
-
-        print("indirect_conflict_table : ", raw_list)
-        print("approve_file_list : ", approve_file_list)
 
         # [ user_name, user_logic, other_name, other_logic ]
         for afl in approve_file_list:
             # [ project_name, u, v, length, user1_name, user2_name, alert_count, log_time ]
-            for rl in raw_list:
-                if ((afl[0] == rl[4] or afl[0] == rl[5]) and
-                        (afl[1] == rl[1] or afl[1] == rl[2]) and
-                        (afl[2] == rl[4] or afl[2] == rl[5]) and
-                        (afl[3] == rl[1] or afl[3] == rl[2])):
-                    remove_list.append(rl)
-
-        for temp_remove_list in remove_list:
-            raw_list.remove(temp_remove_list)
+            for nicl in non_indirect_conflict_list:
+                if ((afl[0] == nicl[4] or afl[0] == nicl[5]) and
+                        (afl[1] == nicl[1] or afl[1] == nicl[2]) and
+                        (afl[2] == nicl[4] or afl[2] == nicl[5]) and
+                        (afl[3] == nicl[1] or afl[3] == nicl[2])):
+                    raw_list.remove(nicl)
 
         print("non_indifrect_conflict_logic : ", raw_list)
 
@@ -354,18 +367,41 @@ class indirect_work_database:
                                   user2_name=user_name)
 
         # Delete all user conflict list
-        try:
-            sql = "delete " \
-                  "from indirect_conflict_table " \
-                  "where project_name = '%s' " \
-                  "and (user1_name = '%s' or user2_name = '%s')" % (project_name, user_name, user_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
+        # [ project_name, u, v, length, user1_name, user2_name, alert_count, log_time ]
+        for nicl in non_indirect_conflict_list:
+            try:
+                sql = "delete " \
+                      "from indirect_conflict_table " \
+                      "where project_name = '%s' " \
+                      "and u = '%s' " \
+                      "and v = '%s' " \
+                      "and user1_name = '%s' " \
+                      "and user2_name = '%s' " \
+                      % (nicl[0], nicl[1], nicl[2], nicl[4], nicl[5])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
 
-        except:
-            self.conn.rollback()
-            print("ERROR : delete user indirect conflict data")
+            except:
+                self.conn.rollback()
+                print("ERROR : delete user indirect conflict data1")
+
+            try:
+                sql = "delete " \
+                      "from indirect_conflict_table " \
+                      "where project_name = '%s' " \
+                      "and u = '%s' " \
+                      "and v = '%s' " \
+                      "and user1_name = '%s' " \
+                      "and user2_name = '%s' " \
+                      % (nicl[0], nicl[2], nicl[1], nicl[5], nicl[4])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : delete user indirect conflict data2")
 
         return
 

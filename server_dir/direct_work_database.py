@@ -121,11 +121,12 @@ class direct_work_database:
                 self.update_first_best_conflict_list(best_direct_conflict_list)
 
         # Non-conflict
-        else:
+        non_direct_conflict_list = self.search_non_direct_conflict_list(project_name, user_name, direct_conflict_list)
+        print("non_direct_conflict_list : ", non_direct_conflict_list)
 
+        if non_direct_conflict_list:
             print("\n#### Non-Direct Conflict !!! ####")
-
-            self.non_direct_conflict_logic(project_name, user_name, approve_file_list)
+            self.non_direct_conflict_logic(project_name, user_name, approve_file_list, non_direct_conflict_list)
 
         return
 
@@ -149,7 +150,7 @@ class direct_work_database:
     # Search same project and same file from working table
     def search_working_table(self, project_name, working_list, user_name):
 
-        all_raw_list = []
+        all_raw_set = set()
 
         # ["file_name", "logic_name", "work_line", "work_amount"]
         for temp_work in working_list:
@@ -167,14 +168,43 @@ class direct_work_database:
 
                 raw_list = list(self.cursor.fetchall())
                 for raw in raw_list:
-                    all_raw_list.append(raw)
+                    all_raw_set.add(raw)
                 print ("select from working_table : ", raw_list)
 
             except:
                 self.conn.rollback()
                 print("ERROR : search working table")
 
-        return all_raw_list
+        return list(all_raw_set)
+
+    def search_non_direct_conflict_list(self, project_name, user_name, direct_conflict_list):
+        non_direct_conflict_list = []
+
+        try:
+            sql = "select * " \
+                  "from direct_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and user1_name = '%s'" % (project_name, user_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+            non_direct_conflict_list = raw_list[:]
+
+            # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
+            for rl in raw_list:
+                # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
+                for dcl in direct_conflict_list:
+                    if rl[1] == dcl[1] and rl[3] == dcl[2] and rl[5] == dcl[3] and rl[4] == user_name:
+                        non_direct_conflict_list.remove(rl)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : search non direct conflict list")
+
+        return non_direct_conflict_list
 
     def search_already_direct_conflict_list(self, project_name, conflict_list, working_list, user_name):
         all_raw_set = set()
@@ -418,42 +448,24 @@ class direct_work_database:
 
         return
 
-    def non_direct_conflict_logic(self, project_name, user_name, approve_file_list):
-        raw_list = []
+    def non_direct_conflict_logic(self, project_name, user_name, approve_file_list, non_direct_conflict_list):
+        raw_list = non_direct_conflict_list[:]
 
-        try:
-            sql = "select * " \
-                  "from direct_conflict_table " \
-                  "where project_name = '%s' " \
-                  "and user1_name = '%s'" % (project_name, user_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_list = list(self.cursor.fetchall())
-
-        except:
-            self.conn.rollback()
-            print("ERROR : select user direct conflict data")
+        print("non_direct_conflict_logic : ", raw_list)
+        print("approve_file_list : ", approve_file_list)
 
         # Do not notice a Conflict-Solve alarm that is resolved by Approve.
-        remove_list = []
-
-        print("direct_conflict_table : ", raw_list)
-        print("approve_file_list : ", approve_file_list)
 
         # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
         for afl in approve_file_list:
             # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
             # 아래 조건문 중 (afl[3] == rl[4] or afl[3] == rl[5]) 가 꼭 필요한가?
-            for rl in raw_list:
-                if afl[0] == rl[0] and afl[1] == rl[1] and (afl[3] == rl[4] or afl[3] == rl[5]):
-                    remove_list.append(rl)
-
-        for temp_remove_list in remove_list:
-            raw_list.remove(temp_remove_list)
+            for ndcl in non_direct_conflict_list:
+                if afl[0] == ndcl[0] and afl[1] == ndcl[1] and (afl[3] == ndcl[4] or afl[3] == ndcl[5]):
+                    raw_list.remove(ndcl)
 
         print("non_direct_conflict_logic : ", raw_list)
+
         for raw_temp in raw_list:
             send_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
                                   conflict_project=project_name,
@@ -469,17 +481,43 @@ class direct_work_database:
                                   user1_name=raw_temp[5],
                                   user2_name=user_name)
 
-        try:
-            sql = "delete " \
-                  "from direct_conflict_table " \
-                  "where project_name = '%s' " \
-                  "and (user1_name = '%s' or user2_name = '%s')" % (project_name, user_name, user_name)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-        except:
-            self.conn.rollback()
-            print("ERROR : delete user direct conflict data")
+        # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
+        for ndcl in non_direct_conflict_list:
+            try:
+                sql = "delete " \
+                      "from direct_conflict_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and logic1_name = '%s' " \
+                      "and logic2_name = '%s' " \
+                      "and user1_name = '%s' " \
+                      "and user2_name = '%s' " \
+                      % (ndcl[0], ndcl[1], ndcl[2], ndcl[3], ndcl[4], ndcl[5])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : delete user direct conflict data1")
+
+            try:
+                sql = "delete " \
+                      "from direct_conflict_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and logic1_name = '%s' " \
+                      "and logic2_name = '%s' " \
+                      "and user1_name = '%s' " \
+                      "and user2_name = '%s' " \
+                      % (ndcl[0], ndcl[1], ndcl[3], ndcl[2], ndcl[5], ndcl[4])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : delete user direct conflict data2")
 
         return
 

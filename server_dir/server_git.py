@@ -100,11 +100,15 @@ def convert_data(content) :
         full_file_path = os.path.join(full_base_path, file_path)
         if not os.path.exists(full_file_path) :
             continue
-        print(full_file_path)
+        print("--- working_list ---")
+        print("full_file_path : ", full_file_path)
         py_info = get_py_info(full_file_path)
+        print("py_info : ", py_info)
         func_list, class_list = get_py_info_list(py_info)
         func_list.sort(key=lambda x : x[1])
         class_list.sort(key=lambda x : x[1])
+        print("func_list : ", func_list)
+        print("class_list : ", class_list)
 
         converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]] = []
 
