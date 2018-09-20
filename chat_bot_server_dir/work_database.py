@@ -759,80 +759,16 @@ class work_database:
     '''
     ignore
     '''
-    def add_update_ignore(self, project_name, ignore_list, slack_code, approval):
+    def add_ignore(self, project_name, ignore_list, slack_code):
         # Ignore ON logic
-        if approval == 1:
-            read_ignore = self.read_ignore(project_name, slack_code)
-
-            if read_ignore is None:
-                # First ignore register
-
-                # Direct ignore On
-                if ignore_list == 1:
-                    sql = "insert into ignore_table " \
-                          "(project_name, slack_code, direct_ignore) value " \
-                          "('%s', '%s', %d) " % (project_name, slack_code, 1)
-
-                # Indirect ignore On
-                elif ignore_list == 2:
-                    sql = "insert into ignore_table " \
-                          "(project_name, slack_code, indirect_ignore) value " \
-                          "('%s', '%s', %d) " % (project_name, slack_code, 1)
-
-            else:
-                # Already exists ignore
-
-                # Direct ignore On
-                if ignore_list == 1:
-                    sql = "update ignore_table " \
-                          "set direct_ignore = %d " \
-                          "where project_name = '%s' " \
-                          "and slack_code = '%s'" % (1, project_name, slack_code)
-
-                # Indirect ignore On
-                elif ignore_list == 2:
-                    sql = "update ignore_table " \
-                          "set indirect_ignore = %d " \
-                          "where project_name = '%s' " \
-                          "and slack_code = '%s'" % (1, project_name, slack_code)
-
-        # Ignore off logic
-        elif approval == 0:
-            read_ignore = self.read_ignore(project_name, slack_code)
-
-            if read_ignore == []:
-                # First ignore register
-
-                # Direct ignore On
-                if ignore_list == 1:
-                    sql = "insert into ignore_table " \
-                          "(project_name, slack_code, direct_ignore) value " \
-                          "('%s', '%s', %d)" % (project_name, slack_code, 0)
-
-                # Indirect ignore On
-                elif ignore_list == 2:
-                    sql = "insert into ignore_table " \
-                          "(project_name, slack_code, indirect_ignore) value " \
-                          "('%s', '%s', %d)" % (project_name, slack_code, 0)
-
-            else:
-                # Already exists ignore
-
-                # Direct ignore On
-                if ignore_list == 1:
-                    sql = "update ignore_table " \
-                          "set direct_ignore = %d " \
-                          "where project_name = '%s' " \
-                          "and slack_code = '%s'" % (0, project_name, slack_code)
-
-                # Indirect ignore On
-                elif ignore_list == 2:
-                    sql = "update ignore_table " \
-                          "set indirect_ignore = %d " \
-                          "where project_name = '%s' " \
-                          "and slack_code = '%s'" % (0, project_name, slack_code)
-
-        # ignore_list : [direct_ignore, indirect_ignore]
+        if ignore_list == 1:
+            sql = "insert into ignore_table " \
+                  "(project_name, slack_code, direct_ignore) value " \
+                  "('%s', '%s', %d) " % (project_name, slack_code, 1)
+        elif ignore_list == 2:
+            sql = "insert into ignore_table " \
+                  "(project_name, slack_code, indirect_ignore) value " \
+                  "('%s', '%s', %d) " % (project_name, slack_code, 1)
         try:
             print(sql)
             self.cursor.execute(sql)
@@ -841,6 +777,29 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : add update ignore")
+
+    def update_ignore(self, project_name, ignore_list, slack_code, approval):
+        # Already exists ignore list
+        if ignore_list == 1:
+            sql = "update ignore_table " \
+                  "set direct_ignore = %d " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (approval, project_name, slack_code)
+
+        elif ignore_list == 2:
+            sql = "update ignore_table " \
+                  "set indirect_ignore = %d " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (approval, project_name, slack_code)
+
+        try:
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update ignore")
 
     def remove_ignore(self, project_name, slack_code):
         try:
@@ -856,8 +815,7 @@ class work_database:
             self.conn.rollback()
             print("ERROR : remove ignore")
 
-    def search_ignore(self, project_name, git_id):
-        slack_code = self.convert_git_id_to_slack_code(git_id)
+    def read_ignore(self, project_name, slack_code):
         raw = tuple()
 
         try:
@@ -870,14 +828,18 @@ class work_database:
             self.conn.commit()
 
             # [project_name, slack_code, direct_ignore, indirect_ignore]
-            raw = tuple(self.cursor.fetchone())
+            raw = self.cursor.fetchone()
+            print(raw)
         except:
             self.conn.rollback()
-            print("ERROR : search ignore")
+            print("ERROR : read ignore")
 
-        # direct_ignore, indirect_ignore
-        # 0 => non-ignore / 1 => ignore
-        return raw[2], raw[3]
+        if raw is None:
+            return raw
+        else:
+            # direct_ignore, indirect_ignore
+            # 0 => non-ignore / 1 => ignore
+            return raw[2], raw[3]
 
 #############################3
 
@@ -930,28 +892,6 @@ class work_database:
             print("ERROR : Get recent data")
 
 
-    def read_ignore(self, project_name, slack_code):
-        raw = tuple()
-
-        try:
-            sql = "select * " \
-                  "from ignore_table " \
-                  "where project_name = '%s' " \
-                  "and slack_code = '%s'" % (project_name, slack_code)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw = self.cursor.fetchone()
-            print(raw)
-        except:
-            self.conn.rollback()
-            print("ERROR : read project name")
-
-        if raw is None:
-            return raw
-        else:
-            return raw[2], raw[3]
 
     ####################################################################
     '''

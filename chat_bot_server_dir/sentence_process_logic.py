@@ -219,20 +219,43 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     w_db = work_database()
     print("ignore : " + str(ignore_list))
     project_name = w_db.read_project_name(slack_code)
-    w_db.add_update_ignore(project_name, ignore_list, slack_code, approval)
+    already_ignore_tuple = w_db.read_ignore(project_name, slack_code)
     message = ""
 
-    # 알람 설정
-    if approval == 1 and ignore_list == 1:
-        message = random.choice(shell_dict['feat_ignore_alarm_direct'])
-    elif approval == 1 and ignore_list == 2:
-        message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
+    # Ignore
+    if approval == 1:
+        if already_ignore_tuple is not None and already_ignore_tuple[ignore_list - 1] == 1: # (1,0) (1,1) / (0,1) (1,1)
+            if ignore_list == 1:
+                message = "You have already ignored direct message."
+            elif ignore_list == 2:
+                message = "You have already ignored indirect message."
+        else:
+            if already_ignore_tuple is None:
+                w_db.add_ignore(project_name, ignore_list, slack_code)
+            else: # (0,0) (0,1) / (0,0) (1,0)
+                w_db.update_ignore(project_name, ignore_list, slack_code, approval)
+            if ignore_list == 1:
+                message = random.choice(shell_dict['feat_ignore_alarm_direct'])
+            elif ignore_list == 2:
+                message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
 
-    # 알람 해제
-    elif approval == 0 and ignore_list == 1:
-        message = random.choice(shell_dict['feat_unignore_alarm_direct'])
-    elif approval == 0 and ignore_list == 2:
-        message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
+    # Unignore
+    elif approval == 0:
+        if already_ignore_tuple is None or already_ignore_tuple[ignore_list - 1] == 0 : #(0,1) (0,0) / (1,0) (0,0)
+            if ignore_list == 1:
+                message = "You didn't ignore direct message. So you get notified of direct message!"
+            elif ignore_list == 2:
+                message = "You didn't ignore indirect message. So you get notified of indirect message!"
+        else:
+            if already_ignore_tuple == (1, 1): # (1,1)
+                w_db.update_ignore(project_name, ignore_list, slack_code, approval)
+            else: # (1,0) / (0,1)
+                w_db.remove_ignore(project_name, slack_code)
+            if ignore_list == 1:
+                message = random.choice(shell_dict['feat_unignore_alarm_direct'])
+            elif ignore_list == 2:
+                message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
+
     w_db.close()
     return message
 
@@ -252,7 +275,7 @@ def check_conflict_logic(slack_code, file_name):
     elif((direct_conflict_flag == False) and (indirect_conflict_flag == True)):
         message = random.choice(shell_dict['feat_conflict_i'])
     else:
-        message = "I think it'll not cause any conflict."
+        message = "I think it'll not cause any conflict." 
 
     w_db.close()
     return message

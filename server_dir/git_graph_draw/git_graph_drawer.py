@@ -377,10 +377,10 @@ def removeDir(root_dir_temp):
     # shutil.rmtree(root_dir_temp)
 
     # windows
-    cmd_line = 'rmdir /S /Q ' + root_dir_temp
+    #cmd_line = 'rmdir /S /Q ' + root_dir_temp
 
     #linux
-    # cmd_line = 'rm -rf ' + root_dir_temp
+    cmd_line = 'rm -rf ' + root_dir_temp
 
     subprocess.check_output(cmd_line, shell=True)
 

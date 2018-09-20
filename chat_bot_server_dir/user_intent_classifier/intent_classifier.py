@@ -60,7 +60,7 @@ suggestion_sentence_list = ["You should not give me notification about File1.py.
                             'You have to send message to <@UCFNMU2ED> "I will check and solve the conflict".',
                             "You would tell me how I can solve the conflict in File1.py"]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.", "I want to lock File1.py.",
-                        "I want to know who wrote line 70 to line 90 in File1.py.", "I do not want you to alert about direct conflict.",
+                        "I want to know who wrote line 70 to line 90 in File1.py.", "I do not want yous to alert about direct conflict.",
                         "I want to know that this is gonna  a conflict in File1.py.",
                         "I want to know <@UCFNMU2ED>'s working status.",
                         'I want to send the message to conflict detector channel that "Do not modify File1.py".',
@@ -264,7 +264,7 @@ def extract_attention_word(_sentence, github_email):
         found = 0
         print(file_list)
 
-        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", 'see']
+        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear"]
 
         for fl in file_list:
             r = fl.split("/")[-1]
@@ -358,7 +358,7 @@ def extract_attention_word(_sentence, github_email):
                     request_lock_set.add(file_list[result_file_list.index(rfl)])
 
         if not remove_lock_list and not request_lock_set:
-            if " not " in sentence or "unlock " in sentence:
+            if " not " in sentence or " unlock " in sentence:
                 remove_lock_list.append(recent_file)
             elif " this file " in sentence:
                 request_lock_set.add(recent_file)
@@ -413,23 +413,43 @@ def extract_attention_word(_sentence, github_email):
 
     # About direct or indirect ignore
     elif intent_type == 4:
+        found = 0
+        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear"]
 
-        if " not " in sentence or " unlock " in sentence:
-            # 알람 해제
-            if " indirect " in sentence:
-                work_db.close()
-                return 4, 2, 0, None
+        for word in approve_word:
+            if word in sentence:
+                found = 1
+                # ignore
+                if " not " in sentence or " un" in sentence:
+                    if " indirect " in sentence:
+                        work_db.close()
+                        return 4, 2, 1, None
+                    else:
+                        work_db.close()
+                        return 4, 1, 1, None
+                # unignore
+                else:
+                    if " indirect " in sentence:
+                        work_db.close()
+                        return 4, 2, 0, None
+                    else:
+                        work_db.close()
+                        return 4, 1, 0, None
+        if found == 0:
+            if " not " in sentence or " un" in sentence:
+                if " indirect " in sentence:
+                    work_db.close()
+                    return 4, 2, 0, None
+                else:
+                    work_db.close()
+                    return 4, 1, 0, None
             else:
-                work_db.close()
-                return 4, 1, 0, None
-        else:
-            # 알람 설정
-            if " indirect " in sentence:
-                work_db.close()
-                return 4, 2, 1, None
-            else:
-                work_db.close()
-                return 4, 1, 1, None
+                if " indirect " in sentence:
+                    work_db.close()
+                    return 4, 2, 1, None
+                else:
+                    work_db.close()
+                    return 4, 1, 1, None
 
     # About check conflict
     elif intent_type == 5:
