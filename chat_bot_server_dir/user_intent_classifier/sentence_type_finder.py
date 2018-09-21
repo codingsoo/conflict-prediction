@@ -111,12 +111,9 @@ def is_question(_sentence, pos_tag_list, nlp):
     else:
         for pos_tag in pos_tag_list:
             if pos_tag[0] == "how" or pos_tag[0] == "what":
-                pass
-            elif pos_tag[0] == "about":
-                return True
-                # pos_idx = pos_tag_list.index((pos_tag[0], pos_tag[1]))
-                # if pos_tag_list[pos_idx + 1][0] == "about":
-                #     return True
+                pos_idx = pos_tag_list.index((pos_tag[0], pos_tag[1]))
+                if pos_tag_list[pos_idx + 1][0] == "about":
+                    return True
     return False
 
 def require_something_sentence(_sentence):

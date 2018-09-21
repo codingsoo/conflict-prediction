@@ -827,7 +827,6 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            # [project_name, slack_code, direct_ignore, indirect_ignore]
             raw = self.cursor.fetchone()
             print(raw)
         except:

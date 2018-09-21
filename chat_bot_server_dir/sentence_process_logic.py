@@ -210,7 +210,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
         message = random.choice(shell_dict['feat_history_logic']).format(",".join(user_name_list), start_line, end_line)
 
     if user_name_fail_list:
-        message += random.choice(shell_dict['feat_history_fail']).format(user_name, ",".join(user_name_fail_list))
+        message += random.choice(shell_dict['feat_history_fail']).format(",".join(user_name_fail_list))
 
     w_db.close()
     return message
