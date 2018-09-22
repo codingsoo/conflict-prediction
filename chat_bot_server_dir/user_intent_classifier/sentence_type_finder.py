@@ -10,7 +10,8 @@ def sentence_preprocess(_sentence):
     replace_list = [(" please ", " "), (" hey ", " "), (" i think ", " "), (" do not have to ", " should not "),
                     (" have to ", " should "), (" ought to ", " should "), (" ought not to ", " should not "),
                     (" can't ", " can not "), (" won't ", " will not "), ("n't ", " not "),
-                    ("'m ", " am "), ("'ve ", " have "), ("'re ", " are ")]
+                    ("'m ", " am "), ("'ve ", " have "), ("'re ", " are "),
+                    (" the ", " "), (" a ", " "), (" an ", " ")]
     # can't -> can not, won't -> will not
     # shouldn't -> should not, wouldn't -> would not, couldn't -> could not , don't -> do not, haven't -> have not
 
@@ -80,7 +81,7 @@ def is_desire(pos_tag_list):
     ignore_pos_list = ["RB", ",", "!", "."]
     VPN_list = ["do", "am", "are", "is", "be"]
     desire_list = ["want", "hope", "wish", "desire", "need", "like", "love"]
-    wonder_list = ["wonder", "curious", "aware"]
+    wonder_list = ["wonder", "curious", "aware", "conscious","inquisitive","interested","questioning","searching"]
 
 
     for pos_tag in pos_tag_list: # I should get @Sun's working status.
