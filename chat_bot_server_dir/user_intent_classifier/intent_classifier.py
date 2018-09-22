@@ -12,9 +12,9 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -49,7 +49,6 @@ command_sentence_list = ["Do not notify me about File1.py again.",
                          "Tell me who wrote line 70 to line 90 in file1.py.",
                          "Do not alert me about indirect conflict.",
                          "Check File1.py whether it will make a conflict or not.",
-                         "Send <@UCFNMU2ED> a message that “I'm working on class1.”",
                          "Tell me where <@UCFNMU2ED>'s working status.",
                          'Tell code-conflict-chatbot channel that “I am working on File1.py”',
                          'Send a message to <@UCFNMU2ED> "I am working on class1".',
