@@ -13,8 +13,8 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -157,6 +157,7 @@ def calcue_max(sentence, list):
     if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
         return 10
 
+    print ("max rate : ", max)
     return max_idx
 
 def intent_classifier(_sentence):
@@ -203,15 +204,15 @@ def get_file_path(file_list):
     return result_file_list
 
 
-def extract_attention_word(_sentence, github_email):
+def extract_attention_word(owner_name,project_name,_sentence, github_email):
     import re
 
     work_db = work_database()
-    onlyFile_list = project_parser("UCNLP", "conflict_test")["file"]
+    onlyFile_list = project_parser(owner_name, project_name)["file"]
     file_list = list()
 
     for ofl in onlyFile_list:
-        fl = "UCNLP" + "/" + "conflict_test" + "/" + ofl
+        fl = owner_name + "/" + project_name + "/" + ofl
         file_list.append(fl)
 
     slack_code_list = get_slack_code_list()
@@ -507,14 +508,14 @@ def extract_attention_word(_sentence, github_email):
             channel_idx = word_list.index("channel")
             if channel_idx != 0:
                 channel = word_list[channel_idx - 1].strip()
-                msg = " ".join(word_list[channel_idx + 1:]).strip()
-                start_quot_idx = msg.find('"')
-                end_quot_idx = msg.rfind('"')
+               # msg = " ".join(word_list[channel_idx + 1:]).strip()
+                start_quot_idx = _sentence.find('"')
+                end_quot_idx = _sentence.rfind('"')
                 if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
                     print('You must write your message between two double quotation like "message"')
                     msg = ""
                 else:
-                    msg = msg[start_quot_idx + 1:end_quot_idx].strip()
+                    msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
             else:
                 print("There is no channel")
                 work_db.close()
@@ -547,18 +548,16 @@ def extract_attention_word(_sentence, github_email):
         if target_user_slack_code == "":
             target_user_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
-        target_user_slack_code_idx = _sentence.find(target_user_slack_code)
-        msg = _sentence[target_user_slack_code_idx + 10:]
-
         _sentence = _sentence.replace('“','"')
         _sentence = _sentence.replace('”','"')
-        start_quot_idx = msg.find('"')
-        end_quot_idx = msg.rfind('"')
+
+        start_quot_idx = _sentence.find('"')
+        end_quot_idx = _sentence.rfind('"')
         if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
             print('You must write your message between two double quotation like "message"')
             msg = ''
         else:
-            msg = msg[start_quot_idx + 1:end_quot_idx].strip()
+            msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
 
         work_db.close()
         return 8, target_user_slack_code, msg, user_name

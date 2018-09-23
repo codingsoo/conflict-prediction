@@ -15,6 +15,7 @@ from pathlib import Path
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import extract_attention_word
 from chat_bot_server_dir.sentence_process_logic import sentence_processing_main
 
+
 print("hi")
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -36,7 +37,7 @@ token = load_token()
 slack = Slacker(token)
 
 # add_ignore = []
-project_structure = project_parser('UCNLP', 'conflict_test')
+#project_structure = project_parser('UCNLP', 'conflict_test')
 
 def make_shell_list(file):
     f = open(file,"rt",encoding="UTF8")
@@ -95,6 +96,9 @@ def on_message(ws, message):
     msg = json.loads(message)
     print(msg)
 
+    owner_name = " "
+    project_name = " "
+
     # Import User Data
 
     # Message Type is message
@@ -118,9 +122,16 @@ def on_message(ws, message):
                 user_slack_id = msg['user']
                 print("print_user_id : ", user_slack_id, user_git_id)
 
+                w_db = work_database.work_database()
+                repository_name = w_db.read_project_name(user_slack_id)
+                owner_name = repository_name.split('/')[0]
+                project_name = repository_name.split('/')[1]
+                project_name = project_name[:-4]
+                w_db.close()
+
                 # Sentence Processing logic
 
-                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
+                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name,project_name,rand_text, user_git_id)
                 return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
 
                 print("return message : " + str(return_message))
@@ -143,8 +154,13 @@ def on_message(ws, message):
                 print("print_user_id : ", user_slack_id, user_git_id)
 
                 # Sentence Processing logic
+                repository_name = w_db.read_project_name(user_slack_id)
+                owner_name = repository_name.split('/')[0]
+                project_name = repository_name.split('/')[1]
+                project_name = project_name[:-4]
+                print(owner_name,project_name)
 
-                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(rand_text, user_git_id)
+                intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name,project_name,rand_text, user_git_id)
                 return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
 
                 print("return message : " + str(return_message))
@@ -175,10 +191,10 @@ def on_open(ws):
 
 if __name__ == "__main__":
     print("hi")
-    nltk.download('punkt')
-    nltk.download('wordnet')
-
-    tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    # nltk.download('punkt')
+    # nltk.download('wordnet')
+    #
+    # tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     res = slack.auth.test().body
 
     msg = [{

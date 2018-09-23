@@ -287,7 +287,7 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
 
     project_name = w_db.read_project_name(target_slack_code)
     if project_name == -2:
-        message = "This user is not in slack. [Assuming all clients are turned on]"
+        message = "This user is not in our database."
     elif project_name == -1:
         message = "This user is not working on the project"
     else:

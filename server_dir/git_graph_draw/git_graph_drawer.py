@@ -454,7 +454,7 @@ def indirect_logic(git_repository_name):
     # Remove exist dir
     removeDir(root_dir_temp)
 
-    return
+    returnz
 def is_old_git_clone(repository_name):
     mysql_conn_obj = mysql_conn()
     raw_list = list()
