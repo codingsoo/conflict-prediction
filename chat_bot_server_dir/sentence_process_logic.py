@@ -346,8 +346,6 @@ def send_message_direct_logic(slack_code, msg, user_name):
     w_db.close()
     return message
 
-
-# Finn can not
 def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
     w_db = work_database()
 
@@ -364,10 +362,12 @@ def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
             message = message.format(user1_slack_id, user1_slack_id)
 
         w_db.close()
-        return message
+
     else:
+        message = random.choice(shell_dict['feat_recommend_no_conflict'])
         w_db.close()
-        return "There was no conflict before."
+
+    return message
 
 
 def greeting_logic(slack_code):
