@@ -68,45 +68,7 @@ def sentence_preprocess(_sentence):
     return sentence
 
 
-def is_command(_sentence, nlp):
-    # sentence 제일 앞에 modal 추가
-    sentence = "Must " + _sentence
-    pos_tag_list = nlp.pos_tag(sentence)
 
-    for pos_tag in pos_tag_list:
-        if pos_tag[1] == "RB" or pos_tag[1] == "MD":
-            pass
-        elif (pos_tag[1] == "VB" and pos_tag[0] != "sayme") or pos_tag[1] == "VBP":
-            return True
-        else:
-            return False
-
-def is_desire(pos_tag_list):
-    ignore_pos_list = ["RB", ",", "!", "."]
-    VPN_list = ["do", "am", "are", "is", "be"]
-    desire_list = ["want", "hope", "wish", "desire", "need", "like", "love"]
-    wonder_list = ["wonder", "curious", "aware", "conscious", "inquisitive", "interested", "questioning", "searching"]
-
-
-    for pos_tag in pos_tag_list: # I should get @Sun's working status.
-        if pos_tag[0] == "I" or pos_tag[1] in ignore_pos_list:
-            pass
-        elif pos_tag[0] in VPN_list and pos_tag[1] == "VBP":
-            pass
-        elif pos_tag[1] == "MD" or pos_tag[0] in desire_list or pos_tag[0] in wonder_list:
-            return True
-        else:
-            return False
-
-def is_suggestion(pos_tag_list):
-    suggestion_noun_list = ["you", "sayme"]
-    for pos_tag in pos_tag_list:
-        if pos_tag[0] in suggestion_noun_list:
-            pass
-        elif pos_tag[1] == "MD":
-            return True
-        else:
-            return False
 
 def is_question(_sentence, pos_tag_list, nlp):
     sentence = _sentence.replace(" not ", " ", 1)
@@ -120,6 +82,53 @@ def is_question(_sentence, pos_tag_list, nlp):
                 if pos_tag_list[pos_idx + 1][0] == "about":
                     return True
     return False
+
+def is_command(_sentence, nlp):
+    # sentence 제일 앞에 modal 추가
+    sentence = "Must " + _sentence
+    pos_tag_list = nlp.pos_tag(sentence)
+
+    for pos_tag in pos_tag_list:
+        if pos_tag[1] == "RB" or pos_tag[1] == "MD":
+            pass
+        elif (pos_tag[1] == "VB" and pos_tag[0] != "sayme") or pos_tag[1] == "VBP":
+            return True
+        else:
+            return False
+
+
+def is_suggestion(pos_tag_list):
+    suggestion_noun_list = ["you", "sayme"]
+    for pos_tag in pos_tag_list:
+        if pos_tag[0] in suggestion_noun_list:
+            pass
+        elif pos_tag[1] == "MD":
+            return True
+        else:
+            return False
+
+def is_desire(pos_tag_list):
+    ignore_pos_list = ["RB", ",", "!", "."]
+    VPN_list = ["do", "am", "are", "is", "be"]
+    desire_list = ["want", "hope", "wish", "desire", "need", "like", "love"]
+    wonder_list = ["wonder", "curious", "aware", "conscious", "inquisitive", "interested", "questioning", "searching"]
+
+
+    for pos_tag in pos_tag_list: # I should get @Sun's working status.
+        # if pos_tag[0] == "I" or pos_tag[1] in ignore_pos_list:
+        #     pass
+        # elif pos_tag[0] in VPN_list and pos_tag[1] == "VBP":
+        #     pass
+        # elif pos_tag[1] == "MD" or pos_tag[0] in desire_list or pos_tag[0] in wonder_list:
+        #     return True
+        # else:
+        #     return False
+        if pos_tag[1] in ignore_pos_list:
+            pass
+        elif pos_tag[0] == "I":
+            return True
+        else:
+            return False
 
 def require_something_sentence(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
