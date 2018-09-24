@@ -72,7 +72,7 @@ def make_indirect_conflict_shell_list():
 
 # Get user slack id
 def get_user_slack_id(git_id):
-    u_db = user_database()
+    u_db = user_database("parent")
     return u_db.search_user_slack_id_code(git_id)
 
 def send_lock_message(lock_file_list, user_name):

@@ -5,7 +5,7 @@ from flask import Flask, request
 from server_dir.git_graph_draw.python_floyd import create_indirect_edge_list
 import pymysql
 from server_dir.server_config_loader import *
-
+from server_dir.user_database import user_database
 # Create Server
 app = Flask(__name__)
 
@@ -454,7 +454,8 @@ def indirect_logic(git_repository_name):
     # Remove exist dir
     removeDir(root_dir_temp)
 
-    returnz
+    return
+
 def is_old_git_clone(repository_name):
     mysql_conn_obj = mysql_conn()
     raw_list = list()
@@ -505,6 +506,11 @@ def repository_name():
     content = request.get_json(silent=True)
 
     git_repository_name = content['repository_name']
+    git_id = content['user_email']
+
+    u_db = user_database("grandparent")
+    u_db.set_repository_name(git_id, git_repository_name)
+    u_db.close()
 
     if(is_old_git_clone(git_repository_name)):
         pass

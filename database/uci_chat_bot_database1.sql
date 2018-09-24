@@ -94,7 +94,8 @@ CREATE TABLE IF NOT EXISTS `logic_dependency` (
 CREATE TABLE IF NOT EXISTS `user_table` (
   `git_id` varchar(50) DEFAULT NULL,
   `slack_id` varchar(50) DEFAULT NULL,
-  `slack_code` varchar(50) DEFAULT 'NULL'
+  `slack_code` varchar(50) DEFAULT NULL,
+  `repository_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

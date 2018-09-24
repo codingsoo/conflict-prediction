@@ -110,20 +110,20 @@ def on_message(ws, message):
 
         # Verifying User : Detect Hash Number
         if(rand_text.isdigit() and (len(rand_text) == 5)):
-            w_db = user_database()
+            w_db = user_database("parent")
             w_db.set_slack_id_code(random_number=rand_text,
                                    slack_id=get_slack_display_name(msg['user']),
                                    slack_code=msg['user'])
             w_db.close()
         elif msg['channel'] == 'CBNKGMWBH':
             if (("Sayme" in msg['text']) or ("<@UBP8LHJS1>" in msg['text'])):
-                u_db = user_database()
+                u_db = user_database("parent")
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
                 user_slack_id = msg['user']
                 print("print_user_id : ", user_slack_id, user_git_id)
 
                 w_db = work_database.work_database()
-                repository_name = w_db.read_project_name(user_slack_id)
+                repository_name = w_db.get_repository_name(user_slack_id)
                 owner_name = repository_name.split('/')[0]
                 project_name = repository_name.split('/')[1]
                 project_name = project_name[:-4]
@@ -144,7 +144,7 @@ def on_message(ws, message):
         else:
             if msg['user'] != "UBP8LHJS1":
                 # Search Git id
-                u_db = user_database()
+                u_db = user_database("parent")
                 w_db = work_database.work_database()
 
                 w_db.insert_last_connection(msg['user'])
@@ -154,7 +154,7 @@ def on_message(ws, message):
                 print("print_user_id : ", user_slack_id, user_git_id)
 
                 # Sentence Processing logic
-                repository_name = w_db.read_project_name(user_slack_id)
+                repository_name = w_db.get_repository_name(user_slack_id)
                 owner_name = repository_name.split('/')[0]
                 project_name = repository_name.split('/')[1]
                 project_name = project_name[:-4]

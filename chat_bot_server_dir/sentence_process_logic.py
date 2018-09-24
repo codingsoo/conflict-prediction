@@ -73,7 +73,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 def approved_file_logic(slack_code, approved_set, removed_list):
     w_db = work_database()
     user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
 
     approved_list = list(approved_set)
 
@@ -127,7 +127,7 @@ def approved_file_logic(slack_code, approved_set, removed_list):
 def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     w_db = work_database()
 
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
     message = ""
 
     m1 = ""
@@ -189,7 +189,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
 def code_history_logic(slack_code, file_path, start_line, end_line):
     w_db = work_database()
 
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
     engaging_user_email_list = get_user_email(project_name, file_path, start_line, end_line)
 
     message = ""
@@ -218,7 +218,7 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
 def ignore_file_logic(slack_code, ignore_list, approval):
     w_db = work_database()
     print("ignore : " + str(ignore_list))
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
     already_ignore_tuple = w_db.read_ignore(project_name, slack_code)
     message = ""
 
@@ -264,7 +264,7 @@ def check_conflict_logic(slack_code, file_name):
     w_db = work_database()
     message = ""
 
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
     print("project_ name test : ", project_name)
     direct_conflict_flag, indirect_conflict_flag = w_db.is_conflict(project_name, slack_code, file_name)
 
@@ -285,7 +285,7 @@ def other_working_status_logic(slack_code, target_slack_code, git_id):
     w_db = work_database()
     message = ""
 
-    project_name = w_db.read_project_name(target_slack_code)
+    project_name = w_db.get_repository_name(target_slack_code)
     if project_name == -2:
         message = "This user is not in our database."
     elif project_name == -1:
@@ -403,7 +403,7 @@ def response_logic(slack_code, msg_type):
     request_lock_set = set()
 
     message = ""
-    project_name = w_db.read_project_name(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
     remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
 
     target_list = w_db.read_oldest_lock_history_list(remove_file_list)

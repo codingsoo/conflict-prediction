@@ -427,7 +427,7 @@ class work_database:
     '''
     # Add lock list
     def add_lock_list(self, slack_code, req_lock_set, delete_time):
-        project_name = self.read_project_name(slack_code)
+        project_name = self.get_repository_name(slack_code)
 
         if str(project_name).isdigit():
             print("ERROR : NO PROJECT NAME")
@@ -497,7 +497,7 @@ class work_database:
         return raw_list
 
     def remove_lock_list(self, slack_code, remove_lock_list):
-        project_name = self.read_project_name(slack_code)
+        project_name = self.get_repository_name(slack_code)
 
         if str(project_name).isdigit():
             print("ERROR : NO PROJECT NAME")
@@ -1067,6 +1067,23 @@ class work_database:
             return -1
         else:
             return raw_list1[0][0]
+
+    def get_repository_name(self,slack_code):
+        try:
+            sql = "select repository_name " \
+                  "from user_table " \
+                  "where slack_code = '%s'" % (slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            repository_name = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get repository name")
+
+        return repository_name
+
 
     # Ex) git_id = "qortndud97@naver.com", slack_code = "<@UCFNMU2EM>", slack_id = "Sooyoung Baek"
     def convert_slack_id_to_git_id(self, slack_name):

@@ -14,6 +14,16 @@ class user_database:
                                     db=db,
                                     charset=charset)
 
+    def __init__(self,mode_type):
+        # Load mysql database connection config
+        host, user, password, db, charset = load_database_connection_config(mode_type)
+
+        # get mysql database connection
+        self.conn = pymysql.connect(host=host,
+                                    user=user,
+                                    password=password,
+                                    db=db,
+                                    charset=charset)
         # get cursor
         self.cursor = self.conn.cursor()
 
@@ -76,6 +86,20 @@ class user_database:
             self.conn.rollback()
             print("ERROR : set slack id code")
 
+    def set_repository_name(self,git_id, repository_name):
+        try:
+            # create sql
+            sql = "update user_table " \
+                  "set repository_name = '%s' " \
+                  "where git_id = '%s' " % (repository_name, git_id)
+
+            # execute sql
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : set repository_name")
 
     def search_user_slack_id_code(self, git_id):
         raw = tuple()

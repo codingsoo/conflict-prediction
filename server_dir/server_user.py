@@ -17,7 +17,7 @@ return      : True / Random Number
 def user_search_logic(content):
 
     git_id = str(content['user_email'])
-    u_db = user_database()
+    u_db = user_database("parent")
 
     if(u_db.search_user(git_id)):
         # Already Sign-in
