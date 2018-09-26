@@ -25,7 +25,7 @@ You and {}! It seems you are working on the same {} {}. I think this problem sho
 You and {}! It seems you are engaging in the same {} {}. I think you need to solve it.
 You and {}! It seems you are engaging in the same {} {}. I think you need to talk about it.
 You and {}! It seems you are engaging in the same {} {}. I think this problem should be solved.
-You and {}! It seems you are engaging in the same {} {}. I think you need to solve it.
+You and {}! It seems you are engaging in the same {} {}. I think you need to solve it.you
 You and {}, you’re on the same {} {}. It could get worse if you both move to same class.
 Two developers you and {} are working simultaneously in {} {}.
 Hey, you and {}, you are working on the same {} - {}. Be careful about conflict!

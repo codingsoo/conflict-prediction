@@ -1019,6 +1019,58 @@ class work_database:
 
     ####################################################################
     '''
+    Find Locker
+    '''
+    def get_locker_slack_code(self, project_name, file_path):
+        locker_name = ""
+        try:
+            sql = "select slack_code " \
+                  "from lock_list " \
+                  "where project_name = '%s' " \
+                  "and lock_file = '%s'" % (project_name, file_path)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            locker_name = self.cursor.fetchall()[0][0]
+            print("locker_name", locker_name)
+        except:
+            self.conn.rollback()
+            print("ERROR : get locker name")
+
+        return locker_name
+
+    ####################################################################
+    '''
+    Find the information of Severity
+    '''
+
+    def get_severity_set(self, project_name, file_path):
+        raw_set = set()
+        try:
+            sql = "select logic1_name, logic2_name, user1_name, user2_name, severity " \
+                  "from direct_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s'" % (project_name, file_path)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            print(raw_tuple)
+            for rt in raw_tuple:
+                if not ((rt[1], rt[3]), (rt[0], rt[2]), rt[4]) in raw_set:
+                    raw_set.add(((rt[0], rt[2]), (rt[1], rt[3]), rt[4]))
+
+            print(raw_set)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get severity set")
+
+        return raw_set
+    ####################################################################
+    '''
     Utility
     '''
     def read_project_name(self, slack_code):
@@ -1068,7 +1120,7 @@ class work_database:
         else:
             return raw_list1[0][0]
 
-    def get_repository_name(self,slack_code):
+    def get_repository_name(self, slack_code):
         try:
             sql = "select repository_name " \
                   "from user_table " \

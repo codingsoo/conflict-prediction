@@ -32,7 +32,7 @@ nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-
 # 11. greeting : Chatbot can greet users.
 # 12. complimentary_close : Chatbot can say good bye.
 # 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-# 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+# 14. detect_indirect_conflict : Chatbot can ddid etect indirect conflict and severity.
 
 question_sentence_list = ["Can you not notify me about hello.py?",
                           "Can you lock hello.py?",
@@ -42,7 +42,9 @@ question_sentence_list = ["Can you not notify me about hello.py?",
                           "Can you tell me <@UCFNMU2ED>'s working status?",
                           'Can you tell code-conflict-chatbot channel that “I am working on File1.py”',
                           'Can you chat to <@UCFNMU2ED> "I will check and solve the problem"?',
-                          "Can you recommend what I should do to fix the conflict in File.py?"]
+                          "Can you recommend what I should do to fix the conflict in File.py?",
+                          "Can you tell me who locked file1.py?",
+                          "How severe is the conflict?"]
 command_sentence_list = ["Do not notify me about File1.py again.",
                          "Don't lock hello.py.",
                          "Tell me who wrote line 70 to line 90 in file1.py.",
@@ -51,16 +53,20 @@ command_sentence_list = ["Do not notify me about File1.py again.",
                          "Tell me where <@UCFNMU2ED>'s working status.",
                          'Tell code-conflict-chatbot channel that “I am working on File1.py”',
                          'Send a message to <@UCFNMU2ED> "I am working on class1".',
-                         "Give me some recommendation about how to solve the conflict of File1.py."]
+                         "Give me some recommendation about how to solve the conflict of File1.py.",
+                         "Tell me who lock file1.py.",
+                         "Tell me the severity of the conflict."]
 suggestion_sentence_list = ["You should not give me notification about File1.py.",
-                            "You should lock File.py.",
+                            "You should lock File.pwy.",
                             "You should let me know who wrote code line 1 to line 9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "You should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
                             'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
                             'You have to send a message to <@UCFNMU2ED> "I will check and solve the conflict".',
-                            "You would tell me how I can solve the conflict in File1.py"]
+                            "You would tell me how I can solve the conflict in File1.py",
+                            "You should tell me who lock file1.py.",
+                            "You should tell me the severity of the conflict."]
 desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         "I want to lock File1.py.",
                         "I want to know who wrote line 70 to line 90 in File1.py.",
@@ -69,7 +75,11 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         "I want to know <@UCFNMU2ED>'s working status.",
                         'I want to send the message to conflict detector channel that "Do not modify File1.py".',
                         'I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".',
-                        "I want to get recommendation how I can solve the conflict in File1.py."]
+                        "I want to get recommendation how I can solve the conflict in File1.py.",
+                        "I want to know who lock file1.py.",
+                        "I want to know the severity of the conflict."]
+
+CONST_ERROR = 15
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -132,7 +142,7 @@ def get_slack_code_list():
 def calcue_max(sentence, list):
     user_input = nlp(sentence.strip())
     max = 0
-    max_idx = 10
+    max_idx = CONST_ERROR
     for idx in range(len(list)):
 
         sample_input = nlp(list[idx])
@@ -153,8 +163,8 @@ def calcue_max(sentence, list):
         else:
             max_idx = 7
 
-    if max_idx in [1, 2, 3, 5] and ".py" not in sentence:
-        return 10
+    if max_idx in [1, 2, 3, 5, 10, 11] and ".py" not in sentence:
+        return CONST_ERROR
 
     print ("max rate : ", max)
     return max_idx
@@ -168,32 +178,28 @@ def intent_classifier(_sentence):
     # Question
     if sentence_type == 1:
         max_idx = calcue_max(sentence, question_sentence_list)
-
         return max_idx, sentence
 
 
     # Command
     elif sentence_type == 2:
         max_idx = calcue_max(sentence, command_sentence_list)
-
         return max_idx, sentence
 
 
     # Suggestion
     elif sentence_type == 3:
         max_idx = calcue_max(sentence, suggestion_sentence_list)
-
         return max_idx, sentence
 
 
     # Desire
     elif sentence_type == 4:
         max_idx = calcue_max(sentence, desire_sentence_list)
-
         return max_idx, sentence
 
     else:
-        return 10, sentence
+        return CONST_ERROR, sentence
 
 def get_file_path(file_list):
     result_file_list = []
@@ -203,7 +209,7 @@ def get_file_path(file_list):
     return result_file_list
 
 
-def extract_attention_word(owner_name,project_name,_sentence, github_email):
+def extract_attention_word(owner_name, project_name,_sentence, github_email):
     import re
 
     work_db = work_database()
@@ -262,19 +268,13 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
 
     # About approve
     if intent_type == 1:
-
-        result_file_list = []
         remove_list = []
         approve_set = set()
         found = 0
-        print(file_list)
 
         approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear"]
 
-        for fl in file_list:
-            r = fl.split("/")[-1]
-            result_file_list.append(str(r))
-        print(result_file_list)
+        result_file_list = get_file_path(file_list)
 
         for rfl in result_file_list:
             print(rfl)
@@ -328,7 +328,7 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
 
         if not remove_list and not approve_set:
             work_db.close()
-            return 13, "no_file", None, None
+            return CONST_ERROR, "no_file", None, None
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
@@ -341,18 +341,14 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
     elif intent_type == 2:
 
         lock_time = 0
-        result_file_list = []
         request_lock_set = set()
         remove_lock_list = []
 
-        for fl in file_list:
-            r = fl.split("/")[-1]
-            result_file_list.append(" " + r)
+        result_file_list = get_file_path(file_list)
 
         for rfl in result_file_list:
             if rfl in sentence:
                 sentence = sentence.replace(rfl, " ")
-
                 if " not " in sentence or " unlock " in sentence:
                     remove_lock_list.append(file_list[result_file_list.index(rfl)])
                 else:
@@ -369,30 +365,25 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
                 request_lock_set.add(recent_file)
             else:
                 work_db.close()
-                return 13, "no_file", None, None
+                return CONST_ERROR, "no_file", None, None
 
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
         work_db.close()
         return 2, request_lock_set, remove_lock_list, lock_time
 
-    # About history
+    # About code history
     elif intent_type == 3:
         result_file_list = get_file_path(file_list)
         file_path = ""
 
         for rfl in result_file_list:
-            name = rfl
-            if str(os.sep) in rfl:
-                name = rfl.split(os.sep)[-1]
-            if name in sentence:
-                file_path = rfl
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
 
         if file_path == "":
             work_db.close()
-            return 13, "no_file", None, None
-
-        file_path_idx = result_file_list.index(file_path)
+            return CONST_ERROR, "no_file", None, None
 
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
@@ -414,7 +405,7 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
             start_line = end_line = 1
 
         work_db.close()
-        return 3, file_list[file_path_idx], start_line, end_line
+        return 3, file_path, start_line, end_line
 
     # About direct or indirect ignore
     elif intent_type == 4:
@@ -458,7 +449,6 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
 
     # About check conflict
     elif intent_type == 5:
-
         result_file_list = get_file_path(file_list)
         file_path = ""
 
@@ -468,7 +458,7 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
 
         if file_path == "":
             work_db.close()
-            return 13, "no_file", None, None
+            return CONST_ERROR, "no_file", None, None
 
         work_db.close()
         return 5, file_path, None, None
@@ -481,7 +471,6 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
             if code in sentence:
                 target_user_slack_code = code
                 break
-
 
         if target_user_slack_code == "":
             slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
@@ -518,12 +507,12 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
             else:
                 print("There is no channel")
                 work_db.close()
-                return 13, "no_file", None, None
+                return CONST_ERROR, "no_file", None, None
 
         except IndexError:
             print("There is no channel")
             work_db.close()
-            return 13, "no_file", None, None
+            return CONST_ERROR, "no_file", None, None
 
         work_db.close()
         return 7, channel, msg, user_name
@@ -563,20 +552,50 @@ def extract_attention_word(owner_name,project_name,_sentence, github_email):
 
     #About recommend
     elif intent_type == 9:
-
         work_db.close()
         return 9, github_email, recent_data[2], None
 
-    #About others
+    # About locker of file
+    elif intent_type == 10:
+        result_file_list = get_file_path(file_list)
+        file_path = ""
+
+        for rfl in result_file_list:
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
+
+        if file_path == "":
+            work_db.close()
+            return CONST_ERROR, "no_file", None, None
+
+        work_db.close()
+        return 10, file_path, None, None
+
+    # About severity
+    elif intent_type == 11:
+        result_file_list = get_file_path(file_list)
+        file_path = ""
+
+        for rfl in result_file_list:
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
+
+        if file_path == "":
+            work_db.close()
+            return CONST_ERROR, "no_file", None, None
+
+        work_db.close()
+        return 11, file_path, None, None
+
     else:
         work_db.close()
-        if " hi " in sentence or " hello " in sentence :
+        if " hi " in sentence or " hello " in sentence:
             print("greeting shell")
-            return 10, "greeting", None, None
+            return CONST_ERROR - 2, "greeting", None, None
         elif " bye " in sentence or " see you " in sentence:
-            return 11, "bye", None, None
+            return CONST_ERROR - 1, "bye", None, None
         else:
-            return 13, "no_response", None, None
+            return CONST_ERROR, "no_response", None, None
 
 
 if __name__ == '__main__':

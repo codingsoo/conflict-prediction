@@ -2,7 +2,7 @@ from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
-from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack, CONST_ERROR
 import os, random
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
@@ -36,15 +36,21 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = recommend_solve_conflict_logic(param0, param1)
 
     elif(intent_type == 10):
-        message = greeting_logic(slack_code)
+        message = find_locker_logic(slack_code, param0)
 
     elif(intent_type == 11):
-        message = bye_logic()
+        message = find_severity_logic(slack_code, param0)
 
-    elif (intent_type == 12):
+    elif(intent_type == 12):
         message = response_logic(slack_code, param0)
 
-    elif(intent_type == 13):
+    elif(intent_type == CONST_ERROR - 2):
+        message = greeting_logic(slack_code)
+
+    elif (intent_type == CONST_ERROR - 1):
+        message = bye_logic()
+
+    elif(intent_type == CONST_ERROR):
         if param0 == "no_response":
             message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
             # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -66,7 +72,6 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             message = "There is no such file. Please say it again."
         elif param0 == "no_channel":
             message = "There is no such channel. Please say it again."
-
 
     return message
 
@@ -151,7 +156,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_lock_file'])
-            ele = ','.join(list(lock_file_list))
+            ele = ', '.join(list(lock_file_list))
             message = message.format(ele)
 
     if remove_lock_list:
@@ -368,34 +373,47 @@ def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
     else:
         message = random.choice(shell_dict['feat_recommend_no_conflict'])
         w_db.close()
-
     return message
 
 
-def greeting_logic(slack_code):
+def find_locker_logic(slack_code, file_path):
     w_db = work_database()
     message = ""
 
-    last_connection = w_db.user_recognize(slack_code)
+    project_name = w_db.get_repository_name(slack_code)
 
-    if(last_connection == 1):
-        message = random.choice(shell_dict['feat_greetings'])
+    locker_slack_code = w_db.get_locker_slack_code(project_name, file_path)
 
-    # Finn can not
-    elif(last_connection == 2):
-        message = random.choice(shell_dict['feat_greetings2'])
-    elif(last_connection == 3):
-        message = random.choice(shell_dict['feat_greetings3'])
+    if locker_slack_code == "":
+        message = "There is no locker of {}".format(file_path)
     else:
-        message = random.choice(shell_dict['feat_greetings'])
+        locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
+        message = "The locker of {} is {}".format(file_path, locker_name)
 
     w_db.close()
-
     return message
 
+def find_severity_logic(slack_code, file_path):
+    w_db = work_database()
+    message = ""
 
-def bye_logic():
-    message = random.choice(shell_dict['feat_goodbye'])
+    project_name = w_db.get_repository_name(slack_code)
+    severity_set = w_db.get_severity_set(project_name, file_path)
+
+    if severity_set:
+        message += "Direct Conflict\n"
+        for ss in severity_set:
+            logic1_name = ss[0][0]
+            user1_name = w_db.convert_git_id_to_slack_id(ss[0][1])
+            logic2_name = ss[1][0]
+            user2_name = w_db.convert_git_id_to_slack_id(ss[1][1])
+            severity = ss[2]
+            message += "{} in '{}' & {} in '{}' : severity {}.\n".format(user1_name, logic1_name, user2_name, logic2_name, severity)
+
+    else:
+        message += "There is no direct conflict in {}. ".format(file_path)
+
+    w_db.close()
     return message
 
 
@@ -433,7 +451,30 @@ def response_logic(slack_code, msg_type):
             message = "I think you enter the wrong one."
 
     w_db.close()
+    return message
 
+def greeting_logic(slack_code):
+    w_db = work_database()
+    message = ""
+
+    last_connection = w_db.user_recognize(slack_code)
+
+    if(last_connection == 1):
+        message = random.choice(shell_dict['feat_greetings'])
+
+    # Finn can not
+    elif(last_connection == 2):
+        message = random.choice(shell_dict['feat_greetings2'])
+    elif(last_connection == 3):
+        message = random.choice(shell_dict['feat_greetings3'])
+    else:
+        message = random.choice(shell_dict['feat_greetings'])
+
+    w_db.close()
+    return message
+
+def bye_logic():
+    message = random.choice(shell_dict['feat_goodbye'])
     return message
 
 

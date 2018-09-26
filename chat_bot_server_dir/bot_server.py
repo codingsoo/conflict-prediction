@@ -37,7 +37,7 @@ token = load_token()
 slack = Slacker(token)
 
 # add_ignore = []
-#project_structure = project_parser('UCNLP', 'conflict_test')
+# project_structure = project_parser('UCNLP', 'conflict_test')
 
 def make_shell_list(file):
     f = open(file,"rt",encoding="UTF8")
@@ -46,7 +46,7 @@ def make_shell_list(file):
 
     return text
 
-# add_ignore = make_shell_list(os.path.join(os.path.pardir,"situation_shell","add_ignore.txt"))
+# add_ignore = make_shell_list(os.path.join(os.path.pardir,"situation_shell","goadd_ignore.txt"))
 
 # Slack Definition
 channel = '#code-conflict-chatbot'
@@ -158,7 +158,7 @@ def on_message(ws, message):
                 owner_name = repository_name.split('/')[0]
                 project_name = repository_name.split('/')[1]
                 project_name = project_name[:-4]
-                print(owner_name,project_name)
+                print(owner_name, project_name)
 
                 intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name,project_name,rand_text, user_git_id)
                 return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
