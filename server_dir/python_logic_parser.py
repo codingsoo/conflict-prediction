@@ -19,8 +19,8 @@ def func_parser( lines, start_line, indent_number, members ) :
         not_white_space_line_number = line_number
         line = line[DEFAULT_INDENT:]
         if line.startswith('def ') :
-            function_nmae = line[4:].split('(')[0].strip()
-            function_info = {'name': function_nmae, 'start': line_number, 'members': {'function': []}}
+            function_name = line[4:].split('(')[0].strip()
+            function_info = {'name': function_name, 'start': line_number, 'members': {'function': []}}
             function_info['end'] = func_parser(lines, line_number, indent_number + 1, function_info['members'])
             members['function'].append(function_info)
             line_number = min(function_info['end'] + 1, end_of_line_number)
@@ -48,12 +48,12 @@ def class_parser( lines, start_line, indent_number, members ) :
         if line.startswith('class '):
             class_name = line[6:].split(':')[0].split('(')[0].strip()
             class_info = {'name': class_name, 'start': line_number + 1, 'members': {'class': [], 'function': []}}
-            class_info['end'] = class_parser(lines, line_number, indent_number + 1, class_info) + 1
+            class_info['end'] = class_parser(lines, line_number, indent_number + 1, class_info['members']) + 1
             members['class'].append(class_info)
             line_number = min(class_info['end'] + 1, end_of_line_number)
         elif line.startswith('def '):
-            function_nmae = line[4:].split('(')[0].strip()
-            function_info = {'name': function_nmae, 'start': line_number + 1, 'members': {'function': []}}
+            function_name = line[4:].split('(')[0].strip()
+            function_info = {'name': function_name, 'start': line_number + 1, 'members': {'function': []}}
             function_info['end'] = func_parser(lines, line_number, indent_number + 1, function_info['members']) + 1
             members['function'].append(function_info)
             line_number = min(function_info['end'] + 1, end_of_line_number)
@@ -76,8 +76,8 @@ def get_py_info( file_path ) :
                 ret_dict['class'].append(class_info)
                 line_number = min(class_info['end'] + 1, end_of_line_number)
             elif line.startswith('def ') :
-                function_nmae = line[4:].split('(')[0].strip()
-                function_info = { 'name' : function_nmae, 'start' : line_number + 1, 'members' : { 'function' : [] }}
+                function_name = line[4:].split('(')[0].strip()
+                function_info = { 'name' : function_name, 'start' : line_number + 1, 'members' : { 'function' : [] }}
                 function_info['end'] = func_parser(lines, line_number, 0, function_info['members']) + 1
                 ret_dict['function'].append(function_info)
                 line_number = min(function_info['end'] + 1, end_of_line_number)

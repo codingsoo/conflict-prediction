@@ -13,8 +13,8 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -28,11 +28,13 @@ nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-
 # 7. channel_message : A user can let chatbot give a message to channel.
 # 8. user_message : A user can let chatbot give a message to other users.
 # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-# 10. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
-# 11. greeting : Chatbot can greet users.
-# 12. complimentary_close : Chatbot can say good bye.
-# 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-# 14. detect_indirect_conflict : Chatbot can ddid etect indirect conflict and severity.
+# 10. check_lock : A user can ask chatbot about who locked the file.
+# 11. check_severity : A user can ask chatbot about how severe conflict is.
+# 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+# 13. greeting : Chatbot can greet users.
+# 14. complimentary_close : Chatbot can say good bye.
+# 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+# 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 question_sentence_list = ["Can you not notify me about hello.py?",
                           "Can you lock hello.py?",
@@ -272,7 +274,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         approve_set = set()
         found = 0
 
-        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear"]
+        approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear", "bulletin", "notification", "notice", "proclamation", "warning", "advertisement", "advisory","alert","communication","communique","declaration","information","message","news","release","report","statement"]
 
         result_file_list = get_file_path(file_list)
 

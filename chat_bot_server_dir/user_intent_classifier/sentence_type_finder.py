@@ -1,8 +1,10 @@
 import nltk
 from stanfordcorenlp import StanfordCoreNLP
 
+nltk.download('wordnet')
 
 def sentence_preprocess(_sentence):
+
     # Change sentence to lower_case except slack code(<@ABCDEFGHI>) and file name(File.py)
     punc_list = ["!", "?", ",", ".", "’"]
 
@@ -134,6 +136,12 @@ def require_something_sentence(_sentence):
     nlp = StanfordCoreNLP('http://localhost', port=9000)
     sentence = sentence_preprocess(_sentence)
     pos_tag_list = nlp.pos_tag(sentence)
+
+    lemmatizer = nltk.WordNetLemmatizer()
+    for pos_tag in pos_tag_list:
+        if pos_tag[1] == "VB" or pos_tag[1] == "VBP" or pos_tag[1] == "VBG":
+            org_wrd = lemmatizer.lemmatize(pos_tag[0], pos ="v")
+            sentence = sentence.replace(pos_tag[0], org_wrd)
 
     print("sentence", sentence)
     print("pos_tag_list", pos_tag_list)
