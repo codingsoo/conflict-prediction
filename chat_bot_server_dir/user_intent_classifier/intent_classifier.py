@@ -12,9 +12,10 @@ from chat_bot_server_dir.work_database import work_database
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -28,13 +29,14 @@ nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/l
 # 7. channel_message : A user can let chatbot give a message to channel.
 # 8. user_message : A user can let chatbot give a message to other users.
 # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-# 10. check_lock : A user can ask chatbot about who locked the file.
-# 11. check_severity : A user can ask chatbot about how severe conflict is.
-# 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
-# 13. greeting : Chatbot can greet users.
-# 14. complimentary_close : Chatbot can say good bye.
-# 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-# 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+# 10. check_ignore : A user can ask chatbot which files are ignored.
+# 11. check_lock : A user can ask chatbot about who locked the file.
+# 12. check_severity : A user can ask chatbot about how severe conflict is.
+# 13. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+# 14. greeting : Chatbot can greet users.
+# 15. complimentary_close : Chatbot can say good bye.
+# 16. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+# 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 question_sentence_list = ["Can you not notify me about hello.py?",
                           "Can you lock hello.py?",
@@ -45,8 +47,10 @@ question_sentence_list = ["Can you not notify me about hello.py?",
                           'Can you tell code-conflict-chatbot channel that “I am working on File1.py”',
                           'Can you chat to <@UCFNMU2ED> "I will check and solve the problem"?',
                           "Can you recommend what I should do to fix the conflict in File.py?",
+                          "Can you tell me which files are ignored?"
                           "Can you tell me who locked file1.py?",
-                          "How severe is the conflict?"]
+                          "Can you tell me who ignored file1.py?"
+                          ]
 command_sentence_list = ["Do not notify me about File1.py again.",
                          "Don't lock hello.py.",
                          "Tell me who wrote line 70 to line 90 in file1.py.",
@@ -56,8 +60,10 @@ command_sentence_list = ["Do not notify me about File1.py again.",
                          'Tell code-conflict-chatbot channel that “I am working on File1.py”',
                          'Send a message to <@UCFNMU2ED> "I am working on class1".',
                          "Give me some recommendation about how to solve the conflict of File1.py.",
+                         "Tell me which files are ignored.",
                          "Tell me who lock file1.py.",
-                         "Tell me the severity of the conflict."]
+                         "Tell me the severity of the conflict in file1.py."
+                         ]
 suggestion_sentence_list = ["You should not give me notification about File1.py.",
                             "You should lock File.pwy.",
                             "You should let me know who wrote code line 1 to line 9 at file1.py.",
@@ -67,8 +73,10 @@ suggestion_sentence_list = ["You should not give me notification about File1.py.
                             'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
                             'You have to send a message to <@UCFNMU2ED> "I will check and solve the conflict".',
                             "You would tell me how I can solve the conflict in File1.py",
+                            "You should tell me which files are ignored."
                             "You should tell me who lock file1.py.",
-                            "You should tell me the severity of the conflict."]
+                            "You should tell me the severity of the conflict in file.py."]
+
 desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         "I want to lock File1.py.",
                         "I want to know who wrote line 70 to line 90 in File1.py.",
@@ -78,10 +86,11 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         'I want to send the message to conflict detector channel that "Do not modify File1.py".',
                         'I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".',
                         "I want to get recommendation how I can solve the conflict in File1.py.",
+                        "I want to know which files are ignored.",
                         "I want to know who lock file1.py.",
-                        "I want to know the severity of the conflict."]
+                        "I want to know the severity of the conflict in file.py"]
 
-CONST_ERROR = 15
+CONST_ERROR = 16
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -165,7 +174,7 @@ def calcue_max(sentence, list):
         else:
             max_idx = 7
 
-    if max_idx in [1, 2, 3, 5, 10, 11] and ".py" not in sentence:
+    if max_idx in [1, 2, 3, 5, 11, 12] and ".py" not in sentence:
         return CONST_ERROR
 
     print ("max rate : ", max)
@@ -552,28 +561,17 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         work_db.close()
         return 8, target_user_slack_code, msg, user_name
 
-    #About recommend
+    # About recommend
     elif intent_type == 9:
         work_db.close()
         return 9, github_email, recent_data[2], None
 
-    # About locker of file
+    # About check ignored file
     elif intent_type == 10:
-        result_file_list = get_file_path(file_list)
-        file_path = ""
-
-        for rfl in result_file_list:
-            if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
-
-        if file_path == "":
-            work_db.close()
-            return CONST_ERROR, "no_file", None, None
-
         work_db.close()
-        return 10, file_path, None, None
+        return 10, None, None, None
 
-    # About severity
+    # About locker of file
     elif intent_type == 11:
         result_file_list = get_file_path(file_list)
         file_path = ""
@@ -588,6 +586,22 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
         work_db.close()
         return 11, file_path, None, None
+
+    # About severity
+    elif intent_type == 12:
+        result_file_list = get_file_path(file_list)
+        file_path = ""
+
+        for rfl in result_file_list:
+            if rfl in sentence:
+                file_path = file_list[result_file_list.index(rfl)]
+
+        if file_path == "":
+            work_db.close()
+            return CONST_ERROR, "no_file", None, None
+
+        work_db.close()
+        return 12, file_path, None, None
 
     else:
         work_db.close()

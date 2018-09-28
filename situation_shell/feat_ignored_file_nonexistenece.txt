@@ -1,0 +1,5 @@
+There is no ignored files!
+Nothing to be ignored.
+Nothing.
+Nobody ignored files in your project.
+No files are ignored.

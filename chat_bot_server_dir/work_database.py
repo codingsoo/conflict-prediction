@@ -1124,6 +1124,34 @@ class work_database:
 
     ####################################################################
     '''
+    Find Ignored Files 
+    '''
+
+    def get_ignored_file_list(self, project_name):
+        raw_list = []
+        try:
+            sql = "select approved_file " \
+                  "from approved_list " \
+                  "where project_name = '%s'" % (project_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for rt in raw_tuple:
+                raw_list.append(rt[0])
+
+            print("raw_list", raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : get ignored file list")
+
+        return raw_list
+
+
+
+    ####################################################################
+    '''
     Find Locker
     '''
     def get_locker_slack_code(self, project_name, file_path):
