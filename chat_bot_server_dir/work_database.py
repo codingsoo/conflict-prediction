@@ -21,11 +21,12 @@ class work_database:
 
     ####################################################
     '''
-    Working_Table
+    Working_Table && Calling_Table
     '''
 
     # Update User data to working_table
-    def update_user_data(self, project_name, working_list, user_name):
+    def update_user_data(self, project_name, working_list, calling_list, user_name):
+        # in working_table
         for temp_work in working_list:
             print("temp_work : ", temp_work)
             try:
@@ -41,12 +42,30 @@ class work_database:
                 self.conn.commit()
             except:
                 self.conn.rollback()
-                print("ERROR : update_user_data")
+                print("ERROR : update_user_data : working")
+
+        # in calling_table
+        # { file_name : { line : { 'file_path': value, 'class_context': [value], 'func_name': value, 'logic': value } } }
+        for file_name, temp_calling_list in calling_list.items():
+            print("temp_calling_list : ", temp_calling_list)
+            for line_num, temp_calling in temp_calling_list.items():
+                try:
+                    sql = "replace into calling_table " \
+                          "(project_name, user_name, file_name, calling_file, calling_logic) " \
+                          "value ('%s', '%s', '%s', '%s', '%s')" \
+                          % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
+                    print(sql)
+                    self.cursor.execute(sql)
+                    self.conn.commit()
+                except:
+                    self.conn.rollback()
+                    print("ERROR : update_user_data : calling")
 
         return
 
     # Remove User data to working_table
-    def remove_user_data(self, project_name, working_list, user_name):
+    def remove_user_data(self, project_name, working_list, calling_list, user_name):
+        # in working_table
         user_working_db = set()
 
         try:
@@ -112,7 +131,93 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : remove_user_data")
 
+        # in calling_table
+        user_calling_db = set()
+        try:
+            sql = "select * " \
+                  "from calling_table " \
+                  "where user_name = '%s'" % (user_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for raw in raw_tuple:
+                user_calling_db.add(raw)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : remove_user_data")
+
+        current_calling_db = set()
+
+        # { file_name : { line : { 'file_path': value, 'class_context': [value], 'func_name': value, 'logic': value } } }
+        for file_name, temp_calling_list in calling_list.items():
+            for line_num, temp_calling in temp_calling_list.items():
+                try:
+                    sql = "select * " \
+                          "from calling_table " \
+                          "where project_name = '%s' " \
+                          "and user_name = '%s' " \
+                          "and file_name = '%s' " \
+                          "and calling_file = '%s' " \
+                          "and calling_logic = '%s' " \
+                          % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
+                    print(sql)
+                    self.cursor.execute(sql)
+                    self.conn.commit()
+
+                    raw_tuple = self.cursor.fetchall()
+                    for raw in raw_tuple:
+                        current_calling_db.add(raw)
+
+                except:
+                    self.conn.rollback()
+                    print("ERROR : remove_user_data")
+
+        remove_calling_db = user_calling_db - current_calling_db
+
+        for temp_remove in remove_calling_db:
+            try:
+                sql = "delete " \
+                      "from calling_table " \
+                      "where project_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and calling_file = '%s' " \
+                      "and calling_logic = '%s' " \
+                      % (temp_remove[0], temp_remove[1], temp_remove[2], temp_remove[3], temp_remove[4])
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : remove_user_data")
+
         return
+
+    ####################################################
+    '''
+    Function list
+    '''
+
+    def insert_function_list(self, project_name, logic_dict):
+        try:
+            sql = "insert into function_list " \
+                  "(project_name, file_name, logic)" \
+                  "values "
+            for file_name, temp_logic_list in logic_dict.items():
+                for temp_logic in temp_logic_list['Function']:
+                    sql += "('%s', '%s', '%s'), " % (project_name, file_name, temp_logic)
+            sql = sql[:-2]
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : insert functino list")
 
     ####################################################
     '''

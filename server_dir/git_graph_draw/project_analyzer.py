@@ -1,6 +1,6 @@
 import os
-from server_dir.git_graph_draw import py_file_parser
 
+from server_dir.git_graph_draw import py_file_parser
 
 def get_file_list( root ) :
     py_list = []
@@ -152,6 +152,7 @@ def run( root , owner) :
     project_name = os.path.basename(root)
     file_list = get_file_list(root)
     print("Project Name : {}".format(project_name))
+    print("file_list : {}".format(file_list))
     print("Code Amount : {}".format(len(file_list)))
 
     for file_path in file_list :
@@ -162,6 +163,9 @@ def run( root , owner) :
         logic_dict[file_path] = {"Class": set(), "Function": set()}
         insert_into_logic_dict(file_path,values,logic_dict)
 
+    for file_name, logic_temp in logic_dict.items():
+        print("SUN TEST : ", file_name, " ", logic_temp)
+
     edges_list = []
 
     for file_path, values in project_dict.items() :
@@ -171,4 +175,4 @@ def run( root , owner) :
             elif value['type'] =='Function' :
                 make_func_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list)
 
-    return edges_list
+    return edges_list, logic_dict
