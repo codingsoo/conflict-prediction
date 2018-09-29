@@ -29,8 +29,8 @@ nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/pyt
 # 7. channel_message : A user can let chatbot give a message to channel.
 # 8. user_message : A user can let chatbot give a message to other users.
 # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-# 10. check_ignore : A user can ask chatbot which files are ignored.
-# 11. check_lock : A user can ask chatbot about who locked the file.
+# 10. check_ignored_file : A user can ask chatbot which files are ignored.
+# 11. check_locker : A user can ask chatbot about who locked the file.
 # 12. check_severity : A user can ask chatbot about how severe conflict is.
 # 13. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
 # 14. greeting : Chatbot can greet users.
@@ -66,7 +66,7 @@ command_sentence_list = ["Do not notify me about File1.py again.",
                          "Tell me the severity of the conflict in file1.py."
                          ]
 suggestion_sentence_list = ["You should not give me notification about File1.py.",
-                            "You should lock File.pwy.",
+                            "You should lock File.py.",
                             "You should let me know who wrote code line 1 to line 9 at file1.py.",
                             "You should not alert me about direct conflict.",
                             "You should check File1.py if this is gonna make a conflict.",
@@ -169,6 +169,12 @@ def calcue_max(sentence, list):
         else:
             max_idx = 1
 
+    if max_idx == 1 or max_idx == 10:
+        if ".py" in sentence:
+            max_idx = 1
+        else:
+            max_idx = 10
+
     if max_idx == 7 or max_idx == 8:
         if " <@" in sentence:
             max_idx = 8
@@ -232,6 +238,8 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         fl = owner_name + "/" + project_name + "/" + ofl
         file_list.append(fl)
 
+    print("onlyFile_list", onlyFile_list)
+    print("file_list", file_list)
     slack_code_list = get_slack_code_list()
 
     recent_data = work_db.get_recent_data(github_email)
@@ -250,18 +258,17 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
     for yes in yes_list:
         if " " + yes + " " in sentence:
             work_db.close()
-            return 12, "yes", None, None
+            return 13, "yes", None, None
     for no in no_list:
         if " " + no + " " in sentence:
             work_db.close()
-            return 12, "no", None, None
+            return 13, "no", None, None
 
     intent_type, sentence = intent_classifier(_sentence)
 
     print("Intent_type", intent_type)
 
     conflict_file_list = work_db.all_conflict_list(github_email)
-
     # help classification about intent_type 5 and 9
     # if conflict_file in sentence, we can think user wants to recommendation.
     is_found = 0
@@ -357,6 +364,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         remove_lock_list = []
 
         result_file_list = get_file_path(file_list)
+        print("result_file_list", result_file_list)
 
         for rfl in result_file_list:
             if rfl in sentence:

@@ -44,7 +44,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 12):
         message = check_severity_logic(slack_code, param0)
 
-    elif(intent_type == 12):
+    elif(intent_type == 13):
         message = response_logic(slack_code, param0)
 
     elif(intent_type == CONST_ERROR - 2):
@@ -65,8 +65,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             # 7. channel_message : A user can let chatbot give a message to channel.
             # 8. user_message : A user can let chatbot give a message to other users.
             # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-            # 10. check_ignore : A user can ask chatbot which files are ignored.
-            # 11. check_lock : A user can ask chatbot about who locked the file.
+            # 10. check_ignored_file : A user can ask chatbot which files are ignored.
+            # 11. check_locker : A user can ask chatbot about who locked the file.
             # 12. check_severity : A user can ask chatbot about how severe conflict is.
             # 13. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
             # 14. greeting : Chatbot can greet users.
@@ -95,40 +95,32 @@ def approved_file_logic(slack_code, approved_set, removed_list):
     message = ""
     ch_message = ""
     if approved_list:
-        diff_approved_set = w_db.add_approved_list(project_name=project_name,
+        diff_approved_list, already_approved_list = w_db.add_approved_list(project_name=project_name,
                                req_approved_set=approved_set)
-
-        if diff_approved_set:
-            for al in approved_list:
-                ch_message += random.choice(shell_dict['feat_ignore_channel'])
-                ch_message = ch_message.format(user_name, al)
-
+        if diff_approved_list:
+            ch_message += random.choice(shell_dict['feat_ignore_channel'])
+            ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
             send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_ignore_file'])
-            message = message.format(approved_list[0])
+            message = message.format(", ".join(diff_approved_list))
 
-        else:
-            for al in approved_list:
-                message += "You already ignored {} file!".format(al)
+        if already_approved_list:
+            message += "You already ignored {} file!".format(", ".join(already_approved_list))
 
     if removed_list:
         success_list, fail_list = w_db.remove_approved_list(project_name=project_name,
                                  remove_approved_list=removed_list)
-
         if success_list:
-            for sl in success_list:
-                ch_message += random.choice(shell_dict['feat_unignore_channel'])
-                ch_message = ch_message.format(user_name, sl)
+            ch_message += random.choice(shell_dict['feat_unignore_channel'])
+            ch_message = ch_message.format(user_name, ", ".join(success_list))
             send_channel_message("code-conflict-chatbot", ch_message)
 
-            for sl in success_list:
-                message += random.choice(shell_dict['feat_unignore_file'])
-                message = message.format(sl)
+            message += random.choice(shell_dict['feat_unignore_file'])
+            message = message.format(", ".join(success_list))
 
         if fail_list:
-            for fl in fail_list:
-                message += "{} is not in approved list.\n".format(fl)
+            message += "You already get notified of {}\n".format(", ".join(fail_list))
 
     w_db.close()
 
@@ -415,10 +407,12 @@ def check_locker_logic(slack_code, file_path):
     locker_slack_code = w_db.get_locker_slack_code(project_name, file_path)
 
     if locker_slack_code == "":
-        message = "There is no locker of {}. ".format(file_path)
+        message = random.choice(shell_dict['feat_locker_nonexistence'])
+        message = random.format(file_path)
     else:
-        locker_name = w_db.convert_slack_code_to_slack_iWd(locker_slack_code)
-        message = "The locker of {} is {}. ".format(file_path, locker_name)
+        locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
+        message = random.choice(shell_dict['feat_locker_existence'])
+        message = message.format(locker_name, file_path)
 
     w_db.close()
     return message

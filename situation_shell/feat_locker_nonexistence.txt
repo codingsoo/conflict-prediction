@@ -1,0 +1,5 @@
+Nobody has locked {}!
+{} has not been locked!
+You can modify {}! It isn't locked.
+Do you want to use {}? Yes, you can!
+Using {} is okay!

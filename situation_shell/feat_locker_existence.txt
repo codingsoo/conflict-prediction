@@ -1,0 +1,5 @@
+{} has locked {}!
+You cannot use this! {} has locked {}!
+How about using it later? {} has locked {}!
+Oh I'm sorry but, {} has already locked {}.
+Use it later! {} has already locked {}.

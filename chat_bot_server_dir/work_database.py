@@ -265,7 +265,7 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : add approved list")
 
-        return diff_approved_set
+        return list(diff_approved_set), list(db_approved_set)
 
     # Remove approved list
     def remove_approved_list(self, project_name, remove_approved_list):
