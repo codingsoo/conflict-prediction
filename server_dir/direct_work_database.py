@@ -57,7 +57,7 @@ class direct_work_database:
             msg = "{} just unlocked. Do you want me to lock it for {} hours?".format(file[1], file[3])
             send_direct_message(file[2], msg)
 
-        lock_file_list = w_db.inform_lock_file(project_name, working_list, user_name)
+        lock_file_list = w_db.inform_lock_file_direct(project_name, working_list, user_name)
         lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)
 
         # final lock_file_list 뽑아내는거 함수로 구현하기. / indirect도

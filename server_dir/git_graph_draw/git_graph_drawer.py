@@ -405,7 +405,7 @@ def store_graph_to_db(repository_name, graph_list):
 
     try:
         print("graph list : " + str(graph_list))
-        sql = "insert into logic_dependency (project_name, u, v, length) values"
+        sql = "insert into logic_dependency (project_name, def_func, call_func, length) values"
         for temp_graph in graph_list:
 
             # create sql

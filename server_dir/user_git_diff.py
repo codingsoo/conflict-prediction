@@ -81,14 +81,14 @@ class user_git_diff:
                         class_context.append(file_path_and_class_context[-1])
                         file_path_and_class_context.pop()
 
-                    # # Include call in same file
-                    # if not file_path:
-                    #     file_path = file_name
-                    # calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
+                    # Include call in same file
+                    if not file_path:
+                        file_path = file_name
+                    calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
 
                     # # Except call in same file
-                    if file_path:
-                        calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
+                    # if file_path:
+                    #     calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
 
         for file_name, temp_calling_list in calling_dict.items():
             for line_num, temp_calling in temp_calling_list.items():

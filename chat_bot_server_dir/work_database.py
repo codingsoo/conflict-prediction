@@ -200,27 +200,6 @@ class work_database:
 
     ####################################################
     '''
-    Function list
-    '''
-
-    def insert_function_list(self, project_name, logic_dict):
-        try:
-            sql = "insert into function_list " \
-                  "(project_name, file_name, logic)" \
-                  "values "
-            for file_name, temp_logic_list in logic_dict.items():
-                for temp_logic in temp_logic_list['Function']:
-                    sql += "('%s', '%s', '%s'), " % (project_name, file_name, temp_logic)
-            sql = sql[:-2]
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-        except:
-            self.conn.rollback()
-            print("ERROR : insert functino list")
-
-    ####################################################
-    '''
     Approved list
     '''
 
@@ -505,7 +484,7 @@ class work_database:
         # [ approved_file ]
         for temp_db_aproved_list in db_approved_set:
             print("temp db approved : ", str(temp_db_aproved_list))
-            # [ user_name, user_logic, other_name, other_logic ]
+            # [user_name, user_logic(call), other_name, other_logic(def), length]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
                 user1_file = str(temp_whole_indirect_conflict_list[1]).split('|')[0]
                 user2_file = str(temp_whole_indirect_conflict_list[3]).split('|')[0]
@@ -765,7 +744,7 @@ class work_database:
         return
 
 
-    def inform_lock_file(self, project_name, working_list, git_id):
+    def inform_lock_file_direct(self, project_name, working_list, git_id):
         raw_list = []
 
         # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
@@ -782,6 +761,34 @@ class work_database:
                       "where project_name = '%s' " \
                       "and lock_file = '%s' " \
                       "and slack_code != '%s'" % (project_name, temp_work[0], slack_code)
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_list = list(self.cursor.fetchall())
+            except:
+                self.conn.rollback()
+                print("ERROR : inform lock file")
+
+        return raw_list
+
+    def inform_lock_file_indirect(self, project_name, calling_list, git_id):
+        raw_list = []
+
+        # calling_list : { 'file_name' : { line_num : { 'file_path': value, 'class_context': value, 'func_name': value, 'logic': value } } }
+        slack_code = self.convert_git_id_to_slack_code(git_id)
+
+        if str(slack_code).isdigit():
+            print("ERROR : NO SLACK CODE")
+            return
+
+        for file_name, temp_calling_list in calling_list.items():
+            try:
+                sql = "select * " \
+                      "from lock_list " \
+                      "where project_name = '%s' " \
+                      "and lock_file = '%s' " \
+                      "and slack_code != '%s'" % (project_name, file_name, slack_code)
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -952,7 +959,7 @@ class work_database:
             sql1 = "SELECT file_name, logic1_name, logic2_name, user1_name, user2_name, log_time " \
                    "FROM direct_conflict_table " \
                    "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
-            sql2 = "SELECT u, v, user1_name, user2_name, log_time " \
+            sql2 = "SELECT def_func, call_func, user1_name, user2_name, log_time " \
                    "FROM indirect_conflict_table " \
                    "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
             print(sql1)
@@ -1044,7 +1051,7 @@ class work_database:
             sql = "select * " \
                   "from uci_chat_bot.logic_dependency " \
                   "where project_name = '%s' " \
-                  "and (u like '%s' or v like '%s')" % (project_name, temp_file_name, temp_file_name)
+                  "and (def_func like '%s' or call_func like '%s')" % (project_name, temp_file_name, temp_file_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -1101,7 +1108,7 @@ class work_database:
             for dt in direct_tuple:
                 conflict_list.append(dt[0])
 
-            sql = "select distinct u, v " \
+            sql = "select distinct def_func, call_func " \
                   "from indirect_conflict_table " \
                   "WHERE user1_name = '%s' or user2_name = '%s'" % (github_email, github_email)
             print(sql)
