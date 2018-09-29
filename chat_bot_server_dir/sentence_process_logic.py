@@ -198,10 +198,9 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
     engaging_user_email_list = get_user_email(project_name, file_path, start_line, end_line)
 
     message = ""
-    user_name_list = []
+    user_email_list = list(engaging_user_email_list)
     user_name_fail_list = []
-
-    for user_email in engaging_user_email_list:
+    for user_email in user_email_list:
         user_name = w_db.convert_git_id_to_slack_id(git_id=user_email)
         if user_name == "":
             print("{} is not in db.".format(user_email))
@@ -209,13 +208,23 @@ def code_history_logic(slack_code, file_path, start_line, end_line):
         if user_name == "":
             user_name_fail_list.append(user_email)
         else:
-            user_name_list.append(user_name)
+            message += "{} edited ".format(user_name)
+            for ele in engaging_user_email_list[user_email]:
+                message += "{}".format(ele)
+            message +=". \n"
 
-    if user_name_list:
-        message = random.choice(shell_dict['feat_history_logic']).format(",".join(user_name_list), start_line, end_line)
+    # if user_name_list:
+        # message = random.choice(shell_dict['feat_history_logic']).format(",".join(user_name_list), start_line, end_line)
 
-    if user_name_fail_list:
-        message += random.choice(shell_dict['feat_history_fail']).format(",".join(user_name_fail_list))
+    # if user_name_fail_list:
+    #     message += random.choice(shell_dict['feat_history_fail']).format(",".join(user_name_fail_list))
+
+    for user_email in user_name_fail_list:
+        line_info = ""
+        for ele in engaging_user_email_list[user_email]:
+            line_info = line_info + "{}".format(ele)
+        message += random.choice(shell_dict['feat_history_fail']).format(user_email,user_email,ele)
+        message += "\n"
 
     w_db.close()
     return message

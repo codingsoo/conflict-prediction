@@ -4,11 +4,10 @@ from pathlib import Path
 
 BASE_PATH = ''
 
-regex = r'^Author: ([가-힣a-zA-Z\s]+) <[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}>$'
 email_regex = r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}'
-
-p = re.compile(regex)
+# line_regex = r'\d+\)'
 email_p = re.compile(email_regex)
+# line_p = re.compile(line_regex)
 
 def get_user_email(project_name, file_path, start_line, end_line) :
     if project_name[:-4] in file_path:
@@ -24,16 +23,41 @@ def get_user_email(project_name, file_path, start_line, end_line) :
         if not os.path.exists(full_file_path):
             return []
         else:
-            ret_list = []
-            command = 'git log -L {},{}:{}'.format(start_line, end_line, file_path.replace(os.sep, '/'))
+            ret_dict = dict()
+            command = 'git blame --show-email -L {},{} ./{}'.format(start_line, end_line, file_path.replace(os.sep, '/'))
             lines = subprocess.check_output(command, shell=True, universal_newlines=True, cwd=full_base_path, encoding='UTF-8').splitlines()
-            for line in lines:
-                if p.match(line) != None:
-                    ret_list.extend(email_p.findall(line))
+            user_start_line = start_line
+            current_line = start_line
+            before_user_email = " "
 
-    ret_list = list(set(ret_list))
-    print(ret_list)
-    return ret_list
+            for line in lines:
+                current_user_email = email_p.findall(line)[0]
+
+                # line_info = line_p.findall(line)
+                if(before_user_email == " "):
+                    before_user_email = current_user_email
+
+                if(current_user_email == before_user_email):
+                    before_user_email = current_user_email
+                    current_line += 1
+                else :
+                    if (before_user_email not in ret_dict) :
+                        ret_dict[before_user_email] = [[user_start_line,current_line-1]]
+                    else :
+                        ret_dict[before_user_email].append([user_start_line,current_line-1])
+
+                    before_user_email = current_user_email
+                    user_start_line = current_line
+                    current_line +=1
+
+                if(current_line-1 == end_line):
+                    if (current_user_email not in ret_dict) :
+                        ret_dict[current_user_email] = [[user_start_line,current_line-1]]
+                    else :
+                        ret_dict[current_user_email].append([user_start_line,current_line-1])
+
+    print(ret_dict)
+    return ret_dict
 
 if __name__ == '__main__' :
     get_user_email('conflict-detector', 'git_graph_draw\\git_graph_draw.py', 1, 3)
