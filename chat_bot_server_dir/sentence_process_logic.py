@@ -2,7 +2,8 @@ from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
-from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack, CONST_ERROR
+from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
+from chat_bot_server_dir.constants import *
 import os, random
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
@@ -47,13 +48,13 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 13):
         message = response_logic(slack_code, param0)
 
-    elif(intent_type == CONST_ERROR - 2):
+    elif(intent_type == ERROR - 2):
         message = greeting_logic(slack_code)
 
-    elif (intent_type == CONST_ERROR - 1):
+    elif (intent_type == ERROR - 1):
         message = bye_logic()
 
-    elif(intent_type == CONST_ERROR):
+    elif(intent_type == ERROR):
         if param0 == "no_response":
             message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
             # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -182,7 +183,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             message = message.format(ele)
 
         else:
-            message = "You didn't lock this file, so you cannot lock this file"
+            message = "You didn't lock this file, so you cannot lock this file. "
 
     # message = m1 + " / " + m2
     w_db.close()
@@ -235,37 +236,37 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     message = ""
 
     # Ignore
-    if approval == 1:
-        if already_ignore_tuple is not None and already_ignore_tuple[ignore_list - 1] == 1: # (1,0) (1,1) / (0,1) (1,1)
-            if ignore_list == 1:
+    if approval == IGNORE:
+        if already_ignore_tuple is not None and already_ignore_tuple[ignore_list - 1] == IGNORE: # (1,0) (1,1) / (0,1) (1,1)
+            if ignore_list == DIRECT:
                 message = "You have already ignored direct message."
-            elif ignore_list == 2:
+            elif ignore_list == INDIRECT:
                 message = "You have already ignored indirect message."
         else:
             if already_ignore_tuple is None:
                 w_db.add_ignore(project_name, ignore_list, slack_code)
             else: # (0,0) (0,1) / (0,0) (1,0)
-                w_db.update_ignore(project_name, ignore_list, slack_code, approval)
-            if ignore_list == 1:
+                w_db.update_igore(project_name, ignore_list, slack_code, approval)
+            if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_ignore_alarm_direct'])
-            elif ignore_list == 2:
+            elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
 
     # Unignore
-    elif approval == 0:
-        if already_ignore_tuple is None or already_ignore_tuple[ignore_list - 1] == 0 : #(0,1) (0,0) / (1,0) (0,0)
-            if ignore_list == 1:
+    elif approval == UNIGNORE:
+        if already_ignore_tuple is None or already_ignore_tuple[ignore_list - 1] == UNIGNORE : #(0,1) (0,0) / (1,0) (0,0)
+            if ignore_list == DIRECT:
                 message = "You didn't ignore direct message. So you get notified of direct message!"
-            elif ignore_list == 2:
+            elif ignore_list == INDIRECT:
                 message = "You didn't ignore indirect message. So you get notified of indirect message!"
         else:
-            if already_ignore_tuple == (1, 1): # (1,1)
+            if already_ignore_tuple == (IGNORE, IGNORE): # (1,1)
                 w_db.update_ignore(project_name, ignore_list, slack_code, approval)
             else: # (1,0) / (0,1)
                 w_db.remove_ignore(project_name, slack_code)
-            if ignore_list == 1:
+            if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_unignore_alarm_direct'])
-            elif ignore_list == 2:
+            elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
 
     w_db.close()
@@ -293,70 +294,66 @@ def check_conflict_logic(slack_code, file_name):
     return message
 
 
-def other_working_status_logic(slack_code, target_slack_code, git_id):
+def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     w_db = work_database()
     message = ""
-    if git_id == "":
-        message = "This user is not working on the project."
+
+    project_name = w_db.get_repository_name(target_slack_code)
+    if project_name == "":
+        message = "This user is not working on our project."
     else:
-        project_name = w_db.get_repository_name(target_slack_code)
-        if project_name == -2:
-            message = "This user is not in our database."
-        elif project_name == -1:
-            message = "This user is not working on the project"
-        else:
-            db_lock_set = set(w_db.read_lock_list_of_slack_code(target_slack_code, project_name))
-            print(db_lock_set)
+        slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
+        working_data = w_db.get_user_working_status(target_git_id)
 
-            slack_name = w_db.convert_slack_code_to_slack_id(target_slack_code)
-            working_data = w_db.get_user_working_status(git_id)
+        message = random.choice(shell_dict['feat_working_status'])
+        message = message.format(slack_id, working_data)
 
-            message = random.choice(shell_dict['feat_working_status'])
-            message = message.format(slack_name, working_data)
-
-            # add lock file information.
-            if db_lock_set:
-                locked_file = ', '.join(list(db_lock_set))
-                message += "\n{} locked '{}' files.".format(slack_name, locked_file)
+        # add lock file information.
+        db_lock_set = set(w_db.read_lock_list_of_slack_code(target_slack_code, project_name))
+        print(db_lock_set)
+        if db_lock_set:
+            locked_file = ', '.join(list(db_lock_set))
+            message += "\n{} locked '{}' files.".format(slack_id, locked_file)
 
     w_db.close()
     return message
 
 
-def send_message_channel_logic(channel, msg, user_name):
+def send_message_channel_logic(target_channel, msg, user_slack_id):
 
     if msg == '':
         message = 'You must write your message between two double quotations like "message"'
         return message
 
-    channel_msg = user_name + " announce : " + msg
-    ret_scm = send_channel_message(channel, channel_msg)
+    channel_msg = user_slack_id + " announce : " + msg
+    ret_scm = send_channel_message(target_channel, channel_msg)
 
-    if ret_scm == 2:
+    if ret_scm == CHANNEL_WITH_SAYME:
         message = random.choice(shell_dict['feat_announce'])
-        message = message.format(channel)
-    elif ret_scm == 1:
-        message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(channel)
-    elif ret_scm == 0:
-        message = "There is no {} channel in Slack workspace, please check channel list.".format(channel)
+        message = message.format(target_channel)
+    elif ret_scm == CHANNEL_WITHOUT_SAYME:
+        message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(target_channel)
+    elif ret_scm == CHANNEL_NONEXISTENCE:
+        message = "There is no {} channel in Slack workspace, please check channel list.".format(target_channel)
     else:
         message = ''
     return message
 
 
-def send_message_direct_logic(slack_code, msg, user_name):
+def send_message_direct_logic(target_slack_code, msg, user_slack_id):
 
     if msg == '':
         message = 'You must write your message between two double quotations like "message"'
         return message
 
     w_db = work_database()
-    target_user = w_db.convert_slack_code_to_slack_id(slack_code)
+    target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
 
-    msg = user_name + " gives message : " + msg
-    send_direct_message(slack_code, msg)
+    msg = user_slack_id + " gives message : " + msg
+    send_direct_message(target_slack_code, msg)
+
     message = random.choice(shell_dict['feat_send_message_user'])
-    message = message.format(target_user)
+    message = message.format(target_slack_id)
     w_db.close()
     return message
 

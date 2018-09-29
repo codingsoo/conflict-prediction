@@ -1254,6 +1254,7 @@ class work_database:
     #         return raw_list1[0][0]
 
     def get_repository_name(self, slack_code):
+        repository_name = ""
         try:
             sql = "select repository_name " \
                   "from user_table " \

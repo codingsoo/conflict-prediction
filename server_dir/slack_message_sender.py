@@ -8,6 +8,7 @@ from server_dir.conflict_flag_enum import Conflict_flag
 from server_dir.user_database import user_database
 from server_dir.user_git_diff import user_git_diff
 from chat_bot_server_dir.work_database import work_database
+from chat_bot_server_dir.constants import *
 
 def get_slack():
     token = ''
@@ -218,14 +219,14 @@ def channel_join_check(channel):
     if channel_idx == -1:
         #Do not implement yet
         print("Channel is not in Slack")
-        return 0
+        return CHANNEL_NONEXISTENCE
     else:
         is_member = channels_list[channel_idx].get("is_member")
         if not is_member:
             print("Sayme is not join in {} Channel".format(channel))
-            return 1
+            return CHANNEL_WITHOUT_SAYME
         else:
-            return 2
+            return CHANNEL_WITH_SAYME
 
 
 # Put channel name and message for sending chatbot message
@@ -233,7 +234,7 @@ def send_channel_message(channel, message):
     slack = get_slack()
     ret_cjc = channel_join_check(channel)
 
-    if ret_cjc == 2:
+    if ret_cjc == CHANNEL_WITH_SAYME:
         attachments_dict = dict()
         attachments_dict['text'] = "%s" % (message)
         attachments_dict['mrkdwn_in'] = ["text", "pretext"]

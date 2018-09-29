@@ -7,6 +7,8 @@ from server_dir.slack_message_sender import send_channel_message
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from chat_bot_server_dir.work_database import work_database
+from chat_bot_server_dir.constants import *
+
 
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
@@ -14,8 +16,8 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -91,7 +93,6 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         "I want to know who lock file1.py.",
                         "I want to know the severity of the conflict in file.py"]
 
-CONST_ERROR = 16
 
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -154,7 +155,7 @@ def get_slack_code_list():
 def calcue_max(sentence, list):
     user_input = nlp(sentence.strip())
     max = 0
-    max_idx = CONST_ERROR
+    max_idx = ERROR
     for idx in range(len(list)):
 
         sample_input = nlp(list[idx])
@@ -181,8 +182,8 @@ def calcue_max(sentence, list):
         else:
             max_idx = 7
 
-    if max_idx in [1, 2, 3, 5, 11, 12] and ".py" not in sentence:
-        return CONST_ERROR
+    if max_idx in [1, 2, 3, 5, 9, 11, 12] and ".py" not in sentence:
+        return ERROR
 
     print ("max rate : ", max)
     return max_idx
@@ -217,14 +218,14 @@ def intent_classifier(_sentence):
         return max_idx, sentence
 
     else:
-        return CONST_ERROR, sentence
+        return ERROR, sentence
 
-def get_file_path(file_list):
-    result_file_list = []
-    for fl in file_list:
+def get_file_name(file_path_list):
+    file_name_list = []
+    for fl in file_path_list:
         r = fl.split("/")[-1]
-        result_file_list.append(" " + r)
-    return result_file_list
+        file_name_list.append(" " + r)
+    return file_name_list
 
 
 def extract_attention_word(owner_name, project_name,_sentence, github_email):
@@ -232,14 +233,14 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
     work_db = work_database()
     onlyFile_list = project_parser(owner_name, project_name)["file"]
-    file_list = list()
+    file_path_list = list()
 
     for ofl in onlyFile_list:
         fl = owner_name + "/" + project_name + "/" + ofl
-        file_list.append(fl)
+        file_path_list.append(fl)
 
     print("onlyFile_list", onlyFile_list)
-    print("file_list", file_list)
+    print("file_path_list", file_path_list)
     slack_code_list = get_slack_code_list()
 
     recent_data = work_db.get_recent_data(github_email)
@@ -268,6 +269,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
     print("Intent_type", intent_type)
 
+
     conflict_file_list = work_db.all_conflict_list(github_email)
     # help classification about intent_type 5 and 9
     # if conflict_file in sentence, we can think user wants to recommendation.
@@ -285,6 +287,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         else:
             intent_type = 5
 
+
     # About approve
     if intent_type == 1:
         remove_list = []
@@ -293,9 +296,9 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
         approve_word = ["advise", "notify", "give_notice", "send_word", "apprise", "apprize", "alert", "see", "hear", "bulletin", "notification", "notice", "proclamation", "warning", "advertisement", "advisory","alert","communication","communique","declaration","information","message","news","release","report","statement"]
 
-        result_file_list = get_file_path(file_list)
+        file_name_list = get_file_name(file_path_list)
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             print(rfl)
             if rfl in sentence:
                 sentence = sentence.replace(rfl, " ")
@@ -304,23 +307,23 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
                     if word in sentence:
                         found = 1
                         if " not " in sentence or " un" in sentence:
-                            approve_set.add(file_list[result_file_list.index(rfl)])
+                            approve_set.add(file_path_list[file_name_list.index(rfl)])
                             print(rfl)
-                            print(file_list[result_file_list.index(rfl)])
+                            print(file_path_list[file_name_list.index(rfl)])
                         else:
-                            remove_list.append(file_list[result_file_list.index(rfl)])
+                            remove_list.append(file_path_list[file_name_list.index(rfl)])
                             print(rfl)
-                            print(file_list[result_file_list.index(rfl)])
+                            print(file_path_list[file_name_list.index(rfl)])
 
                 if found == 0:
                     if " not " in sentence or " un" in sentence:
-                        remove_list.append(file_list[result_file_list.index(rfl)])
+                        remove_list.append(file_path_list[file_name_list.index(rfl)])
                         print(rfl)
-                        print(file_list[result_file_list.index(rfl)])
+                        print(file_path_list[file_name_list.index(rfl)])
                     else:
-                        approve_set.add(file_list[result_file_list.index(rfl)])
+                        approve_set.add(file_path_list[file_name_list.index(rfl)])
                         print(rfl)
-                        print(file_list[result_file_list.index(rfl)])
+                        print(file_path_list[file_name_list.index(rfl)])
 
             elif " this " in sentence:
                 recent_file = work_db.get_recent_data(github_email)
@@ -347,7 +350,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
         if not remove_list and not approve_set:
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         print("remove_list : ", remove_list)
         print("approve_set : ", approve_set)
@@ -363,20 +366,20 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         request_lock_set = set()
         remove_lock_list = []
 
-        result_file_list = get_file_path(file_list)
-        print("result_file_list", result_file_list)
+        file_name_list = get_file_name(file_path_list)
+        print("file_name_list", file_name_list)
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             if rfl in sentence:
                 sentence = sentence.replace(rfl, " ")
                 if " not " in sentence or " unlock " in sentence:
-                    remove_lock_list.append(file_list[result_file_list.index(rfl)])
+                    remove_lock_list.append(file_path_list[file_name_list.index(rfl)])
                 else:
                     try:
                         lock_time = int(re.findall('\d+', sentence)[0])
                     except:
                         lock_time = 1
-                    request_lock_set.add(file_list[result_file_list.index(rfl)])
+                    request_lock_set.add(file_path_list[file_name_list.index(rfl)])
 
         if not remove_lock_list and not request_lock_set:
             if " not " in sentence or " unlock " in sentence:
@@ -385,7 +388,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
                 request_lock_set.add(recent_file)
             else:
                 work_db.close()
-                return CONST_ERROR, "no_file", None, None
+                return ERROR, "no_file", None, None
 
         print("remove_lock_list : ", remove_lock_list)
         print("request_lock_set : ", request_lock_set)
@@ -394,16 +397,16 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
     # About code history
     elif intent_type == 3:
-        result_file_list = get_file_path(file_list)
+        file_name_list = get_file_name(file_path_list)
         file_path = ""
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
+                file_path = file_path_list[file_name_list.index(rfl)]
 
         if file_path == "":
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         pattern = re.compile("\d+")
         num_list = re.findall(pattern, sentence)
@@ -439,72 +442,72 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
                 if " not " in sentence or " un" in sentence:
                     if " indirect " in sentence:
                         work_db.close()
-                        return 4, 2, 1, None
+                        return 4, INDIRECT, IGNORE, None
                     else:
                         work_db.close()
-                        return 4, 1, 1, None
+                        return 4, DIRECT, IGNORE, None
                 # unignore
                 else:
                     if " indirect " in sentence:
                         work_db.close()
-                        return 4, 2, 0, None
+                        return 4, INDIRECT, UNIGNORE, None
                     else:
                         work_db.close()
-                        return 4, 1, 0, None
+                        return 4, INDIRECT, UNIGNORE, None
         if found == 0:
             if " not " in sentence or " un" in sentence:
                 if " indirect " in sentence:
                     work_db.close()
-                    return 4, 2, 0, None
+                    return 4, INDIRECT, UNIGNORE, None
                 else:
                     work_db.close()
-                    return 4, 1, 0, None
+                    return 4, DIRECT, UNIGNORE, None
             else:
                 if " indirect " in sentence:
                     work_db.close()
-                    return 4, 2, 1, None
+                    return 4, INDIRECT, IGNORE, None
                 else:
                     work_db.close()
-                    return 4, 1, 1, None
+                    return 4, INDIRECT, IGNORE, None
 
     # About check conflict
     elif intent_type == 5:
-        result_file_list = get_file_path(file_list)
+        file_name_list = get_file_name(file_path_list)
         file_path = ""
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
+                file_path = file_path_list[file_name_list.index(rfl)]
 
         if file_path == "":
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         work_db.close()
         return 5, file_path, None, None
 
     # About working status
     elif intent_type == 6:
-        target_user_slack_code = ""
+        target_slack_code = ""
 
         for code in slack_code_list:
             if code in sentence:
-                target_user_slack_code = code
+                target_slack_code = code
                 break
 
-        if target_user_slack_code == "":
-            slack_id = work_db.convert_git_id_to_slack_code(recent_data[2])
+        if target_slack_code == "":
+            target_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])
             work_db.close()
-            return 6, slack_id, recent_data[2], None
+            return 6, target_slack_code, recent_data[2], None
         else:
-            target_user_email = work_db.convert_slack_code_to_git_id(target_user_slack_code)
+            target_git_id = work_db.convert_slack_code_to_git_id(target_slack_code)
             work_db.close()
-            return 6, target_user_slack_code, target_user_email, None
+            return 6, target_slack_code, target_git_id, None
 
     # About channel message
     elif intent_type == 7:
 
-        user_name = work_db.convert_git_id_to_slack_id(github_email)
+        user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
 
         # We should use unmodified sentence.
         _sentence = _sentence.replace('“','"')
@@ -515,7 +518,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         try:
             channel_idx = word_list.index("channel")
             if channel_idx != 0:
-                channel = word_list[channel_idx - 1].strip()
+                target_channel = word_list[channel_idx - 1].strip()
                # msg = " ".join(word_list[channel_idx + 1:]).strip()
                 start_quot_idx = _sentence.find('"')
                 end_quot_idx = _sentence.rfind('"')
@@ -527,21 +530,21 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
             else:
                 print("There is no channel")
                 work_db.close()
-                return CONST_ERROR, "no_file", None, None
+                return ERROR, "no_file", None, None
 
         except IndexError:
             print("There is no channel")
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         work_db.close()
-        return 7, channel, msg, user_name
+        return 7, target_channel, msg, user_slack_id
 
     # About user message
     elif intent_type == 8:
 
-        user_name = work_db.convert_git_id_to_slack_id(github_email)
-        target_user_slack_code = ""
+        user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
+        target_slack_code = ""
 
         # We should use unmodified sentence
 
@@ -550,11 +553,11 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
         for code in slack_code_list:
             if code in _sentence:
-                target_user_slack_code = code
+                target_slack_code = code
                 break
 
-        if target_user_slack_code == "":
-            target_user_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
+        if target_slack_code == "":
+            target_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
         _sentence = _sentence.replace('“','"')
         _sentence = _sentence.replace('”','"')
@@ -568,7 +571,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
             msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
 
         work_db.close()
-        return 8, target_user_slack_code, msg, user_name
+        return 8, target_slack_code, msg, user_slack_id
 
     # About recommend
     elif intent_type == 9:
@@ -582,32 +585,32 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
 
     # About locker of file
     elif intent_type == 11:
-        result_file_list = get_file_path(file_list)
+        file_name_list = get_file_name(file_path_list)
         file_path = ""
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
+                file_path = file_path_list[file_name_list.index(rfl)]
 
         if file_path == "":
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         work_db.close()
         return 11, file_path, None, None
 
     # About severity
     elif intent_type == 12:
-        result_file_list = get_file_path(file_list)
+        file_name_list = get_file_name(file_path_list)
         file_path = ""
 
-        for rfl in result_file_list:
+        for rfl in file_name_list:
             if rfl in sentence:
-                file_path = file_list[result_file_list.index(rfl)]
+                file_path = file_path_list[file_name_list.index(rfl)]
 
         if file_path == "":
             work_db.close()
-            return CONST_ERROR, "no_file", None, None
+            return ERROR, "no_file", None, None
 
         work_db.close()
         return 12, file_path, None, None
@@ -616,11 +619,11 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email):
         work_db.close()
         if " hi " in sentence or " hello " in sentence:
             print("greeting shell")
-            return CONST_ERROR - 2, "greeting", None, None
+            return ERROR - 2, "greeting", None, None
         elif " bye " in sentence or " see you " in sentence:
-            return CONST_ERROR - 1, "bye", None, None
+            return ERROR - 1, "bye", None, None
         else:
-            return CONST_ERROR, "no_response", None, None
+            return ERROR, "no_response", None, None
 
 
 if __name__ == '__main__':
