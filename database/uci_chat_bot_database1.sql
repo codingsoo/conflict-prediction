@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS `ignore_table` (
 -- 테이블 uci_chat_bot.indirect_conflict_table 구조 내보내기
 CREATE TABLE IF NOT EXISTS `indirect_conflict_table` (
   `project_name` varchar(50) NOT NULL,
-  `u` varchar(255) NOT NULL,
-  `v` varchar(255) NOT NULL,
+  `def_func` varchar(255) NOT NULL,
+  `call_func` varchar(255) NOT NULL,
   `length` int(11) NOT NULL DEFAULT '0',
   `user1_name` varchar(50) NOT NULL,
   `user2_name` varchar(50) NOT NULL,
@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS `lock_notice_list` (
 -- 테이블 uci_chat_bot.logic_dependency 구조 내보내기
 CREATE TABLE IF NOT EXISTS `logic_dependency` (
   `project_name` varchar(50) NOT NULL,
-  `u` varchar(255) NOT NULL,
-  `v` varchar(255) NOT NULL,
+  `def_func` varchar(255) NOT NULL,
+  `call_func` varchar(255) NOT NULL,
   `length` int(11) NOT NULL DEFAULT '0',
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
