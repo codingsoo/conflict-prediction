@@ -1188,7 +1188,6 @@ class work_database:
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
-
             raw_tuple = self.cursor.fetchall()
             print(raw_tuple)
             for rt in raw_tuple:
@@ -1202,6 +1201,7 @@ class work_database:
             print("ERROR : get severity set")
 
         return raw_set
+
     ####################################################################
     '''
     Utility

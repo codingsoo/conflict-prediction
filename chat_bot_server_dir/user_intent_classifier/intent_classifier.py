@@ -14,8 +14,8 @@ from chat_bot_server_dir.work_database import work_database
 
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 
@@ -37,6 +37,7 @@ nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-
 # 15. complimentary_close : Chatbot can say good bye.
 # 16. detect_direct_conflict : Chatbot can detect direct conflict and severity.
 # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+
 
 question_sentence_list = ["Can you not notify me about hello.py?",
                           "Can you lock hello.py?",
