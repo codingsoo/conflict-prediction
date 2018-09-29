@@ -1,0 +1,5 @@
+The list of ignored files is {}.
+{} has/have been ignored!
+Your project has ignored {}.
+People in your project would like to ignore {}.
+Ignored files are {}.

@@ -427,6 +427,27 @@ def store_graph_to_db(repository_name, graph_list):
     return
 
 
+def insert_function_list(project_name, logic_dict):
+    mysql_conn_obj = mysql_conn()
+
+    try:
+        sql = "insert into function_list " \
+              "(project_name, file_name, logic)" \
+              "values "
+        for file_name, temp_logic_list in logic_dict.items():
+            for temp_logic in temp_logic_list['Function']:
+                sql += "('%s', '%s', '%s'), " % (project_name, file_name, temp_logic)
+        sql = sql[:-2]
+        print(sql)
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
+    except:
+        mysql_conn_obj.conn.rollback()
+        print("ERROR : insert functino list")
+
+    mysql_conn_obj.close()
+
+
 def indirect_logic(git_repository_name):
 
     # git clone from user git url
@@ -441,7 +462,7 @@ def indirect_logic(git_repository_name):
 
     # generate_file_dependency()
 
-    graph_data = run(root_dir_temp, git_repository_name_temp)
+    graph_data, logic_dict = run(root_dir_temp, git_repository_name_temp)
 
     print("graph data : " + str(graph_data))
 
@@ -450,6 +471,7 @@ def indirect_logic(git_repository_name):
     print("edge_list: " + str(edge_list))
 
     store_graph_to_db(git_repository_name, edge_list)
+    insert_function_list(git_repository_name, logic_dict)
 
     # Remove exist dir
     removeDir(root_dir_temp)

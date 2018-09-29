@@ -90,6 +90,14 @@ CREATE TABLE IF NOT EXISTS `logic_dependency` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
+-- 테이블 uci_chat_bot.function_list 구조 내보내기
+CREATE TABLE IF NOT EXISTS `function_list` (
+  `project_name` varchar(50) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `logic` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 uci_chat_bot.user_table 구조 내보내기
 CREATE TABLE IF NOT EXISTS `user_table` (
   `git_id` varchar(50) DEFAULT NULL,
@@ -117,6 +125,18 @@ CREATE TABLE IF NOT EXISTS `working_table` (
   `work_amount` int(11) DEFAULT NULL,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`project_name`,`file_name`,`logic_name`,`user_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+-- 테이블 uci_chat_bot.calling_table 구조 내보내기
+CREATE TABLE IF NOT EXISTS `calling_table` (
+  `project_name` varchar(50) NOT NULL,
+  `user_name` varchar(50) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `calling_file` varchar(255) NOT NULL,
+  `calling_logic` varchar(255) NOT NULL,
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`project_name`,`user_name`,`file_name`,`calling_file`, `calling_logic`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

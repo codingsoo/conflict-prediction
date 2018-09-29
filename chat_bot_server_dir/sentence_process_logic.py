@@ -36,10 +36,13 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = recommend_solve_conflict_logic(param0, param1)
 
     elif(intent_type == 10):
-        message = find_locker_logic(slack_code, param0)
+        message = check_ignored_file_logic(slack_code)
 
     elif(intent_type == 11):
-        message = find_severity_logic(slack_code, param0)
+        message = check_locker_logic(slack_code, param0)
+
+    elif(intent_type == 12):
+        message = check_severity_logic(slack_code, param0)
 
     elif(intent_type == 12):
         message = response_logic(slack_code, param0)
@@ -62,11 +65,14 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             # 7. channel_message : A user can let chatbot give a message to channel.
             # 8. user_message : A user can let chatbot give a message to other users.
             # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-            # 10. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
-            # 11. greeting : Chatbot can greet users.
-            # 12. complimentary_close : Chatbot can say good bye.
-            # 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-            # 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+            # 10. check_ignore : A user can ask chatbot which files are ignored.
+            # 11. check_lock : A user can ask chatbot about who locked the file.
+            # 12. check_severity : A user can ask chatbot about how severe conflict is.
+            # 13. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+            # 14. greeting : Chatbot can greet users.
+            # 15. complimentary_close : Chatbot can say good bye.
+            # 16. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+            # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
             """
         elif param0 == "no_file":
             message = "There is no such file. Please say it again."
@@ -383,8 +389,24 @@ def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
 
     return message
 
+def check_ignored_file_logic(slack_code):
+    w_db = work_database()
+    message = ""
 
-def find_locker_logic(slack_code, file_path):
+    project_name = w_db.get_repository_name(slack_code)
+    ignored_file_list = w_db.get_ignored_file_list(project_name)
+
+    if ignored_file_list == "":
+        message = random.choice(shell_dict['feat_ignored_file_nonexistence'])
+    else:
+        message = random.choice(shell_dict['feat_ignored_file_existence'])
+        message = message.format(", ".join(ignored_file_list))
+
+    w_db.close()
+    return message
+
+
+def check_locker_logic(slack_code, file_path):
     w_db = work_database()
     message = ""
 
@@ -393,15 +415,15 @@ def find_locker_logic(slack_code, file_path):
     locker_slack_code = w_db.get_locker_slack_code(project_name, file_path)
 
     if locker_slack_code == "":
-        message = "There is no locker of {}".format(file_path)
+        message = "There is no locker of {}. ".format(file_path)
     else:
-        locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
-        message = "The locker of {} is {}".format(file_path, locker_name)
+        locker_name = w_db.convert_slack_code_to_slack_iWd(locker_slack_code)
+        message = "The locker of {} is {}. ".format(file_path, locker_name)
 
     w_db.close()
     return message
 
-def find_severity_logic(slack_code, file_path):
+def check_severity_logic(slack_code, file_path):
     w_db = work_database()
     message = ""
 

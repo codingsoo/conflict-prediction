@@ -36,25 +36,32 @@ def git_diff_logic(content):
         send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
     w_db.auto_remove_lock_list()
 
+    project_name = user_data.get_proj_name()
+    working_data = user_data.get_working_data()
+    calling_data = user_data.get_calling_data()
+    user_name = user_data.get_user_name()
+
     # Remove previous user data
-    w_db.remove_user_data(user_data.get_proj_name(),
-                           user_data.get_working_data(),
-                           user_data.get_user_name())
+    w_db.remove_user_data(project_name,
+                          working_data,
+                          calling_data,
+                          user_name)
 
     # Update current user data
-    w_db.update_user_data(user_data.get_proj_name(),
-                           user_data.get_working_data(),
-                           user_data.get_user_name())
+    w_db.update_user_data(project_name,
+                          working_data,
+                          calling_data,
+                          user_name)
 
     # Detect direct conflict
-    dw_db.detect_direct_conflict(user_data.get_proj_name(),
-                                user_data.get_working_data(),
-                                user_data.get_user_name())
+    dw_db.detect_direct_conflict(project_name,
+                                 working_data,
+                                 user_name)
 
     # Detect indirect conflict
-    iw_db.detect_indirect_conflict(user_data.get_proj_name(),
-                                   user_data.get_working_data(),
-                                   user_data.get_user_name())
+    iw_db.detect_indirect_conflict(project_name,
+                                   working_data,
+                                   user_name)
 
     # Close direct and indirect database connection
     dw_db.close_db()
@@ -76,6 +83,9 @@ def convert_data(content) :
     content['repository_name'] = owner_name + '/' + project_name
     converted_data['git_diff'][content['repository_name']] = dict()
 
+    converted_data['plus_list'] = dict()
+    converted_data['minus_list'] = dict()
+    converted_data['modify_file'] = dict()
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)
@@ -128,6 +138,37 @@ def convert_data(content) :
                 flag = True
             if flag == False :
                 converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH) + 1:]].append(['in', start, end - start + 1])
+
+    for file_path, value in content['plus_list'].items() :
+        file_path = os.path.normpath(file_path)
+        if not os.path.splitext(file_path)[-1] == '.py' :
+            continue
+        full_file_path = os.path.join(full_base_path, file_path)
+        if not os.path.exists(full_file_path) :
+            continue
+
+        converted_data['plus_list'][full_file_path[len(BASE_PATH) + 1:]] = value
+
+    for file_path, value in content['minus_list'].items() :
+        file_path = os.path.normpath(file_path)
+        if not os.path.splitext(file_path)[-1] == '.py' :
+            continue
+        full_file_path = os.path.join(full_base_path, file_path)
+        if not os.path.exists(full_file_path) :
+            continue
+
+        converted_data['minus_list'][full_file_path[len(BASE_PATH) + 1:]] = value
+
+    for file_path, value in content['modify_file'].items() :
+        file_path = os.path.normpath(file_path)
+        if not os.path.splitext(file_path)[-1] == '.py' :
+            continue
+        full_file_path = os.path.join(full_base_path, file_path)
+        if not os.path.exists(full_file_path) :
+            continue
+
+        converted_data['modify_file'][full_file_path[len(BASE_PATH) + 1:]] = value
+
 
     return converted_data
 
