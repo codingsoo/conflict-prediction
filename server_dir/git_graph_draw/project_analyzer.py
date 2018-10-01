@@ -162,12 +162,10 @@ def run( root , owner) :
     for file_path, values in project_dict.items() :
         logic_dict[file_path] = {"Class": set(), "Function": set()}
         insert_into_logic_dict(file_path,values,logic_dict)
-<<<<<<< Updated upstream
 
     for file_name, logic_temp in logic_dict.items():
         print("SUN TEST : ", file_name, " ", logic_temp)
-=======
->>>>>>> Stashed changes
+
 
     edges_list = []
 
@@ -178,8 +176,4 @@ def run( root , owner) :
             elif value['type'] =='Function' :
                 make_func_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list)
 
-<<<<<<< Updated upstream
     return edges_list, logic_dict
-=======
-    return edges_list
->>>>>>> Stashed changes

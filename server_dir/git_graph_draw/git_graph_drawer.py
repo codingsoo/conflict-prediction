@@ -462,7 +462,7 @@ def indirect_logic(git_repository_name):
 
     # generate_file_dependency()
 
-    graph_data, logic_dict = run(root_dir_temp, git_repository_name_temp)
+    graph_data, logic_dict =  run(root_dir_temp, git_repository_name_temp)
 
     print("graph data : " + str(graph_data))
 
