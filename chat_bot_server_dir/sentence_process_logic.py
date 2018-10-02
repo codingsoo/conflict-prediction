@@ -77,6 +77,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             """
         elif param0 == "no_file":
             message = "There is no such file. Please say it again."
+        elif param0 == "many_files":
+            message = "Please write just one file"
         elif param0 == "no_channel":
             message = "There is no such channel. Please say it again."
 
@@ -89,15 +91,15 @@ def approved_file_logic(slack_code, approved_set, removed_list):
 
     approved_list = list(approved_set)
 
-    print(slack_code)
     print("approve !! : " + str(approved_list))
     print("remove !! : " + str(removed_list))
 
     message = ""
     ch_message = ""
     if approved_list:
-        diff_approved_list, already_approved_list = w_db.add_approved_list(project_name=project_name,
+        diff_approved_list, db_approved_set = w_db.add_approved_list(project_name=project_name,
                                req_approved_set=approved_set)
+        already_approved_list = list(db_approved_set & approved_set)
         if diff_approved_list:
             ch_message += random.choice(shell_dict['feat_ignore_channel'])
             ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
@@ -190,11 +192,11 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     return message
 
 
-def code_history_logic(slack_code, file_path, start_line, end_line):
+def code_history_logic(slack_code, file_abs_path, start_line, end_line):
     w_db = work_database()
 
     project_name = w_db.get_repository_name(slack_code)
-    engaging_user_email_list = get_user_email(project_name, file_path, start_line, end_line)
+    engaging_user_email_list = get_user_email(project_name, file_abs_path, start_line, end_line)
 
     message = ""
     user_email_list = list(engaging_user_email_list)
@@ -318,7 +320,6 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     w_db.close()
     return message
 
-
 def send_message_channel_logic(target_channel, msg, user_slack_id):
 
     if msg == '':
@@ -395,31 +396,31 @@ def check_ignored_file_logic(slack_code):
     return message
 
 
-def check_locker_logic(slack_code, file_path):
+def check_locker_logic(slack_code, file_abs_path):
     w_db = work_database()
     message = ""
 
     project_name = w_db.get_repository_name(slack_code)
 
-    locker_slack_code = w_db.get_locker_slack_code(project_name, file_path)
+    locker_slack_code = w_db.get_locker_slack_code(project_name, file_abs_path)
 
     if locker_slack_code == "":
         message = random.choice(shell_dict['feat_locker_nonexistence'])
-        message = random.format(file_path)
+        message = random.format(file_abs_path)
     else:
         locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
         message = random.choice(shell_dict['feat_locker_existence'])
-        message = message.format(locker_name, file_path)
+        message = message.format(locker_name, file_abs_path)
 
     w_db.close()
     return message
 
-def check_severity_logic(slack_code, file_path):
+def check_severity_logic(slack_code, file_abs_path):
     w_db = work_database()
     message = ""
 
     project_name = w_db.get_repository_name(slack_code)
-    severity_set = w_db.get_severity_set(project_name, file_path)
+    severity_set = w_db.get_severity_set(project_name, file_abs_path)
 
     if severity_set:
         message += "Direct Conflict\n"
@@ -432,7 +433,7 @@ def check_severity_logic(slack_code, file_path):
             message += "{} in '{}' & {} in '{}' : severity {}.\n".format(user1_name, logic1_name, user2_name, logic2_name, severity)
 
     else:
-        message += "There is no direct conflict in {}. ".format(file_path)
+        message += "There is no direct conflict in {}. ".format(file_abs_path)
 
     w_db.close()
     return message
@@ -498,10 +499,14 @@ def bye_logic():
     message = random.choice(shell_dict['feat_goodbye'])
     return message
 
+def remove_project_name(file_full_path_list, project_name):
+    file_list = []
+    for ffpl in file_full_path_list:
+        file_list.append(ffpl.replace(project_name, "", 1))
+    return file_list
+
 
 shell_dict = dict()
-
-
 for path, dirs, files in os.walk('../situation_shell') :
     for file in files :
         file_name, ext = os.path.splitext(file)

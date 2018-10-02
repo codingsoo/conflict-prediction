@@ -212,9 +212,9 @@ def channel_join_check(channel):
     channels_list_res = slack.channels.list()
     channels_list = channels_list_res.body["channels"]
 
-    for cl in channels_list:
+    for cl_idx, cl in enumerate(channels_list):
         if cl.get("name") == channel:
-            channel_idx = channels_list.index(cl)
+            channel_idx = cl_idx
 
     if channel_idx == -1:
         #Do not implement yet

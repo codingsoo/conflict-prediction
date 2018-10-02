@@ -229,7 +229,6 @@ class work_database:
         db_approved_set = self.read_approved_list(project_name)
 
         diff_approved_set = req_approved_set - db_approved_set
-
         # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
         if diff_approved_set:
             try:
@@ -244,7 +243,7 @@ class work_database:
                 self.conn.rollback()
                 print("ERROR : add approved list")
 
-        return list(diff_approved_set), list(db_approved_set)
+        return list(diff_approved_set), db_approved_set
 
     # Remove approved list
     def remove_approved_list(self, project_name, remove_approved_list):
