@@ -482,19 +482,15 @@ class work_database:
 
         # [ approved_file ]
         for temp_db_aproved_list in db_approved_set:
-            print("temp db approved : ", str(temp_db_aproved_list))
-            # [user_name, user_logic(call), other_name, other_logic(def), length]
+            # user_call : [ user_name, user_logic(call), other_user_name, other_user_logic(def), length ]
+            # user_work : [ user_name, user_logic(def), other_user_name, other_user_logic(call), length ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
                 user1_file = str(temp_whole_indirect_conflict_list[1]).split('|')[0]
                 user2_file = str(temp_whole_indirect_conflict_list[3]).split('|')[0]
 
                 if (temp_db_aproved_list == user1_file) or (temp_db_aproved_list == user2_file):
-                    try:
-                       remove_list.append(temp_whole_indirect_conflict_list)
-                       print("removed by approved list : ", temp_whole_indirect_conflict_list)
-
-                    except:
-                        print("ERROR : classify indirect conflict approved list")
+                    remove_list.append(temp_whole_indirect_conflict_list)
+                    print("removed by approved list : ", temp_whole_indirect_conflict_list)
 
         for temp_remove in remove_list:
             whole_indirect_conflict_list.remove(temp_remove)
@@ -771,17 +767,21 @@ class work_database:
 
         return raw_list
 
-    def inform_lock_file_indirect(self, project_name, calling_list, git_id):
+    def inform_lock_file_indirect(self, project_name, working_list, git_id):
         raw_list = []
+        file_list_set = set()
 
-        # calling_list : { 'file_name' : { line_num : { 'file_path': value, 'class_context': value, 'func_name': value, 'logic': value } } }
         slack_code = self.convert_git_id_to_slack_code(git_id)
 
         if str(slack_code).isdigit():
             print("ERROR : NO SLACK CODE")
             return
 
-        for file_name, temp_calling_list in calling_list.items():
+        # working_list : [ { project_name, file_name, logic_name, user_name, work_line, work_amount, log_time } , ... ]
+        for working_list_temp in working_list:
+            file_list_set.add(working_list_temp[1])
+
+        for file_name in file_list_set:
             try:
                 sql = "select * " \
                       "from lock_list " \

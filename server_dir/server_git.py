@@ -60,8 +60,6 @@ def git_diff_logic(content):
 
     # Detect indirect conflict
     iw_db.detect_indirect_conflict(project_name,
-                                   working_data,
-                                   calling_data,
                                    user_name)
 
     # Close direct and indirect database connection

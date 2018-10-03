@@ -163,10 +163,6 @@ def run( root , owner) :
         logic_dict[file_path] = {"Class": set(), "Function": set()}
         insert_into_logic_dict(file_path,values,logic_dict)
 
-    for file_name, logic_temp in logic_dict.items():
-        print("SUN TEST : ", file_name, " ", logic_temp)
-
-
     edges_list = []
 
     for file_path, values in project_dict.items() :
