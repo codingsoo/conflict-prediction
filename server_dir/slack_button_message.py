@@ -197,6 +197,7 @@ import os
 import json
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
+from server_dir.slack_message_sender import get_slack
 # Flask webserver for incoming traffic from Slack
 app = Flask(__name__)
 
@@ -210,6 +211,7 @@ SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
 
 # Slack client for Web API requests
 slack_client = SlackClient(SLACK_BOT_TOKEN)
+slack = get_slack()
 
 # Helper for verifying that requests came from Slack
 def verify_slack_token(request_token):
@@ -240,10 +242,12 @@ def message_actions():
     msg_json = json_parsing(btmsg_json, selected_file)
     print("msg_json", msg_json)
 
-    slack_client.send_message(
-        channel=btmsg_json["channel"]["id"],
-        message="One {}, right coming up!".format(selected_file),
-        thread_ts=btmsg_json["action_ts"]
+    slack.chat.update(
+        channel = btmsg_json["channel"]["id"],
+        text=btmsg_json["original_message"]["text"],
+        ts=btmsg_json["message_ts"],
+        attachments=[{"text":btmsg_json["original_message"]["attachments"][0]["text"]+":white_check_mark: Ok!",
+                      "color":"#3AA3E3"}]
     )
     from chat_bot_server_dir.bot_server import message_processing
     message_processing(msg_json)
@@ -292,7 +296,7 @@ def send_button_message(slack_code, file_simp_path_list, sentence, intent_type):
     attachments_dict['color'] = "#3AA3E3"
     attachments = [attachments_dict]
 
-    slack_client.send_message(channel="" + slack_code, message="Which file do you mean?", attachments=attachments, as_user=True)
+    slack.chat.post_message(channel="" + slack_code, text="Which file do you mean?", attachments=attachments, as_user=True)
 
 
     # slack = Slacker("SLACK_BOT_TOKEN")
