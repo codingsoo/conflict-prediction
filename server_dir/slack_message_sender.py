@@ -1,5 +1,8 @@
 from slacker import Slacker
 import os
+import websocket
+import json
+import time
 from pathlib import Path
 import random
 import configparser
@@ -9,6 +12,7 @@ from server_dir.user_database import user_database
 from server_dir.user_git_diff import user_git_diff
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.constants import *
+# from chat_bot_server_dir.bot_server import on_message, on_error, on_close
 
 def get_slack():
     token = ''
@@ -231,6 +235,8 @@ def channel_join_check(channel):
 
 # Put channel name and message for sending chatbot message
 def send_channel_message(channel, message):
+    if message == "":
+        return
     slack = get_slack()
     ret_cjc = channel_join_check(channel)
 
@@ -244,11 +250,13 @@ def send_channel_message(channel, message):
     return ret_cjc
 
 # Put user slack id and message for sending chatbot message
-def send_direct_message(user_id, message):
+def send_direct_message(slack_code, message):
+    if message == "":
+        return
     slack = get_slack()
     attachments_dict = dict()
     attachments_dict['text'] = "%s" % (message)
     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
     attachments = [attachments_dict]
-    slack.chat.post_message(channel="" + user_id, text=None, attachments=attachments, as_user=True)
+    slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return

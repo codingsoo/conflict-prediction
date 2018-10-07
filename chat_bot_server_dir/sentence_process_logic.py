@@ -75,6 +75,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             # 16. detect_direct_conflict : Chatbot can detect direct conflict and severity.
             # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
             """
+        elif param0 == "same_named_file":
+            message = ""
         elif param0 == "no_file":
             message = "There is no such file. Please say it again."
         elif param0 == "many_files":
