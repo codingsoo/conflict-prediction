@@ -1,18 +1,13 @@
 from slacker import Slacker
 import os
-import websocket
-import json
-import time
 from pathlib import Path
 import random
 import configparser
 from datetime import datetime, timedelta
 from server_dir.conflict_flag_enum import Conflict_flag
 from server_dir.user_database import user_database
-from server_dir.user_git_diff import user_git_diff
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.constants import *
-# from chat_bot_server_dir.bot_server import on_message, on_error, on_close
 
 def get_slack():
     token = ''
@@ -31,13 +26,11 @@ def get_slack():
     slack = Slacker(token)
     return slack
 
-
 def make_shell_list(file):
     f = open(file, "r", encoding="UTF8")
     text = f.read()
     text = text.split("\n")
     return text
-
 
 def make_go_to_same_file_shell_list():
     go_to_same_file_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "go_to_same_file.txt"))
@@ -260,3 +253,43 @@ def send_direct_message(slack_code, message):
     attachments = [attachments_dict]
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
+
+def send_button_message(slack_code, called_same_named_dict, sentence, intent_type):
+    slack = get_slack()
+    attachments_dict = dict()
+
+    for csnd_idx, (file_name, file_abs_path_list) in enumerate(called_same_named_dict.items()):
+        message = ""
+        actions = []
+
+        for fapl_idx, file_abs_path in enumerate(file_abs_path_list):
+            message += "%d. %s\n" % (fapl_idx + 1, file_abs_path)
+            actions_dict = dict()
+            actions_dict['name'] = sentence
+            actions_dict['text'] = fapl_idx + 1
+            actions_dict['type'] = "button"
+            actions_dict['value'] = file_abs_path
+            actions.append(actions_dict)
+
+        attachments_dict['title'] = "%s" % (message)
+        attachments_dict['fallback'] = "You are unable to choose a file."
+        attachments_dict['callback_id'] = intent_type
+        attachments_dict['attachment_type'] = "warning"
+        attachments_dict['actions'] = actions
+        attachments_dict['color'] = "#3AA3E3"
+        attachments = [attachments_dict]
+
+        slack.chat.post_message(channel="" + slack_code, text="Which file do you mean?", attachments=attachments, as_user=True)
+
+    # slack = Slacker("SLACK_BOT_TOKEN")
+    # response = slack.rtm.start()
+    # endpoint = response.body['url']
+    # ws2 = websocket.create_connection("ws://localhost:4000")
+    # print("start loop")
+    # while True:
+    #     event = json.loads(ws2.recv())
+    #     print("event", event)
+    #     if event.get('type') != "message" or event.get('user') != slack_code:
+    #         continue
+    #     ws2.close()
+    #     break

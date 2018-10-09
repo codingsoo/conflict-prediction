@@ -1,25 +1,13 @@
 import spacy
-import os
-import websocket
-import configparser
-from slacker import Slacker
-from pathlib import Path
-from server_dir.slack_message_sender import send_channel_message
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
-from chat_bot_server_dir.work_database import work_database
-from chat_bot_server_dir.constants import *
 from server_dir.slack_message_sender import *
-from server_dir.slack_button_message import send_button_message
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
-
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 #nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-
-
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -93,10 +81,11 @@ desire_sentence_list = ["I want to ignore any alarm about File1.py.",
                         "I want to know who lock file1.py.",
                         "I want to know the severity of the conflict in file.py"]
 
-test = 1
+
+
 def load_token() :
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
-
+    token = ''
     if not os.path.isfile(file_path) :
         print("ERROR :: There is no all_server_config.ini")
         exit(2)
@@ -104,14 +93,14 @@ def load_token() :
         config = configparser.ConfigParser()
         config.read(file_path)
         try :
-            token=config["SLACK"]["TOKEN"]
+            token = config["SLACK"]["TOKEN"]
         except :
             print("ERROR :: It is all_server_config.ini")
             exit(2)
     return token
-
 token = load_token()
 slack = Slacker(token)
+
 
 def convert_git_id_to_slack_id_from_slack(git_id):
     user_list = get_slack_id_and_git_email_list()
@@ -121,6 +110,7 @@ def convert_git_id_to_slack_id_from_slack(git_id):
             slack_id = user[0]
 
     return slack_id
+
 
 def get_slack_id_and_git_email_list():
     try:
@@ -138,6 +128,7 @@ def get_slack_id_and_git_email_list():
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
     return user_list
+
 
 def get_slack_code_list():
     try:
@@ -196,6 +187,7 @@ def calcue_max(sentence, list):
     print ("max rate : ", max)
     return max_idx
 
+
 def intent_classifier(_sentence):
     if " this file " in _sentence :
         _sentence = _sentence.replace("this file", ":.py")
@@ -207,18 +199,15 @@ def intent_classifier(_sentence):
         max_idx = calcue_max(sentence, question_sentence_list)
         return max_idx, sentence
 
-
     # Command
     elif sentence_type == 2:
         max_idx = calcue_max(sentence, command_sentence_list)
         return max_idx, sentence
 
-
     # Suggestion
     elif sentence_type == 3:
         max_idx = calcue_max(sentence, suggestion_sentence_list)
         return max_idx, sentence
-
 
     # Desire
     elif sentence_type == 4:
@@ -228,29 +217,11 @@ def intent_classifier(_sentence):
     else:
         return ERROR, sentence
 
+
 def extract_attention_word(owner_name, project_name,_sentence, github_email, intent_type):
     import re
 
     work_db = work_database()
-    file_simp_path_list = project_parser(owner_name, project_name)["file"]
-    file_abs_path_list = []
-
-    for fspl in file_simp_path_list:
-        fapl = owner_name + "/" + project_name + "/" + fspl
-        file_abs_path_list.append(fapl)
-
-    print("file_simp_path_list", file_simp_path_list)
-    print("file_abs_path_list", file_abs_path_list)
-    slack_code_list = get_slack_code_list()
-
-    recent_data = work_db.get_recent_data(github_email)
-    if recent_data:
-        recent_file = recent_data[0].split('|')[0]
-    else:
-        recent_data = "no recent data"
-        recent_file = "no recent file"
-    print("recent_data", recent_data)
-    print("recent file", recent_file)
 
     sentence = " " + _sentence + " "
     yes_list = ["y","yes","affirmative", "amen","fine","good","okay","true","yea","all right","aye","beyond a doubt","by all means","certainly","definitely","even so","exctly","gladly","good enough","granted","indubitably","just so","most assuredly","naturally","of course","positively","precisely","sure thing","surely","undoubtedly","unquestionably","very well","willingly","without fail","yep"]
@@ -287,49 +258,69 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
             else:
                 intent_type = 5
 
-    called_file_abs_path_list = []
-    for fapl in file_abs_path_list:
-        if fapl in sentence:
-            print("in", sentence)
-            called_file_abs_path_list.append(fapl)
+    if intent_type in [1, 2, 3, 5, 9, 11, 12]:
+        file_simp_path_list = project_parser(owner_name, project_name)["file"]
+        file_abs_path_list = []
+        called_file_abs_path_list = []
 
-    if not called_file_abs_path_list:
-        file_name_dict = dict()
-        if intent_type in [1, 2, 3, 5, 9, 11, 12]:
+        for fspl in file_simp_path_list:
+            fapl = owner_name + "/" + project_name + "/" + fspl
+            file_abs_path_list.append(fapl)
+
+        print("file_simp_path_list", file_simp_path_list)
+        print("file_abs_path_list", file_abs_path_list)
+
+        # If the format of called file is already absolute path, just pass.
+        for fapl in file_abs_path_list:
+            if fapl in sentence:
+                called_file_abs_path_list.append(fapl)
+
+        # If not, find called file in sentence.
+        if not called_file_abs_path_list:
+            file_name_dict = dict()
+            called_same_named_file_dict = dict()
             file_name_list = get_file_name_list(file_abs_path_list)
+
+            # Create the total of file information.
             for fnl_idx, fnl in enumerate(file_name_list):
                 try:
                     file_name_dict[fnl].append(fnl_idx)
                 except:
                     file_name_dict[fnl] = [fnl_idx]
-
             print("file_name_dict", file_name_dict)
+
+            # Find called files in sentence & decide whether file is same named file
             for file_name, fn_idx_list in file_name_dict.items():
                 if file_name in sentence:
                     if len(fn_idx_list) == 1:
-                        # only one file
                         print("only one")
                         called_file_abs_path_list.append(file_abs_path_list[fn_idx_list[0]])
                     else:
                         # duplicate
                         print("duplicate")
                         same_named_file_list = []
-                        for fnil in fn_idx_list:
-                            same_named_file_list.append(file_abs_path_list[fnil])
-                        print("same_named_file_list", same_named_file_list)
-                        user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
-                        send_button_message(user_slack_code, same_named_file_list, sentence, intent_type)
-                        work_db.close()
-                        return ERROR, "same_named_file", None, None
+                        for idx in fn_idx_list:
+                            same_named_file_list.append(file_abs_path_list[idx])
+                        called_same_named_file_dict[file_name] = same_named_file_list
+
+            # If there are same named files
+            if called_same_named_file_dict:
+                print("called_same_named_file_dict", called_same_named_file_dict)
+                user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
+                send_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
+                if not called_file_abs_path_list:
+                    work_db.close()
+                    return ERROR, "same_named_file", None, None
 
             if not called_file_abs_path_list:
                 work_db.close()
                 return ERROR, "no_file", None, None
+
             if intent_type in [3, 5, 9, 11, 12] and len(called_file_abs_path_list) != 1:
                 work_db.close()
                 return ERROR, "many_files", None, None
 
-    print("called_file_abs_path_list", called_file_abs_path_list)
+        print("called_file_abs_path_list", called_file_abs_path_list)
 
 
     if intent_type == 1:
@@ -457,15 +448,18 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
     elif intent_type == 6:
         target_slack_code = ""
 
+        slack_code_list = get_slack_code_list()
         for code in slack_code_list:
             if code in sentence:
                 target_slack_code = code
                 break
 
         if target_slack_code == "":
+            recent_data = work_db.get_recent_data(github_email)
             target_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])
             work_db.close()
             return 6, target_slack_code, recent_data[2], None
+
         else:
             target_git_id = work_db.convert_slack_code_to_git_id(target_slack_code)
             work_db.close()
@@ -511,19 +505,17 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
         user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
         target_slack_code = ""
 
-        # We should use unmodified sentence
-
-        _sentence = _sentence.replace('“','"')
-        _sentence = _sentence.replace('”','"')
-
+        slack_code_list = get_slack_code_list()
         for code in slack_code_list:
             if code in _sentence:
                 target_slack_code = code
                 break
 
         if target_slack_code == "":
+            recent_data = work_db.get_recent_data(github_email)
             target_slack_code = work_db.convert_git_id_to_slack_code(recent_data[2])[0]
 
+        # We should use unmodified sentence
         _sentence = _sentence.replace('“','"')
         _sentence = _sentence.replace('”','"')
 
@@ -540,6 +532,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
 
     # About recommend
     elif intent_type == 9:
+        recent_data = work_db.get_recent_data(github_email)
         work_db.close()
         return 9, github_email, recent_data[2], None
 

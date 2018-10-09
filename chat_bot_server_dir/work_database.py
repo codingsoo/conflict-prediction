@@ -992,10 +992,9 @@ class work_database:
             sorted(conflict_recent_data, key=lambda s: s[4])
             if conflict_recent_data:
                 conflict_recent_data[-1].remove(github_email)
-
                 return conflict_recent_data[-1]
             else:
-                conflict_recent_data
+                return "no recent data"
 
         except:
             self.conn.rollback()
