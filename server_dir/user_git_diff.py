@@ -50,6 +50,18 @@ class user_git_diff:
 
         return working_list
 
+    def get_edit_amount(self):
+
+        edit_amount = dict()
+
+        # get edit_amount
+        for file_name, temp_amount in self.content['total_plus'].items():
+            edit_amount[file_name] = dict()
+            edit_amount[file_name]['total_plus'] = temp_amount
+            edit_amount[file_name]['total_minus'] = self.content['total_minus'][file_name]
+
+        return edit_amount
+
     def get_calling_data(self):
         call_dict = dict()
         calling_dict = dict()
@@ -68,7 +80,6 @@ class user_git_diff:
             for plus_temp in self.content['plus_list'][file_name]:
                 if plus_temp[1] in call_dict[file_name].keys():
                     call_context = call_dict[file_name][plus_temp[1]].split(".")
-                    print("SUN TEST call_context : ", call_context)
                     func_name = call_context[-1]
                     file_path_and_class_context = call_context[:-1]
                     file_path = ""

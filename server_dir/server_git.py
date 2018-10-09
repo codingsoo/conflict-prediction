@@ -38,18 +38,21 @@ def git_diff_logic(content):
 
     project_name = user_data.get_proj_name()
     working_data = user_data.get_working_data()
+    edit_amount = user_data.get_edit_amount()
     calling_data = user_data.get_calling_data()
     user_name = user_data.get_user_name()
 
     # Remove previous user data
     w_db.remove_user_data(project_name,
                           working_data,
+                          edit_amount,
                           calling_data,
                           user_name)
 
     # Update current user data
     w_db.update_user_data(project_name,
                           working_data,
+                          edit_amount,
                           calling_data,
                           user_name)
 
@@ -85,6 +88,8 @@ def convert_data(content) :
     converted_data['plus_list'] = dict()
     converted_data['minus_list'] = dict()
     converted_data['modify_file'] = dict()
+    converted_data['total_plus'] = dict()
+    converted_data['total_minus'] = dict()
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)
@@ -109,6 +114,10 @@ def convert_data(content) :
         full_file_path = os.path.join(full_base_path, file_path)
         if not os.path.exists(full_file_path) :
             continue
+
+        converted_data['total_plus'][full_file_path[len(BASE_PATH)+1:]] = value['total_plus']
+        converted_data['total_minus'][full_file_path[len(BASE_PATH) + 1:]] = value['total_minus']
+
         print("--- working_list ---")
         print("full_file_path : ", full_file_path)
         py_info = get_py_info(full_file_path)
@@ -167,7 +176,6 @@ def convert_data(content) :
             continue
 
         converted_data['modify_file'][full_file_path[len(BASE_PATH) + 1:]] = value
-
 
     return converted_data
 

@@ -446,7 +446,91 @@ class direct_work_database:
                                   user1_name=temp_best[5],
                                   user2_name=temp_best[6])
 
+            user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
         return
+
+    def calculate_percentage(self, best_conflict):
+        user_edit_amount = tuple()
+        other_edit_amount = tuple()
+        file_total_lines = tuple()
+
+        try:
+            sql = "select total_plus, total_minus " \
+                  "from edit_amount " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and user_name = '%s'" \
+                  % (best_conflict[1], best_conflict[2], best_conflict[5])
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            user_edit_amount = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        try:
+            sql = "select total_plus, total_minus " \
+                  "from edit_amount " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and user_name = '%s'" \
+                  % (best_conflict[1], best_conflict[2], best_conflict[6])
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            other_edit_amount = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        try:
+            sql = "select total_lines " \
+                  "from file_information " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  % (best_conflict[1], best_conflict[2])
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            file_total_lines = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        user_percentage = 0
+
+        if user_edit_amount[0] == 0:
+            user_percentage = (100 * user_edit_amount[1]) / file_total_lines[0]
+        elif user_edit_amount[1] == 0:
+            user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0])
+        elif user_edit_amount[0] > user_edit_amount[1]:
+            user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0] - user_edit_amount[1])
+        elif user_edit_amount[0] <= user_edit_amount[1]:
+            user_percentage = (100 * user_edit_amount[1]) / (file_total_lines[0])
+
+        other_percentage = 0
+
+        if other_edit_amount[0] == 0:
+            other_percentage = (100 * other_edit_amount[1]) / file_total_lines[0]
+        elif other_edit_amount[1] == 0:
+            other_percentage = (100 * other_edit_amount[0]) / (file_total_lines[0] + other_edit_amount[0])
+        elif other_edit_amount[0] > other_edit_amount[1]:
+            other_percentage = (100 * other_edit_amount[0]) / (file_total_lines[0] + other_edit_amount[0] - other_edit_amount[1])
+        elif other_edit_amount[0] <= other_edit_amount[1]:
+            other_percentage = (100 * other_edit_amount[1]) / (file_total_lines[0])
+
+        return user_percentage, other_percentage
 
     def non_direct_conflict_logic(self, project_name, user_name, approve_file_list, non_direct_conflict_list):
         raw_list = non_direct_conflict_list[:]

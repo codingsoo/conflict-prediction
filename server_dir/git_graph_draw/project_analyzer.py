@@ -147,6 +147,8 @@ def make_func_edge(owner, project_name, file_path, value, project_dict, logic_di
                     full_path = full_path + '/' + paths[-2]
                     func_append_edge_list(full_path, owner, paths, project_dict, logic_dict, edges_list)
 
+
+
 def run( root , owner) :
     project_dict = dict()
     project_name = os.path.basename(root)
@@ -172,4 +174,15 @@ def run( root , owner) :
             elif value['type'] =='Function' :
                 make_func_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list)
 
-    return edges_list, logic_dict
+    file_information = dict()
+
+    for file_full_path in file_list:
+        file_path = owner + '/' + os.path.join(file_full_path[len(root) - len(project_name):]).replace(os.sep, '/')
+        file_information[file_path] = dict()
+
+        with open(file_full_path, 'r', encoding='utf-8') as f:
+            total_lines = len(f.readlines())
+
+        file_information[file_path]['total_lines'] = total_lines
+
+    return edges_list, logic_dict, file_information

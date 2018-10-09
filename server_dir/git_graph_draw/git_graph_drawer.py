@@ -384,6 +384,70 @@ def removeDir(root_dir_temp):
 
     subprocess.check_output(cmd_line, shell=True)
 
+def store_file_information(repository_name, file_information):
+
+    mysql_conn_obj = mysql_conn()
+
+    for file_path, temp_file_inforamation in file_information.items():
+        try:
+            sql = "replace into file_information " \
+                  "(project_name, file_name, total_lines) " \
+                  "value ('%s', '%s', '%d')" % (repository_name, file_path, temp_file_inforamation['total_lines'])
+
+            print(sql)
+            mysql_conn_obj.cursor.execute(sql)
+            mysql_conn_obj.conn.commit()
+
+        except:
+            mysql_conn_obj.conn.rollback()
+            print("ERROR : store_file_information")
+
+    # remove not currenct value
+    raw_list = []
+
+    try:
+        sql = "select file_name " \
+              "from file_information " \
+              "where project_name = '%s'" \
+              % (repository_name)
+
+        print(sql)
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
+
+        raw_list = list(mysql_conn_obj.cursor.fetchall())
+
+    except:
+        mysql_conn_obj.conn.rollback()
+        print("ERROR : store_file_information2")
+
+    remove_list = raw_list[:]
+
+    for file_path in file_information.keys():
+        for raw in raw_list:
+            if raw[0] == file_path:
+                remove_list.remove(raw)
+
+    for temp_remove_list in remove_list:
+        try:
+            sql = "delete " \
+                  "from file_information " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  % (repository_name, temp_remove_list[0])
+
+            print(sql)
+            mysql_conn_obj.cursor.execute(sql)
+            mysql_conn_obj.conn.commit()
+        except:
+            mysql_conn_obj.conn.rollback()
+            print("ERROR : store_file_information3")
+
+
+    mysql_conn_obj.close()
+
+    return
+
 def store_graph_to_db(repository_name, graph_list):
 
     mysql_conn_obj = mysql_conn()
@@ -462,7 +526,7 @@ def indirect_logic(git_repository_name):
 
     # generate_file_dependency()
 
-    graph_data, logic_dict =  run(root_dir_temp, git_repository_name_temp)
+    graph_data, logic_dict, file_information = run(root_dir_temp, git_repository_name_temp)
 
     print("graph data : " + str(graph_data))
 
@@ -470,6 +534,7 @@ def indirect_logic(git_repository_name):
 
     print("edge_list: " + str(edge_list))
 
+    store_file_information(git_repository_name, file_information)
     store_graph_to_db(git_repository_name, edge_list)
     insert_function_list(git_repository_name, logic_dict)
 

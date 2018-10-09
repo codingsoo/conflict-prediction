@@ -25,7 +25,7 @@ class work_database:
     '''
 
     # Update User data to working_table
-    def update_user_data(self, project_name, working_list, calling_list, user_name):
+    def update_user_data(self, project_name, working_list, edit_amount, calling_list, user_name):
         # in working_table
         for temp_work in working_list:
             print("temp_work : ", temp_work)
@@ -61,10 +61,27 @@ class work_database:
                     self.conn.rollback()
                     print("ERROR : update_user_data : calling")
 
+        # in edit_amount
+        # { file_name : { 'total_plus': value, 'total_minus': value }
+        for file_name, temp_edit_amount in edit_amount.items():
+            print("temp_edit_amount : ", temp_edit_amount)
+            try:
+                sql = "replace into edit_amount " \
+                      "(project_name, file_name, user_name, total_plus, total_minus) " \
+                      "value ('%s', '%s', '%s', '%d', '%d')" \
+                      % (project_name, file_name, user_name, temp_edit_amount['total_plus'], temp_edit_amount['total_minus'])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+            except:
+                self.conn.rollback()
+                print("ERROR : update_user_data : calling")
+
+
         return
 
     # Remove User data to working_table
-    def remove_user_data(self, project_name, working_list, calling_list, user_name):
+    def remove_user_data(self, project_name, working_list, edit_amount, calling_list, user_name):
         # in working_table
         user_working_db = set()
 
@@ -82,7 +99,7 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : remove_user_data")
+            print("ERROR : remove_user_data1")
 
         current_working_db = set()
 
@@ -107,7 +124,7 @@ class work_database:
 
             except:
                 self.conn.rollback()
-                print("ERROR : remove_user_data")
+                print("ERROR : remove_user_data2")
 
         remove_working_db = user_working_db - current_working_db
 
@@ -129,7 +146,7 @@ class work_database:
 
             except:
                 self.conn.rollback()
-                print("ERROR : remove_user_data")
+                print("ERROR : remove_user_data3")
 
         # in calling_table
         user_calling_db = set()
@@ -147,7 +164,7 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : remove_user_data")
+            print("ERROR : remove_user_data4")
 
         current_calling_db = set()
 
@@ -173,7 +190,7 @@ class work_database:
 
                 except:
                     self.conn.rollback()
-                    print("ERROR : remove_user_data")
+                    print("ERROR : remove_user_data5")
 
         remove_calling_db = user_calling_db - current_calling_db
 
@@ -194,7 +211,71 @@ class work_database:
 
             except:
                 self.conn.rollback()
-                print("ERROR : remove_user_data")
+                print("ERROR : remove_user_data6")
+
+        # in edit_amount
+        user_edit_amount_db = set()
+        try:
+            sql = "select * " \
+                  "from edit_amount " \
+                  "where user_name = '%s'" % (user_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for raw in raw_tuple:
+                user_edit_amount_db.add(raw)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : remove_user_data7")
+
+        current_edit_amount_db = set()
+
+        # { file_name : { 'total_plus': value, 'total_minus': value } }
+        for file_name, temp_edit_amount in edit_amount.items():
+            try:
+                sql = "select * " \
+                      "from edit_amount " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and total_plus = '%s' " \
+                      "and total_minus = '%s' " \
+                      % (project_name, file_name, user_name, temp_edit_amount['total_plus'], temp_edit_amount['total_minus'])
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_tuple = self.cursor.fetchall()
+                for raw in raw_tuple:
+                    current_edit_amount_db.add(raw)
+
+            except:
+                self.conn.rollback()
+                print("ERROR : remove_user_data8")
+
+        remove_edit_amount_db = user_edit_amount_db - current_edit_amount_db
+
+        for temp_remove in remove_edit_amount_db:
+            try:
+                sql = "delete " \
+                      "from edit_amount " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and total_plus = '%s' " \
+                      "and total_minus = '%s' " \
+                      % (temp_remove[0], temp_remove[1], temp_remove[2], temp_remove[3], temp_remove[4])
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+            except:
+                self.conn.rollback()
+                print("ERROR : remove_user_data9")
 
         return
 
