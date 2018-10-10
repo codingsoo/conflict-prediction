@@ -453,13 +453,16 @@ def store_graph_to_db(repository_name, graph_list):
     mysql_conn_obj = mysql_conn()
 
     try:
-        sql = "delete " \
-              "from logic_dependency " \
-              "where project_name = '%s' " % (repository_name)
+        sql = "replace into logic_dependency " \
+              "(project_name, def_func, call_func, length) " \
+              "values"
+
+        for temp_graph in graph_list:
+            sql += " ('%s', '%s', '%s', %d), " %(repository_name, temp_graph[0].replace('\\', '/'), temp_graph[1].replace('\\', '/'), temp_graph[2])
+
+        sql = sql[:-2]
 
         print(sql)
-
-        # execute sql
         mysql_conn_obj.cursor.execute(sql)
         mysql_conn_obj.conn.commit()
 
@@ -468,23 +471,44 @@ def store_graph_to_db(repository_name, graph_list):
         print("ERROR : insert graph info")
 
     try:
-        print("graph list : " + str(graph_list))
-        sql = "insert into logic_dependency (project_name, def_func, call_func, length) values"
-        for temp_graph in graph_list:
+        sql = "select * " \
+              "from logic_dependency " \
+              "where project_name = '%s' " % (repository_name)
 
-            # create sql
-            sql += " ('%s', '%s', '%s', %d), " %(repository_name, temp_graph[0].replace('\\', '/'), temp_graph[1].replace('\\', '/'), temp_graph[2])
-
-        sql = sql[:-2]
         print(sql)
-
-        # execute sql
         mysql_conn_obj.cursor.execute(sql)
         mysql_conn_obj.conn.commit()
+
+        raw_list = list(mysql_conn_obj.cursor.fetchall())
 
     except:
         mysql_conn_obj.conn.rollback()
         print("ERROR : insert graph info")
+
+    remove_list = raw_list[:]
+
+    for temp_graph in graph_list:
+        for raw in raw_list:
+            if temp_graph[0].replace('\\', '/') == raw[1] and temp_graph[1].replace('\\', '/') == raw[2]:
+                remove_list.remove(raw)
+
+    for temp_remove in remove_list:
+        try:
+            sql = "delete " \
+                  "from logic_dependency " \
+                  "where project_name = '%s' " \
+                  "and def_func = '%s' " \
+                  "and call_func = '%s' " \
+                  % (repository_name, temp_remove[1], temp_remove[2])
+
+            print(sql)
+            mysql_conn_obj.cursor.execute(sql)
+            mysql_conn_obj.conn.commit()
+
+        except:
+            mysql_conn_obj.conn.rollback()
+            print("ERROR : insert graph info")
+
 
     mysql_conn_obj.close()
 
@@ -543,19 +567,17 @@ def indirect_logic(git_repository_name):
 
     return
 
-def is_old_git_clone(repository_name):
+def is_empty_git_clone(repository_name):
     mysql_conn_obj = mysql_conn()
     raw_list = list()
 
     try:
         sql = "select * " \
               "from logic_dependency " \
-              "where project_name = '%s' " \
-              "and TIMEDIFF(now(),log_time) > 4*60*60" %(repository_name)
+              "where project_name = '%s'" \
+              % (repository_name)
 
         print(sql)
-
-        # execute sql
         mysql_conn_obj.cursor.execute(sql)
         mysql_conn_obj.conn.commit()
 
@@ -565,26 +587,35 @@ def is_old_git_clone(repository_name):
         mysql_conn_obj.conn.rollback()
         print("ERROR : check git clone time")
 
-    if(raw_list != []):
-        try:
-            sql = "delete " \
-                  "from logic_dependency " \
-                  "where project_name = '%s' "% (repository_name)
+    if raw_list:
+        return False
+    else:
+        return True
 
-            print(sql)
+def is_old_git_clone(repository_name):
+    mysql_conn_obj = mysql_conn()
+    raw_list = list()
 
-            # execute sql
-            mysql_conn_obj.cursor.execute(sql)
-            mysql_conn_obj.conn.commit()
+    try:
+        sql = "select * " \
+              "from logic_dependency " \
+              "where project_name = '%s' " \
+              "and TIMEDIFF(now(),log_time) > 4*60*60" % (repository_name)
 
-        except:
-            mysql_conn_obj.conn.rollback()
-            print("ERROR : delete logic dependency")
-        indirect_logic(repository_name)
+        print(sql)
+        mysql_conn_obj.cursor.execute(sql)
+        mysql_conn_obj.conn.commit()
+
+        raw_list = list(mysql_conn_obj.cursor.fetchall())
+
+    except:
+        mysql_conn_obj.conn.rollback()
+        print("ERROR : check git clone time")
+
+    if raw_list:
         return True
     else:
         return False
-
 
 @app.route('/repository_name', methods = ["GET", "POST"])
 def repository_name():
@@ -599,9 +630,7 @@ def repository_name():
     u_db.set_repository_name(git_id, git_repository_name)
     u_db.close()
 
-    if(is_old_git_clone(git_repository_name)):
-        pass
-    else:
+    if is_empty_git_clone(git_repository_name) or is_old_git_clone(git_repository_name):
         indirect_logic(git_repository_name)
 
     return "Success repository name"

@@ -86,7 +86,8 @@ CREATE TABLE IF NOT EXISTS `logic_dependency` (
   `def_func` varchar(255) NOT NULL,
   `call_func` varchar(255) NOT NULL,
   `length` int(11) NOT NULL DEFAULT '0',
-  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`project_name`,`def_func`,`call_func`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
