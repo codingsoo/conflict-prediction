@@ -2,6 +2,8 @@ import spacy
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from server_dir.slack_message_sender import *
+from server_dir.slack_button_message import send_button_message
+
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
@@ -313,6 +315,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                 if not called_file_abs_path_list:
                     work_db.close()
                     return ERROR, "same_named_file", None, None
+
 
             if not called_file_abs_path_list:
                 work_db.close()

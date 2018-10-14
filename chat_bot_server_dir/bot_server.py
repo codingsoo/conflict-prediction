@@ -7,6 +7,8 @@ import nltk
 import configparser
 from pathlib import Path
 from slacker import Slacker
+import subprocess
+from chat_bot_server_dir.project_parser import project_parser
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_direct_message
 from server_dir.user_database import user_database
@@ -152,6 +154,14 @@ def message_processing(msg):
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, int(msg['intent_type']))
 
                 return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+
+                BASE_PATH = os.path.pardir
+                delete_path = os.path.join(BASE_PATH, owner_name)
+                cmd_line = 'rm -rf ' + delete_path
+
+                print("delete_path : ", delete_path)
+
+                subprocess.check_output(cmd_line, shell=True)
 
                 print("return message : " + str(return_message))
                 # Send the message to user

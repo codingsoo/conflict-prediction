@@ -23,6 +23,12 @@ def get_user_email(project_name, file_path, start_line, end_line) :
         if not os.path.exists(full_file_path):
             return []
         else:
+            with open(full_file_path, 'r') as f :
+                lines = f.readlines()
+
+            file_line = len(lines)
+            if end_line > file_line :
+                end_line = file_line
             ret_dict = dict()
             command = 'git blame --show-email -L {},{} ./{}'.format(start_line, end_line, file_path.replace(os.sep, '/'))
             lines = subprocess.check_output(command, shell=True, universal_newlines=True, cwd=full_base_path, encoding='UTF-8').splitlines()
@@ -57,7 +63,7 @@ def get_user_email(project_name, file_path, start_line, end_line) :
                         ret_dict[current_user_email].append([user_start_line,current_line-1])
 
     print(ret_dict)
-    return ret_dict
+    return end_line, ret_dict
 
 if __name__ == '__main__' :
     get_user_email('conflict-detector', 'git_graph_draw\\git_graph_draw.py', 1, 3)

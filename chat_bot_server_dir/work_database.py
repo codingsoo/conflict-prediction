@@ -1292,52 +1292,52 @@ class work_database:
     '''
     Utility
     '''
-    # def read_project_name(self, slack_code):
-    #     # Read git_id
-    #     raw_list = []
-    #     try:
-    #         sql = "select git_id " \
-    #               "from user_table " \
-    #               "where slack_code = '%s'" % (slack_code)
-    #         print(sql)
-    #         self.cursor.execute(sql)
-    #         self.conn.commit()
-    #
-    #         raw_list = list(self.cursor.fetchall())
-    #
-    #     except:
-    #         self.conn.rollback()
-    #         print("ERROR : read project name")
-    #
-    #     # slack_code don't verified
-    #     if not raw_list:
-    #         print("ERROR : slack_code don't verified")
-    #         return -2
-    #     else:
-    #         git_id = raw_list[0]
-    #
-    #     # Read the project name
-    #     raw_list1 = []
-    #     try:
-    #         sql = "select project_name " \
-    #               "from working_table " \
-    #               "where user_name = '%s'" % (git_id)
-    #         print(sql)
-    #         self.cursor.execute(sql)
-    #         self.conn.commit()
-    #
-    #         raw_list1 = list(self.cursor.fetchall())
-    #         print("raw_list",raw_list)
-    #     except:
-    #         self.conn.rollback()
-    #         print("ERROR : read project name")
-    #
-    #     # This user don't have project
-    #     if not raw_list1:
-    #         print("ERROR : This user don't have project")
-    #         return -1
-    #     else:
-    #         return raw_list1[0][0]
+    def read_project_name(self, slack_code):
+        # Read git_id
+        raw_list = []
+        try:
+            sql = "select git_id " \
+                  "from user_table " \
+                  "where slack_code = '%s'" % (slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+
+        except:
+            self.conn.rollback()
+            print("ERROR : read project name")
+
+        # slack_code don't verified
+        if not raw_list:
+            print("ERROR : slack_code don't verified")
+            return -2
+        else:
+            git_id = raw_list[0]
+
+        # Read the project name
+        raw_list1 = []
+        try:
+            sql = "select project_name " \
+                  "from working_table " \
+                  "where user_name = '%s'" % (git_id)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list1 = list(self.cursor.fetchall())
+            print("raw_list",raw_list)
+        except:
+            self.conn.rollback()
+            print("ERROR : read project name")
+
+        # This user don't have project
+        if not raw_list1:
+            print("ERROR : This user don't have project")
+            return -1
+        else:
+            return raw_list1[0][0]
 
     def get_repository_name(self, slack_code):
         repository_name = ""

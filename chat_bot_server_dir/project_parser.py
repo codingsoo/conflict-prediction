@@ -42,14 +42,10 @@ def project_parser( owner_name, project_name ) :
                 ret_dict["function"].extend(func_list)
                 ret_dict["class"].extend(class_list)
 
-    delete_path = os.path.join(BASE_PATH, owner_name)
+
 
     # windows
     # cmd_line = 'rmdir /S /Q ' + root_dir_temp
 
     # linux
-    cmd_line = 'rm -rf ' + delete_path
-
-    print("delete_path : ", delete_path)
-    subprocess.check_output(cmd_line, shell=True)
     return ret_dict

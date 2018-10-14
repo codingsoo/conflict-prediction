@@ -198,9 +198,15 @@ def code_history_logic(slack_code, file_abs_path, start_line, end_line):
     w_db = work_database()
 
     project_name = w_db.get_repository_name(slack_code)
-    engaging_user_email_list = get_user_email(project_name, file_abs_path, start_line, end_line)
+    file_end_line, engaging_user_email_list = get_user_email(project_name, file_abs_path, start_line, end_line)
+
+
 
     message = ""
+
+    if file_end_line != end_line:
+        message += "This file's total amount of lines is {}.\n".format(file_end_line)
+
     user_email_list = list(engaging_user_email_list)
     user_name_fail_list = []
     for user_email in user_email_list:
@@ -302,7 +308,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     w_db = work_database()
     message = ""
 
-    project_name = w_db.get_repository_name(target_slack_code)
+    project_name = w_db.read_project_name(target_slack_code)
     if project_name == "":
         message = "This user is not working on our project."
     else:
