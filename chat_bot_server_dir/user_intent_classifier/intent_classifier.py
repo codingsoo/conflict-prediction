@@ -224,6 +224,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
     import re
     work_db = work_database()
     sentence = _sentence
+    called_file_abs_path_list = []
 
     if intent_type == -1:
         intent_type, sentence = intent_classifier(_sentence)
@@ -249,7 +250,6 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
     if intent_type in [1, 2, 3, 5, 9, 11, 12]:
         file_simp_path_list = project_parser(owner_name, project_name)["file"]
         file_abs_path_list = []
-        called_file_abs_path_list = []
 
         for fspl in file_simp_path_list:
             fapl = owner_name + "/" + project_name + "/" + fspl
@@ -300,7 +300,6 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                     work_db.close()
                     return ERROR, "same_named_file", None, None
 
-
             if not called_file_abs_path_list:
                 work_db.close()
                 return ERROR, "no_file", None, None
@@ -343,14 +342,14 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
 
     # About lock
     elif intent_type == 2:
-        remove_lock_list = []
         request_lock_set = set()
+        remove_lock_set = set()
         lock_time = 0
 
         for file_abs_path in called_file_abs_path_list:
             sentence = sentence.replace(file_abs_path, " ")
             if " not " in sentence or " unlock " in sentence:
-                remove_lock_list.append(file_abs_path)
+                remove_lock_set.add(file_abs_path)
             else:
                 try:
                     lock_time = int(re.findall('\d+', sentence)[0])
@@ -358,11 +357,11 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                     lock_time = 1
                 request_lock_set.add(file_abs_path)
 
-        print("remove_lock_list : ", remove_lock_list)
+        print("remove_lock_set : ", remove_lock_set)
         print("request_lock_set : ", request_lock_set)
 
         work_db.close()
-        return 2, request_lock_set, remove_lock_list, lock_time
+        return 2, request_lock_set, remove_lock_set, lock_time
 
     # About code history
     elif intent_type == 3:

@@ -616,6 +616,7 @@ class work_database:
             sql = "insert into lock_try_history " \
                   "(project_name, file_name, slack_code, delete_time) " \
                   "values "
+
             for temp_diff_lock in already_lock_set:
                 sql += "('%s', '%s', '%s', %d), " % (project_name, temp_diff_lock, slack_code, delete_time)
 
@@ -652,9 +653,9 @@ class work_database:
 
         return raw_list
 
-    def remove_lock_list(self, project_name, slack_code, remove_lock_list):
+    def remove_lock_list(self, project_name, slack_code, remove_lock_set):
 
-        for temp_remove_file in remove_lock_list:
+        for temp_remove_file in remove_lock_set:
             try:
                 sql = "delete " \
                       "from lock_list " \
@@ -732,8 +733,8 @@ class work_database:
         try:
             sql = "select lock_file " \
                   "from lock_list " \
-                  "where slack_code = '%s'" \
-                  "and project_name = '%s'" % (slack_code, project_name)
+                  "where slack_code = '%s' " \
+                  "and project_name = '%s' " % (slack_code, project_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()

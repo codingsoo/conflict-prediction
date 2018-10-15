@@ -128,7 +128,7 @@ def approved_file_logic(slack_code, approved_set, removed_list):
     return message
 
 
-def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
+def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
     w_db = work_database()
 
     project_name, user_name = w_db.get_repository_and_user_name(slack_code)
@@ -153,29 +153,28 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             ele = ', '.join(list(lock_file_list))
             message = message.format(ele)
 
-    if remove_lock_list:
+    if remove_lock_set:
         ch_message = ""
 
-        lock_list = w_db.read_lock_list_of_slack_code(project_name, slack_code)
-        if lock_list:
-            for file_name in remove_lock_list:
+        already_lock_list = w_db.read_lock_list_of_slack_code(project_name, slack_code)
+        remove_lock_set = set(already_lock_list).intersection(set(remove_lock_set))
+        if remove_lock_set:
+            for file_name in remove_lock_set:
                 ch_message = random.choice(shell_dict['unlock_announce'])
                 ch_message = ch_message.format(user_name, file_name)
 
             send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_unlock_file'])
-            w_db.remove_lock_list(project_name, slack_code, remove_lock_list)
+            w_db.remove_lock_list(project_name, slack_code, remove_lock_set)
 
-            inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
+            inform_unlock_list = w_db.read_oldest_lock_history_list(list(remove_lock_set))
 
             for file in inform_unlock_list:
                 print("inform_unlock_list", file)
-                send_lock_button_message(file[2], file[1], file[3])
-                # msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
-                # send_direct_message(file[2], msg)
+                send_lock_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
-            ele = ','.join(remove_lock_list)
+            ele = ','.join(list(remove_lock_set))
             message = message.format(ele)
 
         else:
