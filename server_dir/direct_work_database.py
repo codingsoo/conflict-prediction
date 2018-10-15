@@ -54,8 +54,7 @@ class direct_work_database:
         inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
 
         for file in inform_unlock_list:
-            msg = "{} just unlocked. Do you want me to lock it for {} hours?".format(file[1], file[3])
-            send_direct_message(file[2], msg)
+            send_lock_button_message(file[2], file[1], file[3])
 
         lock_file_list = w_db.inform_lock_file_direct(project_name, working_list, user_name)
         lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)
@@ -447,6 +446,8 @@ class direct_work_database:
                                   user2_name=temp_best[6])
 
             user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
+            # send_direct_message(slack_code=user_percentage, )
 
         return
 

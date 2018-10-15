@@ -104,11 +104,11 @@ def message_processing(msg):
             if (("Sayme" in msg['text']) or ("<@UCKJC17HT1>" in msg['text'])): # Sayme slack code : "UBP8LHJS1" / Sayme2 slack code : "UCKJC17HT"
                 u_db = user_database("parent")
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
-                user_slack_id = msg['user']
-                print("channel : ", user_slack_id, user_git_id)
+                user_slack_code = msg['user']
+                print("channel : ", user_slack_code, user_git_id)
 
                 w_db = work_database.work_database()
-                repository_name = w_db.get_repository_name(user_slack_id)
+                repository_name = w_db.get_repository_name(user_slack_code)
                 owner_name = repository_name.split('/')[0]
                 project_name = repository_name.split('/')[1]
                 project_name = project_name[:-4]
@@ -120,7 +120,7 @@ def message_processing(msg):
                 elif msg['type'] == 'interactive_message':
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, int(msg['intent_type']))
 
-                return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+                return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 
                 print("return message : " + str(return_message))
                 send_channel_message("code-conflict-chatbot", return_message)
@@ -138,11 +138,11 @@ def message_processing(msg):
                 w_db.insert_last_connection(msg['user'])
 
                 user_git_id = u_db.convert_slack_code_to_git_id(msg['user'])
-                user_slack_id = msg['user']
-                print("user : ", user_slack_id, user_git_id)
+                user_slack_code = msg['user']
+                print("user : ", user_slack_code, user_git_id)
 
                 # Sentence Processing logic
-                repository_name = w_db.get_repository_name(user_slack_id)
+                repository_name = w_db.get_repository_name(user_slack_code)
                 owner_name = repository_name.split('/')[0]
                 project_name = repository_name.split('/')[1]
                 project_name = project_name[:-4]
@@ -153,7 +153,7 @@ def message_processing(msg):
                 elif msg['type'] == 'interactive_message':
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, int(msg['intent_type']))
 
-                return_message = sentence_processing_main(intent_type, user_slack_id, return_param0, return_param1, return_param2)
+                return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 
                 BASE_PATH = os.path.pardir
                 delete_path = os.path.join(BASE_PATH, owner_name)
@@ -166,7 +166,7 @@ def message_processing(msg):
                 print("return message : " + str(return_message))
                 # Send the message to user
 
-                send_direct_message(user_slack_id, return_message)
+                send_direct_message(user_slack_code, return_message)
                 w_db.close()
                 u_db.close()
 

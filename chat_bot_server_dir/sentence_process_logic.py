@@ -1,7 +1,7 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
-from server_dir.slack_message_sender import send_direct_message
+from server_dir.slack_message_sender import send_direct_message, send_lock_button_message
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
 from chat_bot_server_dir.constants import *
 import os, random
@@ -45,9 +45,6 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 12):
         message = check_severity_logic(slack_code, param0)
 
-    elif(intent_type == 13):
-        message = response_logic(slack_code, param0)
-
     elif(intent_type == ERROR - 2):
         message = greeting_logic(slack_code)
 
@@ -88,8 +85,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
 def approved_file_logic(slack_code, approved_set, removed_list):
     w_db = work_database()
-    user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-    project_name = w_db.get_repository_name(slack_code)
+    project_name, user_name = w_db.get_repository_and_user_name(slack_code)
 
     approved_list = list(approved_set)
 
@@ -135,25 +131,20 @@ def approved_file_logic(slack_code, approved_set, removed_list):
 def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     w_db = work_database()
 
-    project_name = w_db.get_repository_name(slack_code)
+    project_name, user_name = w_db.get_repository_and_user_name(slack_code)
     message = ""
 
-    m1 = ""
-    m2 = ""
-
     if request_lock_set:
-        lock_file_list, already_lock_list = list(w_db.add_lock_list(slack_code, request_lock_set, lock_time))
+        lock_file_list, already_lock_list = list(w_db.add_lock_list(project_name, slack_code, request_lock_set, lock_time))
         if already_lock_list:
             for file_name in already_lock_list:
-                slack_code, remain_time_str = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
-                user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-
+                other_slack_code, remain_time_str = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
+                other_user_name = w_db.convert_slack_code_to_slack_id(other_slack_code)
                 message += random.choice(shell_dict['feat_lock_overlap'])
-                message = message.format(user_name, file_name, remain_time_str)
+                message = message.format(other_user_name, file_name, remain_time_str)
 
         if lock_file_list:
             ch_message = ""
-            user_name = w_db.convert_slack_code_to_slack_id(slack_code)
             for file_name in lock_file_list:
                 ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, lock_time)
             send_channel_message("code-conflict-chatbot", ch_message)
@@ -165,9 +156,8 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
     if remove_lock_list:
         ch_message = ""
 
-        lock_list = w_db.read_lock_list_of_slack_code(slack_code, project_name)
+        lock_list = w_db.read_lock_list_of_slack_code(project_name, slack_code)
         if lock_list:
-            user_name = w_db.convert_slack_code_to_slack_id(slack_code)
             for file_name in remove_lock_list:
                 ch_message = random.choice(shell_dict['unlock_announce'])
                 ch_message = ch_message.format(user_name, file_name)
@@ -175,13 +165,15 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
             send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_unlock_file'])
-            w_db.remove_lock_list(slack_code, remove_lock_list)
+            w_db.remove_lock_list(project_name, slack_code, remove_lock_list)
 
             inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
 
             for file in inform_unlock_list:
-                msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
-                send_direct_message(file[2], msg)
+                print("inform_unlock_list", file)
+                send_lock_button_message(file[2], file[1], file[3])
+                # msg = "{} just unlocked. Do you want me to lock it for {} hours? [yes/no]".format(file[1], file[3])
+                # send_direct_message(file[2], msg)
 
             ele = ','.join(remove_lock_list)
             message = message.format(ele)
@@ -189,7 +181,6 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_list, lock_time):
         else:
             message = "You didn't lock this file, so you cannot lock this file. "
 
-    # message = m1 + " / " + m2
     w_db.close()
     return message
 
@@ -319,7 +310,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
         message = message.format(slack_id, working_data)
 
         # add lock file information.
-        db_lock_set = set(w_db.read_lock_list_of_slack_code(target_slack_code, project_name))
+        db_lock_set = set(w_db.read_lock_list_of_slack_code(project_name, target_slack_code))
         print(db_lock_set)
         if db_lock_set:
             locked_file = ', '.join(list(db_lock_set))
@@ -447,41 +438,65 @@ def check_severity_logic(slack_code, file_abs_path):
     return message
 
 
-def response_logic(slack_code, msg_type):
+# def response_logic(slack_code, msg_type):
+#     w_db = work_database()
+#
+#     request_lock_set = set()
+#
+#     message = ""
+#     project_name = w_db.get_repository_name(slack_code)
+#     remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
+#     print("read_lock_history_list", set(w_db.read_lock_history_list(project_name)))
+#     print("read_lock_list", set(w_db.read_lock_list(project_name)))
+#
+#     target_list = w_db.read_oldest_lock_history_list(remove_file_list)
+#     print("target_list", target_list)
+#     for target_file in target_list:
+#         if(target_file[2] == slack_code):
+#             if(msg_type == "yes"):
+#                 request_lock_set.add(target_file[1])
+#                 lock_file_list, already_lock_set = list(w_db.add_lock_list(slack_code, project_name, request_lock_set, target_file[3]))
+#                 print("lock_file_list", lock_file_list)
+#                 print("already_lock_set", already_lock_set)
+#                 ch_message = ""
+#                 user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+#
+#                 for file_name in lock_file_list:
+#                     ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, target_file[3])
+#                 send_channel_message("code-conflict-chatbot", ch_message)
+#
+#                 message += random.choice(shell_dict['feat_lock_file'])
+#                 ele = ','.join(list(lock_file_list))
+#                 message = message.format(ele)
+#
+#                 w_db.delete_lock_history(target_file[1], slack_code)
+#             else:
+#                 w_db.delete_lock_history(target_file[1], slack_code)
+#                 message = "Okay, I'll not lock it"
+#         else:
+#             message = "I think you enter the wrong one."
+#
+#     w_db.close()
+#     return message
+
+def lock_response_logic(slack_code, msg_type, target_file, lock_time):
     w_db = work_database()
+    project_name, user_name = w_db.get_repository_and_user_name(slack_code)
 
-    request_lock_set = set()
-
-    message = ""
-    project_name = w_db.get_repository_name(slack_code)
-    remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
-
-    target_list = w_db.read_oldest_lock_history_list(remove_file_list)
-    for target_file in target_list:
-        if(target_file[2] == slack_code):
-            if(msg_type == "yes"):
-                request_lock_set.add(target_file[1])
-                lock_file_list, already_lock_set = list(w_db.add_lock_list(slack_code, request_lock_set, target_file[3]))
-                ch_message = ""
-                user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-
-                for file_name in lock_file_list:
-                    ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, target_file[3])
-                send_channel_message("code-conflict-chatbot", ch_message)
-
-                message += random.choice(shell_dict['feat_lock_file'])
-                ele = ','.join(list(lock_file_list))
-                message = message.format(ele)
-
-                w_db.delete_lock_history(target_file[1], slack_code)
-            else:
-                w_db.delete_lock_history(target_file[1], slack_code)
-                message = "Okay, I'll not lock it"
-        else:
-            message = "I think you enter the wrong one."
+    if msg_type == "YES" and target_file in w_db.read_lock_history_list(project_name, slack_code):
+        lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
+        ch_message = ""
+        if target_file in lock_file_list:
+            ch_message += "{} locked {} file for {} hour(s).".format(user_name, target_file, lock_time)
+        send_channel_message("code-conflict-chatbot", ch_message)
+        print("YES")
+        w_db.delete_lock_history(project_name, slack_code, target_file)
+    else:
+        print("NO")
+        w_db.delete_lock_history(project_name, slack_code, target_file)
 
     w_db.close()
-    return message
+
 
 def greeting_logic(slack_code):
     w_db = work_database()

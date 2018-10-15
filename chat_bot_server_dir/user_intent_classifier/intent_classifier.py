@@ -2,16 +2,14 @@ import spacy
 from chat_bot_server_dir.project_parser import project_parser
 from chat_bot_server_dir.user_intent_classifier.sentence_type_finder import require_something_sentence
 from server_dir.slack_message_sender import *
-from server_dir.slack_button_message import send_button_message
 
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 
-nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -224,25 +222,11 @@ def intent_classifier(_sentence):
 
 def extract_attention_word(owner_name, project_name,_sentence, github_email, intent_type):
     import re
-
     work_db = work_database()
-
-    sentence = " " + _sentence + " "
-    yes_list = ["y","yes","affirmative", "amen","fine","good","okay","true","yea","all right","aye","beyond a doubt","by all means","certainly","definitely","even so","exctly","gladly","good enough","granted","indubitably","just so","most assuredly","naturally","of course","positively","precisely","sure thing","surely","undoubtedly","unquestionably","very well","willingly","without fail","yep"]
-    no_list = ["n","no", "nay", "nix", "never"]
-
-    for yes in yes_list:
-        if " " + yes + " " in sentence:
-            work_db.close()
-            return 13, "yes", None, None
-    for no in no_list:
-        if " " + no + " " in sentence:
-            work_db.close()
-            return 13, "no", None, None
+    sentence = _sentence
 
     if intent_type == -1:
         intent_type, sentence = intent_classifier(_sentence)
-
         print("Intent_type", intent_type)
 
         # help classification about intent_type 5 and 9
@@ -311,7 +295,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
             if called_same_named_file_dict:
                 print("called_same_named_file_dict", called_same_named_file_dict)
                 user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
-                send_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
+                send_file_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
                 if not called_file_abs_path_list:
                     work_db.close()
                     return ERROR, "same_named_file", None, None

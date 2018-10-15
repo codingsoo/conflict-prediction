@@ -586,12 +586,8 @@ class work_database:
     lock list
     '''
     # Add lock list
-    def add_lock_list(self, slack_code, req_lock_set, delete_time):
-        project_name = self.get_repository_name(slack_code)
+    def add_lock_list(self, project_name, slack_code, req_lock_set, delete_time):
 
-        if str(project_name).isdigit():
-            print("ERROR : NO PROJECT NAME")
-            return
         db_lock_set = set(self.read_lock_list(project_name))
 
         diff_lock_set = req_lock_set - db_lock_set
@@ -656,12 +652,8 @@ class work_database:
 
         return raw_list
 
-    def remove_lock_list(self, slack_code, remove_lock_list):
-        project_name = self.get_repository_name(slack_code)
+    def remove_lock_list(self, project_name, slack_code, remove_lock_list):
 
-        if str(project_name).isdigit():
-            print("ERROR : NO PROJECT NAME")
-            return
         for temp_remove_file in remove_lock_list:
             try:
                 sql = "delete " \
@@ -734,7 +726,7 @@ class work_database:
 
         return raw_list
 
-    def read_lock_list_of_slack_code(self, slack_code, project_name):
+    def read_lock_list_of_slack_code(self, project_name, slack_code):
         raw_list = []
 
         try:
@@ -779,13 +771,14 @@ class work_database:
 
         return raw_list
 
-    def read_lock_history_list(self, project_name):
+    def read_lock_history_list(self, project_name, slack_code):
         raw_list = []
 
         try:
             sql = "select file_name " \
                   "from lock_try_history "\
-                  "where project_name = '%s'" % (project_name)
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (project_name, slack_code)
 
             print(sql)
             self.cursor.execute(sql)
@@ -800,13 +793,14 @@ class work_database:
 
         return raw_list
 
-    def delete_lock_history(self, delete_file, slack_code):
+    def delete_lock_history(self, project_name, slack_code, delete_file):
         try:
 
             sql = "delete "\
                   "from lock_try_history "\
-                  "where file_name = '%s' "\
-                  "and slack_code = '%s'" %(delete_file, slack_code)
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' "\
+                  "and slack_code = '%s'" %(project_name, delete_file, slack_code)
 
             # execute sql
             print(sql)
@@ -1354,7 +1348,41 @@ class work_database:
             self.conn.rollback()
             print("ERROR : get repository name")
 
+        if str(repository_name).isdigit():
+            print("ERROR : NO PROJECT NAME")
+            return
+
         return repository_name
+
+    def get_repository_and_user_name(self, slack_code):
+        repository_name = ""
+        user_name = ""
+        try:
+            sql = "select repository_name, slack_id " \
+                  "from user_table " \
+                  "where slack_code = '%s'" % (slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()[0]
+
+            repository_name = raw_tuple[0]
+            user_name = raw_tuple[1]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get repository and user name")
+
+        if str(repository_name).isdigit():
+            print("ERROR : NO PROJECT NAME")
+            return
+
+        if str(user_name).isdigit():
+            print("ERROR : NO USER NAME")
+            return
+
+        return repository_name, user_name
 
 
     # Ex) git_id = "qortndud97@naver.com", slack_code = "<@UCFNMU2EM>", slack_id = "Sooyoung Baek"

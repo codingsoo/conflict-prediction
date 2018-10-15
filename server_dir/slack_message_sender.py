@@ -254,7 +254,7 @@ def send_direct_message(slack_code, message):
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
 
-def send_button_message(slack_code, called_same_named_dict, sentence, intent_type):
+def send_file_button_message(slack_code, called_same_named_dict, sentence, intent_type):
     slack = get_slack()
     attachments_dict = dict()
 
@@ -271,15 +271,16 @@ def send_button_message(slack_code, called_same_named_dict, sentence, intent_typ
             actions_dict['value'] = file_abs_path
             actions.append(actions_dict)
 
-        attachments_dict['title'] = "%s" % (message)
+        attachments_dict['title'] = "Which file do you mean?"
+        attachments_dict['text'] = "%s" % (message)
         attachments_dict['fallback'] = "You are unable to choose a file."
         attachments_dict['callback_id'] = intent_type
-        attachments_dict['attachment_type'] = "warning"
+        # attachments_dict['attachment_type'] = "warning"
         attachments_dict['actions'] = actions
         attachments_dict['color'] = "#3AA3E3"
         attachments = [attachments_dict]
 
-        slack.chat.post_message(channel="" + slack_code, text="Which file do you mean?", attachments=attachments, as_user=True)
+        slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
 
     # slack = Slacker("SLACK_BOT_TOKEN")
     # response = slack.rtm.start()
@@ -293,3 +294,19 @@ def send_button_message(slack_code, called_same_named_dict, sentence, intent_typ
     #         continue
     #     ws2.close()
     #     break
+
+def send_lock_button_message(slack_code, lock_file, lock_time):
+    slack = get_slack()
+
+    actions = [{'name': "YES", 'text': "YES", 'type': "button", 'value': lock_time},
+               {'name': "NO", 'text': "NO", 'type': "button", 'value': lock_time}]
+
+    attachments_dict = dict()
+    attachments_dict['title'] = "Approval Request"
+    attachments_dict['text'] = "*{}* is just unlocked. Do you want me to lock it for {} hours?".format(lock_file, lock_time)
+    attachments_dict['fallback'] = "You are unable to choose yes or no."
+    attachments_dict['callback_id'] = lock_file
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "good"
+    attachments = [attachments_dict]
+    slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
