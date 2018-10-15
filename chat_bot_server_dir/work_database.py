@@ -432,7 +432,7 @@ class work_database:
 
                 except:
                     self.conn.rollback()
-                    print("ERROR : last_connection one")
+                    print("ERROR : insert last_connection one")
             # else:
             #     try:
             #         sql = "update user_last_connection " \
@@ -457,7 +457,7 @@ class work_database:
 
             except:
                 self.conn.rollback()
-                print("ERROR : last_connection three")
+                print("ERROR : insert last_connection three")
 
     def user_recognize(self, user):
         try:
@@ -483,7 +483,7 @@ class work_database:
 
             except:
                 self.conn.rollback()
-                print("ERROR : last_connection two")
+                print("ERROR : user recognize")
 
             now_time = datetime.now()
             diff_time = now_time - last_connection
@@ -516,7 +516,7 @@ class work_database:
             raw = tuple()
             if raw_tuple:
                 raw = raw_tuple[0]
-                print("working_status", raw)
+                print("get_user_working_status", raw)
 
             return raw
 
@@ -1250,7 +1250,7 @@ class work_database:
             print("locker_name", locker_name)
         except:
             self.conn.rollback()
-            print("ERROR : get locker name")
+            print("ERROR : get locker slack code")
 
         return locker_name
 
@@ -1400,7 +1400,7 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : slack name to git email")
+            print("ERROR : convert slack id to git id")
 
         return git_email
 
@@ -1417,7 +1417,7 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : slack name to slack code")
+            print("ERROR : convert slack id to slack code")
 
         return slack_code
 

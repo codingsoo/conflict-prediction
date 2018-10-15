@@ -438,16 +438,20 @@ class direct_work_database:
                 # just in
                 conflict_flag = Conflict_flag.file_in.value
 
+            user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
             send_conflict_message(conflict_flag=conflict_flag,
                                   conflict_project=temp_best[1],
                                   conflict_file=temp_best[2],
                                   conflict_logic=temp_best[3],
                                   user1_name=temp_best[5],
-                                  user2_name=temp_best[6])
+                                  user2_name=temp_best[6],
+                                  user1_percentage=user_percentage,
+                                  user2_percentage=other_percentage)
 
-            user_percentage, other_percentage = self.calculate_percentage(temp_best)
-
-            # send_direct_message(slack_code=user_percentage, )
+            user1_slack_id_code = get_user_slack_id(temp_best[5])
+            message = "{} : {}% / {} : {}%".format(temp_best[5], user_percentage, temp_best[6], other_percentage)
+            send_direct_message(slack_code=user1_slack_id_code, message=message)
 
         return
 

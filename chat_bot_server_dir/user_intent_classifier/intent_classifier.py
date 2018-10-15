@@ -64,7 +64,7 @@ suggestion_sentence_list = ["You should not give me notification about File1.py.
                             "You should check File1.py if this is gonna make a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
                             'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
-                            'You have to send a message to <@UCFNMU2ED> "I will check and solve the conflict".',
+                            'You should send a message to <@UCFNMU2ED> "I will check and solve the conflict".',
                             "You would tell me how I can solve the conflict in File1.py",
                             "You should tell me which files are ignored."
                             "You should tell me who lock file1.py.",
@@ -158,7 +158,6 @@ def calcue_max(sentence, list):
     max = 0
     max_idx = ERROR
     for idx in range(len(list)):
-
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
         if rate > max and rate > 0.35:
@@ -185,6 +184,14 @@ def calcue_max(sentence, list):
 
     if max_idx in [1, 2, 3, 5, 9, 11, 12] and ".py" not in sentence:
         return ERROR
+
+    if max_idx in [1, 2, 11]:
+        if " who " in sentence:
+            max_idx = 11
+        elif " lock " in sentence:
+            max_idx = 2
+        else:
+            max_idx = 1
 
     print ("max rate : ", max)
     return max_idx
@@ -246,6 +253,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                             intent_type = 5
             else:
                 intent_type = 5
+
 
     if intent_type in [1, 2, 3, 5, 9, 11, 12]:
         file_simp_path_list = project_parser(owner_name, project_name)["file"]
