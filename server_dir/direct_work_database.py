@@ -48,7 +48,11 @@ class direct_work_database:
 
         remove_lock_list = w_db.prev_remove_lock_list()
         if remove_lock_list:
-            send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
+            message = ""
+            for file_name in remove_lock_list:
+                message += "{} is unlocked from now on.\n".format(file_name)
+            send_all_user_message(message)
+            # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
 
         inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
@@ -330,6 +334,8 @@ class direct_work_database:
                 # same user and same project and same logic
                 if temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2] and temp_already[5] == temp_best[6]:
                     if temp_already[7] < temp_best[0]:
+                        user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
                         print("direct : getting severity")
                         conflict_flag = Conflict_flag.getting_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
@@ -337,13 +343,17 @@ class direct_work_database:
                                               conflict_file=temp_best[2],
                                               conflict_logic=temp_best[3],
                                               user1_name=temp_best[5],
-                                              user2_name=temp_best[6])
+                                              user2_name=temp_best[6],
+                                              user1_percentage=user_percentage,
+                                              user2_percentage=other_percentage)
 
                     elif temp_already[7] == temp_best[0]:
                         print("direct same severity")
                         conflict_flag = Conflict_flag.same_severity.value
 
                     elif temp_already[7] > temp_best[0]:
+                        user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
                         print("direct lower severity")
                         conflict_flag = Conflict_flag.lower_severity.value
                         send_conflict_message(conflict_flag=conflict_flag,
@@ -351,7 +361,9 @@ class direct_work_database:
                                               conflict_file=temp_best[2],
                                               conflict_logic=temp_best[3],
                                               user1_name=temp_best[5],
-                                              user2_name=temp_best[6])
+                                              user2_name=temp_best[6],
+                                              user1_percentage=user_percentage,
+                                              user2_percentage=other_percentage)
 
                     # After 30 minutes => send direct message
                     if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
@@ -370,27 +382,26 @@ class direct_work_database:
                                                   user2_name=temp_best[6])
 
                     # After 60 minutes => send channel message
-                    elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
-                        and (temp_already[6] == 2)
-                        and (conflict_flag == Conflict_flag.same_severity.value)):
-                        send_conflict_message_channel(conflict_file=temp_best[2],
-                                                      conflict_logic=temp_best[3],
-                                                      user1_name=temp_best[5],
-                                                      user2_name=temp_best[6])
-                        self.increase_alert_count(project_name=temp_best[1],
-                                                  file_name=temp_best[2],
-                                                  logic1_name=temp_best[3],
-                                                  logic2_name=temp_best[4],
-                                                  user1_name=temp_best[5],
-                                                  user2_name=temp_best[6])
-
-                        self.increase_alert_count(project_name=temp_best[1],
-                                                  file_name=temp_best[2],
-                                                  logic1_name=temp_best[4],
-                                                  logic2_name=temp_best[3],
-                                                  user1_name=temp_best[6],
-                                                  user2_name=temp_best[5])
-
+                    # elif((d.datetime.today() - temp_already[8] > d.timedelta(minutes=60))
+                    #     and (temp_already[6] == 2)
+                    #     and (conflict_flag == Conflict_flag.same_severity.value)):
+                    #     send_conflict_message_channel(conflict_file=temp_best[2],
+                    #                                   conflict_logic=temp_best[3],
+                    #                                   user1_name=temp_best[5],
+                    #                                   user2_name=temp_best[6])
+                    #     self.increase_alert_count(project_name=temp_best[1],
+                    #                               file_name=temp_best[2],
+                    #                               logic1_name=temp_best[3],
+                    #                               logic2_name=temp_best[4],
+                    #                               user1_name=temp_best[5],
+                    #                               user2_name=temp_best[6])
+                    #
+                    #     self.increase_alert_count(project_name=temp_best[1],
+                    #                               file_name=temp_best[2],
+                    #                               logic1_name=temp_best[4],
+                    #                               logic2_name=temp_best[3],
+                    #                               user1_name=temp_best[6],
+                    #                               user2_name=temp_best[5])
 
                     self.update_conflict_data(project_name=temp_best[1],
                                               file_name=temp_best[2],
@@ -448,10 +459,6 @@ class direct_work_database:
                                   user2_name=temp_best[6],
                                   user1_percentage=user_percentage,
                                   user2_percentage=other_percentage)
-
-            user1_slack_id_code = get_user_slack_id(temp_best[5])
-            message = "{} : {}% / {} : {}%".format(temp_best[5], user_percentage, temp_best[6], other_percentage)
-            send_direct_message(slack_code=user1_slack_id_code, message=message)
 
         return
 

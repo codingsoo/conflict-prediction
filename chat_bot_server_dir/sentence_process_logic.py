@@ -1,7 +1,9 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_user_email
 from server_dir.slack_message_sender import send_channel_message
-from server_dir.slack_message_sender import send_direct_message, send_lock_button_message
+from server_dir.slack_message_sender import send_lock_button_message
+from server_dir.slack_message_sender import send_all_user_message
+from server_dir.slack_message_sender import send_direct_message
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
 from chat_bot_server_dir.constants import *
 import os, random
@@ -101,7 +103,8 @@ def approved_file_logic(slack_code, approved_set, removed_list):
         if diff_approved_list:
             ch_message += random.choice(shell_dict['feat_ignore_channel'])
             ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
-            send_channel_message("code-conflict-chatbot", ch_message)
+            # send_channel_message("code-conflict-chatbot", ch_message)
+            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_ignore_file'])
             message = message.format(", ".join(diff_approved_list))
@@ -115,7 +118,8 @@ def approved_file_logic(slack_code, approved_set, removed_list):
         if success_list:
             ch_message += random.choice(shell_dict['feat_unignore_channel'])
             ch_message = ch_message.format(user_name, ", ".join(success_list))
-            send_channel_message("code-conflict-chatbot", ch_message)
+            # send_channel_message("code-conflict-chatbot", ch_message)
+            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_unignore_file'])
             message = message.format(", ".join(success_list))
@@ -151,7 +155,8 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
         if lock_file_list:
             for file_name in lock_file_list:
                 ch_message += "{} locked *{}* file for {} hour(s).".format(user_name, file_name, lock_time)
-            send_channel_message("code-conflict-chatbot", ch_message)
+            # send_channel_message("code-conflict-chatbot", ch_message)
+            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_lock_file'])
             ele = ', '.join(lock_file_list)
@@ -167,8 +172,8 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
             for file_name in remove_lock_set:
                 ch_message = random.choice(shell_dict['unlock_announce'])
                 ch_message = ch_message.format(user_name, file_name)
-
-            send_channel_message("code-conflict-chatbot", ch_message)
+            # send_channel_message("code-conflict-chatbot", ch_message)
+            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_unlock_file'])
             w_db.remove_lock_list(project_name, slack_code, remove_lock_set)
@@ -492,7 +497,8 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
         ch_message = ""
         if target_file in lock_file_list:
             ch_message += "{} locked {} file for {} hour(s).".format(user_name, target_file, lock_time)
-        send_channel_message("code-conflict-chatbot", ch_message)
+        # send_channel_message("code-conflict-chatbot", ch_message)
+        send_all_user_message(ch_message, slack_code)
         print("YES")
         w_db.delete_lock_history(project_name, slack_code, target_file)
     else:

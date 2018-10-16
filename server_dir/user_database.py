@@ -54,6 +54,26 @@ class user_database:
         else:
             return False
 
+    def search_all_slack_code(self, slack_code):
+        raw_list = list()
+
+        try:
+            sql = "select slack_code " \
+                  "from user_table " \
+                  "where slack_code != '%s'" % slack_code
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+
+        except:
+            self.conn.rollback()
+            print("ERROR : search_all_slack_code")
+
+        return raw_list
+
 
     def insert_git_id_random_number(self, git_id, random_number):
         try:

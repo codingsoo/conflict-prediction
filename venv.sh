@@ -11,6 +11,5 @@ pip3 install slackbot
 pip3 install slackclient
 pip3 install slack
 pip3 install slackeventsapi
-npm install -g localtunnel
 python3 -m spacy download en_core_web_lg
 /Applications/Python\ 3.6/Install\ Certificates.command

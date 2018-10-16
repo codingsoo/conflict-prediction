@@ -90,7 +90,7 @@ def send_lock_message(lock_file_list, user_name):
     send_direct_message(user_slack_id_code[1], message)
     w_db.close()
 
-def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name, user1_percentage=-1, user2_percentage=-1):
+def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name, user1_percentage = -1, user2_percentage = -1):
 
     if conflict_logic == "in":
         conflict_logic = ""
@@ -137,8 +137,7 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         # same function
         same_shell = make_same_file_shell_list()
         message = same_shell[random.randint(0, len(same_shell) - 1)].format(user2_slack_id_code[0], conflict_file, conflict_logic)
-        message += "\n### Percentage ###\nUser1 : {0:.2f}%   |   user2 : {0:.2f}%".format(user1_percentage,
-                                                                                          user2_percentage)
+        message += "\n### Percentage ###\nUser1 : {a:.2f}%   |   user2 : {b:.2f}%".format(a=user1_percentage, b=user2_percentage)
 
     elif(conflict_flag == Conflict_flag.same_class.value):
         # same class
@@ -149,15 +148,13 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
             con_logic_for_class = con_logic_for_class + logic + ' '
         print(con_logic_for_class)
         message = same_shell[random.randint(0, len(same_shell) - 1)].format(user2_slack_id_code[0], conflict_file, con_logic_for_class)
-        message += "\n### Percentage ###\nUser1 : {0:.2f}%   |   user2 : {0:.2f}%".format(user1_percentage,
-                                                                                          user2_percentage)
+        message += "\n### Percentage ###\nUser1 : {a:.2f}%   |   user2 : {b:.2f}%".format(a=user1_percentage, b=user2_percentage)
 
     elif(conflict_flag == Conflict_flag.file_in.value):
         # just in
         get_closer = make_same_file_shell_list()
         message = get_closer[random.randint(0, len(get_closer) - 1)].format(user2_slack_id_code[0], conflict_file, "")
-        message += "\n### Percentage ###\nUser1 : {0:.2f}%   |   user2 : {0:.2f}%".format(user1_percentage,
-                                                                                          user2_percentage)
+        message += "\n### Percentage ###\nUser1 : {a:.2f}%   |   user2 : {b:.2f}%".format(a=user1_percentage, b=user2_percentage)
 
     elif(conflict_flag == Conflict_flag.direct_conflict_finished.value):
         # conflict solved
@@ -247,6 +244,24 @@ def send_channel_message(channel, message):
         slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
 
     return ret_cjc
+
+def send_all_user_message(message, slack_code=""):
+    if message == "":
+        return
+    slack = get_slack()
+
+    u_db = user_database("parent")
+    all_user = u_db.search_all_slack_code(slack_code)
+    u_db.close()
+
+    for user in all_user:
+        attachments_dict = dict()
+        attachments_dict['text'] = "%s" % (message)
+        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+        attachments = [attachments_dict]
+        slack.chat.post_message(channel="" + user[0], text=None, attachments=attachments, as_user=True)
+
+    return
 
 # Put user slack id and message for sending chatbot message
 def send_direct_message(slack_code, message):

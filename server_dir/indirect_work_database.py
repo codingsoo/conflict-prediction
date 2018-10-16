@@ -477,27 +477,27 @@ class indirect_work_database:
                                               user2_name=temp_already[5])
 
                 # After 60 minutes => send channel message
-                if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
-
-                    temp_file_logic1 = temp_already[2].split('|')
-                    temp_file_logic2 = temp_already[1].split('|')
-
-                    send_conflict_message_channel(conflict_file=temp_file_logic1,
-                                                  conflict_logic=temp_file_logic2,
-                                                  user1_name=temp_already[4],
-                                                  user2_name=temp_already[5])
-
-                    self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[4],
-                                              user2_name=temp_already[5])
-
-                    self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[5],
-                                              user2_name=temp_already[4])
+                # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
+                #
+                #     temp_file_logic1 = temp_already[2].split('|')
+                #     temp_file_logic2 = temp_already[1].split('|')
+                #
+                #     send_conflict_message_channel(conflict_file=temp_file_logic1,
+                #                                   conflict_logic=temp_file_logic2,
+                #                                   user1_name=temp_already[4],
+                #                                   user2_name=temp_already[5])
+                #
+                #     self.increase_alert_count(project_name=project_name,
+                #                               def_func=temp_already[1],
+                #                               call_func=temp_already[2],
+                #                               user1_name=temp_already[4],
+                #                               user2_name=temp_already[5])
+                #
+                #     self.increase_alert_count(project_name=project_name,
+                #                               def_func=temp_already[1],
+                #                               call_func=temp_already[2],
+                #                               user1_name=temp_already[5],
+                #                               user2_name=temp_already[4])
 
         if type == "user_work":
             # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
@@ -521,26 +521,26 @@ class indirect_work_database:
                                               user2_name=temp_already[5])
 
                 # After 60 minutes => send channel message
-                if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
-                    temp_file_logic1 = temp_already[1].split('|')
-                    temp_file_logic2 = temp_already[2].split('|')
-
-                    send_conflict_message_channel(conflict_file=temp_file_logic1,
-                                                  conflict_logic=temp_file_logic2,
-                                                  user1_name=temp_already[4],
-                                                  user2_name=temp_already[5])
-
-                    self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[4],
-                                              user2_name=temp_already[5])
-
-                    self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[5],
-                                              user2_name=temp_already[4])
+                # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
+                #     temp_file_logic1 = temp_already[1].split('|')
+                #     temp_file_logic2 = temp_already[2].split('|')
+                #
+                #     send_conflict_message_channel(conflict_file=temp_file_logic1,
+                #                                   conflict_logic=temp_file_logic2,
+                #                                   user1_name=temp_already[4],
+                #                                   user2_name=temp_already[5])
+                #
+                #     self.increase_alert_count(project_name=project_name,
+                #                               def_func=temp_already[1],
+                #                               call_func=temp_already[2],
+                #                               user1_name=temp_already[4],
+                #                               user2_name=temp_already[5])
+                #
+                #     self.increase_alert_count(project_name=project_name,
+                #                               def_func=temp_already[1],
+                #                               call_func=temp_already[2],
+                #                               user1_name=temp_already[5],
+                #                               user2_name=temp_already[4])
 
         return
 
