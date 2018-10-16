@@ -285,12 +285,12 @@ class work_database:
     '''
 
     # Read approved list
-    def read_approved_list(self, project_name):
+    def read_approved_list(self, slack_code):
         raw_set = set()
         try:
             sql = "SELECT approved_file " \
                   "from approved_list " \
-                  "where project_name = '%s' " % (project_name)
+                  "where user_name = '%s' " % (slack_code)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -306,16 +306,16 @@ class work_database:
         return raw_set
 
     # Add approved list
-    def add_approved_list(self, project_name, req_approved_set):
-        db_approved_set = self.read_approved_list(project_name)
+    def add_approved_list(self, slack_code, req_approved_set):
+        db_approved_set = self.read_approved_list(slack_code)
 
         diff_approved_set = req_approved_set - db_approved_set
-        # [[project_name, approved_file], [project_name, approved_file], [project_name, approved_file]]
+        # [[slack_code, approved_file], [slack_code, approved_file], [slack_code, approved_file]]
         if diff_approved_set:
             try:
-                sql = "insert into approved_list (project_name, approved_file) values "
+                sql = "insert into approved_list (user_name, approved_file) values "
                 for temp_diff_approved in diff_approved_set:
-                    sql += "('%s', '%s'), " % (project_name, temp_diff_approved)
+                    sql += "('%s', '%s'), " % (slack_code, temp_diff_approved)
                 sql = sql[:-2]
                 print(sql)
                 self.cursor.execute(sql)
@@ -327,7 +327,7 @@ class work_database:
         return list(diff_approved_set), db_approved_set
 
     # Remove approved list
-    def remove_approved_list(self, project_name, remove_approved_list):
+    def remove_approved_list(self, slack_code, remove_approved_list):
         success_remove_approved_list = []
         fail_remove_approved_list = []
 
@@ -335,8 +335,8 @@ class work_database:
             try:
                 sql = "select * " \
                       "from approved_list " \
-                      "where project_name = '%s' " \
-                      "and approved_file = '%s'" % (project_name, temp_removed_file)
+                      "where user_name = '%s' " \
+                      "and approved_file = '%s'" % (slack_code, temp_removed_file)
 
                 print(sql)
                 self.cursor.execute(sql)
@@ -349,8 +349,8 @@ class work_database:
                     try:
                         sql = "delete " \
                               "from approved_list " \
-                              "where project_name = '%s' " \
-                              "and approved_file = '%s'" % (project_name, temp_removed_file)
+                              "where user_name = '%s' " \
+                              "and approved_file = '%s'" % (slack_code, temp_removed_file)
                         print(sql)
                         self.cursor.execute(sql)
                         self.conn.commit()
@@ -525,8 +525,8 @@ class work_database:
             print("ERROR : get user working status")
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
-    def classify_direct_conflict_approved_list(self, project_name, whole_direct_conflict_list):
-        db_approved_set = self.read_approved_list(project_name)
+    def classify_direct_conflict_approved_list(self, slack_code, whole_direct_conflict_list):
+        db_approved_set = self.read_approved_list(slack_code)
 
         print("db_approved_list(set) : ", db_approved_set)
         print("whole_direct_conflict_list : ", whole_direct_conflict_list)
@@ -553,8 +553,8 @@ class work_database:
         return whole_direct_conflict_list, remove_list
 
     # 컨플릭트 파일 받아서 현재 어프루브 리스트 파일 빼서 남은 것만 반환해주기
-    def classify_indirect_conflict_approved_list(self, project_name, whole_indirect_conflict_list):
-        db_approved_set = self.read_approved_list(project_name)
+    def classify_indirect_conflict_approved_list(self, slack_code, whole_indirect_conflict_list):
+        db_approved_set = self.read_approved_list(slack_code)
 
         print("db_approved_set : ", db_approved_set)
         print("whole_indirect_conflict_list : ", whole_indirect_conflict_list)

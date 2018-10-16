@@ -18,9 +18,9 @@ USE `uci_chat_bot`;
 
 -- 테이블 uci_chat_bot.approved_list 구조 내보내기
 CREATE TABLE IF NOT EXISTS `approved_list` (
-  `project_name` varchar(50) DEFAULT NULL,
+  `user_name` varchar(50) DEFAULT NULL,
   `approved_file` varchar(255) DEFAULT NULL,
-  KEY `인덱스 1` (`project_name`)
+  KEY `인덱스 1` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

@@ -157,11 +157,17 @@ def message_processing(msg):
 
                 BASE_PATH = os.path.pardir
                 delete_path = os.path.join(BASE_PATH, owner_name)
+
+                # windows
+                # cmd_line = 'rmdir /S /Q ' + root_dir_temp
+
+                # linux
                 cmd_line = 'rm -rf ' + delete_path
 
                 print("delete_path : ", delete_path)
 
                 subprocess.check_output(cmd_line, shell=True)
+
 
                 print("return message : " + str(return_message))
                 # Send the message to user

@@ -36,10 +36,11 @@ class indirect_work_database:
 
         self.delete_indirect_conflict_list()
 
+        user_slack_code = w_db.convert_git_id_to_slack_code(user_name)
         user_call_indirect_conflict_list = self.search_logic_dependency(project_name, user_calling_list, other_working_list, type="user_call")
         user_work_indirect_conflict_list = self.search_logic_dependency(project_name, other_calling_list, user_working_list, type="user_work")
-        user_call_indirect_conflict_list, user_call_file_approve_list = w_db.classify_indirect_conflict_approved_list(project_name, user_call_indirect_conflict_list)
-        user_wrok_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(project_name, user_work_indirect_conflict_list)
+        user_call_indirect_conflict_list, user_call_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_call_indirect_conflict_list)
+        user_wrok_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_work_indirect_conflict_list)
 
         # Conflict
         if user_call_indirect_conflict_list:

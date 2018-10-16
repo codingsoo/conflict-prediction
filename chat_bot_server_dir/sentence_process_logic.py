@@ -95,16 +95,14 @@ def approved_file_logic(slack_code, approved_set, removed_list):
     print("remove !! : " + str(removed_list))
 
     message = ""
-    ch_message = ""
     if approved_list:
-        diff_approved_list, db_approved_set = w_db.add_approved_list(project_name=project_name,
-                               req_approved_set=approved_set)
+        diff_approved_list, db_approved_set = w_db.add_approved_list(slack_code=slack_code, req_approved_set=approved_set)
         already_approved_list = list(db_approved_set & approved_set)
         if diff_approved_list:
-            ch_message += random.choice(shell_dict['feat_ignore_channel'])
-            ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
+
+            # ch_message += random.choice(shell_dict['feat_ignore_channel'])
+            # ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
             # send_channel_message("code-conflict-chatbot", ch_message)
-            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_ignore_file'])
             message = message.format(", ".join(diff_approved_list))
@@ -113,13 +111,12 @@ def approved_file_logic(slack_code, approved_set, removed_list):
             message += "You already ignored *{}* file!".format(", ".join(already_approved_list))
 
     if removed_list:
-        success_list, fail_list = w_db.remove_approved_list(project_name=project_name,
-                                 remove_approved_list=removed_list)
+        success_list, fail_list = w_db.remove_approved_list(slack_code=slack_code, remove_approved_list=removed_list)
         if success_list:
-            ch_message += random.choice(shell_dict['feat_unignore_channel'])
-            ch_message = ch_message.format(user_name, ", ".join(success_list))
+
+            # ch_message += random.choice(shell_dict['feat_unignore_channel'])
+            # ch_message = ch_message.format(user_name, ", ".join(success_list))
             # send_channel_message("code-conflict-chatbot", ch_message)
-            send_all_user_message(ch_message, slack_code)
 
             message += random.choice(shell_dict['feat_unignore_file'])
             message = message.format(", ".join(success_list))

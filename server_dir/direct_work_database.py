@@ -84,8 +84,10 @@ class direct_work_database:
 
         print("working list : ", working_list)
 
+        slack_code =  w_db.convert_git_id_to_slack_code(user_name)
+
         direct_conflict_list = self.search_working_table(project_name, working_list, user_name)
-        direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(project_name, direct_conflict_list)
+        direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(slack_code, direct_conflict_list)
         w_db.close()
 
         print("direct_conflict_list : ", direct_conflict_list)

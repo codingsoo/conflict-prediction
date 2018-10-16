@@ -42,10 +42,4 @@ def project_parser( owner_name, project_name ) :
                 ret_dict["function"].extend(func_list)
                 ret_dict["class"].extend(class_list)
 
-
-
-    # windows
-    # cmd_line = 'rmdir /S /Q ' + root_dir_temp
-
-    # linux
     return ret_dict
