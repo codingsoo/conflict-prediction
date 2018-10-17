@@ -386,8 +386,7 @@ def check_ignored_file_logic(slack_code):
     w_db = work_database()
     message = ""
 
-    project_name = w_db.get_repository_name(slack_code)
-    ignored_file_list = w_db.get_ignored_file_list(project_name)
+    ignored_file_list = w_db.get_ignored_file_list(slack_code)
     print("ignored_file_list", ignored_file_list)
 
     if not ignored_file_list:

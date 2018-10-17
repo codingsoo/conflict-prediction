@@ -290,7 +290,7 @@ class work_database:
         try:
             sql = "SELECT approved_file " \
                   "from approved_list " \
-                  "where user_name = '%s' " % (slack_code)
+                  "where slack_code = '%s' " % (slack_code)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -313,7 +313,7 @@ class work_database:
         # [[slack_code, approved_file], [slack_code, approved_file], [slack_code, approved_file]]
         if diff_approved_set:
             try:
-                sql = "insert into approved_list (user_name, approved_file) values "
+                sql = "insert into approved_list (slack_code, approved_file) values "
                 for temp_diff_approved in diff_approved_set:
                     sql += "('%s', '%s'), " % (slack_code, temp_diff_approved)
                 sql = sql[:-2]
@@ -335,7 +335,7 @@ class work_database:
             try:
                 sql = "select * " \
                       "from approved_list " \
-                      "where user_name = '%s' " \
+                      "where slack_code = '%s' " \
                       "and approved_file = '%s'" % (slack_code, temp_removed_file)
 
                 print(sql)
@@ -349,7 +349,7 @@ class work_database:
                     try:
                         sql = "delete " \
                               "from approved_list " \
-                              "where user_name = '%s' " \
+                              "where slack_code = '%s' " \
                               "and approved_file = '%s'" % (slack_code, temp_removed_file)
                         print(sql)
                         self.cursor.execute(sql)
@@ -1208,12 +1208,12 @@ class work_database:
     Find Ignored Files 
     '''
 
-    def get_ignored_file_list(self, project_name):
+    def get_ignored_file_list(self, slack_code):
         raw_list = []
         try:
             sql = "select approved_file " \
                   "from approved_list " \
-                  "where project_name = '%s'" % (project_name)
+                  "where slack_code = '%s'" % (slack_code)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
