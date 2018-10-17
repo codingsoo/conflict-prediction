@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `function_list` (
 CREATE TABLE IF NOT EXISTS `user_table` (
   `git_id` varchar(50) DEFAULT NULL,
   `slack_id` varchar(50) DEFAULT NULL,
-  `slack_code` varchar(50) DEFAULT NULL,
+  `slack_code` varchar(50) DEFAULT NULL UNIQUE,
   `repository_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
