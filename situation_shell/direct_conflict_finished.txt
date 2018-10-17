@@ -1,10 +1,5 @@
-You and {}, thank you! Direct conflict has been solved!
-You and {}, good! Direct conflict has been solved!
-You and {}, cool! Direct conflict has been solved!
-You and {}, nice! Direct conflict has been solved!
-You and {}, good news! Direct conflict has been solved!
-You and {}, thank you! No more direct conflict!
-You and {}, good! No more direct conflict!
-You and {}, cool! No more direct conflict!
-You and {}, nice job! No more direct conflict!
-You and {}, good news! No more direct conflict!
+{user2}: the conflict for *{filename}* no longer exists.
+No more conflict for *{filename}* with {user2}.
+Good news! Your conflict with {user2} for *{filename}* has disappeared.
+The conflict for *{filename}* is no longer a concern.
+You can freely edit *{filename}* as you see fit since there is no conflict with {user2} at this time.

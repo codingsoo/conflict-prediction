@@ -1,9 +1,5 @@
-Ok! I'll put {} to ignore list!
-Sure! I'll put {} to ignore list!
-Okay! I'll put {} to ignore list!
-Ok! {} has been added to ignore list.
-Sure! {} has been added to ignore list.
-Okay! {} has been added to ignore list.
-Ok! Now we have {} in the ignore list.
-Sure! Now we have {} in the ignore list.
-Okay! Now we have {} in the ignore list.
+Ok.
+Ok, *{filename}* will be ignored from now on.
+Done. Let me know if you want to undo the ignore.
+Alright, I will no longer inform you of conflicts for *{filename}*.
+Sure. You will no longer see notifications of conflict for *{filename}*.

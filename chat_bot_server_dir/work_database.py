@@ -1091,7 +1091,7 @@ class work_database:
             direct_conflict_flag = True
         if self.is_indirect_conflict(project_name, file_name):
             print("IS INDIRECT CONFLICT TRUE")
-            indirect_conflict_flag = False
+            indirect_conflict_flag = True
 
         return direct_conflict_flag, indirect_conflict_flag
 
@@ -1107,6 +1107,16 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
+            print("is_direct_conflict", raw_list)
+            # sql = "select user_name " \
+            #       "from working_table " \
+            #       "where project_name = '%s' " \
+            #       "and file_name = '%s'" % (project_name, file_name)
+            # print(sql)
+            # self.cursor.execute(sql)
+            # self.conn.commit()
+            #
+            # raw_list = list(self.cursor.fetchall())
 
         except:
             self.conn.rollback()
@@ -1131,6 +1141,7 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
+            print("is_indirect_conflict", raw_list)
 
         except:
             self.conn.rollback()
@@ -1158,6 +1169,7 @@ class work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
+                print("is_indirect_conflict2", raw_list)
 
                 if raw_list:
                     return True

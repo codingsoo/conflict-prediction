@@ -1,10 +1,5 @@
-{} won't be notified from now on.
-As you requested, {} moved to ignore file list.
-I won't notify anything related to {} from now on.
-Ignore {}. You can get notified of it, so tell me any time.
-{} added to ignore file list.
-Adding {} in ignored file list is completed!
-From now on, the alarm about conflicts in {} will be ignored.
-{} is now in ignored list.
-{} is in ignored list from now on.
-From now on, notification about {} will be ignored.
+No problem!
+From now on I won’t notify you of any conflicts involving *{filename}*.
+Ok.
+Let me know if you want to undo the ignore.
+I disabled notifications for this file.

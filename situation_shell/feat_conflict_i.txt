@@ -1,10 +1,5 @@
-I think it'll cause indirect conflict.
-Both of conflicts, indirect conflict will occur.
-You should not modify it because indirect conflict will occur.
-Move on to other file because of indirect conflict.
-There will be indirect conflict both!
-Be careful of indirect conflict.
-In my opinion, indirect conflict will occur.
-Indirect conflict will be generated, so be careful.
-I think indirect conflict will occur.
-You should be careful about indirect conflict!
+I’d recommend you be careful editing {filename1}, since {user2} is editing {filename2} and an indirect conflict may arise.
+Changing this file may cause an indirect conflict with {user2}, since they are currently editing {filename2}.
+Best not to work on this file right now.
+You may want to wait until {user2} is done working on {filename2}.
+I’d recommend you talk with {user2} first, as their changes on {filename2} may conflict.

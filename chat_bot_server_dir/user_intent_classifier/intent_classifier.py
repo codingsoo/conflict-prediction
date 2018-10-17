@@ -6,8 +6,8 @@ from server_dir.slack_message_sender import *
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
 # nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -416,7 +416,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                         return 4, INDIRECT, UNIGNORE, None
                     else:
                         work_db.close()
-                        return 4, INDIRECT, UNIGNORE, None
+                        return 4, DIRECT, UNIGNORE, None
         if found == 0:
             if " not " in sentence or " un" in sentence:
                 if " indirect " in sentence:
@@ -431,7 +431,7 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
                     return 4, INDIRECT, IGNORE, None
                 else:
                     work_db.close()
-                    return 4, INDIRECT, IGNORE, None
+                    return 4, DIRECT, IGNORE, None
 
     # About check conflict
     elif intent_type == 5:

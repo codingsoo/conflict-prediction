@@ -1,10 +1,6 @@
-{} will notified to you from now on.
-As you requested, {} removed from ignore file list.
-I will notify anything related to {} from now on.
-You can get notified of {} anytime.
-{} removed from ignore file list.
-{} is unignored.
-{} is unignored, so you can get alarm any time.
-As you said, {} is removed from ignored file list.
-{} is removed from ignored file list, so you can get alarm from now on.
-You can get notification about {} from now on.
+Ok, I’ll notify you if you and other people modify this file simultaneously and are causing conflicts.
+Done!
+From now on you will again receive notification about the conflicts of *{filename}*.
+Success!
+Done! Let me know if you want to undo the ignore command.
+I enabled notifications for that file.

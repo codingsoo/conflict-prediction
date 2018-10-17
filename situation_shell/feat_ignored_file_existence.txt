@@ -1,5 +1,5 @@
-The list of ignored files is {}.
-{} has/have been ignored!
-Your project has ignored {}.
-People in your project would like to ignore {}.
-Ignored files are {}.
+You are currently ignoring notifications for: *{filename}*
+These are the files for which you are ignoring notifications: *{filename}*
+Here you are: *{filename}*
+You are not receiving notifications for: *{filename}*
+*{filename}*

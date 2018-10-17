@@ -1,10 +1,5 @@
-As you requested, {} unlocked.
-{} unlocked completed.
-Unlocking {} done!
-Your request completed. Unlocked {}.
-{} is removed from requested lock set.
-{} is completely unlocked.
-As you requested, {} is unlocked.
-Hey, {} is unlocked!
-From now on, {} is unlocked.
-As you said, {} is unlocked.
+Done!
+Unlocked.
+I successfully unlocked *{filename}* for you.
+Ok, unlocked the file.
+*{filename}* is now unlocked.

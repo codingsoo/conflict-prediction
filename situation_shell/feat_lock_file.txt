@@ -1,10 +1,5 @@
-As you requested, {} locked.
-{} locked completed.
-Locking {} done!
-Your request completed. Locked {}.
-{} is added on requested lock set.
-{} is completely locked.
-Locking {} is completed.
-Hey, {} is locked!
-From now on, {} is locked.
-As you said, {} is locked.
+You now hold the lock for *{filename}*.
+Success.
+I locked *{filename}* for you. Let me know when you want to unlock it.
+Alright, *{filename}* is now locked for you.
+Locked.
