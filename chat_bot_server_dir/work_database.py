@@ -836,7 +836,10 @@ class work_database:
                 self.cursor.execute(sql)
                 self.conn.commit()
 
-                raw_list = list(self.cursor.fetchall())
+                raw_tuple = self.cursor.fetchall()
+
+                for ele in raw_tuple:
+                    raw_list.append(ele)
             except:
                 self.conn.rollback()
                 print("ERROR : inform lock file")
@@ -905,7 +908,10 @@ class work_database:
                 self.cursor.execute(sql)
                 self.conn.commit()
 
-                raw_list = list(self.cursor.fetchall())
+                raw_tuple = self.cursor.fetchall()
+
+                for ele in raw_tuple:
+                    raw_list.append(ele)
 
             except:
                 self.conn.rollback()
