@@ -1,7 +1,5 @@
-Because your working amount is less than {}, you should't modify it.
-Because your working amount is less than {}, I think you shouldn't change it.
-Because your working amount is less than {}, I recommend you to work on other code.
-Because your working amount is less than {}, I recommend you to not work on here.
-Because your working amount is less than {}, I think you shouldn't work on here.
-Because your working amount is less than {}, I hope that you don't work in here.
-Because your working amount is less than {}, I disagree about working in here.
+You made fewer changes than {user2}. Best to stop editing, and let them know.
+You probably should inform {user2} that your changes are smaller than theirs, and maybe pause your work for now.
+I feel it would not be a wise choice for you to continue working on this file, but do coordinate with {user2} anyways to see when they are done with their changes.
+I recommend you talk to {user2}; your changes are smaller, so maybe you can pause your work for just a bit and let them know.
+Your changes are smaller than {user2}’s.

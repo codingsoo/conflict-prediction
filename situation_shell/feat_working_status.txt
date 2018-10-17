@@ -1,10 +1,5 @@
-{} is working on (Project name, Logic name, working line, working amount){}.
-{} is now on (Project name, Logic name, working line, working amount){}.
-I've checked it and {} is on (Project name, Logic name, working line, working amount){}.
-As you asked, {} is editing (Project name, Logic name, working line, working amount){}.
-The last time I checked, {} was on the (Project name, Logic name, working line, working amount){}.
-Oh, {} is now working on (Project name, Logic name, working line, working amount){}.
-From what I know, {} is editing (Project name, Logic name, working line, working amount){}.
-Hey, {} is on (Project name, Logic name, working line, working amount){}.
-I checked that {} is on (Project name, Logic name, working line, working amount){} now.
-I confirmed that {} is now on (Project name, Logic name, working line, working amount){}.
+{user2} has thus far worked on the following files: *{working_status}* (Project, Logic, Line, Amount)
+The following files have been changed by {user2}: *{working_status}* (Project, Logic, Line, Amount)
+*{working_status}* (Project, Logic, Line, Amount)
+Last time I checked, {user2} was working on a few files: *{working_status}* (Project, Logic, Line, Amount)
+*{working_status}* have been modified by {user2} (Project, Logic, Line, Amount).

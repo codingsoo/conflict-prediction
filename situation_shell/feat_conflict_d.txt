@@ -1,10 +1,5 @@
-I think it'll cause direct conflict.
-Both of conflicts, direct conflict will occur.
-You should not modify it because direct conflict will occur.
-Move on to other file because of direct conflict.
-There will be direct conflict!
-Be careful of direct conflict.
-In my opinion, direct conflict will occur.
-Direct conflict will be generated, so be careful.
-I think direct conflict will occur.
-You should be careful about direct conflict!
+It’s best if you don’t change that file, because {user2} already is editing it right now.
+{user2} is currently modifying this file. It’d be great if you don’t change it.
+You may want to wait until {user2} is done working on this file.
+I’d recommend you talk with {user2} first, as they are already working on *{filename}*.
+That file is currently being modified by {user2}.

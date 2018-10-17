@@ -1,5 +1,5 @@
-You did much than {}. Better to say {} to not modify it, then you can modify it.
-Based on other user's worked amount, You did much than {}. Better to say {} to not modify it, then working on it will not be a problem.
-You did much than {}. Better to say {} to not modify it, then Working on it is okay I think.
-You did much than {}. Better to say {} to not modify it, then I think you can go on what you're going to do.
-You did much than {}. Better to say {} to not modify it, then In my opinion, you can change it.
+You made more changes than {user2}. It should be ok for you to keep editing, but let them know.
+You probably should inform {user2} that your changes are larger than theirs, and talk with them on how to proceed.
+I feel it should be ok for you to continue working on this file, but you may want to coordinate with {user2} anyways to see if they can hold off on completing their changes until you are done.
+I recommend you talk to {user2}; your changes are larger, so maybe you can convince them to pause their work for just a bit.
+{user2}’s changes are smaller than yours.

@@ -1,66 +1,10 @@
-It seems you and {} are working on the same {} {}. I think you need to talk about it.
-It seems you and {} are working on the same {} {}. I think you have to talk about it.
-It seems you and {} are working on the same {} {}. I think you need to chat with others.
-It seems you and {} are working on the same {} {}. I think you have to chat with others.
-It seems you and {} are working on the same {} {}. I think you have to address it.
-It seems you and {} are working on the same {} {}. I think this problem should be solved.
-It seems you and {} are working on the same {} {}. I think this problem should be addressed.
-It seems you and {} are working on the same {} {}. I think this problem should be fixed.
-It seems you and {} are working on the same {} {}. I think you need to solve it.
-It seems you and {} are working on the same {} {}. I think you need to check it.
-It seems you and {} are working on the same {} {}. It is dangerous!
-It seems you and {} are engaging in the same {} {}. I think you need to talk about it.
-It seems you and {} are engaging in the same {} {}. I think you have to talk about it.
-It seems you and {} are engaging in the same {} {}. I think you need to chat with others.
-It seems you and {} are engaging in the same {} {}. I think you have to chat with others.
-It seems you and {} are engaging in the same {} {}. I think you have to address it.
-It seems you and {} are engaging in the same {} {}. I think this problem should be solved.
-It seems you and {} are engaging in the same {} {}. I think this problem should be addressed.
-It seems you and {} are engaging in the same {} {}. I think this problem should be fixed.
-It seems you and {} are engaging in the same {} {}. I think you need to solve it.
-It seems you and {} are engaging in the same {} {}. I think you need to check it.
-It seems you and {} are engaging in the same {} {}. It is dangerous!
-You and {}! It seems you are working on the same {} {}. I think you need to talk about it.
-You and {}! It seems you are working on the same {} {}. I think this problem should be solved.
-You and {}! It seems you are engaging in the same {} {}. I think you need to solve it.
-You and {}! It seems you are engaging in the same {} {}. I think you need to talk about it.
-You and {}! It seems you are engaging in the same {} {}. I think this problem should be solved.
-You and {}! It seems you are engaging in the same {} {}. I think you need to solve it.you
-You and {}, you’re on the same {} {}. It could get worse if you both move to same class.
-Two developers you and {} are working simultaneously in {} {}.
-Hey, you and {}, you are working on the same {} - {}. Be careful about conflict!
-Hey, you and {}, you are engaging in the same {} - {}. Be careful about conflict!
-Hey, you and {}, you are working on the same {} - {}. Be cautious about conflict!
-Hey, you and {}, you are engaging in the same {} - {}. Be cautious about conflict!
-You should know that you and {} are working on a same {} : {}.
-You and {} are working on a same {}(name : {}), so conflict can be happened soon. Be careful!
-You and {} are working on a same {} {}.
-You and {} are engaging a same {} {}.
-You and {} are working on {} {}. It’s dangerous!
-You and {} are engaging in {} {}. It’s dangerous!
-You and {} are working on {} {}. It’s unsafe!
-You and {} are engaging in {} {}. It’s unsafe!
-You and {} are working on {} {}. It’s hazardous!
-You and {} are engaging in {} {}. It’s hazardous!
-You and {} are working on {} {}. It’s risky!
-You and {} are engaging in {} {}. It’s risky!
-You and {} have started working on {} {}. It seems not good.
-You and {} have started engaging in {} {}. It seems not good.
-I would like to let you know that you and {} are working on {} {} and it is not good.
-I would like to let you know that you and {} are engaging in {} {} and it is not good.
-I’m letting you know that you and {} are working on {} {} and it is not good.
-I’m letting you know that you and {} are engaging in {} {} and it is not good.
-I want to let you know that you and {} are working on {} {} and it is not good.
-I want to let you know that you and {} are engaging in {} {} and it is not good.
-There’re more than one user(you, {}) in the same {} {}.
-Hey you and {}! You guys are too close! Both of you working on {} {}.
-Hey you and {}! You guys are too close! Both of you engaging in {} {}.
-You and {} , I think it’s not a good idea to work on same {} {}. It could make the situation worse.
-You and {} , I think it’s not a good idea to work on same {} {}. It is likely to occur conflicts.
-Hey, you and {} what you guys doing? I think both of you on same {} {} is not a good idea.
-As you and {} are working on the same {}({}), it is dangerous.
-As you and {} are working on the same {}({}), it is likely to occur conflicts.
-As you and {} are working on the same {}({}), there is a chance that conflicts may occur.
-As you and {} are working on the same {}({}), there is a possibility of potential conflicts.
-As you and {} are engaging in the same {}({}), it is dangerous.
-Just let you know that you and {} are on same {} {}.
+Your changes on *{filename}* may cause conflict as {user2} is also working on that file.
+Just wanted to tell you that it’s best if you talk with {user2} as both of you are working on the same file.
+*{filename}* is being modified by {user2} right now. You may want to talk with {user2} before proceeding more.
+{user2} is currently working on *{filename}*. Please talk to {user2} before editing the file.
+Heads up! {user2} is editing *{filename}* and if you continue changing that file, conflicts may happen. Why don’t you talk with {user2} first?
+{user2} has started working on *{filename}*. You may want to talk to them.
+Heads up! {user2} is modifying *{filename}* and causing conflicts.
+Just so you’re aware, {user2} is editing *{filename}* and causing conflicts. Please talk to them.
+I think you should talk to {user2}. They’ve started editing *{filename}* and that causes conflicts.
+{user1}, {user2} is editing *{filename}* which leads to having conflicts. Maybe you should talk with them.

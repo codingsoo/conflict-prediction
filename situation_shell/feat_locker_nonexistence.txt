@@ -1,5 +1,5 @@
-Nobody has locked {}!
-{} has not been locked!
-You can modify {}! It isn't locked.
-Do you want to use {}? Yes, you can!
-Using {} is okay!
+This file is not locked by anyone.
+No lock.
+No lock on *filename}*.
+No one has locked the file.
+You can safely lock this file if you want to.

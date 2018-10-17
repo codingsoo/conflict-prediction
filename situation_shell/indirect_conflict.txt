@@ -1,12 +1,5 @@
-Hey! Indirect conflict will occur if you keep editing it. You are at {} and {} is working on {}.
-You are now at {} and {} is at {}. I think indirect conflict will occur.
-Indirect conflict alert! You are at {} and {} is at {}.
-What you edited now at {}, it might affect {} 's working status {}.
-Did you know that indirect conflict might occur? You are at {} and {} is working on {}.
-You are at {} and {} is working on {}. It will be more serious!
-You are now at {} and {} is working on {}. It will be more dangerous!
-Hey, there is a indirect conflict {}. {} is working on {}.
-You have to check {}. {} is working on {}. I think indirect conflict will occur.
-Hey, I think indirect conflict will occur at {}. {} is working on {} now.
-Indirect conflict will occur! You’d better check {}. {} is working on {} now.
-I think you’d better check {} now. {} is working on {}. It will occur indirect conflict.
+Just wanted to let you know that your modifications to *{filename1}* may cause an indirect conflict with the changes being made by {user2} on *{filename2}*.
+Changes by you and {user2} may cause an indirect conflict since {user2} is working on *{filename2}*.
+Just so you know, {user2} is working on *{filename2}* and your edits on *{filename1}* may cause an indirect conflict.
+You may want to talk to {user2}. Their changes to *{filename2}* may interfere with yours to *{filename1}*.
+{user2} is working on *{filename2}*. Your changes to *{filename1}* may be incompatible. I suggest you talk to {user2}.

@@ -1,10 +1,5 @@
-{} edited from line{} to line{}.
-{} worked from line{} to line{}.
-{} wrote from line{} to line{}.
-{} handled that code from line{} to line{}.
-I'm certain that {} wrote from line{} to line{}.
-I'm certain that {} edited from line{} to line{}.
-I'm certain that {} worked from line{} to line{}.
-I think {} related to that code, from line{} to line{}.
-I think {} edited that code, from line{} to line{}.
-I found that {} edited from line{} to line{}.
+{user2} last changed these lines.
+GitHub reports that {user2} is the last person who edited {filename} from line {start_line} to line {end_line}.
+{user2}.
+All these lines of code were last changed by {user2}.
+{user2} is the last person who changed those lines in {filename}.

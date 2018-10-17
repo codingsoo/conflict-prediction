@@ -1,10 +1,5 @@
-Indirect conflict won't be notified from now on.
-As you requested, indirect conflict alarm is off.
-I won't notify indirect conflict from now on.
-Ignore indirect conflict. You can get notify of it anytime.
-I'll not notify about indirect conflict.
-From now on, indirect conflict alarm will be ignored.
-From now on, alarm about indirect conflict will be ignored.
-Indirect conflict alarm will be ignored from now on.
-Conflict of indirect will be ignored from now on.
-As you said, indirect conflict alarm will be ignored.
+Done!
+From now on I won’t notify you of indirect conflicts.
+Ok. From now on, I won’t notify you when your changes might affect the work of others on other files.
+Sure. Let me know if you want to undo the ignore.
+I disabled notifications for indirect conflicts.
