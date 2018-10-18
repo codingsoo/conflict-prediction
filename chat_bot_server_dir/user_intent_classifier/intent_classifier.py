@@ -225,7 +225,7 @@ def intent_classifier(_sentence):
         return ERROR, sentence
 
 
-def extract_attention_word(owner_name, project_name,_sentence, github_email, intent_type):
+def extract_attention_word(owner_name, project_name, _sentence, github_email, intent_type):
     import re
     work_db = work_database()
     sentence = _sentence
@@ -237,20 +237,20 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
 
         # help classification about intent_type 5 and 9
         # if conflict_file in sentence, we can think user wants to recommendation.
-        is_found = 0
-        if intent_type in [5, 9]:
-            conflict_file_list = work_db.all_conflict_list(github_email)
-            if conflict_file_list:
-                for cfl in conflict_file_list:
-                    file_name = cfl.split("/")[-1]
-                    if is_found == 0:
-                        if file_name in sentence:
-                            is_found = 1
-                            intent_type = 9
-                        else:
-                            intent_type = 5
-            else:
-                intent_type = 5
+        # is_found = 0
+        # if intent_type in [5, 9]:
+        #     conflict_file_list = work_db.all_conflict_list(github_email)
+        #     if conflict_file_list:
+        #         for cfl in conflict_file_list:
+        #             file_name = cfl.split("/")[-1]
+        #             if is_found == 0:
+        #                 if file_name in sentence:
+        #                     is_found = 1
+        #                     intent_type = 9
+        #                 else:
+        #                     intent_type = 5
+        #     else:
+        #         intent_type = 5
 
 
     if intent_type in [1, 2, 3, 5, 9, 11, 12]:
@@ -526,9 +526,8 @@ def extract_attention_word(owner_name, project_name,_sentence, github_email, int
 
     # About recommend
     elif intent_type == 9:
-        recent_data = work_db.get_recent_data(github_email)
         work_db.close()
-        return 9, github_email, recent_data[2], None
+        return 9, github_email, called_file_abs_path_list[0], None
 
     # About check ignored file
     elif intent_type == 10:

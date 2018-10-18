@@ -365,25 +365,49 @@ def send_message_direct_logic(target_slack_code, msg, user_slack_id):
     w_db.close()
     return message
 
-def recommend_solve_conflict_logic(user1_git_id, user2_git_id):
+def recommend_solve_conflict_logic(user_git_id, file_name):
     w_db = work_database()
+    message = ""
+    project_name = w_db.get_repository_name_by_git_id(user_git_id)
+    user_percentage, other_percentage, other_git_id = w_db.get_working_amount_percentage(project_name, user_git_id, file_name)
 
-    if user2_git_id != " " :
-        u1, w1, u2, w2 = w_db.recommendation(user1_git_id, user2_git_id)
-        user1_slack_id = w_db.convert_git_id_to_slack_id(u1)
-        user2_slack_id = w_db.convert_git_id_to_slack_id(u2)
-        w_db.close()
-
-        if u1 == user1_git_id:
-            message = random.choice(shell_dict['feat_recommend_change'])
-            message = message.format(user2=user2_slack_id)
-        else:
-            message = random.choice(shell_dict['feat_recommend_not_change'])
-            message = message.format(user2=user1_slack_id)
-
-    else:
+    if other_git_id == "NO_ONE":
         message = random.choice(shell_dict['feat_recommend_no_conflict'])
 
+    else:
+        other_name = w_db.convert_git_id_to_slack_id(other_git_id)
+        percentage_gap = abs(user_percentage - other_percentage)
+
+        if user_percentage >= other_percentage:
+            message = random.choice(shell_dict['feat_recommend_change'])
+        else:
+            message = random.choice(shell_dict['feat_recommend_not_change'])
+
+        message = message.format(user2=other_name,
+                                 severity_gap=percentage_gap,
+                                 user1_severity=user_percentage,
+                                 user2_severity=other_percentage)
+
+    # working_amt_dict = w_db.get_working_amount_dict(user_git_id, file_name)
+    #
+    # working_amt_list = sorted(working_amt_dict, key=lambda w: working_amt_dict[w], reverse=True)
+    # print("working_amt_list", working_amt_list)
+    #
+    # try:
+    #     user_idx = working_amt_list.index(user_git_id)
+    #     if user_git_id == working_amt_list[0]:
+    #         message = random.choice(shell_dict['feat_recommend_change'])
+    #         ele = ", ".join(working_amt_list[1:])
+    #         message = message.format(user2=ele)
+    #     else:
+    #         message = random.choice(shell_dict['feat_recommend_not_change'])
+    #         ele = ", ".join(working_amt_list[:user_idx])
+    #         message = message.format(user2=ele)
+    #
+    # except:
+    #     message = random.choice(shell_dict['feat_recommend_no_conflict'])
+
+    w_db.close()
     return message
 
 def check_ignored_file_logic(slack_code):

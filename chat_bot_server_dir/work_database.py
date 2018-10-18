@@ -373,42 +373,154 @@ class work_database:
 
 ##########################################################
 
-    def recommendation(self, user1, user2):
-        user1_working_amount = "SELECT work_amount " \
-                               "FROM working_table " \
-                               "WHERE user_name= '%s'" % user1
-        user2_working_amount = "SELECT work_amount " \
-                               "FROM working_table " \
-                               "WHERE user_name= '%s'" % user2
-
+    def get_working_amount_dict(self, user_git_id, file_name):
+        raw_tuple = tuple()
+        working_amt_dict = dict()
         try:
-            self.cursor.execute(user1_working_amount)
+            sql = "SELECT user_name, total_plus, total_minus " \
+                                "FROM edit_amount " \
+                                "WHERE file_name = '%s' " % (file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
             self.conn.commit()
-            user1_working_amount = self.cursor.fetchall()[0][0]
-            self.cursor.execute(user2_working_amount)
-            self.conn.commit()
-            user2_working_amount = self.cursor.fetchall()[0][0]
+            raw_tuple = self.cursor.fetchall()
+            print("get_working_amount_dict", raw_tuple)
+
+            for rt in raw_tuple:
+                if rt[0] == user_git_id:
+                    working_amt_dict[rt[0]] = rt[1] + rt[2]
+                else:
+                    working_amt_dict[self.convert_git_id_to_slack_id(rt[0])] = rt[1] + rt[2]
 
         except:
             self.conn.rollback()
-            print("ERROR : recommendation")
+            print("ERROR : get working amount dict ")
 
-        response_list = []
+        return working_amt_dict
 
-        if user1_working_amount >= user2_working_amount:
-            response_list.append(user1)
-            response_list.append(user1_working_amount)
-            response_list.append(user2)
-            response_list.append(user2_working_amount)
-            return response_list
-        elif user1_working_amount < user2_working_amount:
-            response_list.append(user2)
-            response_list.append(user2_working_amount)
-            response_list.append(user1)
-            response_list.append(user1_working_amount)
-            return response_list[0], response_list[1], response_list[2], response_list[3]
-        else:
-            return response_list[0], response_list[1], response_list[2], response_list[3]
+    def get_working_amount_percentage(self, project_name, user_git_id, file_name):
+        user_edit_amount = tuple()
+        other_edit_amount = tuple()
+        file_total_lines = tuple()
+
+        try:
+            sql = "select total_plus, total_minus " \
+                  "from edit_amount " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and user_name = '%s'" \
+                  % (project_name, file_name, user_git_id)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            user_edit_amount = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        try:
+            sql = "select total_plus, total_minus, user_name " \
+                  "from edit_amount " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' "  \
+                  % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            other_edit_amount = self.cursor.fetchone()
+            print(other_edit_amount)
+            if not other_edit_amount:
+                return 0, 0, "NO_ONE"
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        try:
+            sql = "select total_lines " \
+                  "from file_information " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            file_total_lines = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        user_percentage = 0
+
+        if user_edit_amount[0] == 0:
+            user_percentage = (100 * user_edit_amount[1]) / file_total_lines[0]
+        elif user_edit_amount[1] == 0:
+            user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0])
+        elif user_edit_amount[0] > user_edit_amount[1]:
+            user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0] - user_edit_amount[1])
+        elif user_edit_amount[0] <= user_edit_amount[1]:
+            user_percentage = (100 * user_edit_amount[1]) / (file_total_lines[0])
+
+        other_percentage = 0
+
+        if other_edit_amount[0] == 0:
+            other_percentage = (100 * other_edit_amount[1]) / file_total_lines[0]
+        elif other_edit_amount[1] == 0:
+            other_percentage = (100 * other_edit_amount[0]) / (file_total_lines[0] + other_edit_amount[0])
+        elif other_edit_amount[0] > other_edit_amount[1]:
+            other_percentage = (100 * other_edit_amount[0]) / (file_total_lines[0] + other_edit_amount[0] - other_edit_amount[1])
+        elif other_edit_amount[0] <= other_edit_amount[1]:
+            other_percentage = (100 * other_edit_amount[1]) / (file_total_lines[0])
+
+        other_user_git_id = other_edit_amount[2]
+
+        return user_percentage, other_percentage, other_user_git_id
+
+    # def recommendation(self, user1_git_id, file_name):
+        # user1_working_amount = "SELECT work_amount " \
+        #                        "FROM working_table " \
+        #                        "WHERE user_name= '%s'" % user1
+        # user2_working_amount = "SELECT work_amount " \
+        #                        "FROM working_table " \
+        #                        "WHERE user_name= '%s'" % user2
+        #
+        # try:
+        #     self.cursor.execute(user1_working_amount)
+        #     self.conn.commit()
+        #     user1_working_amount = self.cursor.fetchall()[0][0]
+        #     self.cursor.execute(user2_working_amount)
+        #     self.conn.commit()
+        #     user2_working_amount = self.cursor.fetchall()[0][0]
+        #
+        # except:
+        #     self.conn.rollback()
+        #     print("ERROR : recommendation")
+        #
+        # response_list = []
+        #
+        # if user1_working_amount >= user2_working_amount:
+        #     response_list.append(user1)
+        #     response_list.append(user1_working_amount)
+        #     response_list.append(user2)
+        #     response_list.append(user2_working_amount)
+        #     return response_list
+        # elif user1_working_amount < user2_working_amount:
+        #     response_list.append(user2)
+        #     response_list.append(user2_working_amount)
+        #     response_list.append(user1)
+        #     response_list.append(user1_working_amount)
+        #     return response_list[0], response_list[1], response_list[2], response_list[3]
+        # else:
+        #     return response_list[0], response_list[1], response_list[2], response_list[3]
 
 #################################################################
 
@@ -513,6 +625,7 @@ class work_database:
             self.conn.commit()
 
             raw_tuple = self.cursor.fetchall()
+            print(raw_tuple)
             raw = tuple()
             if raw_tuple:
                 raw = raw_tuple[0]
@@ -1366,6 +1479,27 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : get repository name")
+
+        if str(repository_name).isdigit():
+            print("ERROR : NO PROJECT NAME")
+            return
+
+        return repository_name
+
+    def get_repository_name_by_git_id(self, git_id):
+        repository_name = ""
+        try:
+            sql = "select repository_name " \
+                  "from user_table " \
+                  "where git_id = '%s'" % (git_id)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            repository_name = self.cursor.fetchall()[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get repository name by git id")
 
         if str(repository_name).isdigit():
             print("ERROR : NO PROJECT NAME")
