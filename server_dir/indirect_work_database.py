@@ -463,12 +463,13 @@ class indirect_work_database:
                     temp_file_logic1 = temp_already[2].split('|')
                     temp_file_logic2 = temp_already[1].split('|')
 
-                    send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
-                                          conflict_project=project_name,
-                                          conflict_file=temp_file_logic1,
-                                          conflict_logic=temp_file_logic2,
-                                          user1_name=temp_already[4],
-                                          user2_name=temp_already[5])
+                    send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                                   conflict_project=project_name,
+                                                   conflict_logic1=temp_file_logic1,
+                                                   conflict_logic2=temp_file_logic2,
+                                                   user1_name=temp_already[4],
+                                                   user2_name=temp_already[5],
+                                                   type=type)
 
                     self.increase_alert_count(project_name=project_name,
                                               def_func=temp_already[1],
@@ -507,12 +508,13 @@ class indirect_work_database:
                     temp_file_logic1 = temp_already[1].split('|')
                     temp_file_logic2 = temp_already[2].split('|')
 
-                    send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
-                                          conflict_project=project_name,
-                                          conflict_file=temp_file_logic1,
-                                          conflict_logic=temp_file_logic2,
-                                          user1_name=temp_already[4],
-                                          user2_name=temp_already[5])
+                    send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                                   conflict_project=project_name,
+                                                   conflict_logic1=temp_file_logic1,
+                                                   conflict_logic2=temp_file_logic2,
+                                                   user1_name=temp_already[4],
+                                                   user2_name=temp_already[5],
+                                                   type=type)
 
                     self.increase_alert_count(project_name=project_name,
                                               def_func=temp_already[1],
@@ -550,13 +552,13 @@ class indirect_work_database:
             temp_file_logic1 = temp_conflict[1].split('|')
             temp_file_logic2 = temp_conflict[3].split('|')
             self.insert_conflict_data(project_name, temp_conflict, type)
-            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
-                                  conflict_project=project_name,
-                                  conflict_file=temp_file_logic1,
-                                  conflict_logic=temp_file_logic2,
-                                  user1_name=temp_conflict[0],
-                                  user2_name=temp_conflict[2],
-                                  type = type)
+            send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
+                                           conflict_project=project_name,
+                                           conflict_logic1=temp_file_logic1,
+                                           conflict_logic2=temp_file_logic2,
+                                           user1_name=temp_conflict[0],
+                                           user2_name=temp_conflict[2],
+                                           type=type)
 
         return
 
@@ -608,19 +610,19 @@ class indirect_work_database:
         # Send to the user about indirect solved message
         # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time ]
         for raw_temp in raw_list:
-            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
-                                  conflict_project=project_name,
-                                  conflict_file=raw_temp[2],
-                                  conflict_logic=raw_temp[1],
-                                  user1_name=raw_temp[4],
-                                  user2_name=raw_temp[5])
+            send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                           conflict_project=project_name,
+                                           conflict_logic1=raw_temp[2],
+                                           conflict_logic2=raw_temp[1],
+                                           user1_name=raw_temp[4],
+                                           user2_name=raw_temp[5])
 
-            send_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
-                                  conflict_project=project_name,
-                                  conflict_file=raw_temp[2],
-                                  conflict_logic=raw_temp[1],
-                                  user1_name=raw_temp[5],
-                                  user2_name=raw_temp[4])
+            send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                           conflict_project=project_name,
+                                           conflict_logic1=raw_temp[2],
+                                           conflict_logic2=raw_temp[1],
+                                           user1_name=raw_temp[5],
+                                           user2_name=raw_temp[4])
 
         # Delete all user conflict list
         # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time ]

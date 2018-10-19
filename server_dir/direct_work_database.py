@@ -393,12 +393,12 @@ class direct_work_database:
                     # After 30 minutes => send direct message
                     if ((d.datetime.today() - temp_already[9] > d.timedelta(minutes=30))
                         and (temp_already[6] == 1) and (conflict_flag == Conflict_flag.same_severity.value)):
-                        send_conflict_message(conflict_flag=conflict_flag,
-                                              conflict_project=temp_best[1],
-                                              conflict_file=temp_best[2],
-                                              conflict_logic=temp_best[3],
-                                              user1_name=temp_best[5],
-                                              user2_name=temp_best[6])
+                        send_direct_conflict_message(conflict_flag=conflict_flag,
+                                                     conflict_project=temp_best[1],
+                                                     conflict_file=temp_best[2],
+                                                     conflict_logic=temp_best[3],
+                                                     user1_name=temp_best[5],
+                                                     user2_name=temp_best[6])
                         self.increase_alert_count(project_name=temp_best[1],
                                                   file_name=temp_best[2],
                                                   logic1_name=temp_best[3],
@@ -469,14 +469,14 @@ class direct_work_database:
                 # just in
                 conflict_flag = Conflict_flag.file_in.value
 
-            send_conflict_message(conflict_flag=conflict_flag,
-                                  conflict_project=temp_best[1],
-                                  conflict_file=temp_best[2],
-                                  conflict_logic=temp_best[3],
-                                  user1_name=temp_best[5],
-                                  user2_name=temp_best[6],
-                                  user1_percentage=user_percentage,
-                                  user2_percentage=other_percentage)
+            send_direct_conflict_message(conflict_flag=conflict_flag,
+                                         conflict_project=temp_best[1],
+                                         conflict_file=temp_best[2],
+                                         conflict_logic=temp_best[3],
+                                         user1_name=temp_best[5],
+                                         user2_name=temp_best[6],
+                                         user1_percentage=user_percentage,
+                                         user2_percentage=other_percentage)
 
         return
 
@@ -605,19 +605,19 @@ class direct_work_database:
         print("non_direct_conflict_logic : ", raw_list)
 
         for raw_temp in raw_list:
-            send_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
-                                  conflict_project=project_name,
-                                  conflict_file=raw_temp[1],
-                                  conflict_logic=raw_temp[2],
-                                  user1_name=user_name,
-                                  user2_name=raw_temp[5])
+            send_direct_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
+                                         conflict_project=project_name,
+                                         conflict_file=raw_temp[1],
+                                         conflict_logic=raw_temp[2],
+                                         user1_name=user_name,
+                                         user2_name=raw_temp[5])
 
-            send_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
-                                  conflict_project=project_name,
-                                  conflict_file=raw_temp[1],
-                                  conflict_logic=raw_temp[2],
-                                  user1_name=raw_temp[5],
-                                  user2_name=user_name)
+            send_direct_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
+                                         conflict_project=project_name,
+                                         conflict_file=raw_temp[1],
+                                         conflict_logic=raw_temp[2],
+                                         user1_name=raw_temp[5],
+                                         user2_name=user_name)
 
         # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
         for ndcl in non_direct_conflict_list:
