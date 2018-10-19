@@ -5,9 +5,9 @@ from server_dir.slack_message_sender import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -437,7 +437,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
     # About check conflict
     elif intent_type == 5:
         work_db.close()
-        return 5, called_file_abs_path_list[0], None, None
+        return 5, github_email, called_file_abs_path_list[0], None
 
     # About working status
     elif intent_type == 6:

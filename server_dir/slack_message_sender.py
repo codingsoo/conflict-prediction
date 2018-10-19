@@ -130,7 +130,7 @@ def send_lock_message(lock_file_list, user_name):
 
         lock_message_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "feat_lock_alarm.txt"))
         message = random.choice(lock_message_list)
-        message = message.format(user2=lock_user, filename=str(lfl[1]))
+        message = message.format(user2=lock_user, filename=str(lfl[1]), remaining_time=remain_time_str)
     send_direct_message(user_slack_id_code[1], message)
     w_db.close()
 

@@ -57,7 +57,7 @@ def get_code_history_info(project_name, file_path, start_line, end_line):
                             ret_dict[before_user_email] = ["{}-{}".format(user_start_line, current_line-1)]
                     else:
                         if user_start_line == current_line - 1:
-                            ret_dict[before_user_email] = ["{}".format(user_start_line)]
+                            ret_dict[before_user_email].append("{}".format(user_start_line))
                         else:
                             ret_dict[before_user_email].append("{}-{}".format(user_start_line, current_line-1))
 
@@ -73,7 +73,7 @@ def get_code_history_info(project_name, file_path, start_line, end_line):
                             ret_dict[current_user_email] = ["{}-{}".format(user_start_line, current_line-1)]
                     else:
                         if user_start_line == current_line - 1:
-                            ret_dict[before_user_email] = ["{}".format(user_start_line)]
+                            ret_dict[before_user_email].append("{}".format(user_start_line))
                         else:
                             ret_dict[current_user_email].append("{}-{}".format(user_start_line, current_line-1))
 

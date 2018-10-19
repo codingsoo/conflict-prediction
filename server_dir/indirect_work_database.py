@@ -232,7 +232,6 @@ class indirect_work_database:
                     other_user_logic = temp_other_working_list[1] + "|" + temp_other_working_list[2]
                     if temp_user_calling_list[0] == temp_other_working_list[0] and user_logic == other_user_logic:
                         temp_raw = []
-
                         temp_raw.append(temp_user_calling_list[1])  # user_name
                         temp_raw.append(user_logic)  # user_logic(call)
                         temp_raw.append(temp_other_working_list[3])  # other_user_name

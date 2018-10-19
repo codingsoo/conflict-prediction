@@ -24,7 +24,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = ignore_file_logic(slack_code, param0, param1)
 
     elif(intent_type == 5):
-        message = check_conflict_logic(slack_code, param0)
+        message = check_conflict_logic(slack_code, param0, param1)
 
     elif(intent_type == 6):
         message = other_working_status_logic(slack_code, param0, param1)
@@ -36,7 +36,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = send_message_direct_logic(param0, param1, param2)
 
     elif(intent_type == 9):
-        message = recommend_solve_conflict_logic(param0, param1)
+        message = recommend_solve_conflict_logic(slack_code, param0, param1)
 
     elif(intent_type == 10):
         message = check_ignored_file_logic(slack_code)
@@ -217,9 +217,9 @@ def code_history_logic(slack_code, file_abs_path, start_line, end_line):
     # case 1: Single User
     if len(user_name_list) == 1:
         message += random.choice(shell_dict['feat_history_single_user']).format(user2=user_name_list[0],
-                                                                               filename=file_abs_path,
-                                                                               start_line=start_line,
-                                                                               end_line=end_line)
+                                                                                filename=file_abs_path,
+                                                                                start_line=start_line,
+                                                                                end_line=end_line)
     # case 2: Multiple Users
     else:
         message_idx = random.randrange(len(shell_dict['feat_history_multiple_users']))
@@ -322,22 +322,49 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     return message
 
 
-def check_conflict_logic(slack_code, file_name):
+def check_conflict_logic(slack_code, user_git_id, file_name):
     w_db = work_database()
     message = ""
+    additional_message = ""
 
     project_name = w_db.get_repository_name(slack_code)
-    print("project_ name test : ", project_name)
-    direct_conflict_flag, indirect_conflict_flag = w_db.is_conflict(project_name, slack_code, file_name)
 
-    if direct_conflict_flag == True and indirect_conflict_flag == True:
-        message = random.choice(shell_dict['feat_conflict_di']).format(user2="d_user", user3="in_user", filename2="d_file", filename3="in_file")
-    elif direct_conflict_flag == True and indirect_conflict_flag == False:
-        message = random.choice(shell_dict['feat_conflict_d']).format(user2="d_user", filename=file_name)
-    elif direct_conflict_flag == False and indirect_conflict_flag == True:
-        message = random.choice(shell_dict['feat_conflict_i']).format(user2="in_user", filename1=file_name, filename2="in_file")
+    dir_conflict_git_id_list = w_db.get_direct_conflict_user_list(project_name, user_git_id, file_name)
+    indir_conflict_git_id_list, indir_conflict_file_list = w_db.get_indirect_conflict_user_list(project_name, user_git_id, file_name)
+
+    dir_conflict_slack_id_list = w_db.convert_git_id_list_to_slack_id_list(dir_conflict_git_id_list)
+    indir_conflict_slack_id_list = w_db.convert_git_id_list_to_slack_id_list(indir_conflict_git_id_list)
+
+    if len(indir_conflict_slack_id_list) > 1:
+        indir_conflict_info = ""
+        for user_idx, user_name in enumerate(indir_conflict_slack_id_list[1:-1]):
+            indir_conflict_info += "*" + ", ".join(indir_conflict_file_list[user_idx + 1]) + "*" + " by " + user_name + ", "
+        indir_conflict_info += "*" + ", ".join(indir_conflict_file_list[-1]) + "* by " + indir_conflict_slack_id_list[-1]
+        additional_message = " Also {} may cause indirect conflicts.".format(indir_conflict_info)
+
+    print("direct_user_list", dir_conflict_slack_id_list)
+    print("indirect_user_list", indir_conflict_slack_id_list)
+    print("indirect_file_list", indir_conflict_file_list)
+
+    if dir_conflict_slack_id_list and indir_conflict_slack_id_list:
+        message = random.choice(shell_dict['feat_conflict_di']).format(user2=", ".join(dir_conflict_slack_id_list),
+                                                                       user3=indir_conflict_slack_id_list[0],
+                                                                       filename2=file_name,
+                                                                       filename3=", ".join(indir_conflict_file_list[0]))
+        message += additional_message
+
+    elif not dir_conflict_slack_id_list and indir_conflict_slack_id_list:
+        message = random.choice(shell_dict['feat_conflict_i']).format(user2=indir_conflict_slack_id_list[0],
+                                                                      filename1=file_name,
+                                                                      filename2=", ".join(indir_conflict_file_list[0]))
+        message += additional_message
+
+    elif dir_conflict_slack_id_list and not indir_conflict_slack_id_list:
+        message = random.choice(shell_dict['feat_conflict_d']).format(user2=", ".join(dir_conflict_slack_id_list),
+                                                                      filename=file_name)
+
     else:
-        message = "I think it'll not cause any conflict." 
+        message = random.choice(shell_dict['feat_conflict_nothing'])
 
     w_db.close()
     return message
@@ -405,10 +432,10 @@ def send_message_direct_logic(target_slack_code, msg, user_slack_id):
     return message
 
 
-def recommend_solve_conflict_logic(user_git_id, file_name):
+def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
     w_db = work_database()
     message = ""
-    project_name = w_db.get_repository_name_by_git_id(user_git_id)
+    project_name = w_db.get_repository_name(slack_code)
     user_percentage, other_percentage, other_git_id = w_db.get_working_amount_percentage(project_name, user_git_id, file_name)
 
     if other_git_id == "NO_ONE":
@@ -499,7 +526,7 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
     project_name, user_name = w_db.get_repository_and_user_name(slack_code)
 
     if msg_type == "YES" and target_file in w_db.read_lock_history_list(project_name, slack_code):
-        lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
+        lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set(target_file), lock_time))
         ch_message = ""
         if target_file in lock_file_list:
             ch_message += "{} locked {} file for {} hour(s).".format(user_name, target_file, lock_time)

@@ -1203,6 +1203,7 @@ class work_database:
     '''
     is conflict
     '''
+
     def is_conflict(self, project_name, slack_code, file_name):
         direct_conflict_flag = False
         indirect_conflict_flag = False
@@ -1229,19 +1230,10 @@ class work_database:
 
             raw_list = list(self.cursor.fetchall())
             print("is_direct_conflict", raw_list)
-            # sql = "select user_name " \
-            #       "from working_table " \
-            #       "where project_name = '%s' " \
-            #       "and file_name = '%s'" % (project_name, file_name)
-            # print(sql)
-            # self.cursor.execute(sql)
-            # self.conn.commit()
-            #
-            # raw_list = list(self.cursor.fetchall())
 
         except:
             self.conn.rollback()
-            print("ERROR : is direct conflict")
+            print("ERROR : is_direct_conflict")
 
         if raw_list:
             return True
@@ -1266,11 +1258,11 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : is indirect conflict")
+            print("ERROR : is_indirect_conflict")
 
         file_list = []
 
-         # [project_name, u, v, length]
+        # [project_name, u, v, length]
         for temp_raw in raw_list:
             temp_u = str(temp_raw[1]).split('|')[0]
             temp_v = str(temp_raw[2]).split('|')[0]
@@ -1299,6 +1291,87 @@ class work_database:
                 print("ERROR : is indirect logic 2")
 
         return False
+
+    def get_direct_conflict_user_list(self, project_name, user_git_id, file_name):
+        raw_list = []
+        try:
+            sql = "select distinct user_name " \
+                  "from working_table " \
+                  "where project_name = '%s' " \
+                  "and user_name != '%s'" \
+                  "and file_name = '%s' " % (project_name, user_git_id, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall()[0])
+            print("direct_conflict", raw_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get_direct_conflict_user_list")
+
+        return raw_list
+
+
+    def get_indirect_conflict_user_list(self, project_name, user_git_id, file_name):
+        raw_list = []
+        try:
+            temp_file_name = str(file_name) + "%"
+
+            sql = "select * " \
+                  "from uci_chat_bot.logic_dependency " \
+                  "where project_name = '%s' " \
+                  "and (def_func like '%s' or call_func like '%s')" % (project_name, temp_file_name, temp_file_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+            print("indirect_conflict", raw_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get_indirect_conflict_user_list")
+
+        file_list = []
+
+        # [project_name, u, v, length]
+        for temp_raw in raw_list:
+            temp_u = str(temp_raw[1]).split('|')[0]
+            temp_v = str(temp_raw[2]).split('|')[0]
+            file_list.append(temp_u)
+            file_list.append(temp_v)
+
+        file_list = list(set(file_list))
+        raw_dict = dict()
+
+        for temp_file in file_list:
+            try:
+                sql = "select distinct user_name " \
+                      "from uci_chat_bot.working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and file_name != '%s' " \
+                      "and user_name != '%s'" % (project_name, temp_file, file_name, user_git_id)
+
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                user_name_list = list(self.cursor.fetchall())
+                for user_name in user_name_list:
+                    try:
+                        raw_dict[user_name[0]].append(temp_file)
+                    except:
+                        raw_dict[user_name[0]] = [temp_file]
+            except:
+                self.conn.rollback()
+                print("ERROR : get_indirect_conflict_user_list 2")
+        print("indirect_conflict2", raw_dict)
+
+        return list(raw_dict.keys()), list(raw_dict.values())
 
     def all_conflict_list(self, github_email):
         conflict_list = []
@@ -1618,6 +1691,28 @@ class work_database:
             print("ERROR : convert_git_id_to_slack_id")
 
         return slack_id
+
+    def convert_git_id_list_to_slack_id_list(self, git_id_list):
+        slack_id_list = []
+
+        for git_id in git_id_list:
+            try:
+                sql = "select slack_id " \
+                      "from user_table " \
+                      "where git_id = '%s'" % (git_id)
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw_tuple = self.cursor.fetchall()
+                slack_id = raw_tuple[0][0]
+                slack_id_list.append(slack_id)
+
+            except:
+                self.conn.rollback()
+                print("ERROR : convert_git_id_to_slack_id")
+
+        return slack_id_list
 
     def convert_slack_code_to_git_id(self, slack_code):
         # Read git_id
