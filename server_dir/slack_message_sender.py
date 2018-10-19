@@ -142,7 +142,7 @@ def send_lock_message(lock_file_list, user_name):
     send_direct_message(user_slack_id_code[1], message)
     w_db.close()
 
-def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name, user1_percentage = -1, user2_percentage = -1):
+def send_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name, user2_name, type = None , user1_percentage = -1, user2_percentage = -1):
 
     if conflict_logic == "in":
         conflict_logic = ""
@@ -246,7 +246,10 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
     elif conflict_flag == Conflict_flag.indirect_conflict.value:
         # indirect conflict
         indirect_shell = make_indirect_conflict_shell_list()
-        message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_file, user2=user2_slack_id_code[0], filename2=conflict_logic)
+        if (type == 'user_call') :
+            message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_file, user2=user2_slack_id_code[0], filename2=conflict_logic)
+        elif (type == 'user_work') :
+            message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_logic, user2=user2_slack_id_code[0], filename2=conflict_file)
 
     if message != "":
         send_direct_message(user1_slack_id_code[1], message)

@@ -48,8 +48,7 @@ class indirect_work_database:
             print("\n#### User Call Indirect Conflict !!! ####")
 
             user_call_already_indirect_conflict_table = self.search_already_indirect_conflict_table(project_name, user_call_indirect_conflict_list, type="user_call")
-            user_call_first_indirect_conflict_list, user_call_already_indirect_conflict_list = \
-                self.classify_indirect_conflict_list(user_call_indirect_conflict_list, user_call_already_indirect_conflict_table, type="user_call")
+            user_call_first_indirect_conflict_list, user_call_already_indirect_conflict_list = self.classify_indirect_conflict_list(user_call_indirect_conflict_list, user_call_already_indirect_conflict_table, type="user_call")
             print("user_call_already_indirect_conflict_table : ", user_call_already_indirect_conflict_table)
             print("user_call_first_indirect_conflict_list : ", user_call_first_indirect_conflict_list)
             print("user_call_already_indirect_conflict_list : ", user_call_already_indirect_conflict_list)
@@ -556,7 +555,8 @@ class indirect_work_database:
                                   conflict_file=temp_file_logic1,
                                   conflict_logic=temp_file_logic2,
                                   user1_name=temp_conflict[0],
-                                  user2_name=temp_conflict[2])
+                                  user2_name=temp_conflict[2],
+                                  type = type)
 
         return
 
