@@ -99,7 +99,6 @@ def approved_file_logic(slack_code, approved_set, removed_list):
         diff_approved_list, db_approved_set = w_db.add_approved_list(slack_code=slack_code, req_approved_set=approved_set)
         already_approved_list = list(db_approved_set & approved_set)
         if diff_approved_list:
-
             # ch_message += random.choice(shell_dict['feat_ignore_channel'])
             # ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
             # send_channel_message("code-conflict-chatbot", ch_message)
@@ -438,6 +437,7 @@ def check_locker_logic(slack_code, file_abs_path):
     if locker_slack_code == "":
         message = random.choice(shell_dict['feat_locker_nonexistence'])
         message = message.format(filename=file_abs_path)
+
     else:
         locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
         message = random.choice(shell_dict['feat_locker_existence'])

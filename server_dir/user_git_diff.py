@@ -220,6 +220,37 @@ class user_git_diff:
                             assign_dict[name] = stack
                         call_list_dict[each.lineno] = stack
 
+                    if isinstance(each.value.left, ast.Name) or isinstance(each.value.right, ast.Name):
+                        names = []
+                        for name in each.targets:
+                            if isinstance(name, ast.Name):
+                                if name.id in assign_dict:
+                                    del assign_dict[name.id]
+                                names.append(name.id)
+                        if isinstance(each.value.left, ast.Name) :
+                            cur = each.value.left
+                        elif isinstance(each.value.right, ast.Name):
+                            cur = each.value.right
+
+                        print(cur.id)
+                        stack = []
+                        stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
+                        print("stack : ", stack)
+                        stack = stack[::-1]
+                        list = stack[0].split('.')[:-1]
+                        class_name = ".".join(list)
+                        check = 0
+                        for key, ele in assign_dict.items():
+                            if ele == class_name:
+                                check = 1
+
+                        if check == 0:
+                            class_name = stack[0]
+
+                        for name in names:
+                            assign_dict[name] = class_name
+                        call_list_dict[each.lineno] = class_name
+
             elif isinstance(each, ast.Expr):
                 print("--- Expr ---")
                 if isinstance(each.value, ast.Call):

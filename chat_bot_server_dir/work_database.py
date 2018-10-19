@@ -291,6 +291,7 @@ class work_database:
             sql = "SELECT approved_file " \
                   "from approved_list " \
                   "where slack_code = '%s' " % (slack_code)
+
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -314,6 +315,7 @@ class work_database:
         if diff_approved_set:
             try:
                 sql = "insert into approved_list (slack_code, approved_file) values "
+
                 for temp_diff_approved in diff_approved_set:
                     sql += "('%s', '%s'), " % (slack_code, temp_diff_approved)
                 sql = sql[:-2]
