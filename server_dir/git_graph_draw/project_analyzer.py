@@ -48,7 +48,10 @@ def class_append_edge_list(full_path,func_id,owner,paths,project_dict,logic_dict
                     else:
                         class_path = class_path + ":" + element
 
-                edges_list.append([owner + '/' + full_path + '.py|' + 'class:' + class_path + ':' + paths[-1], owner + '/' + func_id])
+                if class_path == " ":
+                    edges_list.append([owner + '/' + full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1], owner + '/' + func_id])
+                else:
+                    edges_list.append([owner + '/' + full_path + '.py|' + 'class:' + class_path + ':' + paths[-1], owner + '/' + func_id])
         else :
             full_path = full_path.split("/")[:-1]
             if (len(full_path) != 1):
@@ -81,14 +84,21 @@ def func_append_edge_list(full_path,owner,paths,project_dict,logic_dict,edges_li
 
             func_append_edge_list(new_path,owner,paths,project_dict,logic_dict,edges_list)
 
-def make_class_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list):
-    id = file_path + '|' + 'class:' + value['name']
+def make_class_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list,outer_class = ""):
+    if(outer_class == ""):
+        id = file_path + '|' + 'class:' + value['name']
+    else:
+        id = file_path + '|' + 'class:' +outer_class + ":"+ value['name']
     nexts = []
     for each in value.get('members', []):
         if each['type'] == 'Function':
             nexts.append([id + ':' + each['name'], each.get('members', [])])
         elif each['type'] == 'Class' :
-            make_class_edge(owner,project_name,file_path,each,project_dict,logic_dict,edges_list)
+            if (outer_class == ""):
+                outer_class = value['name']
+            else:
+                outer_class = outer_class + ":" + value['name']
+            make_class_edge(owner,project_name,file_path,each,project_dict,logic_dict,edges_list,outer_class)
 
     for func_id, func_members in nexts:
         for each in func_members:
