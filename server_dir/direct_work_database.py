@@ -331,44 +331,67 @@ class direct_work_database:
             # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
             for temp_best in best_direct_conflict_list:
                 conflict_flag = 0
+                severity_flag = 0
 
                 # Compare severity
                 # same user and same project and same logic
                 if temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2] and temp_already[5] == temp_best[6]:
-                    if temp_already[7] < temp_best[0]:
-                        user_percentage, other_percentage = self.calculate_percentage(temp_best)
+                    user_percentage, other_percentage = self.calculate_percentage(temp_best)
+                    current_percentage = round(user_percentage + other_percentage, 2)
+                    previous_percentage = round(self.get_percentage_of_direct_conflict(temp_best), 2)
 
+                    # Severity_percentage
+                    # Criterion : 5 %
+                    if abs(current_percentage - previous_percentage) > 5:
+                        if current_percentage > previous_percentage:
+                            print("direct : getting severity_percentage")
+                            conflict_flag = Conflict_flag.getting_severity_percentage.value
+
+                        else:
+                            print("direct : lower severity_percentage")
+                            conflict_flag = Conflict_flag.lower_severity_percentage.value
+
+                    else:
+                        print("direct : same severity_percentage")
+                        conflict_flag = Conflict_flag.same_severity_percentage.value
+
+                    # Severity Position
+                    if temp_already[7] < temp_best[0]:
                         print("direct : getting severity")
-                        conflict_flag = Conflict_flag.getting_severity.value
-                        send_conflict_message(conflict_flag=conflict_flag,
-                                              conflict_project=temp_best[1],
-                                              conflict_file=temp_best[2],
-                                              conflict_logic=temp_best[3],
-                                              user1_name=temp_best[5],
-                                              user2_name=temp_best[6],
-                                              user1_percentage=user_percentage,
-                                              user2_percentage=other_percentage)
+                        severity_flag = Conflict_flag.getting_severity.value
+
+                    elif temp_already[7] > temp_best[0]:
+                        print("direct lower severity")
+                        severity_flag = Conflict_flag.lower_severity.value
 
                     elif temp_already[7] == temp_best[0]:
                         print("direct same severity")
-                        conflict_flag = Conflict_flag.same_severity.value
+                        severity_flag = Conflict_flag.same_severity.value
 
-                    elif temp_already[7] > temp_best[0]:
-                        user_percentage, other_percentage = self.calculate_percentage(temp_best)
+                    if conflict_flag != 0:
+                        send_direct_conflict_message(conflict_flag=conflict_flag,
+                                                     conflict_project=temp_best[1],
+                                                     conflict_file=temp_best[2],
+                                                     conflict_logic=temp_best[3],
+                                                     user1_name=temp_best[5],
+                                                     user2_name=temp_best[6],
+                                                     user1_percentage=user_percentage,
+                                                     user2_percentage=other_percentage,
+                                                     previous_percentage=previous_percentage,
+                                                     current_severity=temp_best[0],
+                                                     severity_flag=severity_flag)
 
-                        print("direct lower severity")
-                        conflict_flag = Conflict_flag.lower_severity.value
-                        send_conflict_message(conflict_flag=conflict_flag,
-                                              conflict_project=temp_best[1],
-                                              conflict_file=temp_best[2],
-                                              conflict_logic=temp_best[3],
-                                              user1_name=temp_best[5],
-                                              user2_name=temp_best[6],
-                                              user1_percentage=user_percentage,
-                                              user2_percentage=other_percentage)
+                        self.update_conflict_data(project_name=temp_best[1],
+                                                  file_name=temp_best[2],
+                                                  logic1_name=temp_best[3],
+                                                  logic2_name=temp_best[4],
+                                                  user1_name=temp_best[5],
+                                                  user2_name=temp_best[6],
+                                                  severity=temp_best[0],
+                                                  severity_percentage=current_percentage)
 
                     # After 30 minutes => send direct message
-                    if ((d.datetime.today() - temp_already[8] > d.timedelta(minutes=30))
+                    if ((d.datetime.today() - temp_already[9] > d.timedelta(minutes=30))
                         and (temp_already[6] == 1) and (conflict_flag == Conflict_flag.same_severity.value)):
                         send_conflict_message(conflict_flag=conflict_flag,
                                               conflict_project=temp_best[1],
@@ -405,14 +428,6 @@ class direct_work_database:
                     #                               user1_name=temp_best[6],
                     #                               user2_name=temp_best[5])
 
-                    self.update_conflict_data(project_name=temp_best[1],
-                                              file_name=temp_best[2],
-                                              logic1_name=temp_best[3],
-                                              logic2_name=temp_best[4],
-                                              user1_name=temp_best[5],
-                                              user2_name=temp_best[6],
-                                              severity=temp_best[0])
-
         return
 
     def update_first_best_conflict_list(self, best_conflict_list):
@@ -420,13 +435,16 @@ class direct_work_database:
         print("#### update first best conflict list #####")
         print(best_conflict_list)
         for temp_best in best_conflict_list:
+            user_percentage, other_percentage = self.calculate_percentage(temp_best)
+
             self.insert_conflict_data(project_name=temp_best[1],
                                       file_name=temp_best[2],
                                       logic1_name=temp_best[3],
                                       logic2_name=temp_best[4],
                                       user1_name=temp_best[5],
                                       user2_name=temp_best[6],
-                                      severity=temp_best[0])
+                                      severity=temp_best[0],
+                                      severity_percentage=round(user_percentage + other_percentage, 2))
 
             if(temp_best[3] == temp_best[4]
                 and temp_best[3][:5] == "class"
@@ -450,8 +468,6 @@ class direct_work_database:
             else:
                 # just in
                 conflict_flag = Conflict_flag.file_in.value
-
-            user_percentage, other_percentage = self.calculate_percentage(temp_best)
 
             send_conflict_message(conflict_flag=conflict_flag,
                                   conflict_project=temp_best[1],
@@ -544,7 +560,31 @@ class direct_work_database:
         elif other_edit_amount[0] <= other_edit_amount[1]:
             other_percentage = (100 * other_edit_amount[1]) / (file_total_lines[0])
 
-        return user_percentage, other_percentage
+        return round(user_percentage, 2), round(other_percentage, 2)
+
+    def get_percentage_of_direct_conflict(self, best_conflict):
+        # best_conflict
+        # [severity, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name]
+        try:
+            sql = "select severity_percentage " \
+                  "from direct_conflict_table " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  "and user1_name = '%s' " \
+                  "and user2_name = '%s'" \
+                  % (best_conflict[1], best_conflict[2], best_conflict[5], best_conflict[6])
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            percentage_of_direct_conflict = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        return percentage_of_direct_conflict[0]
 
     def non_direct_conflict_logic(self, project_name, user_name, approve_file_list, non_direct_conflict_list):
         raw_list = non_direct_conflict_list[:]
@@ -638,13 +678,13 @@ class direct_work_database:
 
 
     # Insert conflict data
-    def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
+    def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage):
         try:
             if "in" in logic1_name or "in" in logic2_name:
                 severity = 1
             sql = "insert into direct_conflict_table " \
-                   "(project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity) " \
-                   "value ('%s', '%s', '%s', '%s', '%s', '%s', %d)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity)
+                  "(project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage) " \
+                  "value ('%s', '%s', '%s', '%s', '%s', '%s', %d, %f)" % (project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -655,14 +695,14 @@ class direct_work_database:
         return
 
     # update conflict data
-    def update_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity):
+    def update_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage):
         try:
             sql = "update direct_conflict_table " \
-                  "set logic1_name = '%s', logic2_name = '%s', severity = %d " \
+                  "set logic1_name = '%s', logic2_name = '%s', severity = %d, severity_percentage = %f " \
                   "where project_name = '%s' " \
                   "and file_name = '%s' " \
                   "and user1_name = '%s' " \
-                  "and user2_name = '%s'" % (logic1_name, logic2_name, severity, project_name, file_name, user1_name, user2_name)
+                  "and user2_name = '%s'" % (logic1_name, logic2_name, severity, severity_percentage, project_name, file_name, user1_name, user2_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()

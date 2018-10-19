@@ -45,8 +45,64 @@ def make_same_file_channel_shell_list():
     return same_file_channel_shell_list
 
 def make_severe_shell_list():
-    severe_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe.txt"))
-    return severe_shell_list
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe_percentage.txt"))
+    return shell_list
+
+def make_severe_percentage_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe_percentage.txt"))
+    return shell_list
+
+def make_lower_severity_list():
+    lower_severity_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated_percentage.txt"))
+    return lower_severity_list
+
+def make_alleviated_percentage_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated_percentage.txt"))
+    return shell_list
+
+def make_severe2_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe2.txt"))
+    return shell_list
+
+def make_severe2_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe2_add.txt"))
+    return shell_list
+
+def make_severe3_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe3.txt"))
+    return shell_list
+
+def make_severe3_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_severe3_add.txt"))
+    return shell_list
+
+def make_alleviated1_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated1.txt"))
+    return shell_list
+
+def make_alleviated1_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated1_add.txt"))
+    return shell_list
+
+def make_alleviated2_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated2.txt"))
+    return shell_list
+
+def make_alleviated2_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "alleviated2_add.txt"))
+    return shell_list
+
+def make_same_severity1_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "same_severity1_add.txt"))
+    return shell_list
+
+def make_same_severity2_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "same_severity2_add.txt"))
+    return shell_list
+
+def make_same_severity3_add_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "same_severity3_add.txt"))
+    return shell_list
 
 def make_direct_conflict_finished_list():
     conflict_finished_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "direct_conflict_finished.txt"))
@@ -59,10 +115,6 @@ def make_indirect_conflict_finished_list():
 def make_get_closer_list():
     get_closer_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_closer.txt"))
     return get_closer_list
-
-def make_lower_severity_list():
-    lower_severity_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "conflict_alleviated.txt"))
-    return lower_severity_list
 
 def make_indirect_conflict_shell_list():
     indirect_conflict_shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict.txt"))
@@ -195,6 +247,173 @@ def send_conflict_message(conflict_flag, conflict_project, conflict_file, confli
         # indirect conflict
         indirect_shell = make_indirect_conflict_shell_list()
         message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_file, user2=user2_slack_id_code[0], filename2=conflict_logic)
+
+    if message != "":
+        send_direct_message(user1_slack_id_code[1], message)
+
+    return
+
+def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name,
+                                 user2_name, user1_percentage=0, user2_percentage=0, previous_percentage=0,
+                                 current_severity=0, severity_flag=0):
+
+    if conflict_logic == "in":
+        conflict_logic = ""
+
+    # Get user slack nickname
+    user1_slack_id_code = get_user_slack_id(user1_name)
+    user2_slack_id_code = get_user_slack_id(user2_name)
+    print("user1_slack_id_code", user1_slack_id_code)
+    print("user2_slack_id_code", user2_slack_id_code)
+
+    current_percentage = round(user1_percentage + user2_percentage, 2)
+
+    # Initialize ignore flag
+    direct_ignore_flag = 0
+    indirect_ignore_flag = 0
+
+    try:
+        w_db = work_database()
+        direct_ignore_flag, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
+        w_db.close()
+    except:
+        print("no ignore list")
+
+    if direct_ignore_flag == 1 or indirect_ignore_flag == 1:
+        print("IGNORE MESSAGE")
+        return
+
+    message = ""
+
+    # Already conflict
+    if conflict_flag == Conflict_flag.getting_severity_percentage.value \
+        or conflict_flag == Conflict_flag.lower_severity_percentage.value \
+        or conflict_flag == Conflict_flag.same_severity_percentage.value:
+
+        if conflict_flag == Conflict_flag.getting_severity_percentage.value:
+            # get severity_percentage
+            severe_percentage_shell = make_severe_percentage_shell_list()
+            message = severe_percentage_shell[random.randint(0, len(severe_percentage_shell) - 1)].format(
+                user2=user2_slack_id_code[0],
+                filename=conflict_file,
+                severity=current_percentage,
+                old_severity=previous_percentage, severity_subtraction=round(current_percentage - previous_percentage, 2))
+
+            message += "\n"
+
+            if severity_flag == Conflict_flag.getting_severity.value:
+                # get severity
+                if current_severity == 2:
+                    severe_shell = make_severe2_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 3:
+                    severe_shell = make_severe3_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+            elif severity_flag == Conflict_flag.same_severity.value:
+                # same severity
+                if current_severity == 1:
+                    severe_shell = make_same_severity1_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 2:
+                    severe_shell = make_same_severity2_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 3:
+                    severe_shell = make_same_severity3_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+            elif severity_flag == Conflict_flag.lower_severity.value:
+                # lower severity
+                if current_severity == 1:
+                    alleviated_shell = make_alleviated1_add_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 2:
+                    alleviated_shell = make_alleviated2_add_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+        elif conflict_flag == Conflict_flag.lower_severity_percentage.value:
+            # lower_severity_percentage
+            alleviated_percentage_shell = make_alleviated_percentage_shell_list()
+            message = alleviated_percentage_shell[random.randint(0, len(alleviated_percentage_shell) - 1)].format(
+                user2=user2_slack_id_code[0],
+                filename=conflict_file,
+                severity=current_percentage,
+                old_severity=previous_percentage, severity_subtraction=round(previous_percentage - current_percentage, 2))
+
+            message += "\n"
+
+            if severity_flag == Conflict_flag.getting_severity.value:
+                # get severity
+                if current_severity == 2:
+                    severe_shell = make_severe2_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 3:
+                    severe_shell = make_severe3_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+            elif severity_flag == Conflict_flag.same_severity.value:
+                # same severity
+                if current_severity == 1:
+                    severe_shell = make_same_severity1_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 2:
+                    severe_shell = make_same_severity2_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 3:
+                    severe_shell = make_same_severity3_add_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+            elif severity_flag == Conflict_flag.lower_severity.value:
+                # lower severity
+                if current_severity == 1:
+                    alleviated_shell = make_alleviated1_add_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 2:
+                    alleviated_shell = make_alleviated2_add_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+        elif conflict_flag == Conflict_flag.same_severity_percentage.value:
+            # lower_severity_percentage
+            message = ""
+            if severity_flag == Conflict_flag.getting_severity.value:
+                # get severity
+                if current_severity == 2:
+                    severe_shell = make_severe2_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 3:
+                    severe_shell = make_severe3_shell_list()
+                    message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+
+            elif severity_flag == Conflict_flag.same_severity.value:
+                # same severity
+                message += ""
+
+            elif severity_flag == Conflict_flag.lower_severity.value:
+                # lower severity
+                if current_severity == 1:
+                    alleviated_shell = make_alleviated1_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
+                elif current_severity == 2:
+                    alleviated_shell = make_alleviated2_shell_list()
+                    message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
+                        user2=user2_slack_id_code[0])
 
     if message != "":
         send_direct_message(user1_slack_id_code[1], message)

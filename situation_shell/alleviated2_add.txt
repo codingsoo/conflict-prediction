@@ -1,0 +1,2 @@
+Also, {user2} is no longer working on the same method, but still same class.
+However, {user2} is now working on the same class as you, but different method.

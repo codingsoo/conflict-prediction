@@ -1,0 +1,3 @@
+And {user2} is now working on a different class in that file.
+Also, {user2} is now working on a different class.
+Note, that {user2} is now working on different method and different class.

@@ -11,6 +11,11 @@ class Conflict_flag(Enum):
     Direct Conflict
     """
     # Already conflicted
+    #
+    getting_severity_percentage = 8
+    same_severity_percentage = 7
+    lower_severity_percentage = 6
+
     getting_severity = 5
     same_severity = 4
     lower_severity = 3
