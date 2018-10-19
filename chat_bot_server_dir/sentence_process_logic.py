@@ -1,5 +1,5 @@
 from chat_bot_server_dir.work_database import work_database
-from chat_bot_server_dir.intent_func import get_user_email
+from chat_bot_server_dir.intent_func import get_code_history_info
 from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_lock_button_message
 from server_dir.slack_message_sender import send_all_user_message
@@ -192,19 +192,18 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
 
 def code_history_logic(slack_code, file_abs_path, start_line, end_line):
     w_db = work_database()
-
     message = ""
+
     project_name = w_db.get_repository_name(slack_code)
-    file_end_line, engaging_user_email_list = get_user_email(project_name, file_abs_path, start_line, end_line)
-
-    if file_end_line != end_line:
-        message += "This file's total amount of lines is *{}*.\n".format(file_end_line)
-        w_db.close()
-        return message
-
-    user_email_list = list(engaging_user_email_list)
+    file_end_line, code_history_info_dict = get_code_history_info(project_name, file_abs_path, start_line, end_line)
+    user_email_list = list(code_history_info_dict)
     user_name_fail_list = []
+    user_name_list = []
 
+    if end_line != file_end_line and end_line > 0:
+        message = "This file's total amount of lines is *{}*.\n".format(file_end_line)
+
+    # Find user_name
     for user_email in user_email_list:
         user_name = w_db.convert_git_id_to_slack_id(git_id=user_email)
         if user_name == "":
@@ -213,30 +212,70 @@ def code_history_logic(slack_code, file_abs_path, start_line, end_line):
         if user_name == "":
             user_name_fail_list.append(user_email)
         else:
-            if len(user_email_list) == 1:
-                message += random.choice(shell_dict['feat_history_logic']).format(user2=user_name,
-                                                                                  file_name=file_abs_path,
-                                                                                  start_line=start_line,
-                                                                                  end_line=end_line)
-            else:
-                message += "{} edited ".format(user_name)
-                for ele in engaging_user_email_list[user_email]:
-                    message += "{}".format(ele)
-                message += ". \n"
+            user_name_list.append(user_name)
 
+    # case 1: Single User
+    if len(user_name_list) == 1:
+        message += random.choice(shell_dict['feat_history_single_user']).format(user2=user_name_list[0],
+                                                                               filename=file_abs_path,
+                                                                               start_line=start_line,
+                                                                               end_line=end_line)
+    # case 2: Multiple Users
+    else:
+        message_idx = random.randrange(len(shell_dict['feat_history_multiple_users']))
+        message += format_code_history_multiple_users(message_idx, user_name_list, code_history_info_dict)
 
-    # if user_name_fail_list:
-    #     message += random.choice(shell_dict['feat_history_fail']).format(",".join(user_name_fail_list))
-
+    # case 3: User Name is not in DB
     for user_email in user_name_fail_list:
-        line_info = ""
-        for ele in engaging_user_email_list[user_email]:
-            line_info = line_info + "{}".format(ele)
-        message += random.choice(shell_dict['feat_history_fail']).format(user_email, user_email, ele)
-        message += "\n"
+        line_info = "line " + ", ".join(code_history_info_dict[user_email])
+        message += random.choice(shell_dict['feat_history_fail']) + "\n" + user_email + " : " + line_info
 
     w_db.close()
     return message
+
+
+def format_code_history_multiple_users(message_idx, user_name_list, code_history_info_dict):
+    # Multiple developers touched these lines of code last: {user1} line {line1}, and {user2} line {line2}.
+    # Line {line1} were edited by {user1}, and {line2} by {user2}.
+    # GitHub reports that {user1} last edited line {line1}, and {user2} line {line2}.
+    # {user1} is the last person to edit line {line1}, and {user2} line {line2}.
+    # {user1}: line {line1}, {user2}: line {line2}
+
+    code_history_info_list = list(code_history_info_dict.values())
+    message = shell_dict['feat_history_multiple_users'][message_idx].format(user1=user_name_list[0], line1=", ".join(code_history_info_list[0]))
+
+    if message_idx in [0, 2, 3]:
+        for user_idx, user_name in enumerate(user_name_list[1:]):
+            line_info = ", ".join(code_history_info_list[user_idx + 1])
+            history_info = user_name + " line " + line_info
+
+            if user_idx == len(user_name_list[1:]) - 1:
+                message += ", and " + history_info + "."
+            else:
+                message += ", " + history_info
+
+    elif message_idx == 1:
+        for user_idx, user_name in enumerate(user_name_list[1:]):
+            line_info = ", ".join(code_history_info_list[user_idx + 1])
+            history_info = line_info + " by " + user_name
+
+            if user_idx == len(user_name_list[1:]) - 1:
+                message += ", and " + history_info + "."
+            else:
+                message += ", " + history_info
+
+    elif message_idx == 4:
+        for user_idx, user_name in enumerate(user_name_list[1:]):
+            line_info = ", ".join(code_history_info_list[user_idx + 1])
+            history_info = user_name + " : " + line_info
+
+            if user_idx == len(user_name_list[1:]) - 1:
+                message += ", " + history_info + "."
+            else:
+                message += ", " + history_info
+
+    return message
+
 
 def ignore_file_logic(slack_code, ignore_list, approval):
     w_db = work_database()
@@ -328,6 +367,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     w_db.close()
     return message
 
+
 def send_message_channel_logic(target_channel, msg, user_slack_id):
     if msg == '':
         message = 'You must write your message between two double quotations like "message"'
@@ -364,6 +404,7 @@ def send_message_direct_logic(target_slack_code, msg, user_slack_id):
     w_db.close()
     return message
 
+
 def recommend_solve_conflict_logic(user_git_id, file_name):
     w_db = work_database()
     message = ""
@@ -387,27 +428,9 @@ def recommend_solve_conflict_logic(user_git_id, file_name):
                                  user1_severity=user_percentage,
                                  user2_severity=other_percentage)
 
-    # working_amt_dict = w_db.get_working_amount_dict(user_git_id, file_name)
-    #
-    # working_amt_list = sorted(working_amt_dict, key=lambda w: working_amt_dict[w], reverse=True)
-    # print("working_amt_list", working_amt_list)
-    #
-    # try:
-    #     user_idx = working_amt_list.index(user_git_id)
-    #     if user_git_id == working_amt_list[0]:
-    #         message = random.choice(shell_dict['feat_recommend_change'])
-    #         ele = ", ".join(working_amt_list[1:])
-    #         message = message.format(user2=ele)
-    #     else:
-    #         message = random.choice(shell_dict['feat_recommend_not_change'])
-    #         ele = ", ".join(working_amt_list[:user_idx])
-    #         message = message.format(user2=ele)
-    #
-    # except:
-    #     message = random.choice(shell_dict['feat_recommend_no_conflict'])
-
     w_db.close()
     return message
+
 
 def check_ignored_file_logic(slack_code):
     w_db = work_database()
@@ -446,6 +469,7 @@ def check_locker_logic(slack_code, file_abs_path):
     w_db.close()
     return message
 
+
 def check_severity_logic(slack_code, file_abs_path):
     w_db = work_database()
     message = ""
@@ -468,48 +492,6 @@ def check_severity_logic(slack_code, file_abs_path):
 
     w_db.close()
     return message
-
-
-# def response_logic(slack_code, msg_type):
-#     w_db = work_database()
-#
-#     request_lock_set = set()
-#
-#     message = ""
-#     project_name = w_db.get_repository_name(slack_code)
-#     remove_file_list = list(set(w_db.read_lock_history_list(project_name)) - set(w_db.read_lock_list(project_name)))
-#     print("read_lock_history_list", set(w_db.read_lock_history_list(project_name)))
-#     print("read_lock_list", set(w_db.read_lock_list(project_name)))
-#
-#     target_list = w_db.read_oldest_lock_history_list(remove_file_list)
-#     print("target_list", target_list)
-#     for target_file in target_list:
-#         if(target_file[2] == slack_code):
-#             if(msg_type == "yes"):
-#                 request_lock_set.add(target_file[1])
-#                 lock_file_list, already_lock_set = list(w_db.add_lock_list(slack_code, project_name, request_lock_set, target_file[3]))
-#                 print("lock_file_list", lock_file_list)
-#                 print("already_lock_set", already_lock_set)
-#                 ch_message = ""
-#                 user_name = w_db.convert_slack_code_to_slack_id(slack_code)
-#
-#                 for file_name in lock_file_list:
-#                     ch_message += "{} locked {} file for {} hour(s).".format(user_name, file_name, target_file[3])
-#                 send_channel_message("code-conflict-chatbot", ch_message)
-#
-#                 message += random.choice(shell_dict['feat_lock_file'])
-#                 ele = ','.join(list(lock_file_list))
-#                 message = message.format(ele)
-#
-#                 w_db.delete_lock_history(target_file[1], slack_code)
-#             else:
-#                 w_db.delete_lock_history(target_file[1], slack_code)
-#                 message = "Okay, I'll not lock it"
-#         else:
-#             message = "I think you enter the wrong one."
-#
-#     w_db.close()
-#     return message
 
 
 def lock_response_logic(slack_code, msg_type, target_file, lock_time):
@@ -551,15 +533,24 @@ def greeting_logic(slack_code):
     w_db.close()
     return message
 
+
 def bye_logic():
     message = random.choice(shell_dict['feat_goodbye'])
     return message
+
+
+
+####################################################
+'''
+other functions
+'''
 
 def remove_project_name(file_full_path_list, project_name):
     file_list = []
     for ffpl in file_full_path_list:
         file_list.append(ffpl.replace(project_name, "", 1))
     return file_list
+
 
 
 shell_dict = dict()

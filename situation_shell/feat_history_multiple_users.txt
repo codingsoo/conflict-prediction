@@ -1,0 +1,5 @@
+Multiple developers touched these lines of code last: {user1} line {line1}
+Line {line1} were edited by {user1}
+GitHub reports that {user1} last edited line {line1}
+{user1} is the last person to edit line {line1}
+{user1}: line {line1}

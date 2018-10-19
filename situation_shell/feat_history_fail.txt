@@ -1,3 +1,1 @@
-Several names of the coders were not found in our database. I give you the email list, "{}". {} edited {}.
-Some names can not be found in our database. I suggest the emails, "{}".{} edited {}.
-I can't find the exact name of the person who wrote the code in our database. I let you know the person's email, "{}".{} edited {}.
+One or more developers who wrote some of this code did not provide their actual name to GitHub. Their GitHub IDs are as follows:

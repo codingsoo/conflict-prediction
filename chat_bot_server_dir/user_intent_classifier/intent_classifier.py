@@ -388,7 +388,8 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             start_line = end_line = int(num_list[0])
 
         else:
-            start_line = end_line = 1
+            # Check the total history of file
+            start_line = end_line = -1
 
         work_db.close()
         return 3, called_file_abs_path_list[0], start_line, end_line
