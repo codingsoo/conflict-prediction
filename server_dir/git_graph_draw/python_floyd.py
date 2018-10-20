@@ -6,9 +6,6 @@ def load_graph( edge_lists ) :
     for u, v in edge_lists :
         if not u in adjacency_matrix :
             adjacency_matrix[u] = dict()
-        # if not v in adjacency_matrix :
-        #     adjacency_matrix[v] = dict()
-        # adjacency_matrix[v][u] = 1
         adjacency_matrix[u][v] = 1
 
 def run_floyd() :
@@ -33,8 +30,6 @@ def save_result() :
     ret_list = []
     for key1, value1 in  adjacency_matrix.items() :
         for key2, value2  in value1.items() :
-            if key1 == key2 :
-                continue
             ret_list.append([key1, key2, value2])
     return ret_list
 

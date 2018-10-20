@@ -93,6 +93,8 @@ def make_class_edge(owner, project_name, file_path, value, project_dict, logic_d
     for each in value.get('members', []):
         if each['type'] == 'Function':
             nexts.append([id + ':' + each['name'], each.get('members', [])])
+            edges_list.append([owner + '/' + id + ':' + each['name'], owner + '/' + id + ':' + each['name']])
+
         elif each['type'] == 'Class' :
             if (outer_class == ""):
                 outer_class = value['name']
@@ -131,6 +133,9 @@ def make_class_edge(owner, project_name, file_path, value, project_dict, logic_d
 
 def make_func_edge(owner, project_name, file_path, value, project_dict, logic_dict, edges_list):
     id = file_path + '|' + 'function:' + value['name']
+
+    edges_list.append([owner + '/' + id, owner + '/' + id])
+
     for each in value.get('members', []):
         if each['type'] == 'Call':
             if not '.' in each['id']:
