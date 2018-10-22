@@ -402,7 +402,8 @@ def send_remove_lock_channel(channel, lock_file_list):
     message = ""
     for file_name in lock_file_list:
         message += "{} is unlocked from now on.\n".format(file_name)
-    send_channel_message(channel, message)
+    # send_channel_message(channel, message)
+    send_all_user_message(message=message)
 
 def channel_join_check(channel):
     slack = get_slack()

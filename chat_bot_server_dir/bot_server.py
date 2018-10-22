@@ -9,7 +9,8 @@ from pathlib import Path
 from slacker import Slacker
 import subprocess
 from chat_bot_server_dir.project_parser import project_parser
-from server_dir.slack_message_sender import send_channel_message
+# from server_dir.slack_message_sender import send_channel_message
+from server_dir.slack_message_sender import send_all_user_message
 from server_dir.slack_message_sender import send_direct_message
 from server_dir.user_database import user_database
 from chat_bot_server_dir import work_database
@@ -123,7 +124,9 @@ def message_processing(msg):
                 return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 
                 print("return message : " + str(return_message))
-                send_channel_message("code-conflict-chatbot", return_message)
+                # send_channel_message("code-conflict-chatbot", return_message)
+                send_all_user_message(message=return_message)
+
             else:
                 pass
 

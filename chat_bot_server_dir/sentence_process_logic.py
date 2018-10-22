@@ -29,8 +29,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 6):
         message = other_working_status_logic(slack_code, param0, param1)
 
-    # elif(intent_type == 7):
-    #     message = send_message_channel_logic(param0, param1, param2)
+    elif(intent_type == 7):
+        message = send_message_channel_logic(param0, param1, param2)
 
     elif(intent_type == 7):
         message = send_message_direct_logic(param0, param1, param2)
@@ -395,25 +395,37 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     return message
 
 
+# def send_message_channel_logic(target_channel, msg, user_slack_id):
+#     if msg == '':
+#         message = 'You must write your message between two double quotations like "message"'
+#         return message
+#
+#     channel_msg = user_slack_id + " announce : " + msg
+#     ret_scm = send_channel_message(target_channel, channel_msg)
+#
+#     if ret_scm == CHANNEL_WITH_SAYME:
+#         message = random.choice(shell_dict['feat_announce'])
+#         message = message.format(target_channel)
+#     elif ret_scm == CHANNEL_WITHOUT_SAYME:
+#         message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(target_channel)
+#     elif ret_scm == CHANNEL_NONEXISTENCE:
+#         message = "There is no {} channel in Slack workspace, please check channel list.".format(target_channel)
+#     else:
+#         message = ''
+#     return message
+
 def send_message_channel_logic(target_channel, msg, user_slack_id):
     if msg == '':
         message = 'You must write your message between two double quotations like "message"'
         return message
 
     channel_msg = user_slack_id + " announce : " + msg
-    ret_scm = send_channel_message(target_channel, channel_msg)
+    send_all_user_message(message=channel_msg)
 
-    if ret_scm == CHANNEL_WITH_SAYME:
-        message = random.choice(shell_dict['feat_announce'])
-        message = message.format(target_channel)
-    elif ret_scm == CHANNEL_WITHOUT_SAYME:
-        message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(target_channel)
-    elif ret_scm == CHANNEL_NONEXISTENCE:
-        message = "There is no {} channel in Slack workspace, please check channel list.".format(target_channel)
-    else:
-        message = ''
+    message = random.choice(shell_dict['feat_announce'])
+    message = message.format(target_channel)
+
     return message
-
 
 def send_message_direct_logic(target_slack_code, msg, user_slack_id):
     if msg == '':
