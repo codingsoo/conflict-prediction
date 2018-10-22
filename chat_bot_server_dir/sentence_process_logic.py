@@ -517,20 +517,28 @@ def check_severity_logic(slack_code, file_abs_path):
     message = ""
 
     project_name = w_db.get_repository_name(slack_code)
-    severity_set = w_db.get_severity_set(project_name, file_abs_path)
+    severity_list = w_db.get_severity_percentage(project_name, file_abs_path)
 
-    if severity_set:
-        message += "Direct Conflict\n"
-        for ss in severity_set:
-            logic1_name = ss[0][0]
-            user1_name = w_db.convert_git_id_to_slack_id(ss[0][1])
-            logic2_name = ss[1][0]
-            user2_name = w_db.convert_git_id_to_slack_id(ss[1][1])
-            severity = ss[2]
-            message += "{} in '{}' & {} in '{}' : severity {}.\n".format(user1_name, logic1_name, user2_name, logic2_name, severity)
-
+    if severity_list:
+        for sl_idx, sl in enumerate(severity_list):
+            user_name = w_db.convert_git_id_to_slack_id(sl[0])
+            message += "{} works {:.2f}%, ".format(user_name, sl[1])
+        message += "in *{}*".format(file_abs_path)
     else:
-        message += "There is no direct conflict in {}. ".format(file_abs_path)
+        message += "There is no direct conflict in *{}*.".format(file_abs_path)
+
+    # if severity_set:
+    #     message += "Direct Conflict\n"
+    #     for ss in severity_set:
+    #         logic1_name = ss[0][0]
+    #         user1_name = w_db.convert_git_id_to_slack_id(ss[0][1])
+    #         logic2_name = ss[1][0]
+    #         user2_name = w_db.convert_git_id_to_slack_id(ss[1][1])
+    #         severity = ss[2]
+    #         message += "{} in '{}' & {} in '{}' : severity {}.\n".format(user1_name, logic1_name, user2_name, logic2_name, severity)
+    #
+    # else:
+    #     message += "There is no direct conflict in {}. ".format(file_abs_path)
 
     w_db.close()
     return message

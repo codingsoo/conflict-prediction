@@ -1374,7 +1374,7 @@ class work_database:
         return list(raw_dict.keys()), list(raw_dict.values())
 
     def all_conflict_list(self, github_email):
-        conflict_list = []
+        conflict_set = set()
         try:
             sql = "select distinct file_name " \
                   "from direct_conflict_table " \
@@ -1384,9 +1384,9 @@ class work_database:
             self.conn.commit()
 
             direct_tuple = self.cursor.fetchall()
-            print(direct_tuple)
+            print("all_direct_conflict_list", direct_tuple)
             for dt in direct_tuple:
-                conflict_list.append(dt[0])
+                conflict_set.add(dt[0])
 
             sql = "select distinct def_func, call_func " \
                   "from indirect_conflict_table " \
@@ -1396,18 +1396,18 @@ class work_database:
             self.conn.commit()
 
             indirect_tuple = self.cursor.fetchall()
-            print(indirect_tuple)
+            print("all_indirect_conflict_list", indirect_tuple)
             for it in indirect_tuple:
-                conflict_list.append(it[0])
-                conflict_list.append(it[1])
+                conflict_set.add(it[0].split('|')[0])
+                conflict_set.add(it[1].split('|')[0])
 
-            print(conflict_list)
+            print("all_conflict_list", conflict_set)
 
         except:
             self.conn.rollback()
             print("ERROR : read conflict table")
 
-        return conflict_list
+        return conflict_set
 
     ####################################################################
     '''
@@ -1488,6 +1488,64 @@ class work_database:
             print("ERROR : get severity set")
 
         return raw_set
+
+    def get_severity_percentage(self, project_name, file_name):
+        user_edit_amount = tuple()
+        other_edit_amount = tuple()
+        file_total_lines = tuple()
+        raw_list = list()
+        try:
+            sql = "select total_plus, total_minus, user_name " \
+                  "from edit_amount " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            users_edit_amount = list(self.cursor.fetchall())
+            print(users_edit_amount)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get_severity_percentage")
+
+        try:
+            sql = "select total_lines " \
+                  "from file_information " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s' " \
+                  % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            file_total_lines = self.cursor.fetchone()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update first best conflict list")
+
+        for user_edit_amount in users_edit_amount:
+            user_percentage = 0
+
+            if user_edit_amount[0] == 0:
+                user_percentage = (100 * user_edit_amount[1]) / file_total_lines[0]
+            elif user_edit_amount[1] == 0:
+                user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0])
+            elif user_edit_amount[0] > user_edit_amount[1]:
+                user_percentage = (100 * user_edit_amount[0]) / (file_total_lines[0] + user_edit_amount[0] - user_edit_amount[1])
+            elif user_edit_amount[0] <= user_edit_amount[1]:
+                user_percentage = (100 * user_edit_amount[1]) / (file_total_lines[0])
+
+            raw_list.append((user_edit_amount[2], user_percentage))
+
+        print(raw_list)
+
+        return raw_list
 
     ####################################################################
     '''

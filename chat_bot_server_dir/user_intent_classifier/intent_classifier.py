@@ -184,6 +184,10 @@ def calcue_max(sentence, list):
     if max_idx in [1, 2, 3, 5, 8, 10, 11] and ".py" not in sentence:
         return ERROR
 
+    if max_idx == 6:
+        if " <@" not in sentence:
+            return ERROR
+
     if max_idx in [1, 2, 10]:
         if " who " in sentence:
             max_idx = 10
@@ -232,28 +236,24 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
     sentence = _sentence
     called_file_abs_path_list = []
 
+    # Before classifying intent
     if intent_type == -1:
         intent_type, sentence = intent_classifier(_sentence)
         print("Intent_type", intent_type)
 
         # help classification about intent_type 5 and 9
         # if conflict_file in sentence, we can think user wants to recommendation.
-        # is_found = 0
-        # if intent_type in [5, 9]:
-        #     conflict_file_list = work_db.all_conflict_list(github_email)
-        #     if conflict_file_list:
-        #         for cfl in conflict_file_list:
-        #             file_name = cfl.split("/")[-1]
-        #             if is_found == 0:
-        #                 if file_name in sentence:
-        #                     is_found = 1
-        #                     intent_type = 9
-        #                 else:
-        #                     intent_type = 5
-        #     else:
-        #         intent_type = 5
+        if intent_type in [5, 9]:
+            conflict_file_list = work_db.all_conflict_list(github_email)
+            for cfl in conflict_file_list:
+                file_name = cfl.split("/")[-1]
+                if file_name in sentence:
+                    intent_type = 9
+                    break
+                else:
+                    intent_type = 5
 
-
+    # After classifying intent
     if intent_type in [1, 2, 3, 5, 8, 10, 11]:
         file_simp_path_list = project_parser(owner_name, project_name)["file"]
         file_abs_path_list = []
@@ -287,12 +287,11 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             # Find called files in sentence & decide whether file is same named file
             for file_name, fn_idx_list in file_name_dict.items():
                 if file_name in sentence:
+                    # Distinct file
                     if len(fn_idx_list) == 1:
-                        print("only one")
                         called_file_abs_path_list.append(file_abs_path_list[fn_idx_list[0]])
+                    # Same named file
                     else:
-                        # duplicate
-                        print("duplicate")
                         same_named_file_list = []
                         for idx in fn_idx_list:
                             same_named_file_list.append(file_abs_path_list[idx])
@@ -317,7 +316,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
 
         print("called_file_abs_path_list", called_file_abs_path_list)
 
-
+    # About ignore
     if intent_type == 1:
         remove_list = []
         approve_set = set()
