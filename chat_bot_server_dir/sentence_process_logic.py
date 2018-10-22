@@ -451,16 +451,18 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
     user_percentage, other_percentage, other_git_id = w_db.get_working_amount_percentage(project_name, user_git_id, file_name)
 
     if other_git_id == "NO_ONE":
-        message = random.choice(shell_dict['feat_recommend_no_conflict'])
+        message = random.choice(shell_dict['feat_recommend_no_conflict']).format(file_name=file_name)
 
     else:
         other_name = w_db.convert_git_id_to_slack_id(other_git_id)
         percentage_gap = abs(user_percentage - other_percentage)
 
-        if user_percentage >= other_percentage:
+        if user_percentage > other_percentage:
             message = random.choice(shell_dict['feat_recommend_change'])
-        else:
+        elif user_percentage < other_percentage:
             message = random.choice(shell_dict['feat_recommend_not_change'])
+        else:
+            message = random.choice(shell_dict['feat_recommend_same_severity'])
 
         message = message.format(user2=other_name,
                                  severity_gap=percentage_gap,
