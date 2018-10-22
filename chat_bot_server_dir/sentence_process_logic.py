@@ -29,8 +29,8 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 6):
         message = other_working_status_logic(slack_code, param0, param1)
 
-    elif(intent_type == 7):
-        message = send_message_channel_logic(param0, param1, param2)
+    # elif(intent_type == 7):
+    #     message = send_message_channel_logic(param0, param1, param2)
 
     elif(intent_type == 7):
         message = send_message_direct_logic(param0, param1, param2)
