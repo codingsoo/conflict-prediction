@@ -337,7 +337,7 @@ class direct_work_database:
                 # same user and same project and same logic
                 if temp_already[0] == temp_best[1] and temp_already[1] == temp_best[2] and temp_already[5] == temp_best[6]:
                     user_percentage, other_percentage = self.calculate_percentage(temp_best)
-                    current_percentage = round(user_percentage + other_percentage, 2)
+                    current_percentage = round((user_percentage + other_percentage) / 2, 2)
                     previous_percentage = round(self.get_percentage_of_direct_conflict(temp_best), 2)
 
                     # Severity_percentage
@@ -444,7 +444,7 @@ class direct_work_database:
                                       user1_name=temp_best[5],
                                       user2_name=temp_best[6],
                                       severity=temp_best[0],
-                                      severity_percentage=round(user_percentage + other_percentage, 2))
+                                      severity_percentage=round((user_percentage + other_percentage) / 2, 2))
 
             if(temp_best[3] == temp_best[4]
                 and temp_best[3][:5] == "class"

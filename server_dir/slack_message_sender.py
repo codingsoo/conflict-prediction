@@ -147,7 +147,7 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
     print("user1_slack_id_code", user1_slack_id_code)
     print("user2_slack_id_code", user2_slack_id_code)
 
-    current_percentage = round(user1_percentage + user2_percentage, 2)
+    current_percentage = round((user1_percentage + user2_percentage) / 2, 2)
 
     # Initialize ignore flag
     direct_ignore_flag = 0
