@@ -262,12 +262,14 @@ class indirect_work_database:
                                     temp_raw = []
 
                                     temp_raw.append(temp_user_calling_list[1])  # user_name
+                                    temp_raw.append(temp_user_calling_list[2])  # user_file(call in this file)
                                     temp_raw.append(user_logic)  # user_logic(call)
                                     temp_raw.append(temp_other_working_list[3])  # other_user_name
+                                    temp_raw.append(temp_other_working_list[1])  # other_user_file(def in this file)
                                     temp_raw.append(other_user_logic)  # other_user_logic(def)
                                     temp_raw.append(raw[0])  # length
 
-                                    # [user_name, user_logic(call), other_name, other_logic(def), length]
+                                    # [user_name, user_file(call in this file), user_logic(call), other_name, other_user_file(def in this file), other_logic(def), length]
                                     all_raw_list.append(temp_raw)
 
                             except:
@@ -314,12 +316,14 @@ class indirect_work_database:
                                     temp_raw = []
 
                                     temp_raw.append(temp_user_working_list[3])  # user_name
+                                    temp_raw.append(temp_user_working_list[1])  # user_file(def in this file)
                                     temp_raw.append(user_logic)  # user_logic(def)
                                     temp_raw.append(temp_other_calling_list[1])  # other_user_name
+                                    temp_raw.append(temp_other_calling_list[2])  # other_user_file(call in this file)
                                     temp_raw.append(other_user_logic)  # other_user_logic(call)
                                     temp_raw.append(raw[0])  # length
 
-                                    # [user_name, user_logic(call), other_name, other_logic(def), length]
+                                    # [user_name, user_file(def in this file), user_logic(call), other_name, other_user_file(call in this file), other_logic(def), length]
                                     all_raw_list.append(temp_raw)
 
                             except:
@@ -345,16 +349,16 @@ class indirect_work_database:
             raw_list = list(self.cursor.fetchall())
             non_indirect_conflict_list = raw_list[:]
 
-            # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
+            # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time]
             for rl in raw_list:
-                # [user1_name, user1_logic(call), user2_name, user2_logic(def)]
+                # [user1_name, user1_file(call in this file), user1_logic(call), user2_name, user2_file(def in this file), user2_logic(def)]
                 for icl in user_call_indirect_conflict_list:
-                    if rl[1] == icl[3] and rl[2] == icl[1] and rl[4] == icl[0] and rl[5] == icl[2]:
+                    if rl[2] == icl[5] and rl[4] == icl[2] and rl[6] == icl[0] and rl[7] == icl[3] and rl[9] == 1:
                         non_indirect_conflict_list.remove(rl)
 
-                # [user1_name, user1_logic(def), user2_name, user2_logic(call)]
+                # [user1_name, user1_file(def in this file), user1_logic(def), user2_name, user2_file(call in this file), user2_logic(call)]
                 for icl in user_work_indirect_conflict_list:
-                    if rl[1] == icl[1] and rl[2] == icl[3] and rl[4] == icl[0] and rl[5] == icl[2]:
+                    if rl[2] == icl[2] and rl[4] == icl[5] and rl[6] == icl[0] and rl[7] == icl[3] and rl[9] == 2:
                         non_indirect_conflict_list.remove(rl)
 
 
@@ -369,15 +373,15 @@ class indirect_work_database:
 
         if type == "user_call":
 
-            # [ user1_name, user1_logic(call), user2_name, user2_logic(def) ]
+            # [ user1_name, user1_file(call in this file), user1_logic(call), user2_name, user2_file(def in this file), user2_logic(def) ]
             for temp_indirect_conflict in indirect_conflict_list:
                 try:
                     sql = "select * " \
                           "from indirect_conflict_table " \
                           "where project_name = '%s' " \
-                          "and def_func = '%s' and call_func = '%s' " \
+                          "and def_func = '%s' and call_file = '%s' and call_func = '%s' " \
                           "and user1_name = '%s' and user2_name = '%s'" \
-                          % (project_name, temp_indirect_conflict[3], temp_indirect_conflict[1], temp_indirect_conflict[0], temp_indirect_conflict[2])
+                          % (project_name, temp_indirect_conflict[5], temp_indirect_conflict[1], temp_indirect_conflict[2], temp_indirect_conflict[0], temp_indirect_conflict[3])
 
                     print(sql)
                     self.cursor.execute(sql)
@@ -394,15 +398,15 @@ class indirect_work_database:
 
         if type == "user_work":
 
-            # [ user1_name, user1_logic(def), user2_name, user2_logic(call) ]
+            # [ user1_name, user1_file(def in this file), user1_logic(def), user2_name, user2_file(call in this file), user2_logic(call) ]
             for temp_indirect_conflict in indirect_conflict_list:
                 try:
                     sql = "select * " \
                           "from indirect_conflict_table " \
                           "where project_name = '%s' " \
-                          "and def_func = '%s' and call_func = '%s' " \
+                          "and def_func = '%s' and call_file = '%s' and call_func = '%s' " \
                           "and user1_name = '%s' and user2_name = '%s'" \
-                          % (project_name, temp_indirect_conflict[1], temp_indirect_conflict[3], temp_indirect_conflict[0], temp_indirect_conflict[2])
+                          % (project_name, temp_indirect_conflict[2], temp_indirect_conflict[4], temp_indirect_conflict[5], temp_indirect_conflict[0], temp_indirect_conflict[3])
 
                     print(sql)
                     self.cursor.execute(sql)
@@ -426,27 +430,31 @@ class indirect_work_database:
 
         if type == "user_call":
 
-            # [ user1_name, user1_logic(call), user2_name, user2_logic(def) ]
+            # [ user1_name, user1_file(call in this file), user1_logic(call), user2_name, user2_file(def in this file), user2_logic(def) ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
-                # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
+                # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time]
                 for temp_already_indirect_conflict_table in already_indirect_conflict_table:
-                    if (temp_whole_indirect_conflict_list[0] == temp_already_indirect_conflict_table[4] and
-                            temp_whole_indirect_conflict_list[1] == temp_already_indirect_conflict_table[2] and
-                            temp_whole_indirect_conflict_list[2] == temp_already_indirect_conflict_table[5] and
-                            temp_whole_indirect_conflict_list[3] == temp_already_indirect_conflict_table[1]):
+                    if (temp_whole_indirect_conflict_list[0] == temp_already_indirect_conflict_table[6] and
+                            temp_whole_indirect_conflict_list[1] == temp_already_indirect_conflict_table[3] and
+                            temp_whole_indirect_conflict_list[2] == temp_already_indirect_conflict_table[4] and
+                            temp_whole_indirect_conflict_list[3] == temp_already_indirect_conflict_table[7] and
+                            temp_whole_indirect_conflict_list[5] == temp_already_indirect_conflict_table[2] and
+                            temp_already_indirect_conflict_table[9] == 1):
                         already_indirect_conflict_list.append(temp_whole_indirect_conflict_list)
                         first_indirect_conflict_list.remove(temp_whole_indirect_conflict_list)
 
         if type == "user_work":
 
-            # [ user1_name, user1_logic(def), user2_name, user2_logic(call) ]
+            # [ user1_name, user1_file(def in this file), user1_logic(def), user2_name, user2_file(call in this file), user2_logic(call) ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
-                # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
+                # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time]
                 for temp_already_indirect_conflict_table in already_indirect_conflict_table:
-                    if (temp_whole_indirect_conflict_list[0] == temp_already_indirect_conflict_table[4] and
-                            temp_whole_indirect_conflict_list[1] == temp_already_indirect_conflict_table[1] and
-                            temp_whole_indirect_conflict_list[2] == temp_already_indirect_conflict_table[5] and
-                            temp_whole_indirect_conflict_list[3] == temp_already_indirect_conflict_table[2]):
+                    if (temp_whole_indirect_conflict_list[0] == temp_already_indirect_conflict_table[6] and
+                            temp_whole_indirect_conflict_list[4] == temp_already_indirect_conflict_table[3] and
+                            temp_whole_indirect_conflict_list[2] == temp_already_indirect_conflict_table[2] and
+                            temp_whole_indirect_conflict_list[3] == temp_already_indirect_conflict_table[7] and
+                            temp_whole_indirect_conflict_list[5] == temp_already_indirect_conflict_table[4] and
+                            temp_already_indirect_conflict_table[9] == 2):
                         already_indirect_conflict_list.append(temp_whole_indirect_conflict_list)
                         first_indirect_conflict_list.remove(temp_whole_indirect_conflict_list)
 
@@ -454,27 +462,27 @@ class indirect_work_database:
 
     def already_indirect_logic(self, project_name, already_indirect_conflict_table, type):
         if type == "user_call":
-            # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
+            # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time]
             for temp_already in already_indirect_conflict_table:
                 # After 30 minutes => send direct message
-                if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=30)) and (temp_already[6] == 1)):
+                if ((d.datetime.today() - temp_already[10] > d.timedelta(minutes=30)) and (temp_already[8] == 1)):
 
-                    temp_file_logic1 = temp_already[2].split('|')
-                    temp_file_logic2 = temp_already[1].split('|')
+                    temp_file_logic1 = temp_already[4].split('|')
+                    temp_file_logic2 = temp_already[2].split('|')
 
                     send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                                    conflict_project=project_name,
                                                    conflict_logic1=temp_file_logic1,
                                                    conflict_logic2=temp_file_logic2,
-                                                   user1_name=temp_already[4],
-                                                   user2_name=temp_already[5],
+                                                   user1_name=temp_already[6],
+                                                   user2_name=temp_already[7],
                                                    type=type)
 
                     self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[4],
-                                              user2_name=temp_already[5])
+                                              def_func=temp_already[2],
+                                              call_func=temp_already[4],
+                                              user1_name=temp_already[6],
+                                              user2_name=temp_already[7])
 
                 # After 60 minutes => send channel message
                 # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
@@ -500,26 +508,26 @@ class indirect_work_database:
                 #                               user2_name=temp_already[4])
 
         if type == "user_work":
-            # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time]
+            # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time]
             for temp_already in already_indirect_conflict_table:
                 # After 30 minutes => send direct message
-                if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=30)) and (temp_already[6] == 1)):
-                    temp_file_logic1 = temp_already[1].split('|')
-                    temp_file_logic2 = temp_already[2].split('|')
+                if ((d.datetime.today() - temp_already[10] > d.timedelta(minutes=30)) and (temp_already[8] == 1)):
+                    temp_file_logic1 = temp_already[2].split('|')
+                    temp_file_logic2 = temp_already[4].split('|')
 
                     send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                                    conflict_project=project_name,
                                                    conflict_logic1=temp_file_logic1,
                                                    conflict_logic2=temp_file_logic2,
-                                                   user1_name=temp_already[4],
-                                                   user2_name=temp_already[5],
+                                                   user1_name=temp_already[6],
+                                                   user2_name=temp_already[7],
                                                    type=type)
 
                     self.increase_alert_count(project_name=project_name,
-                                              def_func=temp_already[1],
-                                              call_func=temp_already[2],
-                                              user1_name=temp_already[4],
-                                              user2_name=temp_already[5])
+                                              def_func=temp_already[2],
+                                              call_func=temp_already[4],
+                                              user1_name=temp_already[6],
+                                              user2_name=temp_already[7])
 
                 # After 60 minutes => send channel message
                 # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
@@ -546,10 +554,10 @@ class indirect_work_database:
         return
 
     def first_indirect_logic(self, project_name, indirect_conflict_list, type):
-        # [ user1_name, user1_logic(call), user2_name, user2_logic(def) ]
+        # [ user1_name, user1_file(call in this file), user1_logic(call), user2_name, user2_file(def in this file), user2_logic(def) ]
         for temp_conflict in indirect_conflict_list:
-            temp_file_logic1 = temp_conflict[1].split('|')
-            temp_file_logic2 = temp_conflict[3].split('|')
+            temp_file_logic1 = temp_conflict[2].split('|')
+            temp_file_logic2 = temp_conflict[5].split('|')
             self.insert_conflict_data(project_name, temp_conflict, type)
             send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                            conflict_project=project_name,
@@ -565,18 +573,18 @@ class indirect_work_database:
     def insert_conflict_data(self, project_name, indirect_conflict_list, type):
         sql = ""
         if type == "user_call":
-            # [user1_name, user1_logic(call), user2_name, user2_logic(def), length]
+            # [user1_name, user1_file(call in this file), user1_logic(call), user2_name, user2_file(def in this file), user2_logic(def), length]
             sql = "insert into indirect_conflict_table " \
-                  "(project_name, def_func, call_func, length, user1_name, user2_name) " \
-                  "value ('%s', '%s', '%s', %d, '%s', '%s')" \
-                  % (project_name, indirect_conflict_list[3], indirect_conflict_list[1], indirect_conflict_list[4], indirect_conflict_list[0], indirect_conflict_list[2])
+                  "(project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, call_user) " \
+                  "value ('%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%d')" \
+                  % (project_name, indirect_conflict_list[4], indirect_conflict_list[5], indirect_conflict_list[1], indirect_conflict_list[2], indirect_conflict_list[6], indirect_conflict_list[0], indirect_conflict_list[3], 1)
 
         if type == "user_work":
-            # [user1_name, user1_logic(def), user2_name, user2_logic(call), length]
+            # [user1_name, user1_file(def in this file), user1_logic(def), user2_name, user2_file(call in this file), user2_logic(call), length]
             sql = "insert into indirect_conflict_table " \
-                  "(project_name, def_func, call_func, length, user1_name, user2_name) " \
-                  "value ('%s', '%s', '%s', %d, '%s', '%s')" \
-                  % (project_name, indirect_conflict_list[1], indirect_conflict_list[3], indirect_conflict_list[4], indirect_conflict_list[0], indirect_conflict_list[2])
+                  "(project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, call_user) " \
+                  "value ('%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%d')" \
+                  % (project_name, indirect_conflict_list[1], indirect_conflict_list[2], indirect_conflict_list[4], indirect_conflict_list[5], indirect_conflict_list[6], indirect_conflict_list[0], indirect_conflict_list[3], 2)
 
         try:
             print(sql)
@@ -597,44 +605,48 @@ class indirect_work_database:
 
         # Do not notice a Conflict-Solve alarm that is resolved by Approve.
 
-        # [ user1_name, user1_logic(call or def), user2_name, user2_logic(def or call) ]
+        # [ user1_name, user1_file, user1_logic(call or def), user2_name, user2_file, user2_logic(def or call) ]
         for afl in approve_file_list:
-            # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time ]
+            # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
             for nicl in non_indirect_conflict_list:
-                if ((afl[0] == nicl[4]) and (afl[1] == nicl[2]) and (afl[2] == nicl[5]) and (afl[3] == nicl[1])):
+                if ((afl[0] == nicl[6]) and (afl[2] == nicl[4]) and (afl[3] == nicl[7]) and (afl[5] == nicl[2]) and nicl[9] == 1):
+                    raw_list.remove(nicl)
+                if ((afl[0] == nicl[6]) and (afl[2] == nicl[2]) and (afl[3] == nicl[7]) and (afl[5] == nicl[4]) and nicl[9] == 2):
                     raw_list.remove(nicl)
 
         print("non_indirect_conflict_logic : ", raw_list)
 
         # Send to the user about indirect solved message
-        # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time ]
+        # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, log_time ]
         for raw_temp in raw_list:
             send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
                                            conflict_project=project_name,
-                                           conflict_logic1=raw_temp[2],
-                                           conflict_logic2=raw_temp[1],
-                                           user1_name=raw_temp[4],
-                                           user2_name=raw_temp[5])
+                                           conflict_logic1=raw_temp[4],
+                                           conflict_logic2=raw_temp[2],
+                                           user1_name=raw_temp[6],
+                                           user2_name=raw_temp[7])
 
             send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
                                            conflict_project=project_name,
-                                           conflict_logic1=raw_temp[2],
-                                           conflict_logic2=raw_temp[1],
-                                           user1_name=raw_temp[5],
-                                           user2_name=raw_temp[4])
+                                           conflict_logic1=raw_temp[4],
+                                           conflict_logic2=raw_temp[2],
+                                           user1_name=raw_temp[7],
+                                           user2_name=raw_temp[6])
 
         # Delete all user conflict list
-        # [ project_name, def_func, call_func, length, user1_name, user2_name, alert_count, log_time ]
+        # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
         for nicl in non_indirect_conflict_list:
             try:
                 sql = "delete " \
                       "from indirect_conflict_table " \
                       "where project_name = '%s' " \
                       "and def_func = '%s' " \
+                      "and call_file = '%s' " \
                       "and call_func = '%s' " \
                       "and user1_name = '%s' " \
                       "and user2_name = '%s' " \
-                      % (nicl[0], nicl[1], nicl[2], nicl[4], nicl[5])
+                      "and call_user = '%d'" \
+                      % (nicl[0], nicl[2], nicl[3], nicl[4], nicl[6], nicl[7], nicl[9])
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
@@ -648,10 +660,12 @@ class indirect_work_database:
                       "from indirect_conflict_table " \
                       "where project_name = '%s' " \
                       "and def_func = '%s' " \
+                      "and call_file = '%s' " \
                       "and call_func = '%s' " \
                       "and user1_name = '%s' " \
                       "and user2_name = '%s' " \
-                      % (nicl[0], nicl[1], nicl[2], nicl[5], nicl[4])
+                      "and call_user = '%d'" \
+                      % (nicl[0], nicl[2], nicl[3], nicl[4], nicl[7], nicl[6], nicl[9])
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()

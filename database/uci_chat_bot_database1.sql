@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `direct_conflict_table` (
   `user2_name` varchar(50) NOT NULL,
   `alert_count` int(11) DEFAULT '1',
   `severity` int(11) DEFAULT '1',
+  `severity_percentage` float(5,2) DEFAULT '0',
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`project_name`,`file_name`,`logic1_name`,`user1_name`,`user2_name`,`logic2_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -51,13 +52,17 @@ CREATE TABLE IF NOT EXISTS `ignore_table` (
 -- 테이블 uci_chat_bot.indirect_conflict_table 구조 내보내기
 CREATE TABLE IF NOT EXISTS `indirect_conflict_table` (
   `project_name` varchar(50) NOT NULL,
+  `def_file` varchar(255) NOT NULL,
   `def_func` varchar(255) NOT NULL,
+  `call_file` varchar(255) NOT NULL,
   `call_func` varchar(255) NOT NULL,
   `length` int(11) NOT NULL DEFAULT '0',
   `user1_name` varchar(50) NOT NULL,
   `user2_name` varchar(50) NOT NULL,
   `alert_count` int(11) NOT NULL DEFAULT '1',
-  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `call_user` int(11) NOT NULL DEFAULT '0',
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`project_name`, `def_func`, `call_file`, `call_func`, `user1_name`, `user2_name`, `call_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
@@ -73,10 +78,11 @@ CREATE TABLE IF NOT EXISTS `lock_list` (
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 uci_chat_bot.lock_notice_list 구조 내보내기
 CREATE TABLE IF NOT EXISTS `lock_notice_list` (
-  `project_name` varchar(50) DEFAULT NULL,
-  `lock_file` varchar(255) DEFAULT NULL,
+  `project_name` varchar(50) NOT NULL,
+  `lock_file` varchar(255) NOT NULL,
   `noticed_user` varchar(50) NOT NULL,
-  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`project_name`, `lock_file`, `noticed_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

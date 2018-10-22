@@ -678,13 +678,12 @@ class work_database:
 
         # [ approved_file ]
         for temp_db_aproved_list in db_approved_set:
-            # user_call : [ user_name, user_logic(call), other_user_name, other_user_logic(def), length ]
-            # user_work : [ user_name, user_logic(def), other_user_name, other_user_logic(call), length ]
+            # user_call : [ user_name, user_file(call in this file), user_logic(call), other_user_name, other_user_file(def in this file), other_user_logic(def), length ]
+            # user_work : [ user_name, user_file(def in this file), user_logic(def), other_user_name, other_user_file(call in this file), other_user_logic(call), length ]
             for temp_whole_indirect_conflict_list in whole_indirect_conflict_list:
-                user1_file = str(temp_whole_indirect_conflict_list[1]).split('|')[0]
-                user2_file = str(temp_whole_indirect_conflict_list[3]).split('|')[0]
+                user1_file = str(temp_whole_indirect_conflict_list[1])
 
-                if (temp_db_aproved_list == user1_file) or (temp_db_aproved_list == user2_file):
+                if temp_db_aproved_list == user1_file:
                     remove_list.append(temp_whole_indirect_conflict_list)
                     print("removed by approved list : ", temp_whole_indirect_conflict_list)
 
