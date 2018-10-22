@@ -1,2 +1,2 @@
-However, {user2} is still working on the same class as you, but different method.
-Note, too, that {user2} is still working on the same class (though not the same method).
+{user2} is still working on the same class as you, but different method.
+{user2} is still working on the same class (though not the same method).

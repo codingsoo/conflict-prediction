@@ -96,6 +96,14 @@ def make_same_severity3_add_shell_list():
     shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "same_severity3_add.txt"))
     return shell_list
 
+def make_adverb1_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "adverb1.txt"))
+    return shell_list
+
+def make_adverb2_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "adverb2.txt"))
+    return shell_list
+
 def make_direct_conflict_finished_list():
     shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "direct_conflict_finished.txt"))
     return shell_list
@@ -183,6 +191,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             if severity_flag == Conflict_flag.getting_severity.value:
                 # get severity
+                adverb_shell = make_adverb2_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 2:
                     severe_shell = make_severe2_add_shell_list()
                     message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
@@ -194,6 +205,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             elif severity_flag == Conflict_flag.same_severity.value:
                 # same severity
+                adverb_shell = make_adverb1_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 1:
                     severe_shell = make_same_severity1_add_shell_list()
                     message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
@@ -209,6 +223,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             elif severity_flag == Conflict_flag.lower_severity.value:
                 # lower severity
+                adverb_shell = make_adverb1_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 1:
                     alleviated_shell = make_alleviated1_add_shell_list()
                     message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(
@@ -231,6 +248,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             if severity_flag == Conflict_flag.getting_severity.value:
                 # get severity
+                adverb_shell = make_adverb1_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 2:
                     severe_shell = make_severe2_add_shell_list()
                     message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
@@ -242,6 +262,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             elif severity_flag == Conflict_flag.same_severity.value:
                 # same severity
+                adverb_shell = make_adverb1_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 1:
                     severe_shell = make_same_severity1_add_shell_list()
                     message += severe_shell[random.randint(0, len(severe_shell) - 1)].format(
@@ -257,6 +280,9 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
             elif severity_flag == Conflict_flag.lower_severity.value:
                 # lower severity
+                adverb_shell = make_adverb2_shell_list()
+                message += adverb_shell[random.randint(0, len(adverb_shell) - 1)] + " "
+
                 if current_severity == 1:
                     alleviated_shell = make_alleviated1_add_shell_list()
                     message += alleviated_shell[random.randint(0, len(alleviated_shell) - 1)].format(

@@ -40,7 +40,7 @@ class indirect_work_database:
         user_call_indirect_conflict_list = self.search_logic_dependency(project_name, user_calling_list, other_working_list, type="user_call")
         user_work_indirect_conflict_list = self.search_logic_dependency(project_name, other_calling_list, user_working_list, type="user_work")
         user_call_indirect_conflict_list, user_call_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_call_indirect_conflict_list)
-        user_wrok_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_work_indirect_conflict_list)
+        user_work_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_work_indirect_conflict_list)
 
         # Conflict
         if user_call_indirect_conflict_list:
@@ -63,7 +63,7 @@ class indirect_work_database:
                 print("\n#### First Indirect Conflict !!! ####")
                 self.first_indirect_logic(project_name, user_call_first_indirect_conflict_list, type="user_call")
 
-        if user_wrok_indirect_conflict_list:
+        if user_work_indirect_conflict_list:
 
             print("\n#### User Work Indirect Conflict !!! ####")
 
@@ -230,16 +230,16 @@ class indirect_work_database:
                 for temp_other_working_list in working_list:
                     user_logic = temp_user_calling_list[3] + "|" + temp_user_calling_list[4]
                     other_user_logic = temp_other_working_list[1] + "|" + temp_other_working_list[2]
-                    if temp_user_calling_list[0] == temp_other_working_list[0] and user_logic == other_user_logic:
-                        temp_raw = []
-                        temp_raw.append(temp_user_calling_list[1])  # user_name
-                        temp_raw.append(user_logic)  # user_logic(call)
-                        temp_raw.append(temp_other_working_list[3])  # other_user_name
-                        temp_raw.append(other_user_logic)  # other_user_logic(def)
-                        temp_raw.append(0)  # length
-
-                        # [user_name, user_logic(call), other_name, other_logic(def), length]
-                        all_raw_list.append(temp_raw)
+                    # if temp_user_calling_list[0] == temp_other_working_list[0] and user_logic == other_user_logic:
+                    #     temp_raw = []
+                    #     temp_raw.append(temp_user_calling_list[1])  # user_name
+                    #     temp_raw.append(user_logic)  # user_logic(call)
+                    #     temp_raw.append(temp_other_working_list[3])  # other_user_name
+                    #     temp_raw.append(other_user_logic)  # other_user_logic(def)
+                    #     temp_raw.append(0)  # length
+                    #
+                    #     # [user_name, user_logic(call), other_name, other_logic(def), length]
+                    #     all_raw_list.append(temp_raw)
 
                     # in logic_dependency
                     if def_call_list:
@@ -281,17 +281,17 @@ class indirect_work_database:
                 for temp_other_calling_list in calling_list:
                     user_logic = temp_user_working_list[1] + "|" + temp_user_working_list[2]
                     other_user_logic = temp_other_calling_list[3] + "|" + temp_other_calling_list[4]
-                    if temp_user_working_list[0] == temp_other_calling_list[0] and user_logic == other_user_logic:
-                        temp_raw = []
-
-                        temp_raw.append(temp_user_working_list[3])  # user_name
-                        temp_raw.append(user_logic)  # user_logic(def)
-                        temp_raw.append(temp_other_calling_list[1])  # other_user_name
-                        temp_raw.append(other_user_logic)  # other_userlogic(call)
-                        temp_raw.append(0)  # length
-
-                        # [user_name, other_user_logic(call), other_name, user_logic(def), length]
-                        all_raw_list.append(temp_raw)
+                    # if temp_user_working_list[0] == temp_other_calling_list[0] and user_logic == other_user_logic:
+                    #     temp_raw = []
+                    #
+                    #     temp_raw.append(temp_user_working_list[3])  # user_name
+                    #     temp_raw.append(user_logic)  # user_logic(def)
+                    #     temp_raw.append(temp_other_calling_list[1])  # other_user_name
+                    #     temp_raw.append(other_user_logic)  # other_userlogic(call)
+                    #     temp_raw.append(0)  # length
+                    #
+                    #     # [user_name, other_user_logic(call), other_name, user_logic(def), length]
+                    #     all_raw_list.append(temp_raw)
 
                     # in logic_dependency
                     if def_call_list:
