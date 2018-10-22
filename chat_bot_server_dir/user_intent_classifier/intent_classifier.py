@@ -5,8 +5,8 @@ from server_dir.slack_message_sender import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/Desktop/UCI/Chatbot/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
@@ -29,57 +29,61 @@ nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages
 # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 
-question_sentence_list = ["Can you not notify me about hello.py?",
+question_sentence_list = ["Can you stop notifying me about hello.py?",
                           "Can you lock hello.py?",
                           "Can you tell me who wrote line 14 to line 18 at file1.py?",
-                          "Can you not notify me about indirect conflict?",
+                          "Can you stop notifying me about indirect conflicts?",
                           "Do you think hello.py is gonna make a conflict?",
-                          "Can you tell me <@UCFNMU2ED>'s working status?",
-                          'Can you tell code-conflict-chatbot channel that “I am working on File1.py”',
-                          'Can you chat to <@UCFNMU2ED> "I will check and solve the problem"?',
-                          "Can you recommend what I should do to fix the conflict in File.py?",
-                          "Can you tell me which files are ignored?"
+                          "Can you tell me the working status of <@UCFNMU2ED>?",
+                         # 'Can you tell code-conflict-chatbot channel that “I am working on File1.py”',
+                          'Can you let <@UCFNMU2ED> know that“I will check and solve the problem”?',
+                          "Can you recommend what to do regarding the conflict in File.py?",
+                          "Can you tell me which files are currently being ignored?",
+                          "Can you tell me which file <@UCFNMU2ED> ignored?",
                           "Can you tell me who locked file1.py?",
-                          "Can you tell me who ignored file1.py?"
+                          "Can you tell me the size of the conflict for file1.py?"
                           ]
-command_sentence_list = ["Do not notify me about File1.py again.",
-                         "Don't lock hello.py.",
+command_sentence_list = ["Stop notify me about File1.py again.",
+                         "Unlock hello.py.",
                          "Tell me who wrote line 70 to line 90 in file1.py.",
-                         "Do not alert me about indirect conflict.",
-                         "Check File1.py whether it will make a conflict or not.",
+                         "Stop alert me about indirect conflict.",
+                         "Would changing File1.py lead to a conflict.",
                          "Tell me where <@UCFNMU2ED>'s working status.",
-                         'Tell code-conflict-chatbot channel that “I am working on File1.py”',
+                        # 'Tell code-conflict-chatbot channel that “I am working on File1.py”',
                          'Send a message to <@UCFNMU2ED> "I am working on class1".',
                          "Give me some recommendation about how to solve the conflict of File1.py.",
-                         "Tell me which files are ignored.",
-                         "Tell me who lock file1.py.",
-                         "Tell me the severity of the conflict in file1.py."
+                         "Tell me which files are being ignored.",
+                         "Tell me which file <@UCFNMU2ED> ignored.",
+                         "Tell me who locked file1.py.",
+                         "Tell me the size of the conflict for file1.py."
                          ]
-suggestion_sentence_list = ["You should not give me notification about File1.py.",
+suggestion_sentence_list = ["You should stop notifying me about File1.py.",
                             "You should lock File.py.",
                             "You should let me know who wrote code line 1 to line 9 at file1.py.",
-                            "You should not alert me about direct conflict.",
-                            "You should check File1.py if this is gonna make a conflict.",
+                            "You should stop alert me about direct conflict.",
+                            "You should check if modifying File1.py might cause a conflict.",
                             "You should tell me <@UCFNMU2ED>'s working status.",
-                            'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
-                            'You should send a message to <@UCFNMU2ED> "I will check and solve the conflict".',
-                            "You would tell me how I can solve the conflict in File1.py",
-                            "You should tell me which files are ignored."
-                            "You should tell me who lock file1.py.",
-                            "You should tell me the severity of the conflict in file.py."]
+                           # 'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
+                            'You have to send <@UCFNMU2ED> that "I will check and solve the conflict".',
+                            "You should tell me how I should address the conflict for File1.py.",
+                            "You should tell me which files are bejng ignored.",
+                            "You should tell me which file <@UCFNMU2ED> ignored.",
+                            "You should tell me who locked file1.py.",
+                            "You should tell me the size of the conflict in file.py."]
 
-desire_sentence_list = ["I want to ignore any alarm about File1.py.",
+desire_sentence_list = ["I want to ignore notifications about File1.py.",
                         "I want to lock File1.py.",
                         "I want to know who wrote line 70 to line 90 in File1.py.",
-                        "I do not want to get alert about direct conflict.",
-                        "I want to know that this is gonna make a conflict in File1.py.",
+                        "I do not want to get alert about direct conflicts.",
+                        "I want to know whether changing File1.py might lead to a conflict.",
                         "I want to know <@UCFNMU2ED>'s working status.",
-                        'I want to send the message to conflict detector channel that "Do not modify File1.py".',
-                        'I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".',
-                        "I want to get recommendation how I can solve the conflict in File1.py.",
-                        "I want to know which files are ignored.",
-                        "I want to know who lock file1.py.",
-                        "I want to know the severity of the conflict in file.py"]
+                       # 'I want to send the message to conflict detector channel that "Do not modify File1.py".',
+                        'I want to send a message to <@UCFNMU2ED> "Do not modify File1.py".',
+                        "I want to get a recommendation as to how I might address the conflict for File1.py.",
+                        "I want to know which files I am currently ignoring.",
+                        "I want to know which files <@UCFNMU2ED> ignored.",
+                        "I want to know who locked file1.py.",
+                        "I want to know the size of the conflict for file1.py"]
 
 
 
@@ -159,8 +163,11 @@ def calcue_max(sentence, list):
         sample_input = nlp(list[idx])
         rate = user_input.similarity(sample_input)
         if rate > max and rate > 0.35:
-            max_idx = idx + 1
-            max = rate
+            if(idx > 8):
+                max_idx = idx
+            else :
+                max_idx = idx + 1
+                max = rate
 
     if max_idx == 1 or max_idx == 4:
         if (" direct " in sentence or " indirect " in sentence) and (".py" not in sentence):
@@ -168,24 +175,18 @@ def calcue_max(sentence, list):
         else:
             max_idx = 1
 
-    if max_idx == 1 or max_idx == 10:
+    if max_idx == 1 or max_idx == 9:
         if ".py" in sentence:
             max_idx = 1
         else:
-            max_idx = 10
+            max_idx = 9
 
-    if max_idx == 7 or max_idx == 8:
-        if " <@" in sentence:
-            max_idx = 8
-        else:
-            max_idx = 7
-
-    if max_idx in [1, 2, 3, 5, 9, 11, 12] and ".py" not in sentence:
+    if max_idx in [1, 2, 3, 5, 8, 10, 11] and ".py" not in sentence:
         return ERROR
 
-    if max_idx in [1, 2, 11]:
+    if max_idx in [1, 2, 10]:
         if " who " in sentence:
-            max_idx = 11
+            max_idx = 10
         elif " lock " in sentence:
             max_idx = 2
         else:
@@ -253,7 +254,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
         #         intent_type = 5
 
 
-    if intent_type in [1, 2, 3, 5, 9, 11, 12]:
+    if intent_type in [1, 2, 3, 5, 8, 10, 11]:
         file_simp_path_list = project_parser(owner_name, project_name)["file"]
         file_abs_path_list = []
 
@@ -310,7 +311,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
                 work_db.close()
                 return ERROR, "no_file", None, None
 
-            if intent_type in [3, 5, 9, 11, 12] and len(called_file_abs_path_list) != 1:
+            if intent_type in [3, 5, 8, 10, 11] and len(called_file_abs_path_list) != 1:
                 work_db.close()
                 return ERROR, "many_files", None, None
 
@@ -460,42 +461,42 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             work_db.close()
             return 6, target_slack_code, target_git_id, None
 
-    # About channel message
-    elif intent_type == 7:
-
-        user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
-
-        # We should use unmodified sentence.
-        _sentence = _sentence.replace('“','"')
-        _sentence = _sentence.replace('”','"')
-        word_list = _sentence.split(" ")
-
-        print("word_list", word_list)
-        try:
-            channel_idx = word_list.index("channel")
-            if channel_idx != 0:
-                target_channel = word_list[channel_idx - 1].strip()
-                # msg = " ".join(word_list[channel_idx + 1:]).strip()
-                start_quot_idx = _sentence.find('"')
-                end_quot_idx = _sentence.rfind('"')
-                if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
-                    print('You must write your message between two double quotation like "message"')
-                    msg = ""
-                else:
-                    msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
-            else:
-                work_db.close()
-                return ERROR, "no_channel", None, None
-
-        except IndexError:
-            work_db.close()
-            return ERROR, "no_channel", None, None
-
-        work_db.close()
-        return 7, target_channel, msg, user_slack_id
+    # # About channel message
+    # elif intent_type == 7:
+    #
+    #     user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
+    #
+    #     # We should use unmodified sentence.
+    #     _sentence = _sentence.replace('“','"')
+    #     _sentence = _sentence.replace('”','"')
+    #     word_list = _sentence.split(" ")
+    #
+    #     print("word_list", word_list)
+    #     try:
+    #         channel_idx = word_list.index("channel")
+    #         if channel_idx != 0:
+    #             target_channel = word_list[channel_idx - 1].strip()
+    #             # msg = " ".join(word_list[channel_idx + 1:]).strip()
+    #             start_quot_idx = _sentence.find('"')
+    #             end_quot_idx = _sentence.rfind('"')
+    #             if start_quot_idx == -1 or end_quot_idx == -1 or start_quot_idx == end_quot_idx:
+    #                 print('You must write your message between two double quotation like "message"')
+    #                 msg = ""
+    #             else:
+    #                 msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
+    #         else:
+    #             work_db.close()
+    #             return ERROR, "no_channel", None, None
+    #
+    #     except IndexError:
+    #         work_db.close()
+    #         return ERROR, "no_channel", None, None
+    #
+    #     work_db.close()
+    #     return 7, target_channel, msg, user_slack_id
 
     # About user message
-    elif intent_type == 8:
+    elif intent_type == 7:
 
         user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
         target_slack_code = ""
@@ -523,27 +524,32 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
 
         work_db.close()
-        return 8, target_slack_code, msg, user_slack_id
+        return 7, target_slack_code, msg, user_slack_id
 
     # About recommend
-    elif intent_type == 9:
+    elif intent_type == 8:
         work_db.close()
-        return 9, github_email, called_file_abs_path_list[0], None
+        return 8, github_email, called_file_abs_path_list[0], None
 
     # About check ignored file
-    elif intent_type == 10:
+    elif intent_type == 9:
         work_db.close()
-        return 10, None, None, None
+        if '@' in _sentence:
+            idx = _sentence.find('@')
+            other_user_code = _sentence[idx+1:idx+9]
+            return 9, other_user_code, None, None
+
+        return 9, None, None, None
 
     # About locker of file
+    elif intent_type == 10:
+        work_db.close()
+        return 10, called_file_abs_path_list[0], None, None
+
+    # About severity
     elif intent_type == 11:
         work_db.close()
         return 11, called_file_abs_path_list[0], None, None
-
-    # About severity
-    elif intent_type == 12:
-        work_db.close()
-        return 12, called_file_abs_path_list[0], None, None
 
     else:
         work_db.close()

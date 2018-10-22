@@ -29,22 +29,22 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 6):
         message = other_working_status_logic(slack_code, param0, param1)
 
-    elif(intent_type == 7):
-        message = send_message_channel_logic(param0, param1, param2)
+    # elif(intent_type == 7):
+    #     message = send_message_channel_logic(param0, param1, param2)
 
-    elif(intent_type == 8):
+    elif(intent_type == 7):
         message = send_message_direct_logic(param0, param1, param2)
 
-    elif(intent_type == 9):
+    elif(intent_type == 8):
         message = recommend_solve_conflict_logic(slack_code, param0, param1)
 
-    elif(intent_type == 10):
-        message = check_ignored_file_logic(slack_code)
+    elif(intent_type == 9):
+        message = check_ignored_file_logic(slack_code, param0)
 
-    elif(intent_type == 11):
+    elif(intent_type == 10):
         message = check_locker_logic(slack_code, param0)
 
-    elif(intent_type == 12):
+    elif(intent_type == 11):
         message = check_severity_logic(slack_code, param0)
 
     elif(intent_type == ERROR - 2):
@@ -459,13 +459,16 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
     return message
 
 
-def check_ignored_file_logic(slack_code):
+def check_ignored_file_logic(slack_code, other_user_code):
     w_db = work_database()
     message = "\n"
 
-    ignored_file_list = w_db.get_ignored_file_list(slack_code)
-    print("ignored_file_list", ignored_file_list)
+    if(other_user_code == None):
+        ignored_file_list = w_db.get_ignored_file_list(slack_code)
+    else:
+        ignored_file_list = w_db.get_ignored_file_list(other_user_code)
 
+    print("ignored_file_list", ignored_file_list)
     if not ignored_file_list:
         message = random.choice(shell_dict['feat_ignored_file_nonexistence'])
     else:
