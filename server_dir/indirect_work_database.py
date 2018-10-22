@@ -472,6 +472,8 @@ class indirect_work_database:
 
                     send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                                    conflict_project=project_name,
+                                                   conflict_file1=temp_already[3],
+                                                   conflict_file2=temp_already[1],
                                                    conflict_logic1=temp_file_logic1,
                                                    conflict_logic2=temp_file_logic2,
                                                    user1_name=temp_already[6],
@@ -480,9 +482,11 @@ class indirect_work_database:
 
                     self.increase_alert_count(project_name=project_name,
                                               def_func=temp_already[2],
+                                              call_file=temp_already[3],
                                               call_func=temp_already[4],
                                               user1_name=temp_already[6],
-                                              user2_name=temp_already[7])
+                                              user2_name=temp_already[7],
+                                              call_user=1)
 
                 # After 60 minutes => send channel message
                 # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
@@ -517,6 +521,8 @@ class indirect_work_database:
 
                     send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                                    conflict_project=project_name,
+                                                   conflict_file1=temp_already[1],
+                                                   conflict_file2=temp_already[3],
                                                    conflict_logic1=temp_file_logic1,
                                                    conflict_logic2=temp_file_logic2,
                                                    user1_name=temp_already[6],
@@ -525,9 +531,11 @@ class indirect_work_database:
 
                     self.increase_alert_count(project_name=project_name,
                                               def_func=temp_already[2],
+                                              call_file=temp_already[3],
                                               call_func=temp_already[4],
                                               user1_name=temp_already[6],
-                                              user2_name=temp_already[7])
+                                              user2_name=temp_already[7],
+                                              call_user=2)
 
                 # After 60 minutes => send channel message
                 # if ((d.datetime.today() - temp_already[7] > d.timedelta(minutes=60)) and (temp_already[6] == 2)):
@@ -561,6 +569,8 @@ class indirect_work_database:
             self.insert_conflict_data(project_name, temp_conflict, type)
             send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict.value,
                                            conflict_project=project_name,
+                                           conflict_file1=temp_conflict[1],
+                                           conflict_file2=temp_conflict[4],
                                            conflict_logic1=temp_file_logic1,
                                            conflict_logic2=temp_file_logic2,
                                            user1_name=temp_conflict[0],
@@ -676,15 +686,17 @@ class indirect_work_database:
 
         return
 
-    def increase_alert_count(self, project_name, def_func, call_func, user1_name, user2_name):
+    def increase_alert_count(self, project_name, def_func, call_file, call_func, user1_name, user2_name, call_user):
         try:
             sql = "update indirect_conflict_table " \
                   "set alert_count = alert_count + 1 " \
                   "where project_name = '%s' " \
                   "and def_func = '%s' " \
+                  "and call_file = '%s '" \
                   "and call_func = '%s' " \
                   "and user1_name = '%s' " \
-                  "and user2_name = '%s'" % (project_name, def_func, call_func, user1_name, user2_name)
+                  "and user2_name = '%s' " \
+                  "and call_user = '%d'" % (project_name, def_func, call_file, call_func, user1_name, user2_name, call_user)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()

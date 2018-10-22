@@ -2,4 +2,4 @@
 No more indirect conflict for *{filename1}* with {user2}.
 Good news! Your indirect conflict with {user2} for *{filename1}* has disappeared.
 The indirect conflict for *{filename1}* is no longer a concern.
-{user2} has abandoned their conflicting changes to *{filename2}*, you can freely edit *{filename1}* now with out worrying about indirect conflicts.
+Indirect conflict solved! You can freely edit *{filename1}* now with out worrying about indirect conflicts.

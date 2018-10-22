@@ -116,8 +116,16 @@ def make_get_closer_list():
     shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "get_closer.txt"))
     return shell_list
 
-def make_indirect_conflict_shell_list():
-    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict.txt"))
+def make_indirect_conflict_calling_length_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict_calling_length.txt"))
+    return shell_list
+
+def make_indirect_conflict_calling_no_length_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict_calling_no_length.txt"))
+    return shell_list
+
+def make_indirect_conflict_working_shell_list():
+    shell_list = make_shell_list(os.path.join(Path(os.getcwd()).parent, "situation_shell", "indirect_conflict_working.txt"))
     return shell_list
 
 # Get user slack id
@@ -362,7 +370,7 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
     return
 
-def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_logic1, conflict_logic2, user1_name, user2_name, type = None):
+def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_file1="", conflict_file2="", conflict_logic1="", conflict_logic2="", user1_name="", user2_name="", type = None):
 
     # Get user slack nickname
     user1_slack_id_code = get_user_slack_id(user1_name)
@@ -396,11 +404,21 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_log
 
     elif conflict_flag == Conflict_flag.indirect_conflict.value:
         # indirect conflict
-        indirect_shell = make_indirect_conflict_shell_list()
         if type == 'user_call':
-            message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_logic1, user2=user2_slack_id_code[0], filename2=conflict_logic2)
+            if conflict_logic1 == conflict_logic2:
+                indirect_shell = make_indirect_conflict_calling_no_length_shell_list()
+            else:
+                indirect_shell = make_indirect_conflict_calling_length_shell_list()
+
         elif type == 'user_work':
-            message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_logic2, user2=user2_slack_id_code[0], filename2=conflict_logic1)
+            indirect_shell = make_indirect_conflict_working_shell_list()
+
+        message = indirect_shell[random.randint(0, len(indirect_shell) - 1)].format(filename1=conflict_file1,
+                                                                                    filename2=conflict_file2,
+                                                                                    function1=conflict_logic1,
+                                                                                    function2=conflict_logic2,
+                                                                                    user1=user1_slack_id_code[0],
+                                                                                    user2=user2_slack_id_code[0])
 
     if message != "":
         send_direct_message(user1_slack_id_code[1], message)
