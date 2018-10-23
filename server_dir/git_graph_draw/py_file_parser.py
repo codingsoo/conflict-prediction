@@ -19,6 +19,7 @@ def get_logic_info( node, logic_info, assign_dict = {}):
             if len(ret_list) != 0 :
                 function_info['members'] = ret_list
             logic_info.append (function_info)
+
         elif isinstance(each, ast.ClassDef):
             function_info = { 'type' : 'Class', 'name' : each.name, 'start' : each.lineno, 'end' : get_end_of_logic(each) }
             ret_list = []
@@ -36,6 +37,34 @@ def get_logic_info( node, logic_info, assign_dict = {}):
 
         elif isinstance(each, ast.If) :
             get_logic_info(each, logic_info, assign_dict)
+
+        elif isinstance(each, ast.With):
+            cur = each.items[0].context_expr
+            if isinstance(cur, ast.Call):
+                cur = cur.func
+                if isinstance(cur, ast.Name):
+                    logic_info.append({'type': 'Call', 'id': cur.id})
+                elif isinstance(cur, ast.Attribute):
+                    stack = []
+                    check = 0
+                    while isinstance(cur, ast.Attribute):
+                        if (check == 0):
+                            stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
+                            check = 1
+                        else:
+                            stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr,
+                                                                                    import_from_table.get(cur.attr,
+                                                                                                          cur.attr))))
+                        cur = cur.value
+                    if not isinstance(cur, ast.Name):
+                        continue
+                    stack.append(
+                        assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
+                    stack = stack[::-1]
+                    stack = '.'.join(stack)
+                    logic_info.append({'type': 'Call', 'id': stack})
+
+            get_logic_info(each, logic_info,assign_dict)
 
         elif isinstance(each, ast.Assign):
             if isinstance(each.value, ast.Call) :

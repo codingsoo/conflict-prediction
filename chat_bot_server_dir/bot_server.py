@@ -158,18 +158,18 @@ def message_processing(msg):
 
                 return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 
-                BASE_PATH = os.path.pardir
-                delete_path = os.path.join(BASE_PATH, owner_name)
-
-                # windows
-                # cmd_line = 'rmdir /S /Q ' + root_dir_temp
-
-                # linux
-                cmd_line = 'rm -rf ' + delete_path
-
-                print("delete_path : ", delete_path)
-
-                subprocess.check_output(cmd_line, shell=True)
+                # BASE_PATH = os.path.pardir
+                # delete_path = os.path.join(BASE_PATH, owner_name)
+                #
+                # # windows
+                # # cmd_line = 'rmdir /S /Q ' + root_dir_temp
+                #
+                # # linux
+                # cmd_line = 'rm -rf ' + delete_path
+                #
+                # print("delete_path : ", delete_path)
+                #
+                # subprocess.check_output(cmd_line, shell=True)
 
 
                 print("return message : " + str(return_message))
