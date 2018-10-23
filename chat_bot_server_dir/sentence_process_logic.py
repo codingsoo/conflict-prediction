@@ -374,7 +374,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     w_db = work_database()
     message = ""
 
-    project_name = w_db.read_project_name(target_slack_code)
+    project_name = w_db.get_repository_name(target_slack_code)
     if project_name == "":
         message = "This user is not working on our project."
     else:
@@ -438,8 +438,11 @@ def send_message_direct_logic(target_slack_code, msg, user_slack_id):
     msg = user_slack_id + " gives message : " + msg
     send_direct_message(target_slack_code, msg)
 
-    message = random.choice(shell_dict['feat_send_message_user'])
-    message = message.format(user2=target_slack_id)
+    if not target_slack_id:
+        message = random.choice(shell_dict['feat_send_message_user'][0:3])
+    else:
+        message = random.choice(shell_dict['feat_send_message_user'][3:5])
+        message = message.format(user2=target_slack_id)
     w_db.close()
     return message
 

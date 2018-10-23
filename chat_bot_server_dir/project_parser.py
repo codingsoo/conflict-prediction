@@ -16,7 +16,7 @@ def project_parser( owner_name, project_name ) :
     if os.path.isdir(os.path.join(full_base_path, os.path.splitext(project_name)[0])) :
         edit_time = os.path.getatime(os.path.join(full_base_path, os.path.splitext(project_name)[0]))
         gap = time.time() - edit_time
-        if gap >= 14400 :
+        if gap >= 14400:
             shutil.rmtree(os.path.join(full_base_path, os.path.splitext(project_name)[0]))
             subprocess.check_output('git clone {}'.format(URL), shell=True, cwd=full_base_path)
     else :
@@ -31,7 +31,7 @@ def project_parser( owner_name, project_name ) :
 
     for path, dirs, files in os.walk(full_base_path) :
         for file in files :
-            if os.path.splitext(file)[-1] == '.py' :
+            if os.path.splitext(file)[-1] == '.py':
                 full_file_path = os.path.join(path, file)
                 file_path = full_file_path[len(full_base_path)+1:]
                 ret_dict['file'].append(file_path)

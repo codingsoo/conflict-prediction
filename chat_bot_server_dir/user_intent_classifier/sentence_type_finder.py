@@ -69,13 +69,12 @@ def sentence_preprocess(_sentence):
 
     return sentence
 
-
-
-
 def is_question(_sentence, pos_tag_list, nlp):
-    sentence = _sentence.replace(" not ", " ", 1)
+    sentence = (_sentence.rstrip(" .,!?") + " / ?").replace(" not ", " ", 1)
+    print(sentence)
     parse_list = nlp.parse(sentence)
-    if "SBARQ" in parse_list or "SQ" in parse_list:
+    print("parse_list", parse_list)
+    if ("SBARQ" in parse_list or "SQ" in parse_list) and pos_tag_list[0][1] != "VB":
         return True
     else:
         for pos_tag in pos_tag_list:
@@ -141,11 +140,10 @@ def require_something_sentence(_sentence):
     for pos_tag in pos_tag_list:
         if pos_tag[1] == "VB" or pos_tag[1] == "VBP" or pos_tag[1] == "VBG":
             org_wrd = lemmatizer.lemmatize(pos_tag[0], pos ="v")
-            sentence = sentence.replace(pos_tag[0], org_wrd)
+            sentence = sentence.replace(" " + pos_tag[0] + " ", " " + org_wrd + " ")
 
     print("sentence", sentence)
     print("pos_tag_list", pos_tag_list)
-    print("parse_list", nlp.parse(sentence))
 
     if is_question(sentence, pos_tag_list, nlp):
         for pos_tag in pos_tag_list:
@@ -157,6 +155,7 @@ def require_something_sentence(_sentence):
                 if pos_tag_list[pos_idx + 1][0] == "I" or pos_tag_list[pos_idx + 2][0] == "I":
                     sentence = sentence.replace(" I ", " you ", 1)
                 break
+
         return 1, sentence
 
     elif is_command(sentence, nlp):

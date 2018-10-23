@@ -5,9 +5,9 @@ from server_dir.slack_message_sender import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
@@ -29,62 +29,136 @@ nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages
 # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
 
 
-question_sentence_list = ["Can you stop notifying me about hello.py?",
-                          "Can you lock hello.py?",
-                          "Can you tell me who wrote line 14 to line 18 at file1.py?",
-                          "Can you stop notifying me about indirect conflicts?",
-                          "Do you think hello.py is gonna make a conflict?",
-                          "Can you tell me the working status of <@UCFNMU2ED>?",
-                         # 'Can you tell code-conflict-chatbot channel that “I am working on File1.py”',
-                          'Can you let <@UCFNMU2ED> know that“I will check and solve the problem”?',
-                          "Can you recommend what to do regarding the conflict in File.py?",
-                          "Can you tell me which files are currently being ignored?",
-                          "Can you tell me which file <@UCFNMU2ED> ignored?",
-                          "Can you tell me who locked file1.py?",
-                          "Can you tell me the size of the conflict for file1.py?"
-                          ]
-command_sentence_list = ["Stop notify me about File1.py again.",
-                         "Unlock hello.py.",
-                         "Tell me who wrote line 70 to line 90 in file1.py.",
-                         "Stop alert me about indirect conflict.",
-                         "Would changing File1.py lead to a conflict.",
-                         "Tell me where <@UCFNMU2ED>'s working status.",
-                        # 'Tell code-conflict-chatbot channel that “I am working on File1.py”',
-                         'Send a message to <@UCFNMU2ED> "I am working on class1".',
-                         "Give me some recommendation about how to solve the conflict of File1.py.",
-                         "Tell me which files are being ignored.",
-                         "Tell me which file <@UCFNMU2ED> ignored.",
-                         "Tell me who locked file1.py.",
-                         "Tell me the size of the conflict for file1.py."
-                         ]
-suggestion_sentence_list = ["You should stop notifying me about File1.py.",
-                            "You should lock File.py.",
-                            "You should let me know who wrote code line 1 to line 9 at file1.py.",
-                            "You should stop alert me about direct conflict.",
-                            "You should check if modifying File1.py might cause a conflict.",
-                            "You should tell me <@UCFNMU2ED>'s working status.",
-                           # 'You should announce to code-conflict-chatbot channel that "Do not touch File1.py".',
-                            'You have to send <@UCFNMU2ED> that "I will check and solve the conflict".',
-                            "You should tell me how I should address the conflict for File1.py.",
-                            "You should tell me which files are bejng ignored.",
-                            "You should tell me which file <@UCFNMU2ED> ignored.",
-                            "You should tell me who locked file1.py.",
-                            "You should tell me the size of the conflict in file.py."]
+# question_sentence_list \
+#     = [("Can you stop notifying me about file.py?", "Can you stop ignoring me about file.py?"),
+#        ("Can you lock file.py?", "Can you release file.py?"),
+#        ("Can you tell me who wrote line 14 to line 18 in file.py?", "Can you tell me who wrote in file.py?"),
+#        ("Can you stop notifying me about indirect conflicts?", "Can you stop ignoring me about indirect conflicts?"),
+#        ("Can you tell me file.py is gonna make conflict?", "How do you think file.py is gonna make conflict?"),
+#        ("Can you tell me working status of <@UCFNMU2ED>?", "Where is <@UCFNMU2ED>?"),
+#        # 'Can you tell code-conflict-chatbot channel that “I am working on file.py”',
+#        ('Can you let <@UCFNMU2ED> know that “I will check and solve the problem”?',
+#         'Can you send message to <@UCFNMU2ED> that “I will check and solve the problem”?'),
+#        ("Can you recommend what to do regarding conflict in file.py?",
+#         "Can you recommend how to solve conflict in file.py?"),
+#        ("Can you tell me which files are currently being ignored?", "Can you tell me which file <@UCFNMU2ED> ignored?",),
+#        ("Can you tell me who locked file.py?", "Can you tell me which user locked file.py?"),
+#        ("Can you tell me size of conflict for file.py?", "Can you tell me how severe file.py is?")
+#        ]
+#
+# command_sentence_list \
+#     = [("Notify me about file.py again.", "Ignore file.py"),
+#        ("Lock file.py.", "Release file.py"),
+#        ("Tell me who wrote line 70 to line 90 in file.py.", "Tell me who wrote in file.py."),
+#        ("Stop alert me about indirect conflict.", "Stop ignore indirect conflict."),
+#        ("Tell me changing file.py lead to a conflict.", "Tell me file.py is gonna make conflict."),
+#        ("Tell me <@UCFNMU2ED>'s working status.", "Tell me where <@UCFNMU2ED> is"),
+#        # 'Tell code-conflict-chatbot channel that “I am working on file.py”',
+#        ('Let <@UCFNMU2ED> know that "I am working on class1".',
+#         'Send a message to <@UCFNMU2ED> "I am working on class1".'),
+#        ("Tell me what to do regarding conflict in file.py",
+#         "Tell me some recommendation about how to solve conflict of file.py."),
+#        ("Tell me which files are being ignored.", "Tell me which file <@UCFNMU2ED> ignored."),
+#        ("Tell me who locked file.py.", "Tell me which user locked file.py."),
+#        ("Tell me size of conflict for file.py.", "Tell me how severe file.py is.")
+#        ]
+#
+# suggestion_sentence_list \
+#     = [("You should stop notifying me about file.py.", "You should stop ignoring file.py"),
+#        ("You should lock file.py.", "You should release file.py."),
+#        ("You should tell me who wrote code line 1 to line 9 in file.py.",
+#         "You should tell me who wrote in file.py"),
+#        ("You should stop alert me about indirect conflict.", "You should stop ignore indirect conflict."),
+#        ("You should tell me if modifying file.py might cause a conflict.",
+#         "You should tell me file.py is gonna make a conflict."),
+#        ("You should tell me <@UCFNMU2ED>'s working status.", "You should tell me where <@UCFNMU2ED> is"),
+#        # 'You should announce to code-conflict-chatbot channel that "Do not touch file.py".',
+#        ('You should let <@UCFNMU2ED> know that "I am working on class1"',
+#         'You should send <@UCFNMU2ED> that "I am working on class1".'),
+#        ("You should tell me what to do regarding conflict in file.py",
+#         "You should tell me how I should address conflict for file.py."),
+#        ("You should tell me which files are being ignored.", "You should tell me which file <@UCFNMU2ED> ignored."),
+#        ("You should tell me who locked file.py.", "You should tell me which user locked file.py"),
+#        ("You should tell me size of conflict in file.py.", "You should tell me how sever file.py is.")
+#        ]
+#
+# desire_sentence_list \
+#     = [("I want to stop notifying me about file.py.", "I want to stop ignoring file.py"),
+#        ("I want to lock file.py.", "I want to release file.py"),
+#        ("I want to know who wrote line 70 to line 90 in file.py.", "I want to know who wrote in file.py"),
+#        ("I want to get alert about indirect conflicts.", "I want to ignore indirect conflicts."),
+#        ("I want to know whether changing file.py might lead to a conflict.",
+#         "I want to know file.py is gonna make a conflict."),
+#        ("I want to know <@UCFNMU2ED>'s working status.", "I want to know where <@UCFNMU2ED> is"),
+#        # 'I want to send the message to conflict detector channel that "Do not modify file.py".',
+#        ('I want to let <@UCFNMU2ED> know that "Do not modify file.py".',
+#         'I want to send message to <@UCFNMU2ED> that "Do not modify file.py".'),
+#        ("I want to know what to do regarding conflict in file.py",
+#         "I want to know recommendation as to how I might address conflict for file.py."),
+#        ("I want to know which files I am currently ignoring.", "I want to know which files <@UCFNMU2ED> ignored."),
+#        ("I want to know who locked file.py.", "I want to know which user locked file.py."),
+#        ("I want to know size of conflict in file.py", "I want to know how sever file.py is.")
+#        ]
 
-desire_sentence_list = ["I want to ignore notifications about File1.py.",
-                        "I want to lock File1.py.",
-                        "I want to know who wrote line 70 to line 90 in File1.py.",
-                        "I do not want to get alert about direct conflicts.",
-                        "I want to know whether changing File1.py might lead to a conflict.",
-                        "I want to know <@UCFNMU2ED>'s working status.",
-                       # 'I want to send the message to conflict detector channel that "Do not modify File1.py".',
-                        'I want to send a message to <@UCFNMU2ED> "Do not modify File1.py".',
-                        "I want to get a recommendation as to how I might address the conflict for File1.py.",
-                        "I want to know which files I am currently ignoring.",
-                        "I want to know which files <@UCFNMU2ED> ignored.",
-                        "I want to know who locked file1.py.",
-                        "I want to know the size of the conflict for file1.py"]
+question_sentence_list \
+    = [("Can you notify me about file.py?", "Can you ignore me about file.py?"),
+       ("Can you lock file.py?", "Can you release file.py?"),
+       ("Can you tell me who wrote line 14 to line 18 in file.py?",),
+       ("Can you notify me about direct conflicts?", "Can you ignore me about direct conflicts?"),
+       ("Can you tell me file.py is gonna make conflict?",),
+       ("Can you tell me working status of <@UCFNMU2ED>?", "Where is <@UCFNMU2ED>?"),
+       # 'Can you tell code-conflict-chatbot channel that “I am working on file.py”',
+       ('Can you send message to <@UCFNMU2ED> that “I will check and solve the problem”?',),
+       ("Can you recommend how to solve conflict in file.py?",),
+       ("Can you tell me which files are currently being ignored?", "Can you tell me which file <@UCFNMU2ED> ignored?",),
+       ("Can you tell me who locked file.py?",),
+       ("Can you tell me how severe file.py is?",)
+       ]
 
+command_sentence_list \
+    = [("Notify me about file.py again.", "Ignore file.py"),
+       ("Lock file.py.", "Release file.py"),
+       ("Tell me who wrote line 70 to line 90 in file.py.",),
+       ("Alert me about direct conflict.", "Ignore direct conflict."),
+       ("Tell me file.py is gonna make conflict.",),
+       ("Tell me <@UCFNMU2ED>'s working status.", "Tell me where <@UCFNMU2ED> is"),
+       # 'Tell code-conflict-chatbot channel that “I am working on file.py”',
+       ('Send a message to <@UCFNMU2ED> "I am working on class1".',),
+       ("Tell me some recommendation about how to solve conflict of file.py.",),
+       ("Tell me which files are being ignored.", "Tell me which file <@UCFNMU2ED> ignored."),
+       ("Tell me who locked file.py.",),
+       ("Tell me how severe file.py is.",)
+       ]
+
+suggestion_sentence_list \
+    = [("You should notify me about file.py.", "You should ignore file.py"),
+       ("You should lock file.py.", "You should release file.py."),
+       ("You should tell me who wrote code line 1 to line 9 in file.py.",),
+       ("You should stop alert me about direct conflict.", "You should stop ignore direct conflict."),
+       ("You should tell me file.py is gonna make a conflict.",),
+       ("You should tell me <@UCFNMU2ED>'s working status.", "You should tell me where <@UCFNMU2ED> is"),
+       # 'You should announce to code-conflict-chatbot channel that "Do not touch file.py".',
+       ('You should send <@UCFNMU2ED> that "I am working on class1".',),
+       ("You should tell me how I should address conflict for file.py.",),
+       ("You should tell me which files are being ignored.", "You should tell me which file <@UCFNMU2ED> ignored."),
+       ("You should tell me who locked file.py.",),
+       ("You should tell me how sever file.py is.",)
+       ]
+
+desire_sentence_list \
+    = [("I want to notify me about file.py.", "I want to ignore file.py"),
+       ("I want to lock file.py.", "I want to release file.py"),
+       ("I want to know who wrote line 70 to line 90 in file.py.",),
+       ("I want to get alert about direct conflict.", "I want to ignore direct conflict."),
+       ("I want to know file.py is gonna make a conflict.",),
+       ("I want to know <@UCFNMU2ED>'s working status.", "I want to know where <@UCFNMU2ED> is."),
+       # 'I want to send the message to conflict detector channel that "Do not modify file.py".',
+       ('I want to send message to <@UCFNMU2ED> that "Do not modify file.py".',),
+       ("I want to know recommendation as to how I might address conflict for file.py.",),
+       ("I want to know which files I am currently ignoring.", "I want to know which files <@UCFNMU2ED> ignored."),
+       ("I want to know who locked file.py.",),
+       ("I want to know how sever file.py is.",)
+       ]
 
 
 def load_token() :
@@ -142,6 +216,7 @@ def get_slack_code_list():
         users = response.body['members']
         for user in users:
             user_list.append(user.get('id'))
+        print("get_slack_code_list", user_list)
     except KeyError as ex:
         print('Invalid key : %s' % str(ex))
     return user_list
@@ -159,15 +234,26 @@ def calcue_max(sentence, list):
     user_input = nlp(sentence.strip())
     max = 0
     max_idx = ERROR
-    for idx in range(len(list)):
-        sample_input = nlp(list[idx])
-        rate = user_input.similarity(sample_input)
-        if rate > max and rate > 0.35:
-            if(idx > 8):
-                max_idx = idx
-            else :
+
+    for idx, sample_sentences in enumerate(list):
+        for idx2, sample_sentence in enumerate(sample_sentences):
+            sample_input = nlp(sample_sentence)
+            rate = user_input.similarity(sample_input)
+            print("sample", idx, idx2, rate, sample_sentence)
+            if rate > max and rate > 0.35:
                 max_idx = idx + 1
                 max = rate
+                print("max   ", max_idx, idx2, rate, sample_sentence)
+
+    # for idx in range(len(list)):
+    #     sample_input = nlp(list[idx])
+    #     rate = user_input.similarity(sample_input)
+    #     if rate > max and rate > 0.35:
+    #         if(idx > 8):
+    #             max_idx = idx
+    #         else:
+    #             max_idx = idx + 1
+    #             max = rate
 
     if max_idx == 1 or max_idx == 4:
         if (" direct " in sentence or " indirect " in sentence) and (".py" not in sentence):
@@ -188,15 +274,15 @@ def calcue_max(sentence, list):
         if " <@" not in sentence:
             return ERROR
 
-    if max_idx in [1, 2, 10]:
-        if " who " in sentence:
-            max_idx = 10
-        elif " lock " in sentence:
-            max_idx = 2
-        else:
-            max_idx = 1
+    # if max_idx in [1, 2, 10]:
+    #     if " who " in sentence:
+    #         max_idx = 10
+    #     elif " lock " in sentence:
+    #         max_idx = 2
+    #     else:
+    #         max_idx = 1
 
-    print ("max rate : ", max)
+    print ("max_index", max_idx, "max_rate", max)
     return max_idx
 
 
@@ -243,12 +329,12 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
 
         # help classification about intent_type 5 and 9
         # if conflict_file in sentence, we can think user wants to recommendation.
-        if intent_type in [5, 9]:
+        if intent_type in [5, 8]:
             conflict_file_list = work_db.all_conflict_list(github_email)
             for cfl in conflict_file_list:
                 file_name = cfl.split("/")[-1]
                 if file_name in sentence:
-                    intent_type = 9
+                    intent_type = 8
                     break
                 else:
                     intent_type = 5
@@ -328,13 +414,13 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             for word in approve_word:
                 if word in sentence:
                     found = 1
-                    if " not " in sentence or " un" in sentence:
+                    if " not " in sentence or " un" in sentence or " stop " in sentence:
                         approve_set.add(file_abs_path)
                     else:
                         remove_list.append(file_abs_path)
 
             if found == 0:
-                if " not " in sentence or " un" in sentence:
+                if " not " in sentence or " un" in sentence or " stop " in sentence:
                     remove_list.append(file_abs_path)
                 else:
                     approve_set.add(file_abs_path)
@@ -354,7 +440,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
 
         for file_abs_path in called_file_abs_path_list:
             sentence = sentence.replace(file_abs_path, " ")
-            if " not " in sentence or " unlock " in sentence:
+            if " not " in sentence or " unlock " in sentence or " stop " in sentence:
                 remove_lock_set.add(file_abs_path)
             else:
                 try:
