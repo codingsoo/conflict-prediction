@@ -428,8 +428,9 @@ class work_database:
             sql = "select total_plus, total_minus, user_name " \
                   "from edit_amount " \
                   "where project_name = '%s' " \
-                  "and file_name = '%s' "  \
-                  % (project_name, file_name)
+                  "and file_name = '%s' " \
+                  "and user_name != '%s'" \
+                  % (project_name, file_name, user_git_id)
 
             print(sql)
             self.cursor.execute(sql)

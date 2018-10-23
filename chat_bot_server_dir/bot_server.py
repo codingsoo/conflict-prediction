@@ -133,7 +133,7 @@ def message_processing(msg):
 
         # Sentence Processing
         else:
-            if msg['user'] != "UCKJC17HT":  # Sayme slack code : "UBP8LHJS1" / Sayme2 slack code : "UCKJC17HT"
+            if msg['user'] != "UCLEZ2QUX":  # Sayme slack code : "UBP8LHJS1" / Sayme2 slack code : "UCKJC17HT"
                 # Search Git id
                 u_db = user_database("parent")
                 w_db = work_database.work_database()

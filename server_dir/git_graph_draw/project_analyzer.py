@@ -37,7 +37,7 @@ def class_append_edge_list(full_path,func_id,owner,paths,project_dict,logic_dict
             elif 'class:' + paths[-1] in logic_dict[full_path + '.py']['Class']:
                 pass
             elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-                edges_list.append([owner + '/' + full_path + '.py|' + 'function:' + paths[-1],owner + '/' + func_id])
+                edges_list.append([owner + '/' + full_path + '.py|' + 'function:' + paths[-1], owner + '/' + func_id])
                 pass
             elif 'class:' + paths[-2] + ':' + paths[-1] in logic_dict[full_path + '.py']['Function']:
                 full_path_list = full_path.split("/")[1:]

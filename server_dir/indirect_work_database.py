@@ -574,7 +574,7 @@ class indirect_work_database:
                                            conflict_logic1=temp_file_logic1,
                                            conflict_logic2=temp_file_logic2,
                                            user1_name=temp_conflict[0],
-                                           user2_name=temp_conflict[2],
+                                           user2_name=temp_conflict[3],
                                            type=type)
 
         return

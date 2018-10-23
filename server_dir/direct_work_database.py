@@ -368,7 +368,7 @@ class direct_work_database:
                         print("direct same severity")
                         severity_flag = Conflict_flag.same_severity.value
 
-                    if conflict_flag != 0:
+                    if conflict_flag != 0 and conflict_flag != 7:
                         send_direct_conflict_message(conflict_flag=conflict_flag,
                                                      conflict_project=temp_best[1],
                                                      conflict_file=temp_best[2],
