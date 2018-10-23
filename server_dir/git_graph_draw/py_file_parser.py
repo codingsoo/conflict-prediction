@@ -43,7 +43,7 @@ def get_logic_info( node, logic_info, assign_dict = {}):
             if isinstance(cur, ast.Call):
                 cur = cur.func
                 if isinstance(cur, ast.Name):
-                    logic_info.append({'type': 'Call', 'id': cur.id})
+                    logic_info.append({'type': 'With', 'id': cur.id})
                 elif isinstance(cur, ast.Attribute):
                     stack = []
                     check = 0
@@ -62,7 +62,7 @@ def get_logic_info( node, logic_info, assign_dict = {}):
                         assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
                     stack = stack[::-1]
                     stack = '.'.join(stack)
-                    logic_info.append({'type': 'Call', 'id': stack})
+                    logic_info.append({'type': 'With', 'id': stack})
 
             get_logic_info(each, logic_info,assign_dict)
 
