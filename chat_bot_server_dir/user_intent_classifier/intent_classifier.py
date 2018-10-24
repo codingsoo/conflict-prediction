@@ -332,13 +332,16 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
         # if conflict_file in sentence, we can think user wants to recommendation.
         if intent_type in [5, 8]:
             conflict_file_list = work_db.all_conflict_list(github_email)
-            for cfl in conflict_file_list:
-                file_name = cfl.split("/")[-1]
-                if file_name in sentence:
-                    intent_type = 8
-                    break
-                else:
-                    intent_type = 5
+            if not conflict_file_list:
+                intent_type = 5
+            else:
+                for cfl in conflict_file_list:
+                    file_name = cfl.split("/")[-1]
+                    if file_name in sentence:
+                        intent_type = 8
+                        break
+                    else:
+                        intent_type = 5
 
     # After classifying intent
     if intent_type in [1, 2, 3, 5, 8, 10, 11]:

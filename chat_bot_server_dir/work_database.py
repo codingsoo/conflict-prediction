@@ -903,6 +903,7 @@ class work_database:
             raw_tuple = self.cursor.fetchall()
             for rt in raw_tuple:
                 raw_list.append(rt[0])
+            print("read_lock_history_list", raw_list)
         except:
             self.conn.rollback()
             print("ERROR : read lock history list")
@@ -931,7 +932,7 @@ class work_database:
 
 
     def inform_lock_file_direct(self, project_name, working_list, git_id):
-        raw_list = []
+        raw_set = set()
 
         # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"], ["file_name", "logic_name", "work_line", "work_amount"], ... ]
         slack_code = self.convert_git_id_to_slack_code(git_id)
@@ -954,12 +955,12 @@ class work_database:
                 raw_tuple = self.cursor.fetchall()
 
                 for ele in raw_tuple:
-                    raw_list.append(ele)
+                    raw_set.add(ele)
             except:
                 self.conn.rollback()
                 print("ERROR : inform lock file")
 
-        return raw_list
+        return list(raw_set)
 
     def inform_lock_file_indirect(self, project_name, working_list, git_id):
         raw_list = []

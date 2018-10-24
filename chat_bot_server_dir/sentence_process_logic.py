@@ -146,7 +146,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 else:
                     other_user_name = w_db.convert_slack_code_to_slack_id(other_slack_code)
                     message += random.choice(shell_dict['feat_lock_overlap'])
-                    message = message.format(user2=other_user_name, filename=file_name)
+                    message = message.format(user2=other_user_name, filename=file_name, remaining_time=remain_time_str)
 
         if lock_file_list:
             for file_name in lock_file_list:
@@ -554,7 +554,8 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
     project_name, user_name = w_db.get_repository_and_user_name(slack_code)
 
     if msg_type == "YES" and target_file in w_db.read_lock_history_list(project_name, slack_code):
-        lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set(target_file), lock_time))
+        print("target_file", target_file)
+        lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
         ch_message = ""
         if target_file in lock_file_list:
             ch_message += "{} locked {} file for {} hour(s).".format(user_name, target_file, lock_time)

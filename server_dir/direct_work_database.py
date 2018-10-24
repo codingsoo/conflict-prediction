@@ -75,6 +75,8 @@ class direct_work_database:
                    if lfl[1] == lnul[1]:
                        already_noticed_lock_file_list.append(lfl)
 
+            print("SUN TEST : ", already_noticed_lock_file_list)
+
             for anlfl in already_noticed_lock_file_list:
                 lock_file_list.remove(anlfl)
 
@@ -368,7 +370,7 @@ class direct_work_database:
                         print("direct same severity")
                         severity_flag = Conflict_flag.same_severity.value
 
-                    if conflict_flag != 0 and conflict_flag != 7:
+                    if conflict_flag != 0 and not (conflict_flag == 7 and severity_flag == 4):
                         send_direct_conflict_message(conflict_flag=conflict_flag,
                                                      conflict_project=temp_best[1],
                                                      conflict_file=temp_best[2],

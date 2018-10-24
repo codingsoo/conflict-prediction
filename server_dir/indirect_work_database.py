@@ -666,6 +666,10 @@ class indirect_work_database:
                 print("ERROR : delete user indirect conflict data1")
 
             try:
+                if nicl[9] == 1:
+                    type = 2
+                elif nicl[9] == 2:
+                    type = 1
                 sql = "delete " \
                       "from indirect_conflict_table " \
                       "where project_name = '%s' " \
@@ -675,7 +679,7 @@ class indirect_work_database:
                       "and user1_name = '%s' " \
                       "and user2_name = '%s' " \
                       "and call_user = '%d'" \
-                      % (nicl[0], nicl[2], nicl[3], nicl[4], nicl[7], nicl[6], nicl[9])
+                      % (nicl[0], nicl[2], nicl[3], nicl[4], nicl[7], nicl[6], type)
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
