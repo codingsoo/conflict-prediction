@@ -47,7 +47,7 @@ def search_directory(url):
             if ext == '.py':
                 sub_file_path = repo + file_path[len(url):]
                 # print("%s/%s" % (sub_file_path, filename))
-                file_dir.append(os.path.join(sub_file_path,filename))
+                file_dir.append(os.path.join(sub_file_path, filename))
                 file_name.append(filename[:len(filename)-3])
 
     print("file_dir: " + str(file_dir))
