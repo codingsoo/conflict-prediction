@@ -1,0 +1,66 @@
+It seems {} and {} are working on the same {} {}. I think you need to talk about it.
+It seems {} and {} are working on the same {} {}. I think you have to talk about it.
+It seems {} and {} are working on the same {} {}. I think you need to chat with others.
+It seems {} and {} are working on the same {} {}. I think you have to chat with others.
+It seems {} and {} are working on the same {} {}. I think you have to address it.
+It seems {} and {} are working on the same {} {}. I think this problem should be solved.
+It seems {} and {} are working on the same {} {}. I think this problem should be addressed.
+It seems {} and {} are working on the same {} {}. I think this problem should be fixed.
+It seems {} and {} are working on the same {} {}. I think you need to solve it.
+It seems {} and {} are working on the same {} {}. I think you need to check it.
+It seems {} and {} are working on the same {} {}. It is dangerous!
+It seems {} and {} are engaging in the same {} {}. I think you need to talk about it.
+It seems {} and {} are engaging in the same {} {}. I think you have to talk about it.
+It seems {} and {} are engaging in the same {} {}. I think you need to chat with others.
+It seems {} and {} are engaging in the same {} {}. I think you have to chat with others.
+It seems {} and {} are engaging in the same {} {}. I think you have to address it.
+It seems {} and {} are engaging in the same {} {}. I think this problem should be solved.
+It seems {} and {} are engaging in the same {} {}. I think this problem should be addressed.
+It seems {} and {} are engaging in the same {} {}. I think this problem should be fixed.
+It seems {} and {} are engaging in the same {} {}. I think you need to solve it.
+It seems {} and {} are engaging in the same {} {}. I think you need to check it.
+It seems {} and {} are engaging in the same {} {}. It is dangerous!
+{} and {}! It seems you are working on the same {} {}. I think you need to talk about it.
+{} and {}! It seems you are working on the same {} {}. I think this problem should be solved.
+{} and {}! It seems you are engaging in the same {} {}. I think you need to solve it.
+{} and {}! It seems you are engaging in the same {} {}. I think you need to talk about it.
+{} and {}! It seems you are engaging in the same {} {}. I think this problem should be solved.
+{} and {}! It seems you are engaging in the same {} {}. I think you need to solve it.
+{} and {}, you’re on the same {} {}. It could get worse if you both move to same class.
+Two developers {} and {} are working simultaneously in {} {}.
+Hey, {} and {}, you are working on the same {} - {}. Be careful about conflict!
+Hey, {} and {}, you are engaging in the same {} - {}. Be careful about conflict!
+Hey, {} and {}, you are working on the same {} - {}. Be cautious about conflict!
+Hey, {} and {}, you are engaging in the same {} - {}. Be cautious about conflict!
+You should know that {} and {} are working on a same {} : {}.
+{} and {} are working on a same {}(name : {}), so conflict can be happened soon. Be careful!
+{} and {} are working on a same {} {}.
+{} and {} are engaging a same {} {}.
+{} and {} are working on {} {}. It’s dangerous!
+{} and {} are engaging in {} {}. It’s dangerous!
+{} and {} are working on {} {}. It’s unsafe!
+{} and {} are engaging in {} {}. It’s unsafe!
+{} and {} are working on {} {}. It’s hazardous!
+{} and {} are engaging in {} {}. It’s hazardous!
+{} and {} are working on {} {}. It’s risky!
+{} and {} are engaging in {} {}. It’s risky!
+{} and {} have started working on {} {}. It seems not good.
+{} and {} have started engaging in {} {}. It seems not good.
+I would like to let you know that {} and {} are working on {} {} and it is not good.
+I would like to let you know that {} and {} are engaging in {} {} and it is not good.
+I’m letting you know that {} and {} are working on {} {} and it is not good.
+I’m letting you know that {} and {} are engaging in {} {} and it is not good.
+I want to let you know that {} and {} are working on {} {} and it is not good.
+I want to let you know that {} and {} are engaging in {} {} and it is not good.
+There’re more than one user({}, {}) in the same {} {}.
+Hey {} and {}! You guys are too close! Both of you working on {} {}.
+Hey {} and {}! You guys are too close! Both of you engaging in {} {}.
+{} and {} , I think it’s not a good idea to work on same {} {}. It could make the situation worse.
+{} and {} , I think it’s not a good idea to work on same {} {}. It is likely to occur conflicts.
+Hey, {} and {} what you guys doing? I think both of you on same {} {} is not a good idea.
+As {} and {} are working on the same {}({}), it is dangerous.
+As {} and {} are working on the same {}({}), it is likely to occur conflicts.
+As {} and {} are working on the same {}({}), there is a chance that conflicts may occur.
+As {} and {} are working on the same {}({}), there is a possibility of potential conflicts.
+As {} and {} are engaging in the same {}({}), it is dangerous.
+Just let you know that {} and {} are on same {} {}.
