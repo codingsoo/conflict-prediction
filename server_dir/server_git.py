@@ -133,18 +133,26 @@ def convert_data(content) :
         for chunk in value['edit_chuck'] :
             start, end = chunk
             flag = False
+            temp_data = []
             for logic in func_list :
                 if logic[2] < start or end < logic[1] :
                     continue
-                converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
+                temp_data = [logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1]
                 flag = True
-                low, high = -1, len(class_list) - 1
+
+            if flag is True:
+                converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH) + 1:]].append(temp_data)
+
             if flag is False:
                 for i, logic in enumerate(class_list):
                     if logic[2] < start or end < logic[1] :
                         continue
-                    converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]].append([ logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1])
+                    temp_data = [logic[0], max(logic[1], start), min(logic[2], end) - max(logic[1], start) + 1]
                     flag = True
+
+                if flag is True:
+                    converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH) + 1:]].append(temp_data)
+
             if flag is False:
                 converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH) + 1:]].append(['in', start, end - start + 1])
 

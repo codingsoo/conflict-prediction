@@ -27,19 +27,36 @@ class work_database:
     # Update User data to working_table
     def update_user_data(self, project_name, working_list, edit_amount, calling_list, user_name):
         # in working_table
+        # working_list = [ ["file_name", "logic_name", "work_line", "work_amount"] ]
         for temp_work in working_list:
             print("temp_work : ", temp_work)
             try:
                 if temp_work[3] == -1:
                     temp_work[1] = "in"
 
-                sql = "replace into working_table " \
-                      "(project_name, file_name, logic_name, user_name, work_line, work_amount) " \
-                      "value ('%s', '%s', '%s', '%s', %d, %d)" % (
-                      project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+                sql = "select * " \
+                      "from working_table " \
+                      "where project_name = '%s' " \
+                      "and file_name = '%s' " \
+                      "and logic_name = '%s' " \
+                      "and user_name = '%s' " \
+                      "and work_line = '%d' " \
+                      "and work_amount = '%d'" \
+                      % (project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
+
+                if not self.cursor.fetchone():
+                    sql = "replace into working_table " \
+                          "(project_name, file_name, logic_name, user_name, work_line, work_amount) " \
+                          "value ('%s', '%s', '%s', '%s', %d, %d)" % (
+                          project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
+
+                    print(sql)
+                    self.cursor.execute(sql)
+                    self.conn.commit()
             except:
                 self.conn.rollback()
                 print("ERROR : update_user_data : working")
