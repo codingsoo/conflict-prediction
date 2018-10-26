@@ -1811,12 +1811,12 @@ class work_database:
 
         return slack_id
 
-    def convert_git_id_list_to_slack_id_list(self, git_id_list):
+    def convert_git_id_list_to_slack_code_list(self, git_id_list):
         slack_id_list = []
 
         for git_id in git_id_list:
             try:
-                sql = "select slack_id " \
+                sql = "select slack_code " \
                       "from user_table " \
                       "where git_id = '%s'" % (git_id)
                 print(sql)
@@ -1824,7 +1824,7 @@ class work_database:
                 self.conn.commit()
 
                 raw_tuple = self.cursor.fetchall()
-                slack_id = raw_tuple[0][0]
+                slack_id = "<@" + raw_tuple[0][0] + ">"
                 slack_id_list.append(slack_id)
 
             except:

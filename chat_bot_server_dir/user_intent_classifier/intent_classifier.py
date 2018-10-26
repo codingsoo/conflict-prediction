@@ -587,7 +587,6 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
     # About user message
     elif intent_type == 7:
 
-        user_slack_id = work_db.convert_git_id_to_slack_id(github_email)
         target_slack_code = ""
 
         slack_code_list = get_slack_code_list()
@@ -613,7 +612,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             msg = _sentence[start_quot_idx + 1:end_quot_idx].strip()
 
         work_db.close()
-        return 7, target_slack_code, msg, user_slack_id
+        return 7, target_slack_code, msg, None
 
     # About recommend
     elif intent_type == 8:

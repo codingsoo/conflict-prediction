@@ -48,7 +48,8 @@ def send_lock_message(lock_file_list, user_name):
     user_slack_id_code = get_user_slack_id(user_name)
     message = ""
     for lfl in lock_file_list:
-        lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
+        # lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
+        lock_user =lfl[2]
 
         end_time = lfl[4] + timedelta(hours=lfl[3])
         remain_time = end_time - datetime.now()
@@ -106,7 +107,7 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
         if conflict_flag == Conflict_flag.getting_severity_percentage.value:
             # get severity_percentage
 
-            message += get_message('get_severe_percentage.txt').format(user2=user2_slack_id_code[0],
+            message += get_message('get_severe_percentage.txt').format(user2=user2_slack_id_code[1],
                                                                        filename=conflict_file,
                                                                        severity=current_percentage,
                                                                        old_severity=previous_percentage,
@@ -120,37 +121,37 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
                 message += get_message('adverb2.txt') + " "
 
                 if current_severity == 2:
-                    message += get_message('get_severe2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe2_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 3:
-                    message += get_message('get_severe3_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe3_add.txt').format(user2=user2_slack_id_code[1])
 
             elif severity_flag == Conflict_flag.same_severity.value:
                 # same severity
                 message += get_message('adverb1.txt') + " "
 
                 if current_severity == 1:
-                    message += get_message('same_severity1_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity1_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 2:
-                    message += get_message('same_severity2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity2_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 3:
-                    message += get_message('same_severity3_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity3_add.txt').format(user2=user2_slack_id_code[1])
 
             elif severity_flag == Conflict_flag.lower_severity.value:
                 # lower severity
                 message += get_message('adverb1.txt') + " "
 
                 if current_severity == 1:
-                    message += get_message('alleviated1_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated1_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 2:
-                    message += get_message('alleviated2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated2_add.txt').format(user2=user2_slack_id_code[1])
 
         elif conflict_flag == Conflict_flag.lower_severity_percentage.value:
             # lower_severity_percentage
-            message = get_message('alleviated_percentage.txt').format(user2=user2_slack_id_code[0],
+            message = get_message('alleviated_percentage.txt').format(user2=user2_slack_id_code[1],
                                                                       filename=conflict_file,
                                                                       severity=current_percentage,
                                                                       old_severity=previous_percentage,
@@ -164,33 +165,33 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
                 message += get_message('adverb1.txt') + " "
 
                 if current_severity == 2:
-                    message += get_message('get_severe2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe2_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 3:
-                    message += get_message('get_severe3_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe3_add.txt').format(user2=user2_slack_id_code[1])
 
             elif severity_flag == Conflict_flag.same_severity.value:
                 # same severity
                 message += get_message('adverb1.txt') + " "
 
                 if current_severity == 1:
-                    message += get_message('same_severity1_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity1_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 2:
-                    message += get_message('same_severity2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity2_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 3:
-                    message += get_message('same_severity3_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('same_severity3_add.txt').format(user2=user2_slack_id_code[1])
 
             elif severity_flag == Conflict_flag.lower_severity.value:
                 # lower severity
                 message += get_message('adverb2.txt') + " "
 
                 if current_severity == 1:
-                    message += get_message('alleviated1_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated1_add.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 2:
-                    message += get_message('alleviated2_add.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated2_add.txt').format(user2=user2_slack_id_code[1])
 
         elif conflict_flag == Conflict_flag.same_severity_percentage.value:
             # lower_severity_percentage
@@ -198,10 +199,10 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
             if severity_flag == Conflict_flag.getting_severity.value:
                 # get severity
                 if current_severity == 2:
-                    message += get_message('get_severe2.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe2.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 3:
-                    message += get_message('get_severe3.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('get_severe3.txt').format(user2=user2_slack_id_code[1])
 
             elif severity_flag == Conflict_flag.same_severity.value:
                 # same severity
@@ -210,18 +211,18 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
             elif severity_flag == Conflict_flag.lower_severity.value:
                 # lower severity
                 if current_severity == 1:
-                    message += get_message('alleviated1.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated1.txt').format(user2=user2_slack_id_code[1])
 
                 elif current_severity == 2:
-                    message += get_message('alleviated2.txt').format(user2=user2_slack_id_code[0])
+                    message += get_message('alleviated2.txt').format(user2=user2_slack_id_code[1])
 
     # First conflict
     elif conflict_flag == Conflict_flag.same_function.value:
         # same function
-        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[0],
-                                                            user2=user2_slack_id_code[0],
+        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[1],
+                                                            user2=user2_slack_id_code[1],
                                                             filename=conflict_logic)
-        message += " " + get_message('direct_conflict_init_severity_2.txt').format(user2=user2_slack_id_code[0])
+        message += " " + get_message('direct_conflict_init_severity_2.txt').format(user2=user2_slack_id_code[1])
 
     elif conflict_flag == Conflict_flag.same_class.value:
         # same class
@@ -231,24 +232,24 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
             con_logic_for_class = con_logic_for_class + logic + ' '
         print(con_logic_for_class)
 
-        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[0],
-                                                            user2=user2_slack_id_code[0],
+        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[1],
+                                                            user2=user2_slack_id_code[1],
                                                             filename=con_logic_for_class)
-        message += " " + get_message('direct_conflict_init_severity_1.txt').format(user2=user2_slack_id_code[0])
+        message += " " + get_message('direct_conflict_init_severity_1.txt').format(user2=user2_slack_id_code[1])
 
     elif conflict_flag == Conflict_flag.file_in.value:
         # just in
-        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[0],
-                                                            user2=user2_slack_id_code[0],
+        message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[1],
+                                                            user2=user2_slack_id_code[1],
                                                             filename=conflict_file)
 
     elif conflict_flag == Conflict_flag.direct_conflict_finished.value:
         # direct conflict solved
-        if user2_slack_id_code[0] == user1_slack_id_code[0]:
+        if user2_slack_id_code[1] == user1_slack_id_code[1]:
             pass
         else:
-            message = get_message('direct_conflict_finished.txt').format(user1=user1_slack_id_code[0],
-                                                                         user2=user2_slack_id_code[0],
+            message = get_message('direct_conflict_finished.txt').format(user1=user1_slack_id_code[1],
+                                                                         user2=user2_slack_id_code[1],
                                                                          filename=conflict_file)
 
     if message != "":
@@ -290,13 +291,13 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
 
     if conflict_flag == Conflict_flag.indirect_conflict_finished.value:
         # indirect conflict solved
-        if user2_slack_id_code[0] == user1_slack_id_code[0]:
+        if user2_slack_id_code[1] == user1_slack_id_code[1]:
             pass
         else:
-            message = get_message('indirect_conflict_finished.txt').format(user1=user1_slack_id_code[0],
+            message = get_message('indirect_conflict_finished.txt').format(user1=user1_slack_id_code[1],
                                                                            filename1=conflict_file1,
                                                                            logic1=conflict_logic1,
-                                                                           user2=user2_slack_id_code[0],
+                                                                           user2=user2_slack_id_code[1],
                                                                            filename2=conflict_file2,
                                                                            logic2=conflict_logic2)
 
@@ -315,8 +316,8 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
                                  filename2=conflict_file2,
                                  function1=conflict_logic1,
                                  function2=conflict_logic2,
-                                 user1=user1_slack_id_code[0],
-                                 user2=user2_slack_id_code[0])
+                                 user1=user1_slack_id_code[1],
+                                 user2=user2_slack_id_code[1])
 
 
     if message != "":
@@ -331,13 +332,13 @@ def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, use
 
     # same server
     if conflict_logic == "in":
-        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[0],
-                                                                    user2_slack_id_code[0],
+        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
+                                                                    user2_slack_id_code[1],
                                                                     conflict_file,
                                                                     '')
     else:
-        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[0],
-                                                                    user2_slack_id_code[0],
+        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
+                                                                    user2_slack_id_code[1],
                                                                     conflict_file,
                                                                     conflict_logic)
     send_channel_message("code-conflict-chatbot", message)
