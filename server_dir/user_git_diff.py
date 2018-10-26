@@ -79,40 +79,44 @@ class user_git_diff:
 
             for plus_temp in self.content['plus_list'][file_name]:
                 if plus_temp[1] in call_dict[file_name].keys():
-                    call_context = call_dict[file_name][plus_temp[1]].split(".")
-                    func_name = call_context[-1]
-                    file_path_and_class_context = call_context[:-1]
-                    file_path = ""
-                    class_context = []
-                    while file_path_and_class_context:
-                        print(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py")
-                        if os.path.exists(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py"):
-                            file_path = os.path.join(project_name, "/".join(file_path_and_class_context)) + ".py"
-                            break
-                        class_context.append(file_path_and_class_context[-1])
-                        file_path_and_class_context.pop()
+                    for call_dict_context in call_dict[file_name][plus_temp[1]]:
+                        call_context = call_dict_context.split(".")
+                        func_name = call_context[-1]
+                        file_path_and_class_context = call_context[:-1]
+                        file_path = ""
+                        class_context = []
+                        while file_path_and_class_context:
+                            print(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py")
+                            if os.path.exists(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py"):
+                                file_path = os.path.join(project_name, "/".join(file_path_and_class_context)) + ".py"
+                                break
+                            class_context.append(file_path_and_class_context[-1])
+                            file_path_and_class_context.pop()
 
-                    # Include call in same file
-                    if not file_path:
-                        file_path = file_name
-                    calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
+                        # Include call in same file
+                        if not file_path:
+                            file_path = file_name
+                        if plus_temp[1] not in calling_dict[file_name].keys():
+                            calling_dict[file_name][plus_temp[1]] = []
+                        calling_dict[file_name][plus_temp[1]].append({"file_path": file_path, "class_context": class_context[::-1], "func_name": func_name})
 
-                    # # Except call in same file
-                    # if file_path:
-                    #     calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
+                        # # Except call in same file
+                        # if file_path:
+                        #     calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
 
         for file_name, temp_calling_list in calling_dict.items():
-            for line_num, temp_calling in temp_calling_list.items():
-                temp_logic = ""
-                if temp_calling['class_context']:
-                    temp_logic += "class"
-                    for temp_class in temp_calling['class_context']:
-                        temp_logic += ":" + temp_class
-                    temp_logic += ":" + temp_calling['func_name']
+            for line_num, temp_calling_list_list in temp_calling_list.items():
+                for temp_calling in temp_calling_list_list:
+                    temp_logic = ""
+                    if temp_calling['class_context']:
+                        temp_logic += "class"
+                        for temp_class in temp_calling['class_context']:
+                            temp_logic += ":" + temp_class
+                        temp_logic += ":" + temp_calling['func_name']
 
-                else:
-                    temp_logic += "function:" + temp_calling['func_name']
-                calling_dict[file_name][line_num]['logic'] = temp_logic
+                    else:
+                        temp_logic += "function:" + temp_calling['func_name']
+                    temp_calling['logic'] = temp_logic
 
         for file_name, call_list_dict in calling_dict.items():
             print("Final calling", file_name, " : ", calling_dict[file_name])
@@ -138,42 +142,34 @@ class user_git_diff:
             elif isinstance(each, ast.If):
                 self.extract_call(each, import_table, import_from_table, call_list_dict)
 
+            elif isinstance(each, ast.With):
+                self.extract_call(each, import_table, import_from_table, call_list_dict)
+
             elif isinstance(each, ast.Assign):
-                print("--- Assign ---")
                 if isinstance(each.value, ast.Call):
-                    print("-- Call --")
                     names = []
                     for name in each.targets:
                         if isinstance(name, ast.Name):
-                            print(" name.id : ", name.id)
                             names.append(name.id)
-                    stack = []
-                    cur = each.value.func
-                    check = 0
-                    while isinstance(cur, ast.Attribute):
-                        if (check == 0):
-                            stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
-                            check = 1
-                        else:
-                            stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
-                        print("stack while : ", stack)
-                        cur = cur.value
 
-                    print(cur)
+                    for keyword in each.value.keywords:
+                        if isinstance(keyword.value, ast.Call):
+                            stack = self.get_extract_call_logic(keyword.value.func, import_table, import_from_table, assign_dict, names)
+                            if each.lineno not in call_list_dict.keys():
+                                call_list_dict[each.lineno] = []
+                            call_list_dict[each.lineno].append(stack)
 
-                    if not isinstance(cur, ast.Name):
-                        print("Done")
-                        continue
-                    print(cur.id)
-                    stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
-                    print("stack : ", stack)
-                    stack = stack[::-1]
-                    print("stack : ", stack)
-                    stack = '.'.join(stack)
-                    print("stack : ", stack)
-                    for name in names:
-                        assign_dict[name] = stack
-                    call_list_dict[each.lineno] = stack
+                    for arg in each.value.args:
+                        if isinstance(arg, ast.Call):
+                            stack = self.get_extract_call_logic(arg.func, import_table, import_from_table, assign_dict, names)
+                            if each.lineno not in call_list_dict.keys():
+                                call_list_dict[each.lineno] = []
+                            call_list_dict[each.lineno].append(stack)
+
+                    stack = self.get_extract_call_logic(each.value.func, import_table, import_from_table, assign_dict, names)
+                    if each.lineno not in call_list_dict.keys():
+                        call_list_dict[each.lineno] = []
+                    call_list_dict[each.lineno].append(stack)
 
                 elif isinstance(each.value, ast.BinOp):
                     if isinstance(each.value.left, ast.Call):
@@ -183,20 +179,10 @@ class user_git_diff:
                                 if name.id in assign_dict:
                                     del assign_dict[name.id]
                                 names.append(name.id)
-                        stack = []
-                        cur = each.value.left.func
-                        while isinstance(cur, ast.Attribute):
-                            stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
-                            cur = cur.value
-                        if not isinstance(cur, ast.Name):
-                            continue
-                        stack.append(
-                            assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
-                        stack = stack[::-1]
-                        stack = '.'.join(stack)
-                        for name in names:
-                            assign_dict[name] = stack
-                        call_list_dict[each.lineno] = stack
+                        stack = self.get_extract_call_logic(each.value.left.func, import_table, import_from_table, assign_dict, names)
+                        if each.lineno not in call_list_dict.keys():
+                            call_list_dict[each.lineno] = []
+                        call_list_dict[each.lineno].append(stack)
 
                     if isinstance(each.value.right, ast.Call):
                         names = []
@@ -205,20 +191,10 @@ class user_git_diff:
                                 if name.id in assign_dict:
                                     del assign_dict[name.id]
                                 names.append(name.id)
-                        stack = []
-                        cur = each.value.right.func
-                        while isinstance(cur, ast.Attribute):
-                            stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
-                            cur = cur.value
-                        if not isinstance(cur, ast.Name):
-                            continue
-                        stack.append(
-                            assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
-                        stack = stack[::-1]
-                        stack = '.'.join(stack)
-                        for name in names:
-                            assign_dict[name] = stack
-                        call_list_dict[each.lineno] = stack
+                        stack = self.get_extract_call_logic(each.value.right.func, import_table, import_from_table, assign_dict, names)
+                        if each.lineno not in call_list_dict.keys():
+                            call_list_dict[each.lineno] = []
+                        call_list_dict[each.lineno].append(stack)
 
                     if isinstance(each.value.left, ast.Name) or isinstance(each.value.right, ast.Name):
                         names = []
@@ -232,10 +208,8 @@ class user_git_diff:
                         elif isinstance(each.value.right, ast.Name):
                             cur = each.value.right
 
-                        print(cur.id)
                         stack = []
                         stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
-                        print("stack : ", stack)
                         stack = stack[::-1]
                         list = stack[0].split('.')[:-1]
                         class_name = ".".join(list)
@@ -252,9 +226,49 @@ class user_git_diff:
                         call_list_dict[each.lineno] = class_name
 
             elif isinstance(each, ast.Expr):
-                print("--- Expr ---")
                 if isinstance(each.value, ast.Call):
-                    print("-- Call --")
+                    for keyword in each.value.keywords:
+                        if isinstance(keyword.value, ast.Call):
+                            stack = []
+                            cur = keyword.value.func
+                            check = 0
+                            while isinstance(cur, ast.Attribute):
+                                if check == 0:
+                                    stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
+                                    check = 1
+                                else:
+                                    stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
+                                cur = cur.value
+                            if not isinstance(cur, ast.Name):
+                                continue
+                            stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id,cur.id))))
+                            stack = stack[::-1]
+                            stack = '.'.join(stack)
+                            if each.lineno not in call_list_dict.keys():
+                                call_list_dict[each.lineno] = []
+                            call_list_dict[each.lineno].append(stack)
+
+                    for arg in each.value.args:
+                        if isinstance(arg, ast.Call):
+                            stack = []
+                            cur = arg.func
+                            check = 0
+                            while isinstance(cur, ast.Attribute):
+                                if check == 0:
+                                    stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
+                                    check = 1
+                                else:
+                                    stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
+                                cur = cur.value
+                            if not isinstance(cur, ast.Name):
+                                continue
+                            stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
+                            stack = stack[::-1]
+                            stack = '.'.join(stack)
+                            if each.lineno not in call_list_dict.keys():
+                                call_list_dict[each.lineno] = []
+                            call_list_dict[each.lineno].append(stack)
+
                     stack = []
                     cur = each.value.func
                     check = 0
@@ -264,17 +278,15 @@ class user_git_diff:
                             check = 1
                         else:
                             stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
-                        print("stack while : ", stack)
                         cur = cur.value
                     if not isinstance(cur, ast.Name):
                         continue
                     stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
-                    print("stack : ", stack)
                     stack = stack[::-1]
-                    print("stack : ", stack)
                     stack = '.'.join(stack)
-                    print("stack : ", stack)
-                    call_list_dict[each.lineno] = stack
+                    if each.lineno not in call_list_dict.keys():
+                        call_list_dict[each.lineno] = []
+                    call_list_dict[each.lineno].append(stack)
 
             elif isinstance(each, ast.Import):
                 for name in each.names:
@@ -288,3 +300,24 @@ class user_git_diff:
                         import_from_table[name.name] = module + '.' + name.name
                     else:
                         import_from_table[name.asname] = module + '.' + name.name
+
+    def get_extract_call_logic(self, cur, import_table, import_from_table, assign_dict, names):
+        stack = []
+        check = 0
+        while isinstance(cur, ast.Attribute):
+            if check == 0:
+                stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
+                check = 1
+            else:
+                stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
+            cur = cur.value
+
+        if not isinstance(cur, ast.Name):
+            return
+        stack.append(assign_dict.get(cur.id, import_table.get(cur.id, import_from_table.get(cur.id, cur.id))))
+        stack = stack[::-1]
+        stack = '.'.join(stack)
+        for name in names:
+            assign_dict[name] = stack
+
+        return stack

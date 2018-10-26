@@ -64,18 +64,19 @@ class work_database:
         # { file_name : { line : { 'file_path': value, 'class_context': [value], 'func_name': value, 'logic': value } } }
         for file_name, temp_calling_list in calling_list.items():
             print("temp_calling_list : ", temp_calling_list)
-            for line_num, temp_calling in temp_calling_list.items():
-                try:
-                    sql = "replace into calling_table " \
-                          "(project_name, user_name, file_name, calling_file, calling_logic) " \
-                          "value ('%s', '%s', '%s', '%s', '%s')" \
-                          % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
-                    print(sql)
-                    self.cursor.execute(sql)
-                    self.conn.commit()
-                except:
-                    self.conn.rollback()
-                    print("ERROR : update_user_data : calling")
+            for line_num, temp_calling_list_list in temp_calling_list.items():
+                for temp_calling in temp_calling_list_list:
+                    try:
+                        sql = "replace into calling_table " \
+                              "(project_name, user_name, file_name, calling_file, calling_logic) " \
+                              "value ('%s', '%s', '%s', '%s', '%s')" \
+                              % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
+                        print(sql)
+                        self.cursor.execute(sql)
+                        self.conn.commit()
+                    except:
+                        self.conn.rollback()
+                        print("ERROR : update_user_data : calling")
 
         # in edit_amount
         # { file_name : { 'total_plus': value, 'total_minus': value }
@@ -186,27 +187,28 @@ class work_database:
 
         # { file_name : { line : { 'file_path': value, 'class_context': [value], 'func_name': value, 'logic': value } } }
         for file_name, temp_calling_list in calling_list.items():
-            for line_num, temp_calling in temp_calling_list.items():
-                try:
-                    sql = "select * " \
-                          "from calling_table " \
-                          "where project_name = '%s' " \
-                          "and user_name = '%s' " \
-                          "and file_name = '%s' " \
-                          "and calling_file = '%s' " \
-                          "and calling_logic = '%s' " \
-                          % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
-                    print(sql)
-                    self.cursor.execute(sql)
-                    self.conn.commit()
+            for line_num, temp_calling_list_list in temp_calling_list.items():
+                for temp_calling in temp_calling_list_list:
+                    try:
+                        sql = "select * " \
+                              "from calling_table " \
+                              "where project_name = '%s' " \
+                              "and user_name = '%s' " \
+                              "and file_name = '%s' " \
+                              "and calling_file = '%s' " \
+                              "and calling_logic = '%s' " \
+                              % (project_name, user_name, file_name, temp_calling['file_path'], temp_calling['logic'])
+                        print(sql)
+                        self.cursor.execute(sql)
+                        self.conn.commit()
 
-                    raw_tuple = self.cursor.fetchall()
-                    for raw in raw_tuple:
-                        current_calling_db.add(raw)
+                        raw_tuple = self.cursor.fetchall()
+                        for raw in raw_tuple:
+                            current_calling_db.add(raw)
 
-                except:
-                    self.conn.rollback()
-                    print("ERROR : remove_user_data5")
+                    except:
+                        self.conn.rollback()
+                        print("ERROR : remove_user_data5")
 
         remove_calling_db = user_calling_db - current_calling_db
 
