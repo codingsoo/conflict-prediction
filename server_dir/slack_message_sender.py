@@ -78,15 +78,22 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
     # Initialize ignore flag
     direct_ignore_flag = 0
 
+    w_db = work_database()
     try:
-        w_db = work_database()
         direct_ignore_flag, _ = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
-        w_db.close()
     except:
         print("no ignore list")
 
+    approve_set = w_db.read_approved_list(user1_slack_id_code[1])
+    print("approve_set : ", approve_set)
+    print("conflict_file : ", conflict_file)
+    w_db.close()
+
     if direct_ignore_flag == 1:
-        print("IGNORE MESSAGE")
+        print("IGNORE MESSAGE BY DIRECT")
+        return
+    elif conflict_file in approve_set:
+        print("IGNORE MESSAGE BY FILE")
         return
 
     message = ""
@@ -260,21 +267,23 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
     # Initialize ignore flag
     indirect_ignore_flag = 0
 
-
-    print("indirect conflict1", conflict_project, user1_slack_id_code[0],
-          conflict_file1, conflict_logic1)
-    print("indirect conflict2", conflict_project, user2_slack_id_code[0],
-          conflict_file2, conflict_logic2)
-
+    w_db = work_database()
     try:
-        w_db = work_database()
         _, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
-        w_db.close()
     except:
         print("no ignore list")
 
+    approve_set = w_db.read_approved_list(user1_slack_id_code[1])
+    print("approve_set : ", approve_set)
+    print("conflict_file : ", conflict_file1)
+    w_db.close()
+
+    if conflict_file1 in approve_set:
+        print("IGNORE MESSAGE BY FILE")
+        return
+
     if indirect_ignore_flag == 1:
-        print("IGNORE MESSAGE")
+        print("IGNORE MESSAGE BY INDIRECT")
         return
 
     message = ""

@@ -90,7 +90,7 @@ class direct_work_database:
         slack_code =  w_db.convert_git_id_to_slack_code(user_name)
 
         direct_conflict_list = self.search_working_table(project_name, working_list, user_name)
-        direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(slack_code, direct_conflict_list)
+        # direct_conflict_list, approve_file_list = w_db.classify_direct_conflict_approved_list(slack_code, direct_conflict_list)
         w_db.close()
 
         print("direct_conflict_list : ", direct_conflict_list)
@@ -134,7 +134,7 @@ class direct_work_database:
 
         if non_direct_conflict_list:
             print("\n#### Non-Direct Conflict !!! ####")
-            self.non_direct_conflict_logic(project_name, user_name, approve_file_list, non_direct_conflict_list)
+            self.non_direct_conflict_logic(project_name, user_name, non_direct_conflict_list)
 
         return
 
@@ -402,6 +402,7 @@ class direct_work_database:
                                                      conflict_logic=temp_best[3],
                                                      user1_name=temp_best[5],
                                                      user2_name=temp_best[6])
+
                         self.increase_alert_count(project_name=temp_best[1],
                                                   file_name=temp_best[2],
                                                   logic1_name=temp_best[3],
@@ -589,25 +590,12 @@ class direct_work_database:
 
         return percentage_of_direct_conflict[0]
 
-    def non_direct_conflict_logic(self, project_name, user_name, approve_file_list, non_direct_conflict_list):
-        raw_list = non_direct_conflict_list[:]
+    def non_direct_conflict_logic(self, project_name, user_name, non_direct_conflict_list):
+        print("non_direct_conflict_logic : ", non_direct_conflict_list)
 
-        print("non_direct_conflict_logic : ", raw_list)
-        print("approve_file_list : ", approve_file_list)
+        # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
+        for raw_temp in non_direct_conflict_list:
 
-        # Do not notice a Conflict-Solve alarm that is resolved by Approve.
-
-        # [ project_name, file_name, logic_name, user_name, work_line, work_amount, log_time ]
-        for afl in approve_file_list:
-            # [ project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, alert_count, severity, log_time ]
-            # 아래 조건문 중 (afl[3] == rl[4] or afl[3] == rl[5]) 가 꼭 필요한가?
-            for ndcl in non_direct_conflict_list:
-                if afl[0] == ndcl[0] and afl[1] == ndcl[1] and (afl[3] == ndcl[4] or afl[3] == ndcl[5]):
-                    raw_list.remove(ndcl)
-
-        print("non_direct_conflict_logic : ", raw_list)
-
-        for raw_temp in raw_list:
             send_direct_conflict_message(conflict_flag=Conflict_flag.direct_conflict_finished.value,
                                          conflict_project=project_name,
                                          conflict_file=raw_temp[1],

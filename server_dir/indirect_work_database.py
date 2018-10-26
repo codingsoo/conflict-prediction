@@ -39,8 +39,8 @@ class indirect_work_database:
         user_slack_code = w_db.convert_git_id_to_slack_code(user_name)
         user_call_indirect_conflict_list = self.search_logic_dependency(project_name, user_calling_list, other_working_list, type="user_call")
         user_work_indirect_conflict_list = self.search_logic_dependency(project_name, other_calling_list, user_working_list, type="user_work")
-        user_call_indirect_conflict_list, user_call_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_call_indirect_conflict_list)
-        user_work_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_work_indirect_conflict_list)
+        # user_call_indirect_conflict_list, user_call_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_call_indirect_conflict_list)
+        # user_work_indirect_conflict_list, user_work_file_approve_list = w_db.classify_indirect_conflict_approved_list(user_slack_code, user_work_indirect_conflict_list)
 
         # Conflict
         if user_call_indirect_conflict_list:
@@ -90,7 +90,7 @@ class indirect_work_database:
 
         if non_indirect_conflict_list:
             print("\n#### User Call Non-Indirect Conflict !!! ####")
-            self.non_indirect_conflict_logic(project_name, user_call_file_approve_list, non_indirect_conflict_list)
+            self.non_indirect_conflict_logic(project_name, non_indirect_conflict_list)
 
         w_db.close()
         return
@@ -607,28 +607,12 @@ class indirect_work_database:
         return
 
 
-    def non_indirect_conflict_logic(self, project_name, approve_file_list, non_indirect_conflict_list):
-        raw_list = non_indirect_conflict_list[:]
-
-        print("non_indirect_conflict_logic : ", raw_list)
-        print("approve_file_list : ", approve_file_list)
-
-        # Do not notice a Conflict-Solve alarm that is resolved by Approve.
-
-        # [ user1_name, user1_file, user1_logic(call or def), user2_name, user2_file, user2_logic(def or call) ]
-        for afl in approve_file_list:
-            # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
-            for nicl in non_indirect_conflict_list:
-                if ((afl[0] == nicl[6]) and (afl[2] == nicl[4]) and (afl[3] == nicl[7]) and (afl[5] == nicl[2]) and nicl[9] == 1):
-                    raw_list.remove(nicl)
-                if ((afl[0] == nicl[6]) and (afl[2] == nicl[2]) and (afl[3] == nicl[7]) and (afl[5] == nicl[4]) and nicl[9] == 2):
-                    raw_list.remove(nicl)
-
-        print("non_indirect_conflict_logic : ", raw_list)
+    def non_indirect_conflict_logic(self, project_name, non_indirect_conflict_list):
+        print("non_indirect_conflict_logic : ", non_indirect_conflict_list)
 
         # Send to the user about indirect solved message
-        # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, log_time ]
-        for raw_temp in raw_list:
+        # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
+        for raw_temp in non_indirect_conflict_list:
             send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
                                            conflict_project=project_name,
                                            conflict_logic1=raw_temp[4],
