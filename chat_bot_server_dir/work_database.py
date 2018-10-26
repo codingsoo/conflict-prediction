@@ -640,14 +640,17 @@ class work_database:
         try:
             sql = "SELECT file_name, logic_name, work_line, work_amount " \
                   "FROM working_table " \
-                  "WHERE user_name = '%s'" % git_email_id
+                  "WHERE user_name = '%s'" \
+                  "ORDER BY log_time DESC LIMIT 1 " % git_email_id
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
 
+            # sorted(student_tuples, key=lambda student: student[2])
             raw_tuple = self.cursor.fetchall()
-            print(raw_tuple)
+            print("get_user_working_status", raw_tuple)
             raw = tuple()
+
             if raw_tuple:
                 raw = raw_tuple[0]
                 print("get_user_working_status", raw)
@@ -1336,6 +1339,8 @@ class work_database:
 
     def get_indirect_conflict_user_list(self, project_name, user_git_id, file_name):
         raw_list = []
+        raw_dict = dict()
+        file_set = set()
         try:
             temp_file_name = str(file_name) + "%"
 
@@ -1348,49 +1353,86 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
-            print("indirect_conflict", raw_list)
+            print("indirect_logic_dependency", raw_list)
 
         except:
             self.conn.rollback()
-            print("ERROR : get_indirect_conflict_user_list")
-
-        file_list = []
+            print("ERROR : get_indirect_conflict_user_list 1")
 
         # [project_name, u, v, length]
         for temp_raw in raw_list:
-            temp_u = str(temp_raw[1]).split('|')[0]
-            temp_v = str(temp_raw[2]).split('|')[0]
-            file_list.append(temp_u)
-            file_list.append(temp_v)
+            temp_file_u = str(temp_raw[1]).split('|')[0]
+            temp_file_v = str(temp_raw[2]).split('|')[0]
+            temp_logic_u = str(temp_raw[1]).split('|')[1]
+            temp_logic_v = str(temp_raw[2]).split('|')[1]
+            # (file_name, logic_name)
+            if temp_file_u != file_name:
+                file_set.add((temp_file_u, temp_logic_u))
+            if temp_file_v != file_name:
+                file_set.add((temp_file_v, temp_logic_v))
 
-        file_list = list(set(file_list))
-        raw_dict = dict()
+        print("indirect_associated_file_set", file_set)
 
-        for temp_file in file_list:
+        raw_list = []
+        # file_name 내에서 call 가능한 다른 파일의 함수를 수정하고 있는지 working list에서 조사
+        for temp_raw in file_set:
             try:
+                temp_file = temp_raw[0]
+                temp_logic = temp_raw[1]
                 sql = "select distinct user_name " \
                       "from uci_chat_bot.working_table " \
                       "where project_name = '%s' " \
                       "and file_name = '%s' " \
-                      "and file_name != '%s' " \
-                      "and user_name != '%s'" % (project_name, temp_file, file_name, user_git_id)
+                      "and logic_name = '%s' " \
+                      "and user_name != '%s'" % (project_name, temp_file, temp_logic, user_git_id)
 
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
 
-                user_name_list = list(self.cursor.fetchall())
-                for user_name in user_name_list:
+                raw_list = list(self.cursor.fetchall())
+                print("indirect_def_list", raw_list)
+
+                for user_name in raw_list:
+                    msg = "[" + temp_file + ", " + temp_logic + "]"
                     try:
-                        raw_dict[user_name[0]].append(temp_file)
+                        raw_dict[user_name[0]].append(msg)
                     except:
-                        raw_dict[user_name[0]] = [temp_file]
+                        raw_dict[user_name[0]] = [msg]
+
             except:
                 self.conn.rollback()
                 print("ERROR : get_indirect_conflict_user_list 2")
-        print("indirect_conflict2", raw_dict)
 
+        # counting_triangle.py 에서 run을 수정했을 때 -> SquareMatrix.py에서 run을 부를 수 있는가
+        # SquareMatrix.py 에서 get_lower을 수정했을 때 -> counting_triangle.py 에서 get_lower을 부를 수 있는가
+        # counting_triangle.py에서 get_lower을 불렀을 때
+        # SquareMatrix.py에서 run을 불렀을 때 -> counting_triangle.py에서 run을 수정할 수 있는가
+
+        raw_list = []
+        try:
+            sql = "select user_name, file_name, calling_logic " \
+                  "from calling_table " \
+                  "where project_name = '%s' " \
+                  "and calling_file = '%s' " % (project_name, file_name)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            raw_list = list(self.cursor.fetchall())
+            print("indirect_call_list", raw_list)
+            for temp_raw in raw_list:
+                msg = "[" + temp_raw[1] + ", " + (file_name + "|" + temp_raw[2]) + "]"
+                try:
+                    raw_dict[temp_raw[0]].append(msg)
+                except:
+                    raw_dict[temp_raw[0]] = [msg]
+        except:
+            self.conn.rollback()
+            print("ERROR : get_indirect_conflict_user_list 3")
+
+        print("indirect_call_and_def_dict", raw_dict)
         return list(raw_dict.keys()), list(raw_dict.values())
+
 
     def all_conflict_list(self, github_email):
         conflict_set = set()

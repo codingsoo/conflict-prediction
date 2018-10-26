@@ -633,6 +633,8 @@ class indirect_work_database:
                                            conflict_project=project_name,
                                            conflict_logic1=raw_temp[4],
                                            conflict_logic2=raw_temp[2],
+                                           conflict_file1=raw_temp[3],
+                                           conflict_file2=raw_temp[1],
                                            user1_name=raw_temp[6],
                                            user2_name=raw_temp[7])
 
@@ -640,6 +642,8 @@ class indirect_work_database:
                                            conflict_project=project_name,
                                            conflict_logic1=raw_temp[4],
                                            conflict_logic2=raw_temp[2],
+                                           conflict_file1=raw_temp[3],
+                                           conflict_file2=raw_temp[1],
                                            user1_name=raw_temp[7],
                                            user2_name=raw_temp[6])
 

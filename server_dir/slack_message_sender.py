@@ -260,6 +260,12 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
     # Initialize ignore flag
     indirect_ignore_flag = 0
 
+
+    print("indirect conflict1", conflict_project, user1_slack_id_code[0],
+          conflict_file1, conflict_logic1)
+    print("indirect conflict2", conflict_project, user2_slack_id_code[0],
+          conflict_file2, conflict_logic2)
+
     try:
         w_db = work_database()
         _, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
@@ -278,9 +284,12 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
         if user2_slack_id_code[0] == user1_slack_id_code[0]:
             pass
         else:
-            message = get_message('indirect_conflict_finished.txt').format(filename1=conflict_logic1,
+            message = get_message('indirect_conflict_finished.txt').format(user1=user1_slack_id_code[0],
+                                                                           filename1=conflict_file1,
+                                                                           logic1=conflict_logic1,
                                                                            user2=user2_slack_id_code[0],
-                                                                           filename2=conflict_logic2)
+                                                                           filename2=conflict_file2,
+                                                                           logic2=conflict_logic2)
 
     elif conflict_flag == Conflict_flag.indirect_conflict.value:
         # indirect conflict
@@ -328,8 +337,9 @@ def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, use
 
 def send_remove_lock_channel(channel, lock_file_list):
     message = ""
-    for file_name in lock_file_list:
-        message += "{} is unlocked from now on.\n".format(file_name)
+    message += "*{}* is unlocked from now on.\n".format(", ".join(lock_file_list))
+    # for file_name in lock_file_list:
+    #     message += "{} is unlocked from now on.\n".format(file_name)
     # send_channel_message(channel, message)
     send_all_user_message(message=message)
 

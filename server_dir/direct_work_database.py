@@ -49,8 +49,9 @@ class direct_work_database:
         remove_lock_list = w_db.prev_remove_lock_list()
         if remove_lock_list:
             message = ""
-            for file_name in remove_lock_list:
-                message += "{} is unlocked from now on.\n".format(file_name)
+            message += "*{}* is unlocked from now on.\n".format(", ".join(remove_lock_list))
+            # for file_name in remove_lock_list:
+                # message += "{} is unlocked from now on.\n".format(file_name)
             send_all_user_message(message)
             # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
@@ -682,7 +683,7 @@ class direct_work_database:
     # Insert conflict data
     def insert_conflict_data(self, project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage):
         try:
-            if "in" in logic1_name or "in" in logic2_name:
+            if "in" == logic1_name or "in" == logic2_name:
                 severity = 1
             sql = "insert into direct_conflict_table " \
                   "(project_name, file_name, logic1_name, logic2_name, user1_name, user2_name, severity, severity_percentage) " \
