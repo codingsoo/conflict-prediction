@@ -175,6 +175,7 @@ def get_attribute_logic(cur_arg, assign_dict, logic_info, type):
     stack = []
     cur = cur_arg
     check = 0
+    inner = 0
     while isinstance(cur, ast.Attribute):
         if check == 0:
             stack.append(assign_dict.get(cur.attr, import_from_table.get(cur.attr, cur.attr)))
@@ -182,6 +183,10 @@ def get_attribute_logic(cur_arg, assign_dict, logic_info, type):
         else:
             stack.append(assign_dict.get(cur.attr, import_table.get(cur.attr, import_from_table.get(cur.attr, cur.attr))))
         cur = cur.value
+    if isinstance(cur, ast.Call):
+        inner = 1
+        cur = cur.func
+
     if not isinstance(cur, ast.Name):
         return
     stack.append(

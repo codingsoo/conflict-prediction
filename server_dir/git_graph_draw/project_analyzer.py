@@ -124,6 +124,16 @@ def make_class_edge(owner, project_name, file_path, value, project_dict, logic_d
                             pass
                         elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
                             edges_list.append([owner + '/' + full_path + '.py|' + 'function:' + paths[-1], owner + '/' + func_id])
+                        elif 'class:'+paths[-1] in logic_dict[full_path + '.py']['Function']:
+                            edges_list.append([owner + '/' + full_path + '.py|' + 'class:' + paths[-1], owner + '/' + func_id])
+
+                    else:
+                        if 'class:' + paths[-1] in logic_dict[file_path]['Class']:
+                            pass
+                        elif 'function:' + paths[0]+':'+paths[1] in logic_dict[file_path]['Function'] :
+                            edges_list.append([owner + '/' + file_path + 'function:' + paths[0]+':'+paths[1], owner + '/' + func_id])
+                        elif 'class:' + paths[0]+':'+paths[1] in logic_dict[file_path]['Function']:
+                            edges_list.append([owner + '/' + file_path + '|class:'+ paths[0]+':'+paths[1], owner + '/' + func_id])
                 else:
                     real_paths = paths[:len(paths) - 2]
                     full_path = project_name
@@ -132,8 +142,7 @@ def make_class_edge(owner, project_name, file_path, value, project_dict, logic_d
 
                     if full_path + '.py' in project_dict:
                         if 'class:' + paths[-2] + ':' + paths[-1] in logic_dict[full_path + '.py']['Function']:
-
-                            edges_list.append([owner + '/' + full_path + '.py|' + 'class:' + paths[-2] + ':' + paths[-1],owner + '/' + func_id])
+                            edges_list.append([owner + '/' + full_path + '.py|'  + 'class:' + paths[-2] + ':' + paths[-1],owner + '/' + func_id])
                         pass
                     else:
                         full_path = full_path + '/' + paths[-2]
@@ -147,9 +156,11 @@ def make_func_edge(owner, project_name, file_path, value, project_dict, logic_di
     for each in value.get('members', []):
         if each['type'] == 'Call' or each['type'] == 'With':
             type = each['type']
-            if not '.' in each['id']:
-                continue
-            paths = each['id'].split('.')
+            if '.' in each['id']:
+                paths = each['id'].split('.')
+            else :
+                paths = [each['id']]
+
             if len(paths) == 2:
                 full_path = project_name + '/' + paths[0]
                 if full_path + '.py' in project_dict:
@@ -157,6 +168,24 @@ def make_func_edge(owner, project_name, file_path, value, project_dict, logic_di
                         pass
                     elif 'function:' + paths[-1] in logic_dict[full_path + '.py']['Function']:
                         edges_list.append([owner + '/' + full_path + '.py|' + 'function:' + paths[-1], owner + '/' + id])
+                else:
+                    if 'class:' + paths[-1] in logic_dict[file_path]['Class']:
+                        pass
+                    elif 'function:' + paths[0] + ':' + paths[1] in logic_dict[file_path]['Function']:
+                        edges_list.append(
+                            [owner + '/' + file_path + '|function:' + paths[0] + ':' + paths[1], owner + '/' + id])
+                    elif 'class:' + paths[0] + ':' + paths[1] in logic_dict[file_path]['Function']:
+                        edges_list.append([owner + '/' + file_path + '|class:' + paths[0] + ':' + paths[1], owner + '/' + id])
+
+            elif len(paths) == 1:
+                if 'class:' + paths[0] in logic_dict[file_path]['Class']:
+                    pass
+                elif 'function:' + paths[0] in logic_dict[file_path]['Function']:
+                    edges_list.append(
+                        [owner + '/' + file_path + '|function:' + paths[0], owner + '/' + id])
+                elif 'class:' + paths[0] in logic_dict[file_path]['Function']:
+                    edges_list.append(
+                        [owner + '/' + file_path + '|class:' + paths[0], owner + '/' + id])
             else:
                 real_paths = paths[:len(paths) - 2]
                 full_path = project_name

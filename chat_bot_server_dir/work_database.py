@@ -43,7 +43,6 @@ class work_database:
                       "and work_line = '%d' " \
                       "and work_amount = '%d'" \
                       % (project_name, temp_work[0], temp_work[1], user_name, temp_work[2], temp_work[3])
-
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
