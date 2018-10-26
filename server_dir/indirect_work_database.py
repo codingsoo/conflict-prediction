@@ -613,23 +613,42 @@ class indirect_work_database:
         # Send to the user about indirect solved message
         # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
         for raw_temp in non_indirect_conflict_list:
-            send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
-                                           conflict_project=project_name,
-                                           conflict_logic1=raw_temp[4],
-                                           conflict_logic2=raw_temp[2],
-                                           conflict_file1=raw_temp[3],
-                                           conflict_file2=raw_temp[1],
-                                           user1_name=raw_temp[6],
-                                           user2_name=raw_temp[7])
+            if raw_temp[9] == 1:
+                send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                               conflict_project=project_name,
+                                               conflict_logic1=raw_temp[4],
+                                               conflict_logic2=raw_temp[2],
+                                               conflict_file1=raw_temp[3],
+                                               conflict_file2=raw_temp[1],
+                                               user1_name=raw_temp[6],
+                                               user2_name=raw_temp[7])
 
-            send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
-                                           conflict_project=project_name,
-                                           conflict_logic1=raw_temp[4],
-                                           conflict_logic2=raw_temp[2],
-                                           conflict_file1=raw_temp[3],
-                                           conflict_file2=raw_temp[1],
-                                           user1_name=raw_temp[7],
-                                           user2_name=raw_temp[6])
+                send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                               conflict_project=project_name,
+                                               conflict_logic1=raw_temp[4],
+                                               conflict_logic2=raw_temp[2],
+                                               conflict_file1=raw_temp[1],
+                                               conflict_file2=raw_temp[3],
+                                               user1_name=raw_temp[7],
+                                               user2_name=raw_temp[6])
+            elif raw_temp[9] == 2:
+                send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                               conflict_project=project_name,
+                                               conflict_logic1=raw_temp[4],
+                                               conflict_logic2=raw_temp[2],
+                                               conflict_file1=raw_temp[1],
+                                               conflict_file2=raw_temp[3],
+                                               user1_name=raw_temp[6],
+                                               user2_name=raw_temp[7])
+
+                send_indirect_conflict_message(conflict_flag=Conflict_flag.indirect_conflict_finished.value,
+                                               conflict_project=project_name,
+                                               conflict_logic1=raw_temp[4],
+                                               conflict_logic2=raw_temp[2],
+                                               conflict_file1=raw_temp[3],
+                                               conflict_file2=raw_temp[1],
+                                               user1_name=raw_temp[7],
+                                               user2_name=raw_temp[6])
 
         # Delete all user conflict list
         # [ project_name, def_file, def_func, call_file, call_func, length, user1_name, user2_name, alert_count, call_user, log_time ]
