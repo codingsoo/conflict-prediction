@@ -62,17 +62,16 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             # 4. ignore_alarm : A user can ignore direct and indirect conflicts.
             # 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
             # 6. working_status : A user can ask about other user's working status
-            # 7. channel_message : A user can let chatbot give a message to channel.
-            # 8. user_message : A user can let chatbot give a message to other users.
-            # 9. recommend : A user can ask chatbot to recommend reaction to conflict.
-            # 10. check_ignored_file : A user can ask chatbot which files are ignored.
-            # 11. check_locker : A user can ask chatbot about who locked the file.
-            # 12. check_severity : A user can ask chatbot about how severe conflict is.
-            # 13. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
-            # 14. greeting : Chatbot can greet users.
-            # 15. complimentary_close : Chatbot can say good bye.
-            # 16. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-            # 17. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+            # 7. user_message : A user can let chatbot give a message to other users.
+            # 8. recommend : A user can ask chatbot to recommend reaction to conflict.
+            # 9. check_ignored_file : A user can ask chatbot which files are ignored.
+            # 10. check_locker : A user can ask chatbot about who locked the file.
+            # 11. check_severity : A user can ask chatbot about how severe conflict is.
+            # 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+            # 13. greeting : Chatbot can greet users.
+            # 14. complimentary_close : Chatbot can say good bye.
+            # 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+            # 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
             """
         elif param0 == "same_named_file":
             message = ""
@@ -107,7 +106,8 @@ def approved_file_logic(slack_code, approved_set, removed_list):
             message = message.format(filename=", ".join(diff_approved_list))
 
         if already_approved_list:
-            message += "You already ignored *{}* file!".format(", ".join(already_approved_list))
+            message += random.choice(shell_dict['feat_already_ignored'])
+            message = message.format(filename=", ".join(already_approved_list))
 
     if removed_list:
         success_list, fail_list = w_db.remove_approved_list(slack_code=slack_code, remove_approved_list=removed_list)
@@ -121,7 +121,8 @@ def approved_file_logic(slack_code, approved_set, removed_list):
             message = message.format(filename=", ".join(success_list))
 
         if fail_list:
-            message += "You already get notified of *{}*\n".format(", ".join(fail_list))
+            message += random.choice(shell_dict['feat_already_notify'])
+            message = message.format(filename=", ".join(fail_list))
 
     w_db.close()
 
@@ -142,16 +143,17 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
             for file_name in already_lock_list:
                 other_slack_code, remain_time_str = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
                 if slack_code == other_slack_code:
-                    message = "You've already locked *{}* file.".format(file_name)
+                    message += random.choice(shell_dict['feat_already_locked'])
+                    message = message.format(filename=file_name)
                 else:
                     message += random.choice(shell_dict['feat_lock_overlap'])
                     message = message.format(user2=other_slack_code, filename=file_name, remaining_time=remain_time_str)
 
         if lock_file_list:
             for file_name in lock_file_list:
-                ch_message += "<@{user}> locked *{file_name}* file for {lock_time} hour(s).".format(user=slack_code,
-                                                                                                    file_name=file_name,
-                                                                                                    lock_time=lock_time)
+                ch_message += random.choice(shell_dict['feat_send_all_user_lock'])
+                ch_message = ch_message.format(user=slack_code, file_name=file_name,lock_time=lock_time)
+
             send_all_user_message(ch_message, slack_code)
             # send_channel_message("code-conflict-chatbot", ch_message)
 
@@ -185,7 +187,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
         else:
-            message = "You didn't lock this file, so you cannot unlock this file. "
+            message += random.choice(shell_dict['feat_cannot_unlock'])
 
     w_db.close()
     return message
@@ -290,9 +292,9 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     if approval == IGNORE:
         if already_ignore_tuple and already_ignore_tuple[ignore_list - 1] == IGNORE: # (1,0) (1,1) / (0,1) (1,1)
             if ignore_list == DIRECT:
-                message = "You have already ignored direct message."
+                message = random.choice(shell_dict['feat_already_ignore_direct'])
             elif ignore_list == INDIRECT:
-                message = "You have already ignored indirect message."
+                message = random.choice(shell_dict['feat_already_ignore_indirect'])
         else:
             if not already_ignore_tuple:
                 w_db.add_ignore(project_name, ignore_list, slack_code)
@@ -307,9 +309,9 @@ def ignore_file_logic(slack_code, ignore_list, approval):
     elif approval == UNIGNORE:
         if not already_ignore_tuple or already_ignore_tuple[ignore_list - 1] == UNIGNORE : #(0,1) (0,0) / (1,0) (0,0)
             if ignore_list == DIRECT:
-                message = "You didn't ignore direct message. So you get notified of direct message!"
+                message = random.choice(shell_dict['feat_can_get_direct_alarm'])
             elif ignore_list == INDIRECT:
-                message = "You didn't ignore indirect message. So you get notified of indirect message!"
+                message = random.choice(shell_dict['feat_can_get_indirect_alarm'])
         else:
             if already_ignore_tuple == (IGNORE, IGNORE): # (1,1)
                 w_db.update_ignore(project_name, ignore_list, slack_code, approval)
@@ -342,7 +344,7 @@ def check_conflict_logic(slack_code, user_git_id, file_name):
         for user_idx, user_name in enumerate(indir_conflict_slack_code_list[1:-1]):
             indir_conflict_info += "*" + ", ".join(indir_conflict_file_list[user_idx + 1]) + "*" + " by <@" + user_name + ">, "
         indir_conflict_info += "*" + ", ".join(indir_conflict_file_list[-1]) + "* by " + indir_conflict_slack_code_list[-1]
-        additional_message = " Also {} may cause indirect conflicts.".format(indir_conflict_info)
+        additional_message = " Also, {} may cause indirect conflicts.".format(indir_conflict_info)
 
     print("direct_user_list", dir_conflict_slack_code_list)
     print("indirect_user_list", indir_conflict_slack_code_list)
@@ -378,12 +380,12 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
 
     project_name = w_db.get_repository_name(target_slack_code)
     if project_name == "":
-        message = "This user is not working on our project."
+        message = random.choice(shell_dict['feat_working_status_no_user'])
     else:
         # target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
         working_status = w_db.get_user_working_status(target_git_id)
         if not working_status:
-            message = "This user doesn't work anything."
+            message = random.choice(shell_dict['feat_no_working_status'])
         else:
             message = random.choice(shell_dict['feat_working_status'])
             message = message.format(user2=target_slack_code, working_status=working_status)
@@ -393,8 +395,9 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
         print(db_lock_set)
         if db_lock_set:
             locked_file = ', '.join(list(db_lock_set))
-            message += "\nAnd <@{user}> locked *{file_name}* files.".format(user=target_slack_code,
+            message += "\nAlso, <@{user}> locked *{file_name}* files.".format(user=target_slack_code,
                                                                             file_name=locked_file)
+
 
     w_db.close()
     return message
@@ -435,7 +438,7 @@ def send_message_channel_logic(target_channel, msg, user_slack_id):
 
 def send_message_direct_logic(user_slack_code, target_slack_code, msg):
     if msg == '':
-        message = 'You must write your message between two double quotations like "message"'
+        message = random.choice(shell_dict['feat_send_message_error'])
         return message
 
     w_db = work_database()
@@ -465,6 +468,7 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
     else:
         other_name = w_db.convert_git_id_to_slack_code(other_git_id)
         # other_name = w_db.convert_git_id_to_slack_id(other_git_id)
+
         percentage_gap = abs(user_percentage - other_percentage)
 
         if user_percentage > other_percentage:
@@ -474,7 +478,7 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
         else:
             message = random.choice(shell_dict['feat_recommend_same_severity'])
 
-        message = message.format(user2=other_name,
+        message = message.format(user2= other_name,
                                  severity_gap=percentage_gap,
                                  user1_severity=user_percentage,
                                  user2_severity=other_percentage)
@@ -538,7 +542,8 @@ def check_severity_logic(slack_code, file_abs_path):
             message += "<@{}> works {:.2f}%, ".format(user_name, sl[1])
         message += "in *{}*".format(file_abs_path)
     else:
-        message += "There is no direct conflict in *{}*.".format(file_abs_path)
+        message = random.choice(shell_dict['feat_check_severity_no_direct_conflict'])
+        message = message.format(filepath=file_abs_path)
 
     w_db.close()
     return message
