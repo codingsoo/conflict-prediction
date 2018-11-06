@@ -44,13 +44,13 @@ slack_events_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", 
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 slack = Slacker(SLACK_BOT_TOKEN)
 
+
 # Error events
 @slack_events_adapter.on("error")
 def error_handler(err):
     print("ERROR: " + str(err))
 
 
-# callback_id : intent_type /  value : conflict_test/ClassA.py  / name : sentence  / text : 1
 # The endpoint Slack will send the user's menu selection to
 @app.route("/slack/message_actions", methods=['POST'])
 def message_actions():
@@ -60,8 +60,10 @@ def message_actions():
 
     # Verify that the request came from Slack
     verify_slack_token(btmsg_json['token'])
+    request_type = btmsg_json['original_message']['attachments'][0]['title']
 
-    if btmsg_json['original_message']['attachments'][0]['title'] == 'Approval Request':
+    # Lock Request button message
+    if request_type == 'Lock Request':
         selected_type = btmsg_json['actions'][0]['name']
         file_name = btmsg_json['callback_id']
         lock_time = int(btmsg_json['actions'][0]['value'])
@@ -72,7 +74,7 @@ def message_actions():
                 channel=btmsg_json['channel']['id'],
                 text=None,
                 ts=btmsg_json['message_ts'],
-                attachments=[{'title': "Approval Request",
+                attachments=[{'title': "Lock Request",
                               'text': ":white_check_mark: Locking *{}* is completed.".format(file_name),
                               'color': "good"}]
             )
@@ -81,7 +83,7 @@ def message_actions():
                 channel=btmsg_json['channel']['id'],
                 text=None,
                 ts=btmsg_json['message_ts'],
-                attachments=[{'title': "Approval Request",
+                attachments=[{'title': "Lock Request",
                               'text': ":white_check_mark: Ok. I'll not lock *{}*".format(file_name),
                               'color': "good"}]
             )
@@ -90,9 +92,12 @@ def message_actions():
                             msg_type=selected_type,
                             target_file=file_name,
                             lock_time=lock_time)
-    else:
+
+    # File selection button message
+    elif request_type == 'Which file do you mean?':
         # Check to see what the user's selection was and update the message accordingly
 
+        # callback_id : intent_type /  value : conflict_test/ClassA.py  / name : sentence  / text : 1
         selected_file = btmsg_json['actions'][0]['value']
         print('selected_file', selected_file)
 

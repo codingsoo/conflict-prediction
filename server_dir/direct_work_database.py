@@ -50,16 +50,14 @@ class direct_work_database:
         if remove_lock_list:
             message = ""
             message += "*{}* is unlocked from now on.\n".format(", ".join(remove_lock_list))
-            # for file_name in remove_lock_list:
-                # message += "{} is unlocked from now on.\n".format(file_name)
             send_all_user_message(message)
             # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()
 
-        inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
-
+        user_slack_code = w_db.convert_git_id_to_slack_code(user_name)
+        inform_unlock_list = w_db.read_oldest_lock_history_list(user_slack_code, remove_lock_list)
         for file in inform_unlock_list:
-            send_lock_button_message(file[2], file[1], file[3])
+            send_lock_request_button_message(file[2], file[1], file[3])
 
         lock_file_list = w_db.inform_lock_file_direct(project_name, working_list, user_name)
         lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)

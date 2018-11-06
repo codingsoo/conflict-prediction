@@ -423,7 +423,8 @@ def send_direct_message(slack_code, message):
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
 
-def send_file_button_message(slack_code, called_same_named_dict, sentence, intent_type):
+# File selection button message
+def send_file_selection_button_message(slack_code, called_same_named_dict, sentence, intent_type):
     slack = get_slack()
     attachments_dict = dict()
 
@@ -464,14 +465,15 @@ def send_file_button_message(slack_code, called_same_named_dict, sentence, inten
     #     ws2.close()
     #     break
 
-def send_lock_button_message(slack_code, lock_file, lock_time):
+# Lock request button message
+def send_lock_request_button_message(slack_code, lock_file, lock_time):
     slack = get_slack()
 
     actions = [{'name': "YES", 'text': "YES", 'type': "button", 'value': lock_time},
                {'name': "NO", 'text': "NO", 'type': "button", 'value': lock_time}]
 
     attachments_dict = dict()
-    attachments_dict['title'] = "Approval Request"
+    attachments_dict['title'] = "Lock Request"
     attachments_dict['text'] = "*{}* is just unlocked. Do you want me to lock it for {} hours?".format(lock_file, lock_time)
     attachments_dict['fallback'] = "You are unable to choose yes or no."
     attachments_dict['callback_id'] = lock_file

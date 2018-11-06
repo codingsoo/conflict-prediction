@@ -5,9 +5,9 @@ from server_dir.slack_message_sender import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+# nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/sooyoungbaek/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/sooyoungbaek/UCI/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
 # bot's feature
@@ -391,7 +391,7 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
             if called_same_named_file_dict:
                 print("called_same_named_file_dict", called_same_named_file_dict)
                 user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
-                send_file_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
+                send_file_selection_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
                 if not called_file_abs_path_list:
                     work_db.close()
                     return ERROR, "same_named_file", None, None

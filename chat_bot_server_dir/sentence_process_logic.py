@@ -1,7 +1,7 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_code_history_info
 from server_dir.slack_message_sender import send_channel_message
-from server_dir.slack_message_sender import send_lock_button_message
+from server_dir.slack_message_sender import send_lock_request_button_message
 from server_dir.slack_message_sender import send_all_user_message
 from server_dir.slack_message_sender import send_direct_message
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
@@ -144,7 +144,6 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 if slack_code == other_slack_code:
                     message = "You've already locked *{}* file.".format(file_name)
                 else:
-                    # other_user_name = w_db.convert_slack_code_to_slack_id(other_slack_code)
                     message += random.choice(shell_dict['feat_lock_overlap'])
                     message = message.format(user2=other_slack_code, filename=file_name, remaining_time=remain_time_str)
 
@@ -179,14 +178,14 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
 
             w_db.remove_lock_list(project_name, slack_code, remove_lock_set)
 
-            inform_unlock_list = w_db.read_oldest_lock_history_list(remove_lock_list)
+            inform_unlock_list = w_db.read_oldest_lock_history_list(slack_code, remove_lock_list)
 
             for file in inform_unlock_list:
                 print("inform_unlock_list", file)
-                send_lock_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
+                send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
         else:
-            message = "You didn't lock this file, so you cannot lock this file. "
+            message = "You didn't lock this file, so you cannot unlock this file. "
 
     w_db.close()
     return message
@@ -554,7 +553,7 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
         lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
         ch_message = ""
         if target_file in lock_file_list:
-            ch_message += "<@{}> locked {} file for {} hour(s).".format(slack_code, target_file, lock_time)
+            ch_message += "<@{}> locked *{}* file for {} hour(s).".format(slack_code, target_file, lock_time)
         # send_channel_message("code-conflict-chatbot", ch_message)
         send_all_user_message(ch_message, slack_code)
         print("YES")

@@ -886,14 +886,14 @@ class work_database:
 
         return
 
-    def read_oldest_lock_history_list(self, unlock_file):
+    def read_oldest_lock_history_list(self, slack_code, unlock_file):
         raw_list = []
 
         try:
             for file in unlock_file:
                 sql = "select * " \
                       "from lock_try_history " \
-                      "where file_name = '%s'" \
+                      "where file_name = '%s'"  \
                       "ORDER BY lock_try_time ASC LIMIT 1 " % (file)
                 print(sql)
                 self.cursor.execute(sql)
