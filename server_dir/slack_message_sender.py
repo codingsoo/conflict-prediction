@@ -222,6 +222,7 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
         message = get_message('direct_conflict.txt').format(user1=user1_slack_id_code[1],
                                                             user2=user2_slack_id_code[1],
                                                             filename=conflict_logic)
+
         message += " " + get_message('direct_conflict_init_severity_2.txt').format(user2=user2_slack_id_code[1])
 
     elif conflict_flag == Conflict_flag.same_class.value:
