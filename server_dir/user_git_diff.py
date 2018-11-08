@@ -342,4 +342,7 @@ class user_git_info:
                     continue
                 row.append(line)
 
+        if row:
+            log_file_list.insert(0, row)
+
         return log_file_list
