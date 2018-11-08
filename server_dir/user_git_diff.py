@@ -3,7 +3,7 @@ import os
 import json
 import ast
 
-class user_git_diff:
+class user_git_info:
 
     # Constructor
     def __init__(self, content):
@@ -13,8 +13,6 @@ class user_git_diff:
             self.proj_name = proj_name_temp
 
         self.user_name = self.content['git_id']
-
-
 
     # getters
     def get_proj_name(self):
@@ -80,29 +78,30 @@ class user_git_diff:
             for plus_temp in self.content['plus_list'][file_name]:
                 if plus_temp[1] in call_dict[file_name].keys():
                     for call_dict_context in call_dict[file_name][plus_temp[1]]:
-                        call_context = call_dict_context.split(".")
-                        func_name = call_context[-1]
-                        file_path_and_class_context = call_context[:-1]
-                        file_path = ""
-                        class_context = []
-                        while file_path_and_class_context:
-                            print(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py")
-                            if os.path.exists(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py"):
-                                file_path = os.path.join(project_name, "/".join(file_path_and_class_context)) + ".py"
-                                break
-                            class_context.append(file_path_and_class_context[-1])
-                            file_path_and_class_context.pop()
+                        if call_dict_context is not None:
+                            call_context = call_dict_context.split(".")
+                            func_name = call_context[-1]
+                            file_path_and_class_context = call_context[:-1]
+                            file_path = ""
+                            class_context = []
+                            while file_path_and_class_context:
+                                print(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py")
+                                if os.path.exists(os.path.join(os.path.pardir, project_name, "/".join(file_path_and_class_context)) + ".py"):
+                                    file_path = os.path.join(project_name, "/".join(file_path_and_class_context)) + ".py"
+                                    break
+                                class_context.append(file_path_and_class_context[-1])
+                                file_path_and_class_context.pop()
 
-                        # Include call in same file
-                        if not file_path:
-                            file_path = file_name
-                        if plus_temp[1] not in calling_dict[file_name].keys():
-                            calling_dict[file_name][plus_temp[1]] = []
-                        calling_dict[file_name][plus_temp[1]].append({"file_path": file_path, "class_context": class_context[::-1], "func_name": func_name})
+                            # Include call in same file
+                            if not file_path:
+                                file_path = file_name
+                            if plus_temp[1] not in calling_dict[file_name].keys():
+                                calling_dict[file_name][plus_temp[1]] = []
+                            calling_dict[file_name][plus_temp[1]].append({"file_path": file_path, "class_context": class_context[::-1], "func_name": func_name})
 
-                        # # Except call in same file
-                        # if file_path:
-                        #     calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
+                            # # Except call in same file
+                            # if file_path:
+                            #     calling_dict[file_name][plus_temp[1]] = {"file_path": file_path, "class_context": class_context, "func_name": func_name}
 
         for file_name, temp_calling_list in calling_dict.items():
             for line_num, temp_calling_list_list in temp_calling_list.items():
@@ -321,3 +320,26 @@ class user_git_diff:
             assign_dict[name] = stack
 
         return stack
+
+    def get_log_file_list(self):
+        log_file_list = []
+        git_log_name_only = self.content['git_log_name_only']
+
+        pos_check = 0
+        row = []
+        for line in git_log_name_only:
+            if line == '':
+                pos_check += 1
+                pos_check %= 3
+                if pos_check == 0:
+                    log_file_list.insert(0, row)
+                    row = []
+                continue
+
+            if pos_check == 2:
+                if line[:7] == 'commit ':
+                    pos_check = 0
+                    continue
+                row.append(line)
+
+        return log_file_list

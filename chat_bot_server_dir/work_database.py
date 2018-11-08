@@ -3,6 +3,7 @@ import time
 from datetime import datetime, timedelta
 import timestring
 from server_dir.server_config_loader import *
+import json
 
 class work_database:
     # Constructor
@@ -1873,6 +1874,46 @@ class work_database:
             print("ERROR : convert slack code to git id")
 
         return slack_id
+
+    def update_git_log_name_only(self, project_name, log_file_list):
+        try:
+            sql = "replace into git_log_name_only " \
+                  "(project_name, commit_order, file_list) values "
+
+            for index, file_list in enumerate(log_file_list):
+                sql += "('%s', '%d', '%s'), " % (project_name, index, json.dumps(file_list))
+
+            sql = sql[:-2]
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update_git_log_name_only")
+
+    def get_git_log_name_only(self, project_name):
+        log_file_list = []
+
+        try:
+            sql = "select * " \
+                  "from git_log_name_only " \
+                  "where project_name = '%s'" % (project_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_list = list(self.cursor.fetchall())
+            for raw in raw_list:
+                log_file_list.append(json.loads(raw[2]))
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get_git_log_name_only")
+
+        return log_file_list
 
     def close(self):
         self.cursor.close()

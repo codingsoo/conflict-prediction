@@ -17,13 +17,19 @@ return      : none
 # BASE_PATH for clone repository.
 BASE_PATH = os.path.pardir
 
-
-def git_diff_logic(content):
-
-    print("\n" + "#### START git diff logic ####")
+def git_logic(content):
+    print("\n" + "#### START git logic ####")
 
     # Create user git diff data
-    user_data = user_git_diff(content)
+    user_data = user_git_info(content)
+
+    git_diff_logic(user_data)
+    git_log_logic(user_data)
+
+    return
+
+def git_diff_logic(user_data):
+    print("\n" + "#### START git diff logic ####")
 
     # Create direct and indirect database connection
     dw_db = direct_work_database()
@@ -72,6 +78,19 @@ def git_diff_logic(content):
 
     return
 
+def git_log_logic(user_data):
+    print("\n" + "#### START git log logic ####")
+
+    w_db = work_database()
+
+    project_name = user_data.get_proj_name()
+    log_file_list = user_data.get_log_file_list()
+
+    w_db.update_git_log_name_only(project_name, log_file_list)
+
+    w_db.close()
+
+    return
 
 def convert_data(content) :
 
@@ -90,6 +109,7 @@ def convert_data(content) :
     converted_data['modify_file'] = dict()
     converted_data['total_plus'] = dict()
     converted_data['total_minus'] = dict()
+    converted_data['git_log_name_only'] = content['git_log_name_only']
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)

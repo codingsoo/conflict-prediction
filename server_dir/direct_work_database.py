@@ -74,8 +74,6 @@ class direct_work_database:
                    if lfl[1] == lnul[1]:
                        already_noticed_lock_file_list.append(lfl)
 
-            print("SUN TEST : ", already_noticed_lock_file_list)
-
             for anlfl in already_noticed_lock_file_list:
                 lock_file_list.remove(anlfl)
 
