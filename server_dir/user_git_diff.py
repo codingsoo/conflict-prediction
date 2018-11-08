@@ -321,6 +321,16 @@ class user_git_info:
 
         return stack
 
+    def get_last_commit_data(self):
+        last_commit_date = ""
+        git_log_name_only = self.content['git_log_name_only']
+        for line in git_log_name_only:
+            if line[:5] == 'Date:':
+                last_commit_date = line
+                break
+
+        return last_commit_date
+
     def get_log_file_list(self):
         log_file_list = []
         git_log_name_only = self.content['git_log_name_only']

@@ -1875,6 +1875,48 @@ class work_database:
 
         return slack_id
 
+    def is_old_git_log_name_only(self, project_name, last_commit_date):
+        try:
+            sql = "select last_commit_date " \
+                  "from last_commit_date " \
+                  "where project_name = '%s'" % (project_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw = self.cursor.fetchone()
+
+            if raw[0] == last_commit_date:
+                return False
+            else:
+                return True
+
+        except:
+            self.conn.rollback()
+            print("ERROR : is_old_git_log_name_only")
+
+    def is_empty_git_log_name_only(self, project_name):
+        try:
+            sql = "select last_commit_date " \
+                  "from last_commit_date " \
+                  "where project_name = '%s'" % (project_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw = self.cursor.fetchone()
+
+            if raw:
+                return False
+            else:
+                return True
+
+        except:
+            self.conn.rollback()
+            print("ERROR : is_empty_git_log_name_only")
+
     def update_git_log_name_only(self, project_name, log_file_list):
         try:
             sql = "replace into git_log_name_only " \
@@ -1892,6 +1934,20 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : update_git_log_name_only")
+
+    def update_last_commit_date(self, project_name, last_commit_date):
+        try:
+            sql = "replace into last_commit_date " \
+                  "(project_name, last_commit_date) value" \
+                  "('%s', '%s')" % (project_name, last_commit_date)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update_last_commit_date")
 
     def get_git_log_name_only(self, project_name):
         log_file_list = []

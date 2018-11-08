@@ -84,9 +84,12 @@ def git_log_logic(user_data):
     w_db = work_database()
 
     project_name = user_data.get_proj_name()
-    log_file_list = user_data.get_log_file_list()
+    last_commit_date = user_data.get_last_commit_data()
 
-    w_db.update_git_log_name_only(project_name, log_file_list)
+    if w_db.is_empty_git_log_name_only(project_name) or w_db.is_old_git_log_name_only(project_name, last_commit_date):
+        log_file_list = user_data.get_log_file_list()
+        w_db.update_git_log_name_only(project_name, log_file_list)
+        w_db.update_last_commit_date(project_name, last_commit_date)
 
     w_db.close()
 
