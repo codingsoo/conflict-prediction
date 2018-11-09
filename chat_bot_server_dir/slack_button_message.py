@@ -6,6 +6,7 @@ from slacker import Slacker
 from flask import Flask, request, make_response
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
+from chat_bot_server_dir.bot_server import message_processing
 
 def get_slack():
     bot_token = verification_token = signing_secret = ''
@@ -112,9 +113,44 @@ def message_actions():
                           'text': btmsg_json['original_message']['attachments'][0]['text']+"\n:white_check_mark: Ok!",
                           'color':"#3AA3E3"}]
         )
-        from chat_bot_server_dir.bot_server import message_processing
         message_processing(msg_json)
 
+    #typo error button message
+    elif request_type == "I think you have typo error.":
+        selected_type = btmsg_json['actions'][0]['value']
+
+        msg_json = dict()
+        msg_json['type'] = 'interactive_message'
+        msg_json['user'] = btmsg_json['user']['id']
+        sentence = btmsg_json['actions'][0]['name']
+        msg_json['text'] = sentence
+        msg_json['channel'] = btmsg_json['channel']['id']
+        msg_json['intent_type'] = btmsg_json['callback_id']
+
+
+        print('msg_json', msg_json)
+
+        if selected_type == "YES":
+            slack.chat.update(
+                channel=btmsg_json['channel']['id'],
+                text=btmsg_json['original_message']['text'],
+                ts=btmsg_json['message_ts'],
+                attachments=[{'title': "I think you have typo error.",
+                              'text': btmsg_json['original_message']['attachments'][0]['text'] + "\n:white_check_mark: Ok!",
+                              'color': "#3AA3E3"}]
+            )
+
+        else:
+            slack.chat.update(
+                channel=btmsg_json['channel']['id'],
+                text=None,
+                ts=btmsg_json['message_ts'],
+                attachments=[{'title': "I think you have typo error.",
+                              'text': ":white_check_mark: Ok.",
+                              'color': "good"}]
+            )
+
+        message_processing(msg_json)
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)
 

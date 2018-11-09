@@ -424,6 +424,27 @@ def send_direct_message(slack_code, message):
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
 
+# Typo error file selection button message
+def send_typo_error_button_message(slack_code,error_file_name, file_name, sentence, intent_type):
+    slack = get_slack()
+    attachments_dict = dict()
+
+    message = ""
+
+    actions = [{'name': sentence.replace(error_file_name, file_name), 'text': "YES", 'type': "button", 'value': "YES"},
+               {'name': sentence, 'text': "NO", 'type': "button", 'value': "NO"}]
+
+    attachments_dict['title'] = "I think you have typo error."
+    attachments_dict['text'] = "You mean%s file?" % (file_name)
+    attachments_dict['fallback'] = "You are unable to choose a file."
+    attachments_dict['callback_id'] = intent_type
+    # attachments_dict['attachment_type'] = "warning"
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "#3AA3E3"
+    attachments = [attachments_dict]
+
+    slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
+
 # File selection button message
 def send_file_selection_button_message(slack_code, called_same_named_dict, sentence, intent_type):
     slack = get_slack()

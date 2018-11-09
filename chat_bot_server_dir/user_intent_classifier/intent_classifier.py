@@ -5,8 +5,9 @@ from server_dir.slack_message_sender import *
 
 # You can download this file : https://spacy.io/usage/vectors-similarity
 
-nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
-# nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+
+# nlp = spacy.load('/Users/seonkyukim/.venv/sayme3.6.5/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
+nlp = spacy.load('/Users/Kathryn/Documents/GitHub/conflict-prediction/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 # nlp = spacy.load('/Users/sooyoungbaek/UCI/conflict-detector/venv/lib/python3.6/site-packages/en_core_web_lg/en_core_web_lg-2.0.0')
 
 
@@ -316,8 +317,29 @@ def intent_classifier(_sentence):
     else:
         return ERROR, sentence
 
+def get_typo_error_cost(user_input, no_typo_error):
+    x_length = len(user_input)+1
+    y_length = len(no_typo_error)+1
 
-def extract_attention_word(owner_name, project_name, _sentence, github_email, intent_type):
+    arr = [[0 for i in range(y_length)] for j in range(x_length)]
+
+    for i in range(x_length-1):
+        arr[i+1][0] = i+1
+
+    for j in range(y_length-1):
+        arr[0][j+1] = j+1
+
+    for j in range(y_length-1):
+        for i in range(x_length-1):
+            if user_input[i] == no_typo_error[j] :
+                arr[i+1][j+1] = arr[i][j]
+            else :
+                arr[i+1][j+1] = min(arr[i][j]+1, min(arr[i+1][j]+1,arr[i][j+1]+1))
+
+
+    return arr[x_length-1][y_length-1]
+
+def extract_attention_word(owner_name, project_name, _sentence, github_email, intent_type, msg_type):
     import re
     work_db = work_database()
     sentence = _sentence
@@ -373,6 +395,34 @@ def extract_attention_word(owner_name, project_name, _sentence, github_email, in
                 except:
                     file_name_dict[fnl] = [fnl_idx]
             print("file_name_dict", file_name_dict)
+
+            if(msg_type == "message"):
+                typo_error_check = 1
+
+                for file_name, fn_idx_list in file_name_dict.items():
+                    if file_name in sentence:
+                        typo_error_check = 0
+
+                sentence_split = sentence.split()
+                user_file_name = " "
+                for i in range(len(sentence_split)):
+                    if ".py" in sentence_split[i]:
+                        user_file_name = sentence_split[i]
+                        break
+
+                if typo_error_check == 1:
+                    no_error_file_name = " "
+                    min_rate = 1000
+                    for file_name, fn_idx_list in file_name_dict.items():
+                        typo_rate = get_typo_error_cost(user_file_name, file_name)
+                        if(typo_rate < min_rate):
+                            min_rate = typo_rate
+                            no_error_file_name = file_name
+
+                    user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
+                    send_typo_error_button_message(user_slack_code,user_file_name, no_error_file_name , sentence, intent_type)
+                    work_db.close()
+                    return ERROR, "typo_error_file", None, None
 
             # Find called files in sentence & decide whether file is same named file
             for file_name, fn_idx_list in file_name_dict.items():
