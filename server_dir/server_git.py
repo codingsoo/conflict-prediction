@@ -23,8 +23,8 @@ def git_logic(content):
     # Create user git diff data
     user_data = user_git_info(content)
 
-    git_diff_logic(user_data)
     git_log_logic(user_data)
+    git_diff_logic(user_data)
 
     return
 
@@ -61,6 +61,11 @@ def git_diff_logic(user_data):
                           edit_amount,
                           calling_data,
                           user_name)
+
+    # Predict conflict
+    w_db.predict_conflict(project_name,
+                          user_name)
+
 
     # Detect direct conflict
     dw_db.detect_direct_conflict(project_name,
