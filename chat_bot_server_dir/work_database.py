@@ -1,7 +1,6 @@
 import pymysql
-import time
+import json
 from datetime import datetime, timedelta
-import timestring
 from server_dir.server_config_loader import *
 import json
 import itertools
@@ -81,22 +80,27 @@ class work_database:
                         print("ERROR : update_user_data : calling")
 
         # in edit_amount
-        # { file_name : { 'total_plus': value, 'total_minus': value }
+        # { file_name : { 'total_plus': value, 'total_minus': value, 'git_diff_code' : text }
         for file_name, temp_edit_amount in edit_amount.items():
             print("temp_edit_amount : ", temp_edit_amount)
             try:
                 sql = "replace into edit_amount " \
-                      "(project_name, file_name, user_name, total_plus, total_minus) " \
-                      "value ('%s', '%s', '%s', '%d', '%d')" \
-                      % (project_name, file_name, user_name, temp_edit_amount['total_plus'], temp_edit_amount['total_minus'])
+                      "(project_name, file_name, user_name, total_plus, total_minus, git_diff_code) " \
+                      "value ('%s', '%s', '%s', '%d', '%d', '%s')" \
+                      % (project_name, file_name, user_name, temp_edit_amount['total_plus'],
+                         temp_edit_amount['total_minus'], temp_edit_amount['git_diff_code'])
+                # sql = "replace into edit_amount " \
+                #       "(project_name, file_name, user_name, total_plus, total_minus, git_diff_code) " \
+                #       "value ('%s', '%s', '%s', '%d', '%d', '%s')" \
+                #       % (project_name, file_name, user_name, temp_edit_amount['total_plus'],
+                #          temp_edit_amount['total_minus'], json.dumps(temp_edit_amount['git_diff_code']))
+
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
             except:
                 self.conn.rollback()
                 print("ERROR : update_user_data : calling")
-
-
         return
 
     # Remove User data to working_table
@@ -1522,6 +1526,31 @@ class work_database:
             print("ERROR : get locker slack code")
 
         return locker_name
+
+    ####################################################################
+    # '''
+    # Find Git diff code
+    # '''
+
+    def get_git_diff_code(self, user_name, project_name, file_path):
+        raw_tuple = tuple()
+        try:
+            sql = "select git_diff_code " \
+                  "from edit_amount " \
+                  "where user_name = '%s' " \
+                  "and project_name = '%s' " \
+                  "and file_name = '%s'" % (user_name, project_name, file_path)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            raw_tuple = self.cursor.fetchone()[0]
+            print("raw_tuple", raw_tuple)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get git diff code")
+
+        return raw_tuple
 
     ####################################################################
     '''

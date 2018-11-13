@@ -114,10 +114,13 @@ def convert_data(content) :
 
     converted_data['plus_list'] = dict()
     converted_data['minus_list'] = dict()
+    converted_data['git_diff_list'] = dict()
     converted_data['modify_file'] = dict()
     converted_data['total_plus'] = dict()
     converted_data['total_minus'] = dict()
     converted_data['git_log_name_only'] = content['git_log_name_only']
+    converted_data['func_list'] = dict()
+    converted_data['class_list'] = dict()
 
     URL = "https://github.com/{}/{}".format(owner_name, project_name)
     full_base_path = os.path.join(BASE_PATH, owner_name)
@@ -155,6 +158,9 @@ def convert_data(content) :
         class_list.sort(key=lambda x : x[1])
         print("func_list : ", func_list)
         print("class_list : ", class_list)
+
+        converted_data['func_list'][full_file_path[len(BASE_PATH) + 1:]] = func_list
+        converted_data['class_list'][full_file_path[len(BASE_PATH) + 1:]] = class_list
 
         converted_data['git_diff'][content['repository_name']][full_file_path[len(BASE_PATH)+1:]] = []
 
@@ -213,6 +219,16 @@ def convert_data(content) :
             continue
 
         converted_data['modify_file'][full_file_path[len(BASE_PATH) + 1:]] = value
+
+
+    for file_path, value in content['git_diff_list'].items():
+        file_path = os.path.normpath(file_path)
+        if not os.path.splitext(file_path)[-1] == '.py':
+            continue
+        full_file_path = os.path.join(full_base_path, file_path)
+        if not os.path.exists(full_file_path):
+            continue
+        converted_data['git_diff_list'][full_file_path[len(BASE_PATH) + 1:]] = value
 
     return converted_data
 

@@ -61,10 +61,10 @@ def message_actions():
 
     # Verify that the request came from Slack
     verify_slack_token(btmsg_json['token'])
-    request_type = btmsg_json['original_message']['attachments'][0]['title']
+    request_type = btmsg_json['original_message']['attachments'][0]['fallback']
 
     # Lock Request button message
-    if request_type == 'Lock Request':
+    if request_type == 'Lock Request Button Message':
         selected_type = btmsg_json['actions'][0]['name']
         file_name = btmsg_json['callback_id']
         lock_time = int(btmsg_json['actions'][0]['value'])
@@ -95,7 +95,7 @@ def message_actions():
                             lock_time=lock_time)
 
     # File selection button message
-    elif request_type == 'Which file do you mean?':
+    elif request_type == 'File Selection Button Message':
         # Check to see what the user's selection was and update the message accordingly
 
         # callback_id : intent_type /  value : conflict_test/ClassA.py  / name : sentence  / text : 1
@@ -115,8 +115,8 @@ def message_actions():
         )
         message_processing(msg_json)
 
-    #typo error button message
-    elif request_type == "I think you have typo error.":
+    # Typo error button message
+    elif request_type == 'Typo Error Button Message':
         selected_type = btmsg_json['actions'][0]['value']
 
         msg_json = dict()
@@ -126,7 +126,6 @@ def message_actions():
         msg_json['text'] = sentence
         msg_json['channel'] = btmsg_json['channel']['id']
         msg_json['intent_type'] = btmsg_json['callback_id']
-
 
         print('msg_json', msg_json)
 
@@ -151,6 +150,23 @@ def message_actions():
             )
 
         message_processing(msg_json)
+
+    # Git diff code show button message
+    elif request_type == 'Git Diff Code Button Message':
+        git_diff_code = btmsg_json['actions'][0]['value']
+
+        git_diff_code =  git_diff_code.replace("|||", "\n")
+
+        slack.chat.post_message(channel=btmsg_json['channel']['id'], text = "```" + git_diff_code + "```")
+
+        # slack.chat.update(
+        #     channel=btmsg_json['channel']['id'],
+        #     text=btmsg_json['original_message']['text'],
+        #     ts=btmsg_json['message_ts'],
+        #     attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'] + "\n\n" + git_diff_code,
+        #                   'color': "#3AA3E3"}]
+        # )
+
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)
 
@@ -175,4 +191,3 @@ def json_parsing(btmsg_json, selected_file):
 
 if __name__ == "__main__":
     app.run(port=8000)
-

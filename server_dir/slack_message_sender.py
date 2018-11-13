@@ -9,6 +9,7 @@ from server_dir.user_database import user_database
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.constants import *
 
+
 def get_slack():
     token = ''
     file_path = os.path.join(Path(os.getcwd()).parent, "all_server_config.ini")
@@ -26,6 +27,7 @@ def get_slack():
     slack = Slacker(token)
     return slack
 
+
 def make_shell_list(file):
     f = open(file, "r", encoding="UTF8")
     text = f.read()
@@ -38,10 +40,22 @@ def get_message(shell_file):
     message = random.choice(shell_list)
     return message
 
+
+def get_git_diff_code(user_name, project_name, file_name):
+    w_db = work_database()
+    git_diff_code = w_db.get_git_diff_code(user_name, project_name, file_name)
+    if not git_diff_code:
+        git_diff_code = ""
+    print("get_git_diff_code", git_diff_code)
+
+    return git_diff_code
+
+
 # Get user slack id
 def get_user_slack_id(git_id):
     u_db = user_database("parent")
     return u_db.search_user_slack_id_code(git_id)
+
 
 def send_lock_message(lock_file_list, user_name):
     w_db = work_database()
@@ -56,10 +70,11 @@ def send_lock_message(lock_file_list, user_name):
         remain_time_str = str(int(remain_time.seconds / 3600)).zfill(2) + " : " + str(int((remain_time.seconds % 3600) / 60)).zfill(2) + " : " + str(int(remain_time.seconds % 60)).zfill(2)
 
         message += get_message('feat_lock_alarm.txt').format(user2=lock_user,
-                                                            filename=str(lfl[1]),
-                                                            remaining_time=remain_time_str)
+                                                             filename=str(lfl[1]),
+                                                             remaining_time=remain_time_str)
     send_direct_message(user_slack_id_code[1], message)
     w_db.close()
+
 
 def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file, conflict_logic, user1_name,
                                  user2_name, user1_percentage=0, user2_percentage=0, previous_percentage=0,
@@ -253,8 +268,10 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
                                                                          user2=user2_slack_id_code[1],
                                                                          filename=conflict_file)
 
+    git_diff_code = get_git_diff_code(user2_name, conflict_project, conflict_file)
+
     if message != "":
-        send_direct_message(user1_slack_id_code[1], message)
+        send_conflict_button_message(user1_slack_id_code[1], message, git_diff_code)
 
     return
 
@@ -320,11 +337,13 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
                                  user1=user1_slack_id_code[1],
                                  user2=user2_slack_id_code[1])
 
+    git_diff_code = get_git_diff_code(user2_name, conflict_project, conflict_file2)
 
     if message != "":
-        send_direct_message(user1_slack_id_code[1], message)
+        send_conflict_button_message(user1_slack_id_code[1], message, git_diff_code)
 
     return
+
 
 def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
     user1_slack_id_code = get_user_slack_id(user1_name)
@@ -346,6 +365,7 @@ def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, use
 
     return
 
+
 def send_remove_lock_channel(channel, lock_file_list):
     message = ""
     message += "*{}* is unlocked from now on.\n".format(", ".join(lock_file_list))
@@ -353,6 +373,7 @@ def send_remove_lock_channel(channel, lock_file_list):
     #     message += "{} is unlocked from now on.\n".format(file_name)
     # send_channel_message(channel, message)
     send_all_user_message(message=message)
+
 
 def channel_join_check(channel):
     slack = get_slack()
@@ -412,6 +433,7 @@ def send_all_user_message(message, slack_code=""):
 
     return
 
+
 # Put user slack id and message for sending chatbot message
 def send_direct_message(slack_code, message):
     if message == "":
@@ -424,26 +446,24 @@ def send_direct_message(slack_code, message):
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
 
-# Typo error file selection button message
-def send_typo_error_button_message(slack_code,error_file_name, file_name, sentence, intent_type):
+
+# Lock request button message
+def send_lock_request_button_message(slack_code, lock_file, lock_time):
     slack = get_slack()
+
+    actions = [{'name': "YES", 'text': "YES", 'type': "button", 'value': lock_time},
+               {'name': "NO", 'text': "NO", 'type': "button", 'value': lock_time}]
+
     attachments_dict = dict()
-
-    message = ""
-
-    actions = [{'name': sentence.replace(error_file_name, file_name), 'text': "YES", 'type': "button", 'value': "YES"},
-               {'name': sentence, 'text': "NO", 'type': "button", 'value': "NO"}]
-
-    attachments_dict['title'] = "I think you have typo error."
-    attachments_dict['text'] = "You mean%s file?" % (file_name)
-    attachments_dict['fallback'] = "You are unable to choose a file."
-    attachments_dict['callback_id'] = intent_type
-    # attachments_dict['attachment_type'] = "warning"
+    attachments_dict['title'] = "Lock Request"
+    attachments_dict['text'] = "*{}* is just unlocked. Do you want me to lock it for {} hours?".format(lock_file, lock_time)
+    attachments_dict['fallback'] = "Lock Request Button Message"
+    attachments_dict['callback_id'] = lock_file
     attachments_dict['actions'] = actions
-    attachments_dict['color'] = "#3AA3E3"
+    attachments_dict['color'] = "good"
     attachments = [attachments_dict]
+    slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
 
-    slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
 
 # File selection button message
 def send_file_selection_button_message(slack_code, called_same_named_dict, sentence, intent_type):
@@ -465,7 +485,7 @@ def send_file_selection_button_message(slack_code, called_same_named_dict, sente
 
         attachments_dict['title'] = "Which file do you mean?"
         attachments_dict['text'] = "%s" % (message)
-        attachments_dict['fallback'] = "You are unable to choose a file."
+        attachments_dict['fallback'] = "File Selection Button Message"
         attachments_dict['callback_id'] = intent_type
         # attachments_dict['attachment_type'] = "warning"
         attachments_dict['actions'] = actions
@@ -487,19 +507,44 @@ def send_file_selection_button_message(slack_code, called_same_named_dict, sente
     #     ws2.close()
     #     break
 
-# Lock request button message
-def send_lock_request_button_message(slack_code, lock_file, lock_time):
+
+# Typo error file selection button message
+def send_typo_error_button_message(slack_code,error_file_name, file_name, sentence, intent_type):
     slack = get_slack()
-
-    actions = [{'name': "YES", 'text': "YES", 'type': "button", 'value': lock_time},
-               {'name': "NO", 'text': "NO", 'type': "button", 'value': lock_time}]
-
     attachments_dict = dict()
-    attachments_dict['title'] = "Lock Request"
-    attachments_dict['text'] = "*{}* is just unlocked. Do you want me to lock it for {} hours?".format(lock_file, lock_time)
-    attachments_dict['fallback'] = "You are unable to choose yes or no."
-    attachments_dict['callback_id'] = lock_file
+
+    message = ""
+
+    actions = [{'name': sentence.replace(error_file_name, file_name), 'text': "YES", 'type': "button", 'value': "YES"},
+               {'name': sentence, 'text': "NO", 'type': "button", 'value': "NO"}]
+
+    attachments_dict['title'] = "I think you have typo error."
+    attachments_dict['text'] = "You mean%s file?" % (file_name)
+    attachments_dict['fallback'] = "Typo Error Button Message"
+    attachments_dict['callback_id'] = intent_type
+    # attachments_dict['attachment_type'] = "warning"
     attachments_dict['actions'] = actions
-    attachments_dict['color'] = "good"
+    attachments_dict['color'] = "#3AA3E3"
     attachments = [attachments_dict]
+
+    slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
+
+
+# Git diff code show button message
+def send_conflict_button_message(slack_code, message, git_diff_code):
+    slack = get_slack()
+    attachments_dict = dict()
+
+    actions = [{'name': "git_diff_code_view", 'text': "code view", 'type': "button", 'value': git_diff_code}]
+
+    attachments_dict['title'] = ""
+    attachments_dict['text'] = "%s" % (message)
+    attachments_dict['fallback'] = "Git Diff Code Button Message"
+    attachments_dict['callback_id'] = "conflict"
+    attachments_dict['actions'] = actions
+    # attachments_dict['color'] = "#3AAAAA"
+    attachments = [attachments_dict]
+
+    print("send_conflict_button_message", git_diff_code)
+
     slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
