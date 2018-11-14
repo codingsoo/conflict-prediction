@@ -2008,26 +2008,36 @@ class work_database:
 
         user_related_row = self.get_user_related_row(git_log_name_only_list, user_working_file_set)
         num_user_related_row = len(user_related_row)
-        user_combination_row = self.make_combination(user_related_row)
+        user_combination_row = self.make_combination(user_related_row, user_working_file_set)
         user_combination_row_set = set(user_combination_row)
 
         probability_dict = dict()
         # Using only for check
+        both_user_working_file_dict = dict()
+        both_user_combination_row_dict = dict()
         other_user_related_row_dict = dict()
         num_other_user_related_row_dict = dict()
         other_user_combination_row_dict = dict()
         other_user_combination_row_set_dict = dict()
         for other_user, other_user_working_file_set in other_user_working_file_dict.items():
+            both_user_working_file_dict[other_user] = []
+            both_user_working_file_dict[other_user].append(user_working_file_set & other_user_working_file_dict[other_user])
+            both_user_combination_row_dict[other_user] = set(self.make_combination(both_user_working_file_dict[other_user]))
+
             other_user_related_row_dict[other_user] = self.get_user_related_row(git_log_name_only_list, other_user_working_file_set)
             num_other_user_related_row_dict[other_user] = len(other_user_related_row_dict[other_user])
-            other_user_combination_row_dict[other_user] = self.make_combination(other_user_related_row_dict[other_user])
+            other_user_combination_row_dict[other_user] = self.make_combination(other_user_related_row_dict[other_user], other_user_working_file_dict[other_user])
             other_user_combination_row_set_dict[other_user] = set(other_user_combination_row_dict[other_user])
             probability_dict[other_user] = self.calculate_probability(num_user_related_row,
                                                                       num_other_user_related_row_dict[other_user],
                                                                       user_combination_row,
                                                                       other_user_combination_row_dict[other_user],
-                                                                      user_combination_row_set &
-                                                                      other_user_combination_row_set_dict[other_user])
+                                                                      (user_combination_row_set &
+                                                                       other_user_combination_row_set_dict[
+                                                                           other_user]) -
+                                                                      both_user_combination_row_dict[other_user])
+
+            print("Probability with {} : ".format(other_user), probability_dict[other_user])
 
 
     def get_user_working_file(self, project_name, user_name):
@@ -2104,16 +2114,25 @@ class work_database:
         user_related_row_list = []
         for temp in git_log_name_only_list:
             if temp & user_working_file_set:
-                if temp - user_working_file_set:
-                    user_related_row_list.append(temp - user_working_file_set)
+                user_related_row_list.append(temp)
 
         return user_related_row_list
 
-    def make_combination(self, row_list):
+    def make_combination(self, row_list, working_file_set=set()):
+        working_combination_list = []
+        for i in range(len(working_file_set)):
+            working_combination_list += list(itertools.combinations(working_file_set, i + 1))
+
         combination_list = []
         for row_temp in row_list:
             for i in range(len(row_temp)):
                 combination_list += list(itertools.combinations(row_temp, i + 1))
+            if working_file_set - row_temp:
+                combination_temp_list = working_combination_list[:]
+                set_temp = working_file_set & row_temp
+                for j in range(len(set_temp)):
+                    combination_temp_list = list(set(combination_temp_list) - set(list(itertools.combinations(set_temp, j + 1))))
+                combination_list += combination_temp_list
 
         return combination_list
 
