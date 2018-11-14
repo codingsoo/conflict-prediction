@@ -57,41 +57,37 @@ class user_git_info:
             edit_amount[file_name] = dict()
             edit_amount[file_name]['total_plus'] = temp_amount
             edit_amount[file_name]['total_minus'] = self.content['total_minus'][file_name]
-            edit_amount[file_name]['git_diff_code'] = self.get_git_diff_code(file_name)
+            edit_amount[file_name]['git_diff_code'] = self.get_git_diff_info(file_name)
 
         return edit_amount
 
+    def get_git_diff_info(self, file_name):
+        git_diff_info = self.content['git_diff_info'][file_name]
+
+        git_diff_code = "|||".join(git_diff_info).replace("'", "\\'")
+        print("get_git_diff_info", git_diff_code)
+
+        return git_diff_code
+
+
     def get_git_diff_code(self, file_name):
-        func_list = self.content['func_list'][file_name]
-        class_list = self.content['class_list'][file_name]
-        git_diff_list = self.content['git_diff_list'][file_name]
         minus_list = self.content['minus_list'][file_name]
         plus_list = self.content['plus_list'][file_name]
         modify_file = self.content['modify_file'][file_name]
-        # logic_type = logic_name.split(':')[0]
 
         git_diff_code = ""
         git_diff_file = []
-
-        # for idx, line in enumerate(modify_file):
-        #     git_diff_line = line.replace("\n", "\\n")
-        #     git_diff_line = git_diff_line.replace('"', "'")
-        #     git_diff_line = git_diff_line.replace("'", "\'")
-        #     git_diff_file.append(str(idx)+git_diff_line)
 
         for idx, line in enumerate(modify_file):
             git_diff_file.append(line)
             print(idx, line)
 
-
         # 105번째가 수정되었으면, 104번째에서 -, 105번째에서 +
         for code, line in plus_list:
-            # git_diff_file[line - 1] = "*+" + str(code) + "*\n"
             git_diff_file[line - 1] = "+" + str(code) + "\n"
             print("plus", line, git_diff_file[line - 1])
 
         for code, line in minus_list:
-            # git_diff_file[line] = "~-" + str(code) + "~\n" + git_diff_file[line]
             git_diff_file[line] = "-" + str(code) + "\n" + git_diff_file[line]
             print("minus", line, git_diff_file[line])
 
@@ -100,28 +96,6 @@ class user_git_info:
 
         git_diff_code = "|||".join(git_diff_file).replace("'", "\\'")
 
-        # print(self.content['modify_file'][file_name])
-
-        # if logic_type == "function":
-        #     for func_name, start, end in func_list:
-        #         if func_name == logic_name:
-        #             git_diff_code = modify_file[start:end]
-        #             print("function_diff_code", git_diff_code)
-        #
-        # elif logic_type == "class":
-        #     for class_name, start, end in class_list:
-        #         if class_name == logic_name:
-        #             git_diff_code = modify_file[start:end]
-        #             print("class_diff_code", git_diff_code)
-        #
-        # elif logic_type == "in":
-        #     git_diff_code = modify_file
-        #     print("file_diff_code", git_diff_code)
-
-        # json_git_diff = json.dumps(git_diff_code)
-        # json_git_diff = json_git_diff.replace("'", "\\'")
-
-        # return git_diff_file
         return git_diff_code
 
     def get_calling_data(self):

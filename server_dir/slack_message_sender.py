@@ -46,9 +46,9 @@ def get_git_diff_code(user_name, project_name, file_name):
     git_diff_code = w_db.get_git_diff_code(user_name, project_name, file_name)
     if not git_diff_code:
         git_diff_code = ""
-    git_diff_code = git_diff_code.replace("|||", "")
+    git_diff_code = git_diff_code.replace("|||", "\n")
     print("get_git_diff_code", git_diff_code)
-
+    print("hi")
     return git_diff_code
 
 
@@ -270,7 +270,10 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
                                                                          filename=conflict_file)
 
     if message != "":
-        send_conflict_button_message(user1_slack_id_code[1], message, user2_name, conflict_project, conflict_file)
+        if conflict_flag == Conflict_flag.direct_conflict_finished.value:
+            send_direct_message(user1_slack_id_code[1], message, "good")
+        else:
+            send_conflict_button_message(user1_slack_id_code[1], message, user2_name, conflict_project, conflict_file)
 
     return
 
@@ -318,7 +321,6 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
                                                                            user2=user2_slack_id_code[1],
                                                                            filename2=conflict_file2,
                                                                            logic2=conflict_logic2)
-
     elif conflict_flag == Conflict_flag.indirect_conflict.value:
         # indirect conflict
         if type == 'user_call':
@@ -326,7 +328,6 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
                 message = get_message('indirect_conflict_calling_no_length.txt')
             else:
                 message = get_message('indirect_conflict_calling_length.txt')
-
         elif type == 'user_work':
             message = get_message('indirect_conflict_working.txt')
 
@@ -338,7 +339,10 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
                                  user2=user2_slack_id_code[1])
 
     if message != "":
-        send_conflict_button_message(user1_slack_id_code[1], message, user2_name, conflict_project, conflict_file2)
+        if conflict_flag == Conflict_flag.indirect_conflict_finished.value:
+            send_direct_message(user1_slack_id_code[1], message, "good")
+        else:
+            send_conflict_button_message(user1_slack_id_code[1], message, user2_name, conflict_project, conflict_file2)
 
     return
 
@@ -434,13 +438,14 @@ def send_all_user_message(message, slack_code=""):
 
 
 # Put user slack id and message for sending chatbot message
-def send_direct_message(slack_code, message):
+def send_direct_message(slack_code, message, color="#D3D3D3"):
     if message == "":
         return
     slack = get_slack()
     attachments_dict = dict()
     attachments_dict['text'] = "%s" % (message)
     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+    attachments_dict['color'] = color
     attachments = [attachments_dict]
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
     return
@@ -459,7 +464,7 @@ def send_lock_request_button_message(slack_code, lock_file, lock_time):
     attachments_dict['fallback'] = "Lock Request Button Message"
     attachments_dict['callback_id'] = lock_file
     attachments_dict['actions'] = actions
-    attachments_dict['color'] = "good"
+    attachments_dict['color'] = "#3AA3E3"
     attachments = [attachments_dict]
     slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
 
@@ -521,7 +526,7 @@ def send_typo_error_button_message(slack_code,error_file_name, file_name, senten
     attachments_dict['text'] = "You mean%s file?" % (file_name)
     attachments_dict['fallback'] = "Typo Error Button Message"
     attachments_dict['callback_id'] = intent_type
-    # attachments_dict['attachment_type'] = "warning"
+    attachments_dict['attachment_type'] = "warning"
     attachments_dict['actions'] = actions
     attachments_dict['color'] = "#3AA3E3"
     attachments = [attachments_dict]
@@ -541,7 +546,7 @@ def send_conflict_button_message(slack_code, message, user2_name, project_name, 
     attachments_dict['fallback'] = "Git Diff Code Button Message"
     attachments_dict['callback_id'] = project_name
     attachments_dict['actions'] = actions
-    # attachments_dict['color'] = "#3AAAAA"
+    attachments_dict['color'] = "warning"
     attachments = [attachments_dict]
 
     slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
@@ -549,19 +554,7 @@ def send_conflict_button_message(slack_code, message, user2_name, project_name, 
 
 def send_git_diff_message(user1_name, user2_name, project_name, file_name):
     slack = get_slack()
-    git_diff_code = get_git_diff_code(user2_name, project_name, file_name)
+    git_diff_code = "```" + get_git_diff_code(user2_name, project_name, file_name) + "```"
     print("send_git_diff_message", git_diff_code)
 
     slack.chat.post_message(channel=user1_name, text=git_diff_code, as_user=True)
-
-#
-# def send_direct_message(slack_code, message):
-#     if message == "":
-#         return
-#     slack = get_slack()
-#     attachments_dict = dict()
-#     attachments_dict['text'] = "%s" % (message)
-#     attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-#     attachments = [attachments_dict]
-#     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
-#     return

@@ -114,7 +114,7 @@ def convert_data(content) :
 
     converted_data['plus_list'] = dict()
     converted_data['minus_list'] = dict()
-    converted_data['git_diff_list'] = dict()
+    converted_data['git_diff_info'] = dict()
     converted_data['modify_file'] = dict()
     converted_data['total_plus'] = dict()
     converted_data['total_minus'] = dict()
@@ -220,15 +220,14 @@ def convert_data(content) :
 
         converted_data['modify_file'][full_file_path[len(BASE_PATH) + 1:]] = value
 
-
-    for file_path, value in content['git_diff_list'].items():
+    for file_path, value in content['git_diff_info'].items():
         file_path = os.path.normpath(file_path)
         if not os.path.splitext(file_path)[-1] == '.py':
             continue
         full_file_path = os.path.join(full_base_path, file_path)
         if not os.path.exists(full_file_path):
             continue
-        converted_data['git_diff_list'][full_file_path[len(BASE_PATH) + 1:]] = value
+        converted_data['git_diff_info'][full_file_path[len(BASE_PATH) + 1:]] = value
 
     return converted_data
 

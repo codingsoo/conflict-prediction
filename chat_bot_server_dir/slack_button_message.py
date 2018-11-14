@@ -160,15 +160,15 @@ def message_actions():
         file_name = btmsg_json['actions'][0]['value']
         project_name = btmsg_json['callback_id']
 
-        send_git_diff_message(user1_name, user2_name, project_name, file_name)
+        slack.chat.update(
+            channel=btmsg_json['channel']['id'],
+            text=btmsg_json['original_message']['text'],
+            ts=btmsg_json['message_ts'],
+            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
+                          'color': "warning"}]
+        )
 
-        # slack.chat.update(
-        #     channel=btmsg_json['channel']['id'],
-        #     text=btmsg_json['original_message']['text'],
-        #     ts=btmsg_json['message_ts'],
-        #     attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'] + "\n\n" + git_diff_code,
-        #                   'color': "#3AA3E3"}]
-        # )
+        send_git_diff_message(user1_name, user2_name, project_name, file_name)
 
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)

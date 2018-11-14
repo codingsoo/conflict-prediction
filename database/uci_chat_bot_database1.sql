@@ -172,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `edit_amount` (
   `user_name` varchar(50) NOT NULL,
   `total_plus` int(11) DEFAULT 0,
   `total_minus` int(11) DEFAULT 0,
+  `git_diff_code` longtext,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`project_name`,`file_name`,`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -184,23 +185,6 @@ CREATE TABLE IF NOT EXISTS `file_information` (
   `total_lines` int(11) DEFAULT 0,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`project_name`,`file_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 내보낼 데이터가 선택되어 있지 않습니다.
--- 테이블 uci_chat_bot.git_log_name_only 구조 내보내기
-CREATE TABLE IF NOT EXISTS `git_log_name_only` (
-  `project_name` varchar(50) NOT NULL,
-  `commit_order` int(11),
-  `file_list` JSON,
-  PRIMARY KEY (`project_name`,`commit_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 내보낼 데이터가 선택되어 있지 않습니다.
--- 테이블 uci_chat_bot.git_log_name_only 구조 내보내기
-CREATE TABLE IF NOT EXISTS `last_commit_date` (
-  `project_name` varchar(50) NOT NULL,
-  `last_commit_date` varchar(50),
-  PRIMARY KEY (`project_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
