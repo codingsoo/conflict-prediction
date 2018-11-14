@@ -7,6 +7,7 @@ from flask import Flask, request, make_response
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
 from chat_bot_server_dir.bot_server import message_processing
+from server_dir.slack_message_sender import send_git_diff_message
 
 def get_slack():
     bot_token = verification_token = signing_secret = ''
@@ -25,6 +26,7 @@ def get_slack():
             print("ERROR :: It is server_config.ini")
             exit(2)
     return bot_token, verification_token, signing_secret
+
 
 # Helper for verifying that requests came from Slack
 def verify_slack_token(request_token):
@@ -153,11 +155,12 @@ def message_actions():
 
     # Git diff code show button message
     elif request_type == 'Git Diff Code Button Message':
-        git_diff_code = btmsg_json['actions'][0]['value']
+        user1_name = btmsg_json['channel']['id']
+        user2_name = btmsg_json['actions'][0]['name']
+        file_name = btmsg_json['actions'][0]['value']
+        project_name = btmsg_json['callback_id']
 
-        git_diff_code =  git_diff_code.replace("|||", "\n")
-
-        slack.chat.post_message(channel=btmsg_json['channel']['id'], text = "```" + git_diff_code + "```")
+        send_git_diff_message(user1_name, user2_name, project_name, file_name)
 
         # slack.chat.update(
         #     channel=btmsg_json['channel']['id'],
