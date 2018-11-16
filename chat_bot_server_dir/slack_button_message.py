@@ -63,6 +63,7 @@ def message_actions():
 
     # Verify that the request came from Slack
     verify_slack_token(btmsg_json['token'])
+
     request_type = btmsg_json['original_message']['attachments'][0]['fallback']
 
     # Lock Request button message
@@ -71,7 +72,6 @@ def message_actions():
         file_name = btmsg_json['callback_id']
         lock_time = int(btmsg_json['actions'][0]['value'])
         slack_code = btmsg_json['user']['id']
-        print("slack_code", slack_code)
         if selected_type == "YES":
             slack.chat.update(
                 channel=btmsg_json['channel']['id'],
@@ -102,10 +102,8 @@ def message_actions():
 
         # callback_id : intent_type /  value : conflict_test/ClassA.py  / name : sentence  / text : 1
         selected_file = btmsg_json['actions'][0]['value']
-        print('selected_file', selected_file)
 
         msg_json = json_parsing(btmsg_json, selected_file)
-        print('msg_json', msg_json)
 
         slack.chat.update(
             channel=btmsg_json['channel']['id'],
@@ -126,10 +124,7 @@ def message_actions():
         msg_json['user'] = btmsg_json['user']['id']
         sentence = btmsg_json['actions'][0]['name']
         msg_json['text'] = sentence
-        msg_json['channel'] = btmsg_json['channel']['id']
-        msg_json['intent_type'] = btmsg_json['callback_id']
-
-        print('msg_json', msg_json)
+        msg_json['channel'] = btmsgdtmsg_json['callback_id']
 
         if selected_type == "YES":
             slack.chat.update(

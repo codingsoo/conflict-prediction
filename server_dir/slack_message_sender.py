@@ -523,7 +523,7 @@ def send_typo_error_button_message(slack_code,error_file_name, file_name, senten
                {'name': sentence, 'text': "NO", 'type': "button", 'value': "NO"}]
 
     attachments_dict['title'] = "I think you have typo error."
-    attachments_dict['text'] = "You mean%s file?" % (file_name)
+    attachments_dict['text'] = "Do you mean%s file?" % (file_name)
     attachments_dict['fallback'] = "Typo Error Button Message"
     attachments_dict['callback_id'] = intent_type
     attachments_dict['attachment_type'] = "warning"
@@ -539,7 +539,7 @@ def send_conflict_button_message(slack_code, message, user2_name, project_name, 
     slack = get_slack()
     attachments_dict = dict()
 
-    actions = [{'name': user2_name, 'text': "code view", 'type': "button", 'value': file_name}]
+    actions = [{'name': user2_name, 'text': "git diff", 'type': "button", 'value': file_name}]
 
     attachments_dict['title'] = ""
     attachments_dict['text'] = "%s" % (message)

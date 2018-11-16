@@ -1,0 +1,2 @@
+{user1} works {percentage1}%, {user2} works {percentage2}% in *{filename}*.
+The amount of {user1}'s working on {filename} is {percentage1}% and that of {user2} is {percentage2}%.

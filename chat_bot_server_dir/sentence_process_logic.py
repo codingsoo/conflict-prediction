@@ -51,7 +51,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = greeting_logic(slack_code)
 
     elif (intent_type == ERROR - 1):
-        message = bye_logic()
+        message = bye_logic(slack_code)
 
     elif(intent_type == ERROR):
         if param0 == "no_response":
@@ -400,7 +400,6 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
             message += "\nAlso, <@{user}> locked *{file_name}* files.".format(user=target_slack_code,
                                                                             file_name=locked_file)
 
-
     w_db.close()
     return message
 
@@ -522,7 +521,6 @@ def check_locker_logic(slack_code, file_abs_path):
         message = message.format(filename=file_abs_path)
 
     else:
-        # locker_name = w_db.convert_slack_code_to_slack_id(locker_slack_code)
         message = random.choice(shell_dict['feat_locker_existence'])
         message = message.format(user2=locker_slack_code, filename=file_abs_path)
 
@@ -535,12 +533,11 @@ def check_severity_logic(slack_code, file_abs_path):
     message = ""
 
     project_name = w_db.get_repository_name(slack_code)
-    severity_list = w_db.get_severity_percentage(project_name, file_abs_path)
+    severity_list = w_db.get_severity_percentage(project_name, file_abs_path) # (user_slack_code, severity)
 
     if severity_list:
         for sl_idx, sl in enumerate(severity_list):
             user_name = w_db.convert_git_id_to_slack_code(sl[0])
-            # user_name = w_db.convert_git_id_to_slack_id(sl[0])
             message += "<@{}> works {:.2f}%, ".format(user_name, sl[1])
         message += "in *{}*".format(file_abs_path)
     else:
@@ -592,8 +589,11 @@ def greeting_logic(slack_code):
     return message
 
 
-def bye_logic():
-    message = random.choice(shell_dict['feat_goodbye'])
+def bye_logic(slack_code):
+    w_db = work_database()
+    user_name = w_db.convert_slack_code_to_slack_id(slack_code)
+
+    message = random.choice(shell_dict['feat_goodbye']).format(user=user_name)
     return message
 
 

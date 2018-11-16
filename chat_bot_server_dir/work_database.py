@@ -787,7 +787,8 @@ class work_database:
             self.conn.commit()
 
             raw_tuple = self.cursor.fetchall()
-            raw_list = list(raw_tuple)
+            for rt in raw_tuple:
+                raw_list.append(rt[0])
 
         except:
             self.conn.rollback()
