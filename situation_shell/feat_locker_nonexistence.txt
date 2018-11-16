@@ -1,5 +1,5 @@
-This file is not locked by anyone.
+This file is not locked by anyone. Do you want me to go ahead and lock it for you?
 No lock.
 No lock on *{filename}*.
-No one has locked the file.
-You can safely lock this file if you want to.
+No one has locked the file. Should I lock it?
+You can safely lock this file is you want to. Just let me know.
