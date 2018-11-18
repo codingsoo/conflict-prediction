@@ -1,7 +1,7 @@
-import nltk
+#import nltk
 from stanfordcorenlp import StanfordCoreNLP
 
-nltk.download('wordnet')
+#nltk.download('wordnet')
 
 def sentence_preprocess(_sentence):
 
