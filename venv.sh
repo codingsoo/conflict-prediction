@@ -12,4 +12,5 @@ pip3 install slackclient
 pip3 install slack
 pip3 install slackeventsapi
 python3 -m spacy download en_core_web_lg
+pip3 install dialogflow
 /Applications/Python\ 3.6/Install\ Certificates.command
