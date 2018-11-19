@@ -731,9 +731,9 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
     else:
         work_db.close()
-        if " hi " in sentence or " hello " in sentence:
+        if "hi" in sentence or "hello" in sentence:
             return ERROR - 2, "greeting", None, None
-        elif " bye " in sentence or " see you " in sentence:
+        elif "bye" in sentence or "see you" in sentence:
             return ERROR - 1, "bye", None, None
         else:
             return ERROR, "no_response", None, None
