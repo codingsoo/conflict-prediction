@@ -80,19 +80,19 @@ class user_git_info:
 
         for idx, line in enumerate(modify_file):
             git_diff_file.append(line)
-            print(idx, line)
+            # print(idx, line)
 
         # 105번째가 수정되었으면, 104번째에서 -, 105번째에서 +
         for code, line in plus_list:
             git_diff_file[line - 1] = "+" + str(code) + "\n"
-            print("plus", line, git_diff_file[line - 1])
+            # print("plus", line, git_diff_file[line - 1])
 
         for code, line in minus_list:
             git_diff_file[line] = "-" + str(code) + "\n" + git_diff_file[line]
-            print("minus", line, git_diff_file[line])
+            # print("minus", line, git_diff_file[line])
 
-        for idx, code in enumerate(git_diff_file):
-            print(idx + 1, code)
+        # for idx, code in enumerate(git_diff_file):
+        #     print(idx + 1, code)
 
         git_diff_code = "|||".join(git_diff_file).replace("'", "\\'")
 

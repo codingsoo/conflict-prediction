@@ -124,7 +124,7 @@ def message_actions():
         msg_json['user'] = btmsg_json['user']['id']
         sentence = btmsg_json['actions'][0]['name']
         msg_json['text'] = sentence
-        msg_json['channel'] = btmsgdtmsg_json['callback_id']
+        msg_json['channel'] = btmsg_json['callback_id']
 
         if selected_type == "YES":
             slack.chat.update(
