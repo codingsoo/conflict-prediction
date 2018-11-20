@@ -48,12 +48,17 @@ def git_diff_logic(user_data):
     calling_data = user_data.get_calling_data()
     user_name = user_data.get_user_name()
 
+    # Check whether we need prediction
+    predict_flag = dw_db.check_necessity_prediction(project_name,
+                                                   working_data,
+                                                   user_name)
+
     # Remove previous user data
     w_db.remove_user_data(project_name,
                           working_data,
                           edit_amount,
                           calling_data,
-                          user_name)
+                          user_name,)
 
     # Update current user data
     w_db.update_user_data(project_name,
@@ -63,8 +68,10 @@ def git_diff_logic(user_data):
                           user_name)
 
     # Predict conflict
-    w_db.predict_conflict(project_name,
-                          user_name)
+    if predict_flag:
+        print("\n#### START predict_conflict ####")
+        dw_db.predict_conflict(project_name,
+                              user_name)
 
 
     # Detect direct conflict

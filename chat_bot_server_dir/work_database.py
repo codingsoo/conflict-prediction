@@ -1,9 +1,7 @@
 import pymysql
-import json
 from datetime import datetime, timedelta
 from server_dir.server_config_loader import *
 import json
-import itertools
 
 class work_database:
     # Constructor
@@ -111,7 +109,8 @@ class work_database:
         try:
             sql = "select * " \
                   "from working_table " \
-                  "where user_name = '%s'" % (user_name)
+                  "where project_name = '%s' " \
+                  "and user_name = '%s'" % (project_name, user_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -176,7 +175,8 @@ class work_database:
         try:
             sql = "select * " \
                   "from calling_table " \
-                  "where user_name = '%s'" % (user_name)
+                  "where project_name = '%s' " \
+                  "and user_name = '%s'" % (project_name, user_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -242,7 +242,8 @@ class work_database:
         try:
             sql = "select * " \
                   "from edit_amount " \
-                  "where user_name = '%s'" % (user_name)
+                  "where project_name = '%s' " \
+                  "and user_name = '%s'" % (project_name, user_name)
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
@@ -1979,183 +1980,6 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : update_last_commit_date")
-
-    def get_git_log_name_only(self, project_name):
-        log_file_list = []
-
-        try:
-            sql = "select * " \
-                  "from git_log_name_only " \
-                  "where project_name = '%s'" % (project_name)
-
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_list = list(self.cursor.fetchall())
-            for raw in raw_list:
-                log_file_list.append(set(json.loads(raw[2])))
-
-        except:
-            self.conn.rollback()
-            print("ERROR : get_git_log_name_only")
-
-        return log_file_list
-
-    def predict_conflict(self, project_name, user_name):
-        git_log_name_only_list = self.get_git_log_name_only(project_name)
-        user_working_file_set = self.get_user_working_file(project_name, user_name)
-        other_user_working_file_dict = self.get_other_user_working_file(project_name, user_name)
-
-        user_related_row = self.get_user_related_row(git_log_name_only_list, user_working_file_set)
-        num_user_related_row = len(user_related_row)
-        user_combination_row = self.make_combination(user_related_row, user_working_file_set)
-        user_combination_row_set = set(user_combination_row)
-
-        probability_dict = dict()
-        # Using only for check
-        both_user_working_file_dict = dict()
-        both_user_combination_row_dict = dict()
-        other_user_related_row_dict = dict()
-        num_other_user_related_row_dict = dict()
-        other_user_combination_row_dict = dict()
-        other_user_combination_row_set_dict = dict()
-        for other_user, other_user_working_file_set in other_user_working_file_dict.items():
-            both_user_working_file_dict[other_user] = []
-            both_user_working_file_dict[other_user].append(user_working_file_set & other_user_working_file_dict[other_user])
-            both_user_combination_row_dict[other_user] = set(self.make_combination(both_user_working_file_dict[other_user]))
-
-            other_user_related_row_dict[other_user] = self.get_user_related_row(git_log_name_only_list, other_user_working_file_set)
-            num_other_user_related_row_dict[other_user] = len(other_user_related_row_dict[other_user])
-            other_user_combination_row_dict[other_user] = self.make_combination(other_user_related_row_dict[other_user], other_user_working_file_dict[other_user])
-            other_user_combination_row_set_dict[other_user] = set(other_user_combination_row_dict[other_user])
-            probability_dict[other_user] = self.calculate_probability(num_user_related_row,
-                                                                      num_other_user_related_row_dict[other_user],
-                                                                      user_combination_row,
-                                                                      other_user_combination_row_dict[other_user],
-                                                                      (user_combination_row_set &
-                                                                       other_user_combination_row_set_dict[
-                                                                           other_user]) -
-                                                                      both_user_combination_row_dict[other_user])
-
-            print("Probability with {} : ".format(other_user), probability_dict[other_user])
-
-
-    def get_user_working_file(self, project_name, user_name):
-        user_working_file = set()
-        # file_name include (project_name - '.git') + '/'
-        # so -3 because -4 + 1
-        project_name_len = len(project_name) - 3
-
-        try:
-            sql = "select file_name " \
-                  "from working_table " \
-                  "where project_name = '%s' " \
-                  "and user_name = '%s'" % (project_name, user_name)
-
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_tuple = self.cursor.fetchall()
-            for raw in raw_tuple:
-                user_working_file.add(raw[0][project_name_len:])
-
-        except:
-            self.conn.rollback()
-            print("ERROR : get_user_working_file")
-
-        return user_working_file
-
-    def get_other_user_working_file(self, project_name, user_name):
-        other_user_working_file = dict()
-        # file_name include (project_name - '.git') + '/'
-        # so -3 because -4 + 1
-        project_name_len = len(project_name) - 3
-
-        try:
-            sql = "select git_id " \
-                  "from user_table " \
-                  "where repository_name = '%s' " \
-                  "and git_id != '%s'" % (project_name, user_name)
-
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_tuple = self.cursor.fetchall()
-            for raw in raw_tuple:
-                other_user_working_file[raw[0]] = set()
-
-        except:
-            self.conn.rollback()
-            print("ERROR : get_user_working_file")
-
-        try:
-            sql = "select user_name, file_name " \
-                  "from working_table " \
-                  "where project_name = '%s' " \
-                  "and user_name != '%s'" % (project_name, user_name)
-
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-            raw_tuple = self.cursor.fetchall()
-            for raw in raw_tuple:
-                other_user_working_file[raw[0]].add(raw[1][project_name_len:])
-
-        except:
-            self.conn.rollback()
-            print("ERROR : get_user_working_file")
-
-        return other_user_working_file
-
-    def get_user_related_row(self, git_log_name_only_list, user_working_file_set):
-        user_related_row_list = []
-        for temp in git_log_name_only_list:
-            if temp & user_working_file_set:
-                user_related_row_list.append(temp)
-
-        return user_related_row_list
-
-    def make_combination(self, row_list, working_file_set=set()):
-        working_combination_list = []
-        for i in range(len(working_file_set)):
-            working_combination_list += list(itertools.combinations(working_file_set, i + 1))
-
-        combination_list = []
-        for row_temp in row_list:
-            for i in range(len(row_temp)):
-                combination_list += list(itertools.combinations(row_temp, i + 1))
-            if working_file_set - row_temp:
-                combination_temp_list = working_combination_list[:]
-                set_temp = working_file_set & row_temp
-                for j in range(len(set_temp)):
-                    combination_temp_list = list(set(combination_temp_list) - set(list(itertools.combinations(set_temp, j + 1))))
-                combination_list += combination_temp_list
-
-        return combination_list
-
-    def calculate_probability(self, num_user_related_row, num_other_user_related_row, user_combination_row, other_user_combination_row, common_combination_row):
-        probability = 0
-
-        # Using only for check
-        probability_dict = dict()
-
-        for common_combination_temp in common_combination_row:
-            num_user_combination = user_combination_row.count(common_combination_temp)
-            num_other_user_combination = other_user_combination_row.count(common_combination_temp)
-            probability_dict[common_combination_temp] = (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
-            if len(common_combination_temp) & 1:
-                probability += (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
-            else:
-                probability -= (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
-
-        return probability
-
-
-
 
     def close(self):
         self.cursor.close()
