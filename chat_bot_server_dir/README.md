@@ -32,4 +32,4 @@ User : Can you ignore this file?
     
 ## Sequence diagram(NLP)
 
-![nlp_sequence_diagram](https://github.com/UCNLP/conflict-detector/blob/py3_server/images/nlp_sequence_diagram.png)
+![nlp_sequence_diagram](https://github.com/UCNLP/conflict-prediction/blob/py3_server/images/nlp_sequence_diagram.png)
