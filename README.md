@@ -24,7 +24,7 @@ https://www.youtube.com/embed/FO2RW24wHFQ<br>
 5.	Check conflict possibility : Before a user starts to work, the user can check whether editing certain file generates a conflict or not.
 6.	Check working status : A user can ask about other user's working status.(Working Project, Logic, Line, Amount)
 7.	Give user message : A user can let chatbot give a message to other users.
-8.	Give recommendation : A user can ask chatbot to recommend how to deal with the conflict.
+8.	Give recommendation : A user can ask chatbot to recommend how to deal with the conflict in certain file.
 9.  Check ignored file : A user can ask chatbot about which files are being ignored by certain user or ignored in the project.
 10. Check who lock file : A user can ask chatbot about who lock certain file.
 11. Check severity : A user can ask chatbot about how severe conflict is in certain file. 
