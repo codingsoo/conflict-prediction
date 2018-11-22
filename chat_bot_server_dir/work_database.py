@@ -1111,20 +1111,19 @@ class work_database:
             print("ERROR : insert_ignore")
 
     def update_ignore(self, project_name, ignore_list, slack_code, set_value):
-        # Ignore ON logic
         if ignore_list == 1:
             sql = "update ignore_table " \
-                  "set direct_ignore = '%d' " \
+                  "set direct_ignore = %d " \
                   "where project_name = '%s' " \
                   "and slack_code = '%s'" % (set_value, project_name, slack_code)
         elif ignore_list == 2:
             sql = "update ignore_table " \
-                  "set indirect_ignore = '%d' " \
+                  "set indirect_ignore = %d " \
                   "where project_name = '%s' " \
                   "and slack_code = '%s'" % (set_value, project_name, slack_code)
         elif ignore_list == 3:
             sql = "update ignore_table " \
-                  "set prediction_ignore = '%d' " \
+                  "set prediction_ignore = %d " \
                   "where project_name = '%s' " \
                   "and slack_code = '%s'" % (set_value, project_name, slack_code)
         try:
