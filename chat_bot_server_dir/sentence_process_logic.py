@@ -21,7 +21,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         message = code_history_logic(slack_code, param0, param1, param2)
 
     elif(intent_type == 4):
-        message = ignore_file_logic(slack_code, param0, param1)
+        message = ignore_alarm_logic(slack_code, param0, param1)
 
     elif(intent_type == 5):
         message = check_conflict_logic(slack_code, param0, param1)
@@ -283,46 +283,52 @@ def format_code_history_multiple_users(message_idx, user_name_list, code_history
     return message
 
 
-def ignore_file_logic(slack_code, ignore_list, approval):
+def ignore_alarm_logic(slack_code, ignore_list, approval):
     w_db = work_database()
     print("ignore : " + str(ignore_list))
     project_name = w_db.get_repository_name(slack_code)
-    already_ignore_tuple = w_db.read_ignore(project_name, slack_code)
+    already_ignore_list = w_db.read_ignore_list(project_name, slack_code)
+    if not already_ignore_list:
+        w_db.insert_ignore(project_name, slack_code)
     message = ""
 
     # Ignore
     if approval == IGNORE:
-        if already_ignore_tuple and already_ignore_tuple[ignore_list - 1] == IGNORE: # (1,0) (1,1) / (0,1) (1,1)
+        # already set
+        if already_ignore_list and already_ignore_list[ignore_list - 1] == IGNORE:
             if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_already_ignore_direct'])
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_already_ignore_indirect'])
+            elif ignore_list == PREDICTION:
+                message = "Not implented yet"
+        # not set yet
         else:
-            if not already_ignore_tuple:
-                w_db.add_ignore(project_name, ignore_list, slack_code)
-            else: # (0,0) (0,1) / (0,0) (1,0)
-                w_db.update_ignore(project_name, ignore_list, slack_code, approval)
+            w_db.update_ignore(project_name, ignore_list, slack_code, approval)
             if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_ignore_alarm_direct'])
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
+            elif ignore_list == PREDICTION:
+                message = "Not implented yet"
 
     # Unignore
     elif approval == UNIGNORE:
-        if not already_ignore_tuple or already_ignore_tuple[ignore_list - 1] == UNIGNORE : #(0,1) (0,0) / (1,0) (0,0)
+        if not already_ignore_list or already_ignore_list[ignore_list - 1] == UNIGNORE:
             if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_can_get_direct_alarm'])
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_can_get_indirect_alarm'])
+            elif ignore_list == PREDICTION:
+                message = "Not implented yet"
         else:
-            if already_ignore_tuple == (IGNORE, IGNORE): # (1,1)
-                w_db.update_ignore(project_name, ignore_list, slack_code, approval)
-            else: # (1,0) / (0,1)
-                w_db.remove_ignore(project_name, slack_code)
+            w_db.update_ignore(project_name, ignore_list, slack_code, approval)
             if ignore_list == DIRECT:
                 message = random.choice(shell_dict['feat_unignore_alarm_direct'])
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
+            elif ignore_list == PREDICTION:
+                message = "Not implented yet"
 
     w_db.close()
     return message

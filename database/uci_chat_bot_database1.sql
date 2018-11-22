@@ -45,7 +45,9 @@ CREATE TABLE IF NOT EXISTS `ignore_table` (
   `project_name` varchar(50) NOT NULL,
   `slack_code` varchar(50) NOT NULL,
   `direct_ignore` int(11) NOT NULL DEFAULT '0',
-  `indirect_ignore` int(11) NOT NULL DEFAULT '0'
+  `indirect_ignore` int(11) NOT NULL DEFAULT '0',
+  `prediction_ignore` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`project_name`,`slack_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

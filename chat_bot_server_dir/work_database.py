@@ -1097,16 +1097,36 @@ class work_database:
     '''
     ignore
     '''
-    def add_ignore(self, project_name, ignore_list, slack_code):
+    def insert_ignore(self, project_name, slack_code):
+        try:
+            sql = "insert into ignore_table" \
+                  "(project_name, slack_code) value " \
+                  "('%s', '%s')" % (project_name, slack_code)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
+            print("ERROR : insert_ignore")
+
+    def update_ignore(self, project_name, ignore_list, slack_code, set_value):
         # Ignore ON logic
         if ignore_list == 1:
-            sql = "insert into ignore_table " \
-                  "(project_name, slack_code, direct_ignore) value " \
-                  "('%s', '%s', %d) " % (project_name, slack_code, 1)
+            sql = "update ignore_table " \
+                  "set direct_ignore = '%d' " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (set_value, project_name, slack_code)
         elif ignore_list == 2:
-            sql = "insert into ignore_table " \
-                  "(project_name, slack_code, indirect_ignore) value " \
-                  "('%s', '%s', %d) " % (project_name, slack_code, 1)
+            sql = "update ignore_table " \
+                  "set indirect_ignore = '%d' " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (set_value, project_name, slack_code)
+        elif ignore_list == 3:
+            sql = "update ignore_table " \
+                  "set prediction_ignore = '%d' " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (set_value, project_name, slack_code)
         try:
             print(sql)
             self.cursor.execute(sql)
@@ -1114,34 +1134,13 @@ class work_database:
 
         except:
             self.conn.rollback()
-            print("ERROR : add update ignore")
+            print("ERROR : update_ignore")
 
-    def update_ignore(self, project_name, ignore_list, slack_code, approval):
-        # Already exists ignore list
-        if ignore_list == 1:
-            sql = "update ignore_table " \
-                  "set direct_ignore = %d " \
-                  "where project_name = '%s' " \
-                  "and slack_code = '%s'" % (approval, project_name, slack_code)
-
-        elif ignore_list == 2:
-            sql = "update ignore_table " \
-                  "set indirect_ignore = %d " \
-                  "where project_name = '%s' " \
-                  "and slack_code = '%s'" % (approval, project_name, slack_code)
+    def read_ignore_list(self, project_name, slack_code):
+        raw = []
 
         try:
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-
-        except:
-            self.conn.rollback()
-            print("ERROR : update ignore")
-
-    def remove_ignore(self, project_name, slack_code):
-        try:
-            sql = "delete " \
+            sql = "select * " \
                   "from ignore_table " \
                   "where project_name = '%s' " \
                   "and slack_code = '%s'" % (project_name, slack_code)
@@ -1149,15 +1148,24 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
+            raw = list(self.cursor.fetchone())
+            print(raw)
         except:
             self.conn.rollback()
-            print("ERROR : remove ignore")
+            print("ERROR : read ignore")
 
-    def read_ignore(self, project_name, slack_code):
+        if not raw:
+            return raw
+        else:
+            # direct_ignore, indirect_ignore, prediction_ignore
+            # 0 => non-ignore / 1 => ignore
+            return raw[2], raw[3], raw[4]
+
+    def read_direct_ignore(self, project_name, slack_code):
         raw = tuple()
 
         try:
-            sql = "select * " \
+            sql = "select direct_ignore " \
                   "from ignore_table " \
                   "where project_name = '%s' " \
                   "and slack_code = '%s'" % (project_name, slack_code)
@@ -1169,14 +1177,61 @@ class work_database:
             print(raw)
         except:
             self.conn.rollback()
-            print("ERROR : read ignore")
+            print("ERROR : read_direct_ignore")
 
         if raw is None:
             return raw
         else:
-            # direct_ignore, indirect_ignore
             # 0 => non-ignore / 1 => ignore
-            return raw[2], raw[3]
+            return raw[0]
+
+    def read_indirect_ignore(self, project_name, slack_code):
+        raw = tuple()
+
+        try:
+            sql = "select indirect_ignore " \
+                  "from ignore_table " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (project_name, slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw = self.cursor.fetchone()
+            print(raw)
+        except:
+            self.conn.rollback()
+            print("ERROR : read_indirect_ignore")
+
+        if raw is None:
+            return raw
+        else:
+            # 0 => non-ignore / 1 => ignore
+            return raw[0]
+
+    def read_prediction_ignore(self, project_name, slack_code):
+        raw = tuple()
+
+        try:
+            sql = "select prediction_ignore " \
+                  "from ignore_table " \
+                  "where project_name = '%s' " \
+                  "and slack_code = '%s'" % (project_name, slack_code)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw = self.cursor.fetchone()
+            print(raw)
+        except:
+            self.conn.rollback()
+            print("ERROR : read_prediction_ignore")
+
+        if raw is None:
+            return raw
+        else:
+            # 0 => non-ignore / 1 => ignore
+            return raw[0]
 
 #############################3
 

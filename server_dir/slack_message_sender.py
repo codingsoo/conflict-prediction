@@ -97,7 +97,7 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 
     w_db = work_database()
     try:
-        direct_ignore_flag, _ = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
+        direct_ignore_flag = w_db.read_direct_ignore(conflict_project, user1_slack_id_code[1])
     except:
         print("no ignore list")
 
@@ -291,7 +291,7 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
 
     w_db = work_database()
     try:
-        _, indirect_ignore_flag = w_db.read_ignore(conflict_project, user1_slack_id_code[1])
+        indirect_ignore_flag = w_db.read_indirect_ignore(conflict_project, user1_slack_id_code[1])
     except:
         print("no ignore list")
 

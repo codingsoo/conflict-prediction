@@ -102,11 +102,12 @@ class user_database:
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
+
         except:
             self.conn.rollback()
             print("ERROR : set slack id code")
 
-    def set_repository_name(self,git_id, repository_name):
+    def set_repository_name(self, git_id, repository_name):
         try:
             # create sql
             sql = "update user_table " \
@@ -117,6 +118,7 @@ class user_database:
             print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
+
         except:
             self.conn.rollback()
             print("ERROR : set repository_name")
@@ -169,6 +171,27 @@ class user_database:
 
         return raw
 
+    def convert_git_id_to_slack_code(self, git_id):
+        raw = ""
+
+        try:
+            sql = "select slack_code " \
+                  "from user_table " \
+                  "where git_id = '%s'" % (git_id)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            if raw_tuple:
+                raw = raw_tuple[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert slack code to git id")
+
+        return raw
 
     def match_user_git_id_code(self, slack_id):
         raw_list = list()
