@@ -53,14 +53,14 @@ def get_git_diff_code(user_name, project_name, file_name):
 
 
 # Get user slack id
-def get_user_slack_id(git_id):
+def get_user_slack_id_and_code(git_id):
     u_db = user_database("parent")
-    return u_db.search_user_slack_id_code(git_id)
+    return u_db.search_user_slack_id_and_code(git_id)
 
 
 def send_lock_message(lock_file_list, user_name):
     w_db = work_database()
-    user_slack_id_code = get_user_slack_id(user_name)
+    user_slack_id_code = get_user_slack_id_and_code(user_name)
     message = ""
     for lfl in lock_file_list:
         # lock_user = w_db.convert_slack_code_to_slack_id(lfl[2])
@@ -85,21 +85,15 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
         conflict_logic = ""
 
     # Get user slack nickname
-    user1_slack_id_code = get_user_slack_id(user1_name)
-    user2_slack_id_code = get_user_slack_id(user2_name)
+    user1_slack_id_code = get_user_slack_id_and_code(user1_name)
+    user2_slack_id_code = get_user_slack_id_and_code(user2_name)
     print("user1_slack_id_code", user1_slack_id_code)
     print("user2_slack_id_code", user2_slack_id_code)
 
     current_percentage = round((user1_percentage + user2_percentage) / 2, 2)
 
-    # Initialize ignore flag
-    direct_ignore_flag = 0
-
     w_db = work_database()
-    try:
-        direct_ignore_flag = w_db.read_direct_ignore(conflict_project, user1_slack_id_code[1])
-    except:
-        print("no ignore list")
+    direct_ignore_flag = w_db.read_direct_ignore(conflict_project, user1_slack_id_code[1])
 
     approve_set = w_db.read_approved_list(user1_slack_id_code[1])
     print("approve_set : ", approve_set)
@@ -281,19 +275,13 @@ def send_direct_conflict_message(conflict_flag, conflict_project, conflict_file,
 def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_file1="", conflict_file2="", conflict_logic1="", conflict_logic2="", user1_name="", user2_name="", type = None):
 
     # Get user slack nickname
-    user1_slack_id_code = get_user_slack_id(user1_name)
-    user2_slack_id_code = get_user_slack_id(user2_name)
+    user1_slack_id_code = get_user_slack_id_and_code(user1_name)
+    user2_slack_id_code = get_user_slack_id_and_code(user2_name)
     print("user1_slack_id_code", user1_slack_id_code)
     print("user2_slack_id_code", user2_slack_id_code)
 
-    # Initialize ignore flag
-    indirect_ignore_flag = 0
-
     w_db = work_database()
-    try:
-        indirect_ignore_flag = w_db.read_indirect_ignore(conflict_project, user1_slack_id_code[1])
-    except:
-        print("no ignore list")
+    indirect_ignore_flag = w_db.read_indirect_ignore(conflict_project, user1_slack_id_code[1])
 
     approve_set = w_db.read_approved_list(user1_slack_id_code[1])
     print("approve_set : ", approve_set)
@@ -347,9 +335,21 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
     return
 
 
+def send_prediction_message(project_name, user_name):
+    user_slack_id_code = get_user_slack_id_and_code(user_name)
+
+    w_db = work_database()
+    prediction_ignore_flag = w_db.read_prediction_ignore(project_name, user_slack_id_code[1])
+
+    if prediction_ignore_flag == 1:
+        print("IGNORE MESSAGE BY PREDICTION")
+        return
+
+    message = ""
+
 def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
-    user1_slack_id_code = get_user_slack_id(user1_name)
-    user2_slack_id_code = get_user_slack_id(user2_name)
+    user1_slack_id_code = get_user_slack_id_and_code(user1_name)
+    user2_slack_id_code = get_user_slack_id_and_code(user2_name)
     message = ""
 
     # same server
@@ -366,7 +366,6 @@ def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, use
     send_channel_message("code-conflict-chatbot", message)
 
     return
-
 
 def send_remove_lock_channel(channel, lock_file_list):
     message = ""

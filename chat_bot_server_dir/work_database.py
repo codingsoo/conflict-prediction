@@ -1161,7 +1161,7 @@ class work_database:
             return raw[2], raw[3], raw[4]
 
     def read_direct_ignore(self, project_name, slack_code):
-        raw = tuple()
+        raw = []
 
         try:
             sql = "select direct_ignore " \
@@ -1172,20 +1172,20 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw = self.cursor.fetchone()
+            raw = list(self.cursor.fetchone())
             print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_direct_ignore")
 
-        if raw is None:
-            return raw
+        if not raw:
+            return 0
         else:
             # 0 => non-ignore / 1 => ignore
             return raw[0]
 
     def read_indirect_ignore(self, project_name, slack_code):
-        raw = tuple()
+        raw = []
 
         try:
             sql = "select indirect_ignore " \
@@ -1196,20 +1196,20 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw = self.cursor.fetchone()
+            raw = list(self.cursor.fetchone())
             print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_indirect_ignore")
 
-        if raw is None:
-            return raw
+        if not raw:
+            return 0
         else:
             # 0 => non-ignore / 1 => ignore
             return raw[0]
 
     def read_prediction_ignore(self, project_name, slack_code):
-        raw = tuple()
+        raw = []
 
         try:
             sql = "select prediction_ignore " \
@@ -1220,19 +1220,19 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
 
-            raw = self.cursor.fetchone()
+            raw = list(self.cursor.fetchone())
             print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_prediction_ignore")
 
-        if raw is None:
-            return raw
+        if not raw:
+            return 0
         else:
             # 0 => non-ignore / 1 => ignore
             return raw[0]
 
-#############################3
+#############################
 
     def get_recent_data(self, github_email):
         try:

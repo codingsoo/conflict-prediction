@@ -301,7 +301,7 @@ def ignore_alarm_logic(slack_code, ignore_list, approval):
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_already_ignore_indirect'])
             elif ignore_list == PREDICTION:
-                message = "Not implented yet"
+                message = random.choice(shell_dict['feat_already_prediction_indirect'])
         # not set yet
         else:
             w_db.update_ignore(project_name, ignore_list, slack_code, approval)
@@ -310,7 +310,7 @@ def ignore_alarm_logic(slack_code, ignore_list, approval):
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_ignore_alarm_indirect'])
             elif ignore_list == PREDICTION:
-                message = "Not implented yet"
+                message = random.choice(shell_dict['feat_ignore_alarm_prediction'])
 
     # Unignore
     elif approval == UNIGNORE:
@@ -320,7 +320,7 @@ def ignore_alarm_logic(slack_code, ignore_list, approval):
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_can_get_indirect_alarm'])
             elif ignore_list == PREDICTION:
-                message = "Not implented yet"
+                message = random.choice(shell_dict['feat_can_get_prediction_alarm'])
         else:
             w_db.update_ignore(project_name, ignore_list, slack_code, approval)
             if ignore_list == DIRECT:
@@ -328,7 +328,7 @@ def ignore_alarm_logic(slack_code, ignore_list, approval):
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_unignore_alarm_indirect'])
             elif ignore_list == PREDICTION:
-                message = "Not implented yet"
+                message = random.choice(shell_dict['feat_unignore_alarm_prediction'])
 
     w_db.close()
     return message

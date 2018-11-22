@@ -123,7 +123,7 @@ class user_database:
             self.conn.rollback()
             print("ERROR : set repository_name")
 
-    def search_user_slack_id_code(self, git_id):
+    def search_user_slack_id_and_code(self, git_id):
         raw = tuple()
 
         try:
