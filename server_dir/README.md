@@ -13,15 +13,15 @@ Indirect Conflict is a conflict that occurs when two users (programmers) modify 
 
 ### Platform architecture
 
-![conflict_server_structure](https://github.com/UCNLP/conflict-detector/blob/py3_server/images/conflict_server_structure.png)
+![conflict_server_structure](https://github.com/UCNLP/conflict-prediction/blob/py3_server/images/conflict_server_structure.png)
 
 ### Class diagram
 
-![conflict_server_class_diagram](https://github.com/UCNLP/conflict-detector/tree/py3_server/images/conflict_server_class_diagram.jpg)
+![conflict_server_class_diagram](https://github.com/UCNLP/conflict-prediction/blob/py3_server/images/conflict_server_class_diagram.png)
 
 ### Sequence diagram
 
-![conflict_server_sequence_diagram](https://github.com/UCNLP/conflict-detector/tree/py3_server/images/conflict_server_sequence_diagram.jpg)
+![conflict_server_sequence_diagram](https://github.com/UCNLP/conflict-prediction/blob/py3_server/images/conflict_server_sequence_diagram.jpg)
 
 ## How to detect conflict
 

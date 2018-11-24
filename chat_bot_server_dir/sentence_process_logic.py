@@ -574,7 +574,6 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
 
     w_db.close()
 
-
 def greeting_logic(slack_code):
     w_db = work_database()
     message = ""

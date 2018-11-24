@@ -729,6 +729,14 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
         work_db.close()
         return 11, called_file_abs_path_list[0], None, None
 
+    # About prediction alarm
+    elif intent_type == "12_0" or intent_type == "12_1":
+        work_db.close()
+        if intent_type == "12_0":
+            return 4, PREDICTION,IGNORE, None
+        else:
+            return 4, PREDICTION,UNIGNORE,None
+
     else:
         work_db.close()
         if "hi" in sentence or "hello" in sentence:
