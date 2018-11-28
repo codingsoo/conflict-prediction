@@ -784,6 +784,7 @@ class direct_work_database:
         user_combination_row_set = set(user_combination_row)
 
         probability_dict = dict()
+        whole_predicted_file_set = set()
         # Using only for check
         both_user_working_file_dict = dict()
         both_user_combination_row_dict = dict()
@@ -807,10 +808,15 @@ class direct_work_database:
                                                                       (user_combination_row_set &
                                                                        other_user_combination_row_set_dict[
                                                                            other_user]) -
-                                                                      both_user_combination_row_dict[other_user])
+                                                                      both_user_combination_row_dict[other_user],
+                                                                      whole_predicted_file_set)
 
             print("Probability with {} : ".format(other_user), probability_dict[other_user])
-
+            
+        send_prediction_message(project_name=project_name,
+                                user_name=user_name,
+                                probability_dict=probability_dict,
+                                whole_predicted_file_set=whole_predicted_file_set)
 
     def get_user_working_file(self, project_name, user_name):
         user_working_file = set()
@@ -908,7 +914,7 @@ class direct_work_database:
 
         return combination_list
 
-    def calculate_probability(self, num_user_related_row, num_other_user_related_row, user_combination_row, other_user_combination_row, common_combination_row):
+    def calculate_probability(self, num_user_related_row, num_other_user_related_row, user_combination_row, other_user_combination_row, common_combination_row, whole_predicted_file_set):
         probability = 0
 
         # Using only for check
@@ -920,10 +926,13 @@ class direct_work_database:
             probability_dict[common_combination_temp] = (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
             if len(common_combination_temp) & 1:
                 probability += (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
+                if len(common_combination_temp) == 1:
+                    whole_predicted_file_set.add(common_combination_temp[0])
             else:
                 probability -= (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
 
-        return probability
+        print(probability)
+        return str(round(probability * 100)) + '%'
 
     # Close Database connection and cursor
     def close_db(self):

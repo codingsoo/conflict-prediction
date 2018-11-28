@@ -1,0 +1,2 @@
+I predict you may end up editing *{filelist}*. That would cause a direct conflict with *{userlist}* with probabilities of *{percentagelist}* because they are working on those files or they will edit those files.
+I predict direct conflict(s) may occur in *{filelist}* between you and *{userlist}* with probabilities of *{percentagelist}* because they are working on those files or they will edit those files.

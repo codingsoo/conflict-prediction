@@ -335,7 +335,7 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
     return
 
 
-def send_prediction_message(project_name, user_name):
+def send_prediction_message(project_name, user_name, probability_dict, whole_predicted_file_set):
     user_slack_id_code = get_user_slack_id_and_code(user_name)
 
     w_db = work_database()
@@ -345,7 +345,16 @@ def send_prediction_message(project_name, user_name):
         print("IGNORE MESSAGE BY PREDICTION")
         return
 
-    message = ""
+    user_list = list(probability_dict.keys())
+    for i, user_temp in enumerate(user_list):
+        user_list[i] = "<@" + w_db.convert_git_id_to_slack_code(user_temp) + ">"
+    percentage_list = list(probability_dict.values())
+    file_list = list(whole_predicted_file_set)
+    message = get_message('prediction_direct_conflict.txt')
+    message = message.format(userlist=user_list,
+                             percentagelist=percentage_list,
+                             filelist=file_list)
+    send_direct_message(user_slack_id_code[1], message)
 
 def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
     user1_slack_id_code = get_user_slack_id_and_code(user1_name)
