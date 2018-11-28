@@ -301,7 +301,7 @@ def ignore_alarm_logic(slack_code, ignore_list, approval):
             elif ignore_list == INDIRECT:
                 message = random.choice(shell_dict['feat_already_ignore_indirect'])
             elif ignore_list == PREDICTION:
-                message = random.choice(shell_dict['feat_already_prediction_indirect'])
+                message = random.choice(shell_dict['feat_already_ignore_prediction'])
         # not set yet
         else:
             w_db.update_ignore(project_name, ignore_list, slack_code, approval)
