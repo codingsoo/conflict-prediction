@@ -55,7 +55,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     elif(intent_type == ERROR):
         if param0 == "no_response":
-            message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features : 
+            message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features :
             # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
             # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
             # 3. code_history : A user can ask who wrote certain code lines.
@@ -78,11 +78,9 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
         elif param0 == "typo_error_file":
             message = ""
         elif param0 == "no_file":
-            message = "There is no such file. Please say it again."
+            message = random.choice(shell_dict['sentence_process_no_file'])
         elif param0 == "many_files":
-            message = "Please write just one file"
-        elif param0 == "no_channel":
-            message = "There is no such channel. Please say it again."
+            message = random.choice(shell_dict['sentence_process_many_files'])
 
     return message
 
@@ -171,7 +169,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
 
         if remove_lock_set:
             for file_name in remove_lock_set:
-                ch_message = random.choice(shell_dict['unlock_announce'])
+                ch_message = random.choice(shell_dict['feat_send_all_user_unlock'])
                 ch_message = ch_message.format(user2=slack_code, filename=file_name)
             send_all_user_message(ch_message, slack_code)
             # send_channel_message("code-conflict-chatbot", ch_message)
@@ -189,7 +187,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
         else:
-            message += random.choice(shell_dict['feat_cannot_unlock'])
+            message += random.choice(shell_dict['feat_unlock_fail'])
 
     w_db.close()
     return message
@@ -206,7 +204,7 @@ def code_history_logic(slack_code, file_abs_path, start_line, end_line):
     user_name_list = []
 
     if end_line != file_end_line and end_line > 0:
-        message = "This file's total amount of lines is *{}*.\n".format(file_end_line)
+        message += random.choice(shell_dict['feat_history_line_info']).format(end_line=file_end_line) + "\n"
 
     # Find user_name
     for user_email in user_email_list:
@@ -403,8 +401,8 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
         print(db_lock_set)
         if db_lock_set:
             locked_file = ', '.join(list(db_lock_set))
-            message += "\nAlso, <@{user}> locked *{file_name}* files.".format(user=target_slack_code,
-                                                                            file_name=locked_file)
+            message += random.choice(shell_dict['feat_working_status_lock_info']).format(user=target_slack_code,
+                                                                                         file_name=locked_file)
 
     w_db.close()
     return message
@@ -431,7 +429,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
 
 def send_message_channel_logic(target_channel, msg, user_slack_id):
     if msg == '':
-        message = 'You must write your message between two double quotations like "message"'
+        message = random.choice(shell_dict['feat_send_message_error'])
         return message
 
     channel_msg = user_slack_id + " announce : " + msg
@@ -451,7 +449,7 @@ def send_message_direct_logic(user_slack_code, target_slack_code, msg):
     w_db = work_database()
     # target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
 
-    msg = "<@" + user_slack_code + ">" + " gives message : " + msg
+    msg = random.choice(shell_dict['feat_send_message_target_user']).format(user1=user_slack_code, message=msg)
     send_direct_message(target_slack_code, msg)
 
     if not target_slack_code:
@@ -563,7 +561,7 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
         lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
         ch_message = ""
         if target_file in lock_file_list:
-            ch_message += "<@{}> locked *{}* file for {} hour(s).".format(slack_code, target_file, lock_time)
+            ch_message += random.choice(shell_dict['feat_send_all_user_lock']).format(user=slack_code, file_name=target_file, lock_time=lock_time)
         # send_channel_message("code-conflict-chatbot", ch_message)
         send_all_user_message(ch_message, slack_code)
         print("YES")

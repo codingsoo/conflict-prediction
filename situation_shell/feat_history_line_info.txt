@@ -1,0 +1,1 @@
+This file's total amount of lines is *{end_line}*.

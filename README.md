@@ -9,9 +9,9 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 #### Using conflict_test project
 
    1. Clone [conflict_test](https://github.com/UCNLP/conflict_test.git) repository
-    
-        ```$ git clone https://github.com/UCNLP/conflict_test.git``` 
-           
+        ```
+        $ git clone https://github.com/UCNLP/conflict_test.git
+        ```
    2. Set IP and PORT in *conflict_test/client_setting.ini*
         ```
            [CONNECTION]
@@ -22,19 +22,18 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
             IP = 35.196.166.28
             PORT = 5010
         ```
-    
    3. Run *client.py*
-    
-        ```$ python3 ./client.py```
+        ```
+        $ python3 ./client.py
+        ```
 
 #### Using your own project
 
    1. Download [client.py](https://github.com/UCNLP/conflict_test/blob/master/client.py) and [client_setting.ini](https://github.com/UCNLP/conflict_test/blob/master/client_settings.ini) in your own project
-    
-        ```$ git clone https://github.com/UCNLP/conflict_test.git``` 
-           
+        ```
+        $ git clone https://github.com/UCNLP/conflict_test.git
+        ``` 
    2. Set IP and PORT in *conflict_test/client_setting.ini*
-   
         ```
            [CONNECTION]
             IP = 35.196.166.28
@@ -44,10 +43,10 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
             IP = 35.196.166.28
             PORT = 5010
         ```
-    
    3. Run *client.py*
-    
-        ```$ python3 ./client.py```
+        ```
+        $ python3 ./client.py
+        ```
 
 ## Demo Video
 https://www.youtube.com/embed/FO2RW24wHFQ<br>

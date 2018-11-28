@@ -1,0 +1,17 @@
+I don't know what are you talking about. I am conflict detect chatbot, and I have 16 talking features :
+            # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+            # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+            # 3. code_history : A user can ask who wrote certain code lines.
+            # 4. ignore_alarm : A user can ignore direct and indirect conflicts.
+            # 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
+            # 6. working_status : A user can ask about other user's working status
+            # 7. user_message : A user can let chatbot give a message to other users.
+            # 8. recommend : A user can ask chatbot to recommend reaction to conflict.
+            # 9. check_ignored_file : A user can ask chatbot which files are ignored.
+            # 10. check_locker : A user can ask chatbot about who locked the file.
+            # 11. check_severity : A user can ask chatbot about how severe conflict is.
+            # 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+            # 13. greeting : Chatbot can greet users.
+            # 14. complimentary_close : Chatbot can say good bye.
+            # 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+            # 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.

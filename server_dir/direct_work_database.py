@@ -50,8 +50,7 @@ class direct_work_database:
 
         remove_lock_list = w_db.prev_remove_lock_list()
         if remove_lock_list:
-            message = ""
-            message += "*{}* is unlocked from now on.\n".format(", ".join(remove_lock_list))
+            message = get_message('feat_send_all_user_auto_unlock.txt').format(file_name=", ".join(remove_lock_list))
             send_all_user_message(message)
             # send_remove_lock_channel("code-conflict-chatbot", remove_lock_list)
         w_db.auto_remove_lock_list()

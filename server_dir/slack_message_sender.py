@@ -377,8 +377,7 @@ def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, use
     return
 
 def send_remove_lock_channel(channel, lock_file_list):
-    message = ""
-    message += "*{}* is unlocked from now on.\n".format(", ".join(lock_file_list))
+    message = get_message('feat_send_all_user_auto_unlock.txt').format(file_name=", ".join(lock_file_list)) + "\n"
     # for file_name in lock_file_list:
     #     message += "{} is unlocked from now on.\n".format(file_name)
     # send_channel_message(channel, message)
