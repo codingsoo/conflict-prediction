@@ -184,7 +184,8 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
 
             for file in inform_unlock_list:
                 print("inform_unlock_list", file)
-                send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
+                if(file[2] != slack_code):
+                    send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
         else:
             message += random.choice(shell_dict['feat_unlock_fail'])

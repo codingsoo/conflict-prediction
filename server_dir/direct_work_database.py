@@ -58,7 +58,8 @@ class direct_work_database:
         user_slack_code = w_db.convert_git_id_to_slack_code(user_name)
         inform_unlock_list = w_db.read_oldest_lock_history_list(user_slack_code, remove_lock_list)
         for file in inform_unlock_list:
-            send_lock_request_button_message(file[2], file[1], file[3])
+            if(user_slack_code != file[2]):
+                send_lock_request_button_message(file[2], file[1], file[3])
 
         lock_file_list = w_db.inform_lock_file_direct(project_name, working_list, user_name)
         lock_noticed_user_list = w_db.check_lock_noticed_user(project_name, lock_file_list, user_name)
