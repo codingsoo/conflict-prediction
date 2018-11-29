@@ -7,6 +7,7 @@ pip3 install stanfordcorenlp
 pip3 install websocket-client-py3
 pip3 install timestring
 pip3 install -U spacy
+pip3 install spacy
 pip3 install slackbot
 pip3 install slackclient
 pip3 install slack
