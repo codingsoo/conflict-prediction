@@ -377,10 +377,10 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
     # Before classifying intent
     if intent_type == -1:
        # intent_type, sentence = intent_classifier(_sentence)
-        intent_type = detect_intent_texts('sayme-16cf9',str(uuid.uuid4()),sentence,'en-US')
+        intent_type = detect_intent_texts('sayme-9614e',str(uuid.uuid4()),sentence,'en-US')
         print("Intent_type", intent_type)
 
-        # help classification about intent_type 5 and 9
+        # help classification about intent_type 5 and 9e
         # if conflict_file in sentence, we can think user wants to recommendation.
         # if intent_type in [5, 8]:
         #     conflict_file_list = work_db.all_conflict_list(github_email)
@@ -391,7 +391,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
         #             file_name = cfl.split("/")[-1]
         #             if file_name in sentence:
         #                 intent_type = 8
-        #                 break
+        #                 breakex
         #             else:
         #                 intent_type = 5
 
@@ -738,9 +738,9 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
     else:
         work_db.close()
-        if "hi" in sentence or "hello" in sentence:
+        if intent_type == "13" :
             return ERROR - 2, "greeting", None, None
-        elif "bye" in sentence or "see you" in sentence:
+        elif intent_type == "14":
             return ERROR - 1, "bye", None, None
         else:
             return ERROR, "no_response", None, None
