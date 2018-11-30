@@ -1,6 +1,5 @@
 from chat_bot_server_dir.work_database import work_database
 from chat_bot_server_dir.intent_func import get_code_history_info
-from server_dir.slack_message_sender import send_channel_message
 from server_dir.slack_message_sender import send_lock_request_button_message
 from server_dir.slack_message_sender import send_all_user_message
 from server_dir.slack_message_sender import send_direct_message

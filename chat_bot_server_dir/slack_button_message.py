@@ -7,7 +7,7 @@ from flask import Flask, request, make_response
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
 from chat_bot_server_dir.bot_server import message_processing
-from server_dir.slack_message_sender import send_git_diff_message
+from server_dir.slack_message_sender import send_git_diff_message, send_prediction_list_message
 
 def get_slack():
     bot_token = verification_token = signing_secret = ''
@@ -149,7 +149,8 @@ def message_actions():
 
         message_processing(msg_json)
 
-    # Git diff code show button message
+
+    # Git diff button message
     elif request_type == 'Git Diff Code Button Message':
         user1_name = btmsg_json['channel']['id']
         user2_name = btmsg_json['actions'][0]['name']
@@ -165,6 +166,23 @@ def message_actions():
         )
 
         send_git_diff_message(user1_name, user2_name, project_name, file_name)
+
+
+    # Prediction button message
+    elif request_type == "Prediction Button Message":
+        user1_name = btmsg_json['channel']['id']
+        user2_name = btmsg_json['actions'][0]['name']
+        project_name = btmsg_json['callback_id']
+
+        slack.chat.update(
+            channel=btmsg_json['channel']['id'],
+            text=btmsg_json['original_message']['text'],
+            ts=btmsg_json['message_ts'],
+            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
+                          'color': "#3AA3E3"}]
+        )
+
+        send_prediction_list_message(user1_name, user2_name, project_name)
 
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)
@@ -187,6 +205,7 @@ def json_parsing(btmsg_json, selected_file):
     msg_json['channel'] = btmsg_json['channel']['id']
     msg_json['intent_type'] = btmsg_json['callback_id']
     return msg_json
+
 
 if __name__ == "__main__":
     app.run(port=8000)

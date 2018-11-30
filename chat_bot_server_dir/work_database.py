@@ -1920,6 +1920,27 @@ class work_database:
 
         return slack_id_list
 
+    def convert_git_id_to_slack_code_id(self, git_id):
+        slack_code = ""
+        slack_id = ""
+        try:
+            sql = "select slack_code, slack_id " \
+                  "from user_table " \
+                  "where git_id = '%s'" % (git_id)
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchone()
+            slack_code = raw_tuple[0][0]
+            slack_id = raw_tuple[0][1]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert_slack_code_to_git_id")
+
+        return slack_code, slack_id
+
     def convert_slack_code_to_git_id(self, slack_code):
         # Read git_id
         git_id = ""

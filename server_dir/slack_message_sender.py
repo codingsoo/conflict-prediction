@@ -346,35 +346,42 @@ def send_prediction_message(project_name, user_name, probability_dict, whole_pre
         return
 
     user_list = list(probability_dict.keys())
+    user_name_list = []
     for i, user_temp in enumerate(user_list):
-        user_list[i] = "<@" + w_db.convert_git_id_to_slack_code(user_temp) + ">"
+        slack_code, slack_id = w_db.convert_git_id_to_slack_code_id(user_temp)
+        user_list[i] = "<@" + slack_code + ">"
+        user_name_list[i] = slack_id
+
     percentage_list = list(probability_dict.values())
     file_list = list(whole_predicted_file_set)
     message = get_message('prediction_direct_conflict.txt')
     message = message.format(userlist=user_list,
                              percentagelist=percentage_list,
                              filelist=file_list)
-    send_direct_message(user_slack_id_code[1], message)
 
-def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
-    user1_slack_id_code = get_user_slack_id_and_code(user1_name)
-    user2_slack_id_code = get_user_slack_id_and_code(user2_name)
-    message = ""
+    send_prediction_button_message(user_slack_id_code[1], message, project_name, user_name_list)
 
-    # same server
-    if conflict_logic == "in":
-        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
-                                                                    user2_slack_id_code[1],
-                                                                    conflict_file,
-                                                                    '')
-    else:
-        message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
-                                                                    user2_slack_id_code[1],
-                                                                    conflict_file,
-                                                                    conflict_logic)
-    send_channel_message("code-conflict-chatbot", message)
 
-    return
+# def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
+#     user1_slack_id_code = get_user_slack_id_and_code(user1_name)
+#     user2_slack_id_code = get_user_slack_id_and_code(user2_name)
+#     message = ""
+#
+#     # same server
+#     if conflict_logic == "in":
+#         message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
+#                                                                     user2_slack_id_code[1],
+#                                                                     conflict_file,
+#                                                                     '')
+#     else:
+#         message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
+#                                                                     user2_slack_id_code[1],
+#                                                                     conflict_file,
+#                                                                     conflict_logic)
+#     send_channel_message("code-conflict-chatbot", message)
+#
+#     return
+
 
 def send_remove_lock_channel(channel, lock_file_list):
     message = get_message('feat_send_all_user_auto_unlock.txt').format(file_name=", ".join(lock_file_list)) + "\n"
@@ -409,22 +416,23 @@ def channel_join_check(channel):
 
 
 # Put channel name and message for sending chatbot message
-def send_channel_message(channel, message):
-    if message == "":
-        return
-    slack = get_slack()
-    ret_cjc = channel_join_check(channel)
+# def send_channel_message(channel, message):
+#     if message == "":
+#         return
+#     slack = get_slack()
+#     ret_cjc = channel_join_check(channel)
+#
+#     if ret_cjc == CHANNEL_WITH_SAYME:
+#         attachments_dict = dict()
+#         attachments_dict['text'] = "%s" % (message)
+#         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
+#         attachments = [attachments_dict]
+#         slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
+#
+#     return ret_cjc
 
-    if ret_cjc == CHANNEL_WITH_SAYME:
-        attachments_dict = dict()
-        attachments_dict['text'] = "%s" % (message)
-        attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-        attachments = [attachments_dict]
-        slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
 
-    return ret_cjc
-
-
+# Send a message to everyone in the project
 def send_all_user_message(message, slack_code=""):
     if message == "":
         return
@@ -541,7 +549,7 @@ def send_typo_error_button_message(slack_code,error_file_name, file_name, senten
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
 
 
-# Git diff code show button message
+# Git diff button message
 def send_conflict_button_message(slack_code, message, user2_name, project_name, file_name):
     slack = get_slack()
     attachments_dict = dict()
@@ -559,9 +567,68 @@ def send_conflict_button_message(slack_code, message, user2_name, project_name, 
     slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
 
 
+# Git diff message after click a button
 def send_git_diff_message(user1_name, user2_name, project_name, file_name):
     slack = get_slack()
     git_diff_code = "```" + get_git_diff_code(user2_name, project_name, file_name) + "```"
     print("send_git_diff_message", git_diff_code)
 
     slack.chat.post_message(channel=user1_name, text=git_diff_code, as_user=True)
+
+
+# Prediction button message
+def send_prediction_button_message(slack_code, message, project_name, user_list):
+    slack = get_slack()
+    attachments_dict = dict()
+
+    actions = []
+    actions.append({'name': 'All', 'text': 'All', 'type': "button", 'value': 'All', 'style': 'danger'})
+    for user_name in user_list:
+        actions_dict = dict()
+        actions_dict['name'] = user_name
+        actions_dict['text'] = user_name
+        actions_dict['type'] = "button"
+        actions_dict['value'] = user_name
+        actions.append(actions_dict)
+
+    attachments_dict['title'] = ""
+    attachments_dict['text'] = "%s" % (message)
+    attachments_dict['fallback'] = "Prediction Button Message"
+    attachments_dict['callback_id'] = project_name
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "#3AA3E3"
+    attachments = [attachments_dict]
+
+    slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
+
+
+# Prediction list message after click a button
+def send_prediction_list_message(user1_name, user2_name, project_name):
+    slack = get_slack()
+
+    # prediction_list = ["80%  Sun            counting_triangle.py",
+    #                    "50%  Kathryn Choi   SquareMatrix.py",
+    #                    "17%  Kathryn Choi   conflict_test/ClassAofA.py",
+    #                    " 8%  Sun            conflict_test/ClassAofA.py"]
+    # 띄어쓰기 formatting 해주기!
+
+    prediction_list = []
+
+    # Show all of prediction lists
+    if user2_name == "All":
+        prediction_list = ["80%  Sun            counting_triangle.py",
+                           "50%  Kathryn Choi   SquareMatrix.py",
+                           "17%  Kathryn Choi   conflict_test/ClassAofA.py",
+                           " 8%  Sun            conflict_test/ClassAofA.py"]
+
+    # Show prediction list of user2
+    else:
+        prediction_list = ["80%  Sun            counting_triangle.py",
+                           " 8%  Sun            conflict_test/ClassAofA.py"]
+
+    message = ""
+    for idx, prediction in enumerate(prediction_list):
+        message += "%d. %s\n" % (idx + 1, prediction)
+
+    attachments = [{'title': user2_name, 'text': message, 'color': "#3AA3E3" }]
+    slack.chat.post_message(channel=user1_name, attachments=attachments, as_user=True)
