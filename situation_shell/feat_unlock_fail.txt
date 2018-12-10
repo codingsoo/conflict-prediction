@@ -1,1 +1,2 @@
-You didn't lock this file, so you cannot unlock this file.
+This file does not have a lock by you.
+You didn’t lock this file, so you cannot unlock it.

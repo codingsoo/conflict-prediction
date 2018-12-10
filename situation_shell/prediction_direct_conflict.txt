@@ -1,2 +1,7 @@
-I predict you may end up editing *{filelist}*. That would cause a direct conflict with *{userlist}* with probabilities of *{percentagelist}* because they are working on those files or they will edit those files.
-I predict direct conflict(s) may occur in *{filelist}* between you and *{userlist}* with probabilities of *{percentagelist}* because they are working on those files or they will edit those files.
+I predict you may have a direct conflict in future with *{userlist}* with probabilities of {percentagelist}.
+You will probably end up having a direct conflict in future with *{userlist}* with {percentagelist} confidence.
+There will likely be a direct conflict in future with {percentagelist} probability with *{userlist}*.
+With a likelihood of {percentagelist} of the time, you will probably have a direct conflict in future with *{userlist}*
+I predict that you will probably have a direct conflict in future with *{userlist}* with {percentagelist} of confidence.
+You and *{userlist}* may end up having direct conflicts in future with probabilities of {percentagelist}.
+I believe a direct conflict is likely to occur in future between you and *{userlist}* with {percentagelist} probability.

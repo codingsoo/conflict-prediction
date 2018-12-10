@@ -1,1 +1,4 @@
-<@{user}> locked *{file_name}* file for {lock_time} hour(s).
+<@{user}> placed a lock on *{file_name}* for {lock_time}. I’ll let you know when they unlock it.
+*{file_name}* is locked by <@{user}>. You can change the file, though, if you so wish, but <@{user}> is currently working on it.
+*{file_name}* is locked by <@{user}> for {lock_time}.
+<@{user}> has locked *{file_name}* for {lock_time}. It’s probably best if you don’t edit it until it’s unlocked. I will let you know when.

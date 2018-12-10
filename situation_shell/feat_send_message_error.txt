@@ -1,1 +1,1 @@
-You must write your message between two double quotations like "message".
+You must write your message between double quotes, like this: "message".

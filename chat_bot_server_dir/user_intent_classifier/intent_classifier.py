@@ -430,7 +430,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
                 typo_error_check = 1
 
                 for file_name, fn_idx_list in file_name_dict.items():
-                    if file_name in sentence:
+                    if file_name in sentence or file_name.split(".")[0] in sentence:
                         typo_error_check = 0
 
                 sentence_split = sentence.split()
@@ -456,7 +456,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
             # Find called files in sentence & decide whether file is same named file
             for file_name, fn_idx_list in file_name_dict.items():
-                if file_name in sentence:
+                if file_name in sentence or file_name.split(".")[0] in sentence:
                     # Distinct file
                     if len(fn_idx_list) == 1:
                         called_file_abs_path_list.append(file_abs_path_list[fn_idx_list[0]])

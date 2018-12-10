@@ -1,1 +1,2 @@
-This user is not working on our project.
+I could not find a user with this name. Are you sure you typed the name correctly?
+This user appears to not be working on our project.

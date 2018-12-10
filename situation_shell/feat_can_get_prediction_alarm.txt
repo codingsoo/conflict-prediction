@@ -1,1 +1,2 @@
-You didn't ignore prediction message. So you get notified of prediction message!
+You were not ignoring messages concerning indirect conflicts.
+You have been already receiving notifications about indirect conflicts.

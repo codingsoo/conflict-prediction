@@ -1,5 +1,5 @@
 You will receive notifications for indirect conflicts from now on.
 Done.
-Indirect conflicts will once again appear in this channel.
+Indirect conflicts notifications will once again appear in this channel.
 I will let you know again whenever your changes and those of someone else involve a possible indirect conflict.
 Ok.

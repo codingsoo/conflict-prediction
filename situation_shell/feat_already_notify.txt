@@ -1,1 +1,2 @@
-You already get notified of *{filename}*
+You had not disabled notifications for *{filename}* before.
+You have been already receiving notifications about *{filename}*.

@@ -1,1 +1,2 @@
-You have already ignored direct message.
+You have already been ignoring notifications of direct conflicts.
+You have already asked to not receive notifications about direct conflicts.

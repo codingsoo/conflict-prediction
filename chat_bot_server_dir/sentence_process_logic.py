@@ -364,13 +364,13 @@ def check_conflict_logic(slack_code, user_git_id, file_name):
         message += additional_message
 
     elif not dir_conflict_slack_code_list and indir_conflict_slack_code_list:
-        message = random.choice(shell_dict['feat_conflict_i']).format(user2=indir_conflict_slack_code_list[0],
+        message = random.choice(shell_dict['feat_conflict_indirect']).format(user2=indir_conflict_slack_code_list[0],
                                                                       filename1=file_name,
                                                                       filename2=", ".join(indir_conflict_file_list[0]))
         message += additional_message
 
     elif dir_conflict_slack_code_list and not indir_conflict_slack_code_list:
-        message = random.choice(shell_dict['feat_conflict_d']).format(user2=", ".join(dir_conflict_slack_code_list),
+        message = random.choice(shell_dict['feat_conflict_direcc']).format(user2=", ".join(dir_conflict_slack_code_list),
                                                                       filename=file_name)
 
     else:
@@ -390,19 +390,23 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     else:
         # target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
         working_status = w_db.get_user_working_status(target_git_id)
+        percentage = w_db.get_severity_percentage(project_name, working_status[0])
         if not working_status:
-            message = random.choice(shell_dict['feat_no_working_status'])
+            message = random.choice(shell_dict['feat_no_working_status']).format(user = slack_code)
         else:
             message = random.choice(shell_dict['feat_working_status'])
-            message = message.format(user2=target_slack_code, working_status=working_status)
+            message = message.format(user2=target_slack_code, working_status=working_status, severity = percentage + "%")
 
         # add lock file information.
         db_lock_set = set(w_db.read_lock_list_of_slack_code(project_name, target_slack_code))
         print(db_lock_set)
         if db_lock_set:
             locked_file = ', '.join(list(db_lock_set))
+            remain_time_list = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
+            remain_time = ', '.join(remain_time_list)
             message += random.choice(shell_dict['feat_working_status_lock_info']).format(user=target_slack_code,
-                                                                                         file_name=locked_file)
+                                                                                         file_name=locked_file,
+                                                                                         remaining_time = remain_time)
 
     w_db.close()
     return message
@@ -479,7 +483,7 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
         if user_percentage > other_percentage:
             message = random.choice(shell_dict['feat_recommend_change'])
         elif user_percentage < other_percentage:
-            message = random.choice(shell_dict['feat_recommend_not_change'])
+            message = random.choice(shell_dict['feat_recommend_no_change'])
         else:
             message = random.choice(shell_dict['feat_recommend_same_severity'])
 
@@ -521,11 +525,11 @@ def check_locker_logic(slack_code, file_abs_path):
     locker_slack_code = w_db.get_locker_slack_code(project_name, file_abs_path)
 
     if locker_slack_code == "":
-        message = random.choice(shell_dict['feat_locker_nonexistence'])
+        message = random.choice(shell_dict['feat_locked_nonexistence'])
         message = message.format(filename=file_abs_path)
 
     else:
-        message = random.choice(shell_dict['feat_locker_existence'])
+        message = random.choice(shell_dict['feat_locked_existence'])
         message = message.format(user2=locker_slack_code, filename=file_abs_path)
 
     w_db.close()

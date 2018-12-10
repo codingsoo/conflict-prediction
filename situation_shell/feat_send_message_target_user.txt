@@ -1,1 +1,5 @@
- <@{user1}> gives message : *{message}*
+{user1} has sent you the following message: {message}
+{user1} asked me to send you this message: {message}
+You have received the following message from {user1}: {message}
+New message from {user1}: {message}
+From {user1}: {message}

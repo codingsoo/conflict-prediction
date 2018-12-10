@@ -98,7 +98,7 @@ class direct_work_database:
 
             print("\n#### Direct Conflict !!! ####")
 
-            already_direct_conflict_table = self.search_already_direct_conflict_list(project_name, direct_conflict_list, working_list, user_name)
+            already_direct_conflict_table = self. search_already_direct_conflict_list(project_name, direct_conflict_list, working_list, user_name)
             first_direct_conflict_list, already_direct_conflict_list = self.classify_direct_conflict_list(direct_conflict_list, already_direct_conflict_table)
             print("already_direct_conflict_table : ", already_direct_conflict_table)
             print("first_direct_conflict_list : ", first_direct_conflict_list)
@@ -817,6 +817,7 @@ class direct_work_database:
                                 user_name=user_name,
                                 probability_dict=probability_dict,
                                 whole_predicted_file_set=whole_predicted_file_set)
+        return
 
     def get_user_working_file(self, project_name, user_name):
         user_working_file = set()

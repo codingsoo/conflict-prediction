@@ -1,2 +1,4 @@
-{user1} works {percentage1}%, {user2} works {percentage2}% in *{filename}*.
-The amount of {user1}'s working on {filename} is {percentage1}% and that of {user2} is {percentage2}%.
+In *{filename}*, {user1} has thus far changed {severity1}, {user2} has changed {severity2}.
+Until now, these developers have changed *{filename}*:  {user1}: {severity1}% {user2}: {severity2}%.
+Last time I checked, {user2} has modified {severity1}% of {filename}, {user2} {severity1}%.
+*{filename}* has been modified by {user1} {severity1}%, {user2} {severity2}%.

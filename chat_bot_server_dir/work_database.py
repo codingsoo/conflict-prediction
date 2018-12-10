@@ -1093,6 +1093,37 @@ class work_database:
 
         return slack_code, remain_time_str
 
+    def check_target_user_remain_time_of_lock_file(self, project_name, file_name, slack_code):
+        remain_time_str = ""
+        slack_code = ""
+        raw_list = []
+        try:
+            for file in file_name :
+                sql = "select * " \
+                      "from lock_list " \
+                      "where project_name = '%s' " \
+                      "and slack_code = '%s' "\
+                      "and lock_file = '%s'" % (project_name, slack_code, file)
+                print(sql)
+                self.cursor.execute(sql)
+                self.conn.commit()
+
+                raw = self.cursor.fetchone()
+
+                delete_time = raw[3]
+                log_time = raw[4]
+
+                end_time = log_time + timedelta(hours=delete_time)
+                remain_time = end_time - datetime.now()
+                remain_time_str = str(int(remain_time.seconds / 3600)).zfill(2) + " : " + str(int((remain_time.seconds % 3600) / 60)).zfill(2) + " : " + str(int(remain_time.seconds % 60)).zfill(2)
+                raw_list.append(remain_time_str);
+        except:
+            self.conn.rollback()
+            print("ERROR : check_remain_time_of_lock_file")
+
+        return raw_list
+
+
     ####################################################################
     '''
     ignore

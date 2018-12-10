@@ -1,1 +1,5 @@
-Also, <@{user}> locked *{file_name}* files.
+Also, <@{user}> placed a lock on *{file_name}* for {remaining_time}.
+Additionally, <@{user}> has locked *{file_name}* for {remaining_time}.
+BesidesIn addition, <@{user}> holds a lock on *{file_name}*for another {remaining_time}.
+Also, <@{user}> locked also has locks on *{file_name}* for another {remaining_time}.
+In addition, <@{user}> additionally has locked *{file_name}* for {remaining_time}.

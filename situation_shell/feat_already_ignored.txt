@@ -1,1 +1,2 @@
-You already ignored *{filename}* file!
+You have already been ignoring *{filename}*.
+I have already disabled notifications about this file for you, since you asked me to do so before.

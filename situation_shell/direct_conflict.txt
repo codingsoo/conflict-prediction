@@ -1,4 +1,4 @@
-Your changes on *{filename}* may cause conflict as <@{user2}> who already is working on that file.
+Your changes on *{filename}* may cause conflict as <@{user2}> is already working on that file.
 Just wanted to tell you that it’s best if you talk with <@{user2}>, since both of you are now working on the same file.
 *{filename}* is being modified by <@{user2}> right now. You may want to talk with <@{user2}> before proceeding.
 <@{user2}> is currently working on *{filename}*. Please talk to <@{user2}> before editing the file.

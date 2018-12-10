@@ -1,7 +1,5 @@
-Sure.
-Done.
-Ok, done.
-Ok.
-Alright, you will now receive notifications for prediction again.
+Alright, you will now receive notifications about predictions of direct conflicts again.
 Done, you’ll be notified from now on.
-You will receive notifications for prediction from now on.
+As soon as you start modifying a new file, From now on, I’ll notify you about the possibility of having direct conflicts in future.
+Sure, you will receive notifications about direct conflicts predictions from now on.
+Ok, I will let you know again whenever your changes and those of someone else involve a possible direct conflict in future.

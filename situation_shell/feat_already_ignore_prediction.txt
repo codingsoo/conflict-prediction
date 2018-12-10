@@ -1,1 +1,4 @@
-You have already ignored prediction message.
+I have already disabled notifications about predictions of direct conflicts, since you asked me to do so before.
+You have already not been receiving been ignoring messages concerning direct conflict predictions.
+You have already asked me to not receive provide notifications about predictions of direct conflicts.
+You have already disabled notifications about direct conflicts predictions.

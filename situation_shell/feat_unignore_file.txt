@@ -2,5 +2,5 @@ Ok, I’ll notify you if you and other people modify this file simultaneously an
 Done!
 From now on you will again receive notification about the conflicts of *{filename}*.
 Success!
-Done! Let me know if you want to undo the ignore command.
+Done! Let me know if you want to undo the unignore command.
 I enabled notifications for that file.
