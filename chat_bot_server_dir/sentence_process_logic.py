@@ -3,6 +3,7 @@ from chat_bot_server_dir.intent_func import get_code_history_info
 from server_dir.slack_message_sender import send_lock_request_button_message
 from server_dir.slack_message_sender import send_all_user_message
 from server_dir.slack_message_sender import send_direct_message
+from server_dir.slack_message_sender import send_feature_button_message
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
 from chat_bot_server_dir.constants import *
 import os, random
@@ -54,24 +55,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
 
     elif(intent_type == ERROR):
         if param0 == "no_response":
-            message = """I don't know what are you talking about. I am conflict detect chatbot, and I have 12 talking features :
-            # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
-            # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
-            # 3. code_history : A user can ask who wrote certain code lines.
-            # 4. ignore_alarm : A user can ignore direct and indirect conflicts.
-            # 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
-            # 6. working_status : A user can ask about other user's working status
-            # 7. user_message : A user can let chatbot give a message to other users.
-            # 8. recommend : A user can ask chatbot to recommend reaction to conflict.
-            # 9. check_ignored_file : A user can ask chatbot which files are ignored.
-            # 10. check_locker : A user can ask chatbot about who locked the file.
-            # 11. check_severity : A user can ask chatbot about how severe conflict is.
-            # 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
-            # 13. greeting : Chatbot can greet users.
-            # 14. complimentary_close : Chatbot can say good bye.
-            # 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.
-            # 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
-            """
+            message = no_response(slack_code)
         elif param0 == "same_named_file":
             message = ""
         elif param0 == "typo_error_file":
@@ -412,25 +396,6 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     return message
 
 
-# def send_message_channel_logic(target_channel, msg, user_slack_id):
-#     if msg == '':
-#         message = 'You must write your message between two double quotations like "message"'
-#         return message
-#
-#     channel_msg = user_slack_id + " announce : " + msg
-#     ret_scm = send_channel_message(target_channel, channel_msg)
-#
-#     if ret_scm == CHANNEL_WITH_SAYME:
-#         message = random.choice(shell_dict['feat_announce'])
-#         message = message.format(target_channel)
-#     elif ret_scm == CHANNEL_WITHOUT_SAYME:
-#         message = "I'm not in {} channel. If you want to send message to that channel, please invite me.".format(target_channel)
-#     elif ret_scm == CHANNEL_NONEXISTENCE:
-#         message = "There is no {} channel in Slack workspace, please check channel list.".format(target_channel)
-#     else:
-#         message = ''
-#     return message
-
 def send_message_channel_logic(target_channel, msg, user_slack_id):
     if msg == '':
         message = random.choice(shell_dict['feat_send_message_error'])
@@ -603,7 +568,11 @@ def bye_logic(slack_code):
     message = random.choice(shell_dict['feat_goodbye']).format(user=user_name)
     return message
 
+def no_response(slack_code):
 
+    message = random.choice(shell_dict['sentence_process_no_response'])
+    send_feature_button_message(slack_code,message)
+    return ""
 
 ####################################################
 '''

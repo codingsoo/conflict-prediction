@@ -29,7 +29,7 @@ def user_search():
     return str(user_search_logic(content))
 
 
-# Read the information of Upser Git Diff data
+# Read the information of User Git Diff data
 @app.route("/git_diff", methods = ["POST"])
 def git_diff():
     print("##### START request git_diff logic ##### (", str(request.remote_addr), ")")

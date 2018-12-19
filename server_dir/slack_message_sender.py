@@ -362,27 +362,6 @@ def send_prediction_message(project_name, user_name, probability_dict, whole_pre
     send_prediction_button_message(user_slack_id_code[1], message, project_name, user_name_list)
 
 
-# def send_conflict_message_channel(conflict_file, conflict_logic, user1_name, user2_name):
-#     user1_slack_id_code = get_user_slack_id_and_code(user1_name)
-#     user2_slack_id_code = get_user_slack_id_and_code(user2_name)
-#     message = ""
-#
-#     # same server
-#     if conflict_logic == "in":
-#         message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
-#                                                                     user2_slack_id_code[1],
-#                                                                     conflict_file,
-#                                                                     '')
-#     else:
-#         message = get_message('direct_conflict_channel.txt').format(user1_slack_id_code[1],
-#                                                                     user2_slack_id_code[1],
-#                                                                     conflict_file,
-#                                                                     conflict_logic)
-#     send_channel_message("code-conflict-chatbot", message)
-#
-#     return
-
-
 def send_remove_lock_channel(channel, lock_file_list):
     message = get_message('feat_send_all_user_auto_unlock.txt').format(file_name=", ".join(lock_file_list)) + "\n"
     # for file_name in lock_file_list:
@@ -413,23 +392,6 @@ def channel_join_check(channel):
             return CHANNEL_WITHOUT_SAYME
         else:
             return CHANNEL_WITH_SAYME
-
-
-# Put channel name and message for sending chatbot message
-# def send_channel_message(channel, message):
-#     if message == "":
-#         return
-#     slack = get_slack()
-#     ret_cjc = channel_join_check(channel)
-#
-#     if ret_cjc == CHANNEL_WITH_SAYME:
-#         attachments_dict = dict()
-#         attachments_dict['text'] = "%s" % (message)
-#         attachments_dict['mrkdwn_in'] = ["text", "pretext"]
-#         attachments = [attachments_dict]
-#         slack.chat.post_message(channel="#" + channel, text=None, attachments=attachments, as_user=True)
-#
-#     return ret_cjc
 
 
 # Send a message to everyone in the project
@@ -513,19 +475,6 @@ def send_file_selection_button_message(slack_code, called_same_named_dict, sente
 
         slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
 
-    # slack = Slacker("SLACK_BOT_TOKEN")
-    # response = slack.rtm.start()
-    # endpoint = response.body['url']
-    # ws2 = websocket.create_connection("ws://localhost:4000")
-    # print("start loop")
-    # while True:
-    #     event = json.loads(ws2.recv())
-    #     print("event", event)
-    #     if event.get('type') != "message" or event.get('user') != slack_code:
-    #         continue
-    #     ws2.close()
-    #     break
-
 
 # Typo error file selection button message
 def send_typo_error_button_message(slack_code,error_file_name, file_name, sentence, intent_type):
@@ -538,7 +487,7 @@ def send_typo_error_button_message(slack_code,error_file_name, file_name, senten
                {'name': sentence, 'text': "NO", 'type': "button", 'value': "NO"}]
 
     attachments_dict['title'] = "I think you have typo error."
-    attachments_dict['text'] = "Do you mean%s file?" % (file_name)
+    attachments_dict['text'] = "Do you mean %s file?" % (file_name)
     attachments_dict['fallback'] = "Typo Error Button Message"
     attachments_dict['callback_id'] = intent_type
     attachments_dict['attachment_type'] = "warning"
@@ -548,6 +497,58 @@ def send_typo_error_button_message(slack_code,error_file_name, file_name, senten
 
     slack.chat.post_message(channel="" + slack_code, text=None, attachments=attachments, as_user=True)
 
+# Git diff button message
+def send_feature_button_message(slack_code,message):
+    slack = get_slack()
+    attachments_dict = dict()
+
+    actions = [{'name': 'All', 'text': 'List of feature', 'type': "button", 'value': 'All'},
+               {'name': 'All', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
+
+    attachments_dict['title'] = ""
+    attachments_dict['text'] = "%s" % (message)
+    attachments_dict['fallback'] = "Send list of feature button message"
+    attachments_dict['callback_id'] = "ALL"
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "warning"
+    attachments = [attachments_dict]
+
+    slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
+
+# Git diff message after click a button
+def send_list_of_feature_button_message(slack_code):
+    slack = get_slack()
+    list_of_feature = "# 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files. \n\
+# 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.\n\
+# 3. code_history : A user can ask who wrote certain code lines. \n\
+# 4. ignore_alarm : A user can ignore direct and indirect conflicts, and prediction alarm.\n\
+# 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file.\n\
+# 6. working_status : A user can ask about other user's working status.\n\
+# 7. user_message : A user can let chatbot give a message to other users.\n\
+# 8. recommend : A user can ask chatbot to recommend reaction to conflict.\n\
+# 9. check_ignored_file : A user can ask chatbot which files are ignored.\n\
+# 10. check_locker : A user can ask chatbot about who locked the file.\n\
+# 11. check_severity : A user can ask chatbot about how severe conflict is. \n\
+# 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information.\n\
+# 13. greeting : Chatbot can greet users.\n\
+# 14. complimentary_close : Chatbot can say good bye.\n\
+# 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.\n\
+# 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity."
+
+    attachments_dict = dict()
+
+    actions = [{'name': 'All', 'text': 'List of feature', 'type': "button", 'value': 'All'},
+               {'name': 'All', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
+
+    attachments_dict['title'] = ""
+    attachments_dict['text'] = list_of_feature
+    attachments_dict['fallback'] = "Send list of feature button message"
+    attachments_dict['callback_id'] = "ALL"
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "warning"
+    attachments = [attachments_dict]
+
+    slack.chat.post_message(channel=slack_code, text=None, as_user=True, attachments= attachments)
 
 # Git diff button message
 def send_conflict_button_message(slack_code, message, user2_name, project_name, file_name):
