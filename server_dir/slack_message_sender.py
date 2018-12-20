@@ -502,8 +502,8 @@ def send_feature_button_message(slack_code,message):
     slack = get_slack()
     attachments_dict = dict()
 
-    actions = [{'name': 'All', 'text': 'List of feature', 'type': "button", 'value': 'All'},
-               {'name': 'All', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
+    actions = [{'name': 'List of feature', 'text': 'List of feature', 'type': "button", 'value': 'All'},
+               {'name': 'List of sample commands', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
 
     attachments_dict['title'] = ""
     attachments_dict['text'] = "%s" % (message)
@@ -515,7 +515,7 @@ def send_feature_button_message(slack_code,message):
 
     slack.chat.post_message(channel=slack_code, text=None, attachments=attachments, as_user=True)
 
-# Git diff message after click a button
+# List of feature message after click a button
 def send_list_of_feature_button_message(slack_code):
     slack = get_slack()
     list_of_feature = "# 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files. \n\
@@ -527,22 +527,57 @@ def send_list_of_feature_button_message(slack_code):
 # 7. user_message : A user can let chatbot give a message to other users.\n\
 # 8. recommend : A user can ask chatbot to recommend reaction to conflict.\n\
 # 9. check_ignored_file : A user can ask chatbot which files are ignored.\n\
-# 10. check_locker : A user can ask chatbot about who locked the file.\n\
+# 10. check_who_locked_file : A user can ask chatbot about who locked the file.\n\
 # 11. check_severity : A user can ask chatbot about how severe conflict is. \n\
-# 12. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information.\n\
-# 13. greeting : Chatbot can greet users.\n\
-# 14. complimentary_close : Chatbot can say good bye.\n\
-# 15. detect_direct_conflict : Chatbot can detect direct conflict and severity.\n\
-# 16. detect_indirect_conflict : Chatbot can detect indirect conflict and severity."
+# 12. ignore_prediction_alarm : A user can ignore prediction alarm. \n\
+# 13. file_status : A user can check which user is now working on specific file. \n\
+# 14. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. \n\
+# 15. greeting : Chatbot can greet users.\n\
+# 16. complimentary_close : Chatbot can say good bye.\n\
+# 17. detect_direct_conflict : Chatbot can detect direct conflict and severity.\n\
+# 18. detect_indirect_conflict : Chatbot can detect indirect conflict and severity."
 
     attachments_dict = dict()
 
-    actions = [{'name': 'All', 'text': 'List of feature', 'type': "button", 'value': 'All'},
-               {'name': 'All', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
+    actions = [{'name': 'List of feature', 'text': 'List of feature', 'type': "button", 'value': 'All'},
+               {'name': 'List of sample commands', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
 
     attachments_dict['title'] = ""
     attachments_dict['text'] = list_of_feature
     attachments_dict['fallback'] = "Send list of feature button message"
+    attachments_dict['callback_id'] = "ALL"
+    attachments_dict['actions'] = actions
+    attachments_dict['color'] = "warning"
+    attachments = [attachments_dict]
+
+    slack.chat.post_message(channel=slack_code, text=None, as_user=True, attachments= attachments)
+
+
+# List of feature message after click a button
+def send_list_of_command_message(slack_code):
+    slack = get_slack()
+    list_of_sample_commands = "# 1. ignore_file : Can you stop notifying me about file.py? / I want to get an alarm about file.py\n\
+# 2. lock_file : Sayme, could you please lock file.py / Release file.py.\n\
+# 3. code_history : You should tell me who wrote code line 1 to line 9 in file.py. / I want to know who writes line 15 in file.py.\n\
+# 4. ignore_alarm : Don't alert me about direct conflict / Unignore direct conflict.\n\
+# 5. check_conflict : I want to know if a conflict occurs when I change file.py. / Can I change file.py?\n\
+# 6. working_status : What @Sun is up to? / Give me @Sun's working status.\n\
+# 7. user_message : Can you send message to @Sun that “Message”? / Send “message” to @Sun.\n\
+# 8. recommend : Any thought about how to solve conflict at file.py? / What should I do to solve conflict in file.py?\n\
+# 9 . check_ignored_file : You should tell me which file @Sun ignored. / Tell me which files are being ignored.\n\
+# 10. check_who_locked_file : Tell me who locked file.py. / Do you know who lock SquareMatrix.py?\n\
+# 11. check_severity : Could you tell me the severity of file.py? / Let me know the severity of file.py\n\
+# 12. ignore_prediction_alarm : Stop sending me the notification about prediction. / Inform prediction part.\n\
+# 13. file_status : Who is editing file.py now? / Check the user who's working on file.py."
+
+    attachments_dict = dict()
+
+    actions = [{'name': 'List of feature', 'text': 'List of feature', 'type': "button", 'value': 'All'},
+               {'name': 'List of sample commands', 'text': 'List of sample commands', 'type': "button", 'value': 'All'}]
+
+    attachments_dict['title'] = ""
+    attachments_dict['text'] = list_of_sample_commands
+    attachments_dict['fallback'] = "Send list of sample command button message"
     attachments_dict['callback_id'] = "ALL"
     attachments_dict['actions'] = actions
     attachments_dict['color'] = "warning"

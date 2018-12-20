@@ -7,7 +7,7 @@ from flask import Flask, request, make_response
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
 from chat_bot_server_dir.bot_server import message_processing
-from server_dir.slack_message_sender import send_git_diff_message, send_prediction_list_message,send_list_of_feature_button_message
+from server_dir.slack_message_sender import send_git_diff_message, send_prediction_list_message,send_list_of_feature_button_message, send_list_of_command_message
 
 def get_slack():
     bot_token = verification_token = signing_secret = ''
@@ -185,9 +185,9 @@ def message_actions():
         send_prediction_list_message(user1_name, user2_name, project_name)
 
 
-    elif request_type == "Send list of feature button message":
+    elif request_type == "Send list of feature button message" \
+            or request_type == "Send list of sample command button message":
         slack_code = btmsg_json['channel']['id']
-
         slack.chat.update(
             channel=btmsg_json['channel']['id'],
             text=btmsg_json['original_message']['text'],
@@ -196,7 +196,11 @@ def message_actions():
                           'color': "#3AA3E3"}]
         )
 
-        send_list_of_feature_button_message(slack_code)
+        if btmsg_json['actions'][0]['name'] == 'List of feature' :
+            send_list_of_feature_button_message(slack_code)
+        else :
+            send_list_of_command_message(slack_code)
+
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)
 
