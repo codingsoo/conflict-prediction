@@ -1,1 +1,1 @@
-There is no working users on *{filename}*.
+No one is working on that file right now.
