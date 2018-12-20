@@ -1,4 +1,4 @@
-{user2} ignored {filename1}, {filename2}, {filename3}.
+{user2} ignored *{filename1}*, *{filename2}*, *{filename3}*.
 {user2} is currently ignoring notifications for: *{filename1}*
 These are the files for which {user2} are ignoring notifications: *{filename2}*
 Here you are: *{filename1}*

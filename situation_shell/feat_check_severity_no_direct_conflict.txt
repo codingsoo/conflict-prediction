@@ -1,1 +1,1 @@
-There is no direct conflict in *{filepath}*.
+There is no direct conflict in *{filename}*.

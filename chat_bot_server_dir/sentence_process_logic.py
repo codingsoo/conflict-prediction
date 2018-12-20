@@ -47,6 +47,9 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     elif(intent_type == 11):
         message = check_severity_logic(slack_code, param0)
 
+    elif(intent_type == 13):
+        message = file_status_logic(slack_code, param0)
+
     elif(intent_type == ERROR - 2):
         message = greeting_logic(slack_code)
 
@@ -166,7 +169,7 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
             inform_unlock_list = w_db.read_oldest_lock_history_list(slack_code, remove_lock_list)
 
             for file in inform_unlock_list:
-                print("inform_unlock_list", file)
+                print("inform_unlock_list : ", file)
                 if(file[2] != slack_code):
                     send_lock_request_button_message(slack_code=file[2], lock_file=file[1], lock_time=file[3])
 
@@ -336,9 +339,9 @@ def check_conflict_logic(slack_code, user_git_id, file_name):
         indir_conflict_info += "*" + ", ".join(indir_conflict_file_list[-1]) + "* by " + indir_conflict_slack_code_list[-1]
         additional_message = " Also, {} may cause indirect conflicts.".format(indir_conflict_info)
 
-    print("direct_user_list", dir_conflict_slack_code_list)
-    print("indirect_user_list", indir_conflict_slack_code_list)
-    print("indirect_file_list", indir_conflict_file_list)
+    print("direct_user_list : ", dir_conflict_slack_code_list)
+    print("indirect_user_list : ", indir_conflict_slack_code_list)
+    print("indirect_file_list : ", indir_conflict_file_list)
 
     if dir_conflict_slack_code_list and indir_conflict_slack_code_list:
         message = random.choice(shell_dict['feat_conflict_di']).format(user2=", ".join(dir_conflict_slack_code_list),
@@ -383,7 +386,7 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
 
         # add lock file information.
         db_lock_set = set(w_db.read_lock_list_of_slack_code(project_name, target_slack_code))
-        print(db_lock_set)
+        print("working_status : ", db_lock_set)
         if db_lock_set:
             locked_file = ', '.join(list(db_lock_set))
             remain_time_list = w_db.check_user_and_remain_time_of_lock_file(project_name, file_name)
@@ -470,7 +473,7 @@ def check_ignored_file_logic(slack_code, other_user_code):
     else:
         ignored_file_list = w_db.get_ignored_file_list(other_user_code)
 
-    print("ignored_file_list", ignored_file_list)
+    print("ignored_file_list : ", ignored_file_list)
     if not ignored_file_list:
         message = random.choice(shell_dict['feat_ignored_file_nonexistence'])
     else:
@@ -515,31 +518,47 @@ def check_severity_logic(slack_code, file_abs_path):
         message += "in *{}*".format(file_abs_path)
     else:
         message = random.choice(shell_dict['feat_check_severity_no_direct_conflict'])
-        message = message.format(filepath=file_abs_path)
+        message = message.format(filename=file_abs_path)
 
     w_db.close()
     return message
 
+
+def file_status_logic(slack_code, file_abs_path):
+    w_db = work_database()
+    message = ""
+
+    project_name = w_db.get_repository_name(slack_code)
+    user_list = w_db.get_working_users_on_file(project_name, file_abs_path)
+
+    if user_list:
+        user_list = w_db.convert_git_id_list_to_slack_code_list(user_list)
+        message = random.choice(shell_dict['feat_file_status_users_existence']).format(filename=file_abs_path, user_list=",".join(user_list))
+    else:
+        message = random.choice(shell_dict['feat_file_status_users_nonexistence']).format(filename=file_abs_path)
+
+    w_db.close()
+
+    return message
 
 def lock_response_logic(slack_code, msg_type, target_file, lock_time):
     w_db = work_database()
     project_name, user_name = w_db.get_repository_and_user_name(slack_code)
 
     if msg_type == "YES" and target_file in w_db.read_lock_history_list(project_name, slack_code):
-        print("target_file", target_file)
+        print("lock_respond_file : ", target_file)
         lock_file_list, already_lock_set = list(w_db.add_lock_list(project_name, slack_code, set([target_file]), lock_time))
         ch_message = ""
         if target_file in lock_file_list:
             ch_message += random.choice(shell_dict['feat_send_all_user_lock']).format(user=slack_code, file_name=target_file, lock_time=lock_time)
         # send_channel_message("code-conflict-chatbot", ch_message)
         send_all_user_message(ch_message, slack_code)
-        print("YES")
         w_db.delete_lock_history(project_name, slack_code, target_file)
     else:
-        print("NO")
         w_db.delete_lock_history(project_name, slack_code, target_file)
 
     w_db.close()
+
 
 def greeting_logic(slack_code):
     w_db = work_database()

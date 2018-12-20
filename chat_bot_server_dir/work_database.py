@@ -412,7 +412,7 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
             raw_tuple = self.cursor.fetchall()
-            print("get_working_amount_dict", raw_tuple)
+            print("get_working_amount_dict : ", raw_tuple)
 
             for rt in raw_tuple:
                 if rt[0] == user_git_id:
@@ -655,12 +655,10 @@ class work_database:
 
             # sorted(student_tuples, key=lambda student: student[2])
             raw_tuple = self.cursor.fetchall()
-            print("get_user_working_status", raw_tuple)
             raw = tuple()
 
             if raw_tuple:
                 raw = raw_tuple[0]
-                print("get_user_working_status", raw)
 
             return raw
 
@@ -932,7 +930,7 @@ class work_database:
             raw_tuple = self.cursor.fetchall()
             for rt in raw_tuple:
                 raw_list.append(rt[0])
-            print("read_lock_history_list", raw_list)
+            print("read_lock_history_list : ", raw_list)
         except:
             self.conn.rollback()
             print("ERROR : read lock history list")
@@ -1204,7 +1202,6 @@ class work_database:
             self.conn.commit()
 
             raw = list(self.cursor.fetchone())
-            print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_direct_ignore")
@@ -1228,7 +1225,6 @@ class work_database:
             self.conn.commit()
 
             raw = list(self.cursor.fetchone())
-            print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_indirect_ignore")
@@ -1252,7 +1248,6 @@ class work_database:
             self.conn.commit()
 
             raw = list(self.cursor.fetchone())
-            print(raw)
         except:
             self.conn.rollback()
             print("ERROR : read_prediction_ignore")
@@ -1278,7 +1273,7 @@ class work_database:
             self.conn.commit()
 
             direct_recent_data = list(self.cursor.fetchall())
-            print("direct_recent_data", direct_recent_data)
+            print("direct_recent_data : ", direct_recent_data)
             direct_recent_data_mod = []
             indirect_recent_data_mod = []
 
@@ -1344,7 +1339,7 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
-            print("is_direct_conflict", raw_list)
+            print("is_direct_conflict : ", raw_list)
 
         except:
             self.conn.rollback()
@@ -1369,7 +1364,7 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
-            print("is_indirect_conflict", raw_list)
+            print("is_indirect_conflict : ", raw_list)
 
         except:
             self.conn.rollback()
@@ -1397,7 +1392,7 @@ class work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
-                print("is_indirect_conflict2", raw_list)
+                print("is_indirect_conflict2 : ", raw_list)
 
                 if raw_list:
                     return True
@@ -1421,7 +1416,7 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall()[0])
-            print("direct_conflict", raw_list)
+            print("direct_conflict : ", raw_list)
 
         except:
             self.conn.rollback()
@@ -1446,7 +1441,7 @@ class work_database:
             self.conn.commit()
 
             raw_list = list(self.cursor.fetchall())
-            print("indirect_logic_dependency", raw_list)
+            print("indirect_logic_dependency : ", raw_list)
 
         except:
             self.conn.rollback()
@@ -1464,7 +1459,7 @@ class work_database:
             if temp_file_v != file_name:
                 file_set.add((temp_file_v, temp_logic_v))
 
-        print("indirect_associated_file_set", file_set)
+        print("indirect_associated_file_set : ", file_set)
 
         raw_list = []
         # file_name 내에서 call 가능한 다른 파일의 함수를 수정하고 있는지 working list에서 조사
@@ -1484,7 +1479,7 @@ class work_database:
                 self.conn.commit()
 
                 raw_list = list(self.cursor.fetchall())
-                print("indirect_def_list", raw_list)
+                print("indirect_def_list : ", raw_list)
 
                 for user_name in raw_list:
                     msg = "[" + temp_file + ", " + temp_logic + "]"
@@ -1512,7 +1507,7 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
             raw_list = list(self.cursor.fetchall())
-            print("indirect_call_list", raw_list)
+            print("indirect_call_list : ", raw_list)
             for temp_raw in raw_list:
                 msg = "[" + temp_raw[1] + ", " + (file_name + "|" + temp_raw[2]) + "]"
                 try:
@@ -1523,7 +1518,7 @@ class work_database:
             self.conn.rollback()
             print("ERROR : get_indirect_conflict_user_list 3")
 
-        print("indirect_call_and_def_dict", raw_dict)
+        print("indirect_call_and_def_dict : ", raw_dict)
         return list(raw_dict.keys()), list(raw_dict.values())
 
 
@@ -1538,7 +1533,7 @@ class work_database:
             self.conn.commit()
 
             direct_tuple = self.cursor.fetchall()
-            print("all_direct_conflict_list", direct_tuple)
+            print("all_direct_conflict_list : ", direct_tuple)
             for dt in direct_tuple:
                 conflict_set.add(dt[0])
 
@@ -1550,12 +1545,12 @@ class work_database:
             self.conn.commit()
 
             indirect_tuple = self.cursor.fetchall()
-            print("all_indirect_conflict_list", indirect_tuple)
+            print("all_indirect_conflict_list : ", indirect_tuple)
             for it in indirect_tuple:
                 conflict_set.add(it[0].split('|')[0])
                 conflict_set.add(it[1].split('|')[0])
 
-            print("all_conflict_list", conflict_set)
+            print("all_conflict_list : ", conflict_set)
 
         except:
             self.conn.rollback()
@@ -1582,7 +1577,6 @@ class work_database:
             for rt in raw_tuple:
                 raw_list.append(rt[0])
 
-            print("raw_list", raw_list)
         except:
             self.conn.rollback()
             print("ERROR : get ignored file list")
@@ -1607,7 +1601,7 @@ class work_database:
             self.conn.commit()
 
             locker_name = self.cursor.fetchall()[0][0]
-            print("locker_name", locker_name)
+            print("locker_name : ", locker_name)
         except:
             self.conn.rollback()
             print("ERROR : get locker slack code")
@@ -1631,7 +1625,6 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
             raw_tuple = self.cursor.fetchone()[0]
-            print("raw_tuple", raw_tuple)
 
         except:
             self.conn.rollback()
@@ -1655,12 +1648,9 @@ class work_database:
             self.cursor.execute(sql)
             self.conn.commit()
             raw_tuple = self.cursor.fetchall()
-            print(raw_tuple)
             for rt in raw_tuple:
                 if not ((rt[1], rt[3]), (rt[0], rt[2]), rt[4]) in raw_set:
                     raw_set.add(((rt[0], rt[2]), (rt[1], rt[3]), rt[4]))
-
-            print(raw_set)
 
         except:
             self.conn.rollback()
@@ -1685,7 +1675,6 @@ class work_database:
             self.conn.commit()
 
             users_edit_amount = list(self.cursor.fetchall())
-            print(users_edit_amount)
 
         except:
             self.conn.rollback()
@@ -1722,9 +1711,34 @@ class work_database:
 
             raw_list.append((user_edit_amount[2], user_percentage))
 
-        print(raw_list)
-
         return raw_list
+
+
+    def get_working_users_on_file(self, project_name, file_name):
+        user_list = []
+        try:
+            sql = "select user_name " \
+                  "from working_table " \
+                  "where project_name = '%s' " \
+                  "and file_name = '%s'" \
+                  % (project_name, file_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            for rt in raw_tuple:
+                user_list.append(rt[0])
+
+            print("get_working_users_on_file : ", user_list)
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get working users on file")
+
+        return user_list
+
 
     ####################################################################
     '''
@@ -1765,7 +1779,6 @@ class work_database:
             self.conn.commit()
 
             raw_list1 = list(self.cursor.fetchall())
-            print("raw_list",raw_list)
         except:
             self.conn.rollback()
             print("ERROR : read project name")
@@ -1930,7 +1943,7 @@ class work_database:
         return slack_id
 
     def convert_git_id_list_to_slack_code_list(self, git_id_list):
-        slack_id_list = []
+        slack_code_list = []
 
         for git_id in git_id_list:
             try:
@@ -1940,16 +1953,16 @@ class work_database:
                 print(sql)
                 self.cursor.execute(sql)
                 self.conn.commit()
-
                 raw_tuple = self.cursor.fetchall()
-                slack_id = "<@" + raw_tuple[0][0] + ">"
-                slack_id_list.append(slack_id)
+
+                slack_code = "<@" + raw_tuple[0][0] + ">"
+                slack_code_list.append(slack_code)
 
             except:
                 self.conn.rollback()
                 print("ERROR : convert_git_id_to_slack_id")
 
-        return slack_id_list
+        return slack_code_list
 
     def convert_git_id_to_slack_code_id(self, git_id):
         slack_code = ""

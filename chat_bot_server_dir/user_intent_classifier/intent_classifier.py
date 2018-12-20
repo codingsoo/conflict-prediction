@@ -148,7 +148,7 @@ def get_typo_error_cost(user_input, no_typo_error):
 def extract_attention_word(owner_name, project_name, sentence, github_email, intent_type, msg_type):
     import re
     work_db = work_database()
-    sentence = sentence
+    sentence = " " + sentence + " "
     called_file_abs_path_list = []
 
     # Before classifying intent
@@ -159,7 +159,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
 
     # After classifying intent
-    if intent_type in ["1_0","1_1", "2_0","2_1", "3", "5", "8", "10", "11"]:
+    if intent_type in ["1_0","1_1", "2_0","2_1", "3", "5", "8", "10", "11", "13"]:
         file_simp_path_list = project_parser(owner_name, project_name)["file"]
         file_abs_path_list = []
 
@@ -167,8 +167,8 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
             fapl = owner_name + "/" + project_name + "/" + fspl
             file_abs_path_list.append(fapl)
 
-        print("file_simp_path_list", file_simp_path_list)
-        print("file_abs_path_list", file_abs_path_list)
+        print("file_simp_path_list : ", file_simp_path_list)
+        print("file_abs_path_list : ", file_abs_path_list)
 
         # If the format of called file is already absolute path, just pass.
         for fapl in file_abs_path_list:
@@ -187,7 +187,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
                     file_name_dict[fnl].append(fnl_idx)
                 except:
                     file_name_dict[fnl] = [fnl_idx]
-            print("file_name_dict", file_name_dict)
+            print("file_name_dict : ", file_name_dict)
 
             if(msg_type == "message"):
                 typo_error_check = 1
@@ -232,7 +232,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
             # If there are same named files
             if called_same_named_file_dict:
-                print("called_same_named_file_dict", called_same_named_file_dict)
+                print("called_same_named_file_dict : ", called_same_named_file_dict)
                 user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
                 send_file_selection_button_message(user_slack_code, called_same_named_file_dict, sentence, intent_type)
                 if not called_file_abs_path_list:
@@ -243,11 +243,11 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
                 work_db.close()
                 return ERROR, "no_file", None, None
 
-            if intent_type in ["3", "5", "8", "10", "11"] and len(called_file_abs_path_list) != 1:
+            if intent_type in ["3", "5", "8", "10", "11", "13"] and len(called_file_abs_path_list) != 1:
                 work_db.close()
                 return ERROR, "many_files", None, None
 
-        print("called_file_abs_path_list", called_file_abs_path_list)
+        print("called_file_abs_path_list : ", called_file_abs_path_list)
 
     # About ignore
     if intent_type == "1_0" or intent_type == "1_1"  :
@@ -427,11 +427,15 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
         else:
             return 4, PREDICTION, UNIGNORE, None
 
+    elif intent_type == "13":
+        work_db.close()
+        return 13, called_file_abs_path_list[0], None, None
+
     else:
         work_db.close()
-        if intent_type == "13" :
+        if intent_type == "14" :
             return ERROR - 2, "greeting", None, None
-        elif intent_type == "14":
+        elif intent_type == "15":
             return ERROR - 1, "bye", None, None
         else:
             return ERROR, "no_response", None, None
