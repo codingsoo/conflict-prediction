@@ -94,6 +94,7 @@ def get_file_name_list(file_abs_path_list):
         file_name_list.append(" " + r)
     return file_name_list
 
+
 def detect_intent_texts(project_id, session_id, text, language_code):
     """Returns the result of detect intent with texts as inputs.
 
@@ -137,13 +138,13 @@ def get_typo_error_cost(user_input, no_typo_error):
 
     for j in range(y_length-1):
         for i in range(x_length-1):
-            if user_input[i] == no_typo_error[j] :
+            if user_input[i] == no_typo_error[j]:
                 arr[i+1][j+1] = arr[i][j]
-            else :
+            else:
                 arr[i+1][j+1] = min(arr[i][j]+1, min(arr[i+1][j]+1,arr[i][j+1]+1))
 
-
     return arr[x_length-1][y_length-1]
+
 
 def extract_attention_word(owner_name, project_name, sentence, github_email, intent_type, msg_type):
     import re
@@ -156,7 +157,6 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
        # intent_type, sentence = intent_classifier(_sentence)
         intent_type = detect_intent_texts('sayme-9614e',str(uuid.uuid4()),sentence,'en-US')
         print("Intent_type", intent_type)
-
 
     # After classifying intent
     if intent_type in ["1_0","1_1", "2_0","2_1", "3", "5", "8", "10", "11", "13"]:
@@ -265,7 +265,6 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
         print("approve_set : ", approve_set)
 
         work_db.close()
-
         return 1, approve_set, remove_list, None
 
     # About lock
@@ -319,7 +318,7 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
     # About direct or indirect ignore
     elif intent_type == "4_0" or intent_type == "4_1":
-
+        # ignore
         if intent_type == "4_0":
             if " indirect " in sentence:
                 work_db.close()
@@ -327,7 +326,8 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
             else:
                 work_db.close()
                 return 4, DIRECT, IGNORE, None
-    # unignore
+
+        # unignore
         else:
             if " indirect " in sentence:
                 work_db.close()
@@ -335,7 +335,6 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
             else:
                 work_db.close()
                 return 4, DIRECT, UNIGNORE, None
-
 
     # About check conflict
     elif intent_type == "5":
@@ -362,7 +361,6 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
             target_git_id = work_db.convert_slack_code_to_git_id(target_slack_code)
             work_db.close()
             return 6, target_slack_code, target_git_id, None
-
 
     # About user message
     elif intent_type == "7":
@@ -406,7 +404,6 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
             idx = sentence.find('@')
             other_user_code = sentence[idx+1:idx+9]
             return 9, other_user_code, None, None
-
         return 9, None, None, None
 
     # About locker of file

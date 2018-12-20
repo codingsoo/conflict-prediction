@@ -6,57 +6,56 @@ from server_dir.slack_message_sender import send_direct_message
 from server_dir.slack_message_sender import send_feature_button_message
 from chat_bot_server_dir.user_intent_classifier.intent_classifier import convert_git_id_to_slack_id_from_slack
 from chat_bot_server_dir.constants import *
-import os, random
+import os
+import random
+
 
 def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
     message = "default"
 
-    if(intent_type == 1):
+    if intent_type == 1:
         message = approved_file_logic(slack_code, param0, param1)
 
-    elif(intent_type == 2):
+    elif intent_type == 2:
         message = lock_file_logic(slack_code, param0, param1, param2)
 
-    elif(intent_type == 3):
+    elif intent_type == 3:
         message = code_history_logic(slack_code, param0, param1, param2)
 
-    elif(intent_type == 4):
+    elif intent_type == 4:
         message = ignore_alarm_logic(slack_code, param0, param1)
 
-    elif(intent_type == 5):
+    elif intent_type == 5:
         message = check_conflict_logic(slack_code, param0, param1)
 
-    elif(intent_type == 6):
+    elif intent_type == 6:
         message = other_working_status_logic(slack_code, param0, param1)
 
-    # elif(intent_type == 7):
-    #     message = send_message_channel_logic(param0, param1, param2)
-
-    elif(intent_type == 7):
+    elif intent_type == 7:
         message = send_message_direct_logic(slack_code, param0, param1)
 
-    elif(intent_type == 8):
+    elif intent_type == 8:
         message = recommend_solve_conflict_logic(slack_code, param0, param1)
 
-    elif(intent_type == 9):
+    elif intent_type == 9:
         message = check_ignored_file_logic(slack_code, param0)
 
-    elif(intent_type == 10):
+    elif intent_type == 10:
         message = check_locker_logic(slack_code, param0)
 
-    elif(intent_type == 11):
+    elif intent_type == 11:
         message = check_severity_logic(slack_code, param0)
 
-    elif(intent_type == 13):
+    elif intent_type == 13:
         message = file_status_logic(slack_code, param0)
 
-    elif(intent_type == ERROR - 2):
+    elif intent_type == ERROR - 2:
         message = greeting_logic(slack_code)
 
-    elif (intent_type == ERROR - 1):
+    elif intent_type == ERROR - 1:
         message = bye_logic(slack_code)
 
-    elif(intent_type == ERROR):
+    elif intent_type == ERROR:
         if param0 == "no_response":
             message = no_response(slack_code)
         elif param0 == "same_named_file":
@@ -69,6 +68,7 @@ def sentence_processing_main(intent_type, slack_code, param0, param1, param2):
             message = random.choice(shell_dict['sentence_process_many_files'])
 
     return message
+
 
 def approved_file_logic(slack_code, approved_set, removed_list):
     w_db = work_database()
@@ -84,10 +84,6 @@ def approved_file_logic(slack_code, approved_set, removed_list):
         diff_approved_list, db_approved_set = w_db.add_approved_list(slack_code=slack_code, req_approved_set=approved_set)
         already_approved_list = list(db_approved_set & approved_set)
         if diff_approved_list:
-            # ch_message += random.choice(shell_dict['feat_ignore_channel'])
-            # ch_message = ch_message.format(user_name, ", ".join(diff_approved_list))
-            # send_channel_message("code-conflict-chatbot", ch_message)
-
             message += random.choice(shell_dict['feat_ignore_file'])
             message = message.format(filename=", ".join(diff_approved_list))
 
@@ -98,11 +94,6 @@ def approved_file_logic(slack_code, approved_set, removed_list):
     if removed_list:
         success_list, fail_list = w_db.remove_approved_list(slack_code=slack_code, remove_approved_list=removed_list)
         if success_list:
-
-            # ch_message += random.choice(shell_dict['feat_unignore_channel'])
-            # ch_message = ch_message.format(user_name, ", ".join(success_list))
-            # send_channel_message("code-conflict-chatbot", ch_message)
-
             message += random.choice(shell_dict['feat_unignore_file'])
             message = message.format(filename=", ".join(success_list))
 
@@ -141,7 +132,6 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 ch_message = ch_message.format(user=slack_code, file_name=file_name,lock_time=lock_time)
 
             send_all_user_message(ch_message, slack_code)
-            # send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_lock_file'])
             ele = ', '.join(lock_file_list)
@@ -158,7 +148,6 @@ def lock_file_logic(slack_code, request_lock_set, remove_lock_set, lock_time):
                 ch_message = random.choice(shell_dict['feat_send_all_user_unlock'])
                 ch_message = ch_message.format(user2=slack_code, filename=file_name)
             send_all_user_message(ch_message, slack_code)
-            # send_channel_message("code-conflict-chatbot", ch_message)
 
             message += random.choice(shell_dict['feat_unlock_file'])
             ele = ','.join(remove_lock_list)
@@ -195,7 +184,6 @@ def code_history_logic(slack_code, file_abs_path, start_line, end_line):
 
     # Find user_name
     for user_email in user_email_list:
-        # user_name = w_db.convert_git_id_to_slack_id(git_id=user_email)
         user_name = "<@" + w_db.convert_git_id_to_slack_code(git_id=user_email) + ">"
         if user_name == "<@>":
             print("{} is not in db.".format(user_email))
@@ -375,7 +363,6 @@ def other_working_status_logic(slack_code, target_slack_code, target_git_id):
     if project_name == "":
         message = random.choice(shell_dict['feat_working_status_no_user'])
     else:
-        # target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
         working_status = w_db.get_user_working_status(target_git_id)
         percentage = w_db.get_severity_percentage(project_name, working_status[0])
         if not working_status:
@@ -419,7 +406,6 @@ def send_message_direct_logic(user_slack_code, target_slack_code, msg):
         return message
 
     w_db = work_database()
-    # target_slack_id = w_db.convert_slack_code_to_slack_id(target_slack_code)
 
     msg = random.choice(shell_dict['feat_send_message_target_user']).format(user1=user_slack_code, message=msg)
     send_direct_message(target_slack_code, msg)
@@ -444,7 +430,6 @@ def recommend_solve_conflict_logic(slack_code, user_git_id, file_name):
 
     else:
         other_name = w_db.convert_git_id_to_slack_code(other_git_id)
-        # other_name = w_db.convert_git_id_to_slack_id(other_git_id)
 
         percentage_gap = abs(user_percentage - other_percentage)
 
@@ -468,7 +453,7 @@ def check_ignored_file_logic(slack_code, other_user_code):
     w_db = work_database()
     message = "\n"
 
-    if(other_user_code == None):
+    if other_user_code == None:
         ignored_file_list = w_db.get_ignored_file_list(slack_code)
     else:
         ignored_file_list = w_db.get_ignored_file_list(other_user_code)
@@ -551,7 +536,7 @@ def lock_response_logic(slack_code, msg_type, target_file, lock_time):
         ch_message = ""
         if target_file in lock_file_list:
             ch_message += random.choice(shell_dict['feat_send_all_user_lock']).format(user=slack_code, file_name=target_file, lock_time=lock_time)
-        # send_channel_message("code-conflict-chatbot", ch_message)
+
         send_all_user_message(ch_message, slack_code)
         w_db.delete_lock_history(project_name, slack_code, target_file)
     else:
