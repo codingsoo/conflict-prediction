@@ -1,3 +1,9 @@
+"""
+    @file   server_git.py
+    @brief
+        Detecting direct and indirect conflict, updating user data and converting data from the client.
+"""
+
 from server_dir.python_logic_parser import *
 from server_dir.direct_work_database import *
 from server_dir.user_git_diff import *

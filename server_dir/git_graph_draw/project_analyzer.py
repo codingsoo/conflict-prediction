@@ -1,3 +1,10 @@
+"""
+    @file   project_analyzer.py
+    @brief
+        After getting information from the py_file_parser, it analyzed the structure of the code.
+        Which classes, functions the code have. Whether the function is in class or not.
+"""
+
 import os
 
 from server_dir.git_graph_draw import py_file_parser

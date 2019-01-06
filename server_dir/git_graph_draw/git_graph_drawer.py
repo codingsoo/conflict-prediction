@@ -1,3 +1,10 @@
+"""
+    @file   git_graph_drawer.py
+    @brief
+       Generating dependency between function, file, class and making dependency graph.
+"""
+
+
 import re
 import subprocess
 from server_dir.git_graph_draw.project_analyzer import run

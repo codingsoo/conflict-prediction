@@ -1,3 +1,9 @@
+"""
+    @file   user_database.py
+    @brief
+        All the queries related to user data.
+"""
+
 import pymysql
 from server_dir.server_config_loader import load_database_connection_config
 class user_database:

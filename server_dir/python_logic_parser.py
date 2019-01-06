@@ -1,3 +1,8 @@
+"""
+    @file   python_logic_parser.py
+    @brief
+        Parsing for converting data from the client.
+"""
 DEFAULT_INDENT = 4
 TAB = DEFAULT_INDENT * ' '
 

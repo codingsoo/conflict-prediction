@@ -1,3 +1,11 @@
+"""
+    @file   python_floyd.py
+    @brief
+        Floyd-Warshall Algorithm
+        To calculate the distance for the dependency.
+
+"""
+
 import queue
 
 adjacency_matrix = dict()

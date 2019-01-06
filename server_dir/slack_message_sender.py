@@ -1,3 +1,9 @@
+"""
+    @file   slack_message_sender.py
+    @brief
+        Handling all the message related to conflict and prediction.(All the message except messages related to features.)
+"""
+
 from slacker import Slacker
 import os
 from pathlib import Path

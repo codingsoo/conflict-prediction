@@ -1,3 +1,11 @@
+"""
+    @file   py_file_parser.py
+    @brief
+        Parsing the code and get logic using AST.
+        It gets which functions are called at which class or which file, which function is defined in which class
+        and some kind of information like this.
+"""
+
 import ast
 
 import_table = {}

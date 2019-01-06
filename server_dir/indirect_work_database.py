@@ -1,3 +1,9 @@
+"""
+    @file   indirect_work_database.py
+    @brief
+        Handling indirect conflict process including database.
+"""
+
 import pymysql
 import datetime as d
 from server_dir.slack_message_sender import *

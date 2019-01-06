@@ -1,3 +1,8 @@
+"""
+    @file   user_git_diff.py
+    @brief
+        User git diff logic. Get user's working data, calling data, and user's last commit data.
+"""
 from pathlib import Path
 import os
 import json

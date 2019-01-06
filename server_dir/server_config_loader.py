@@ -1,3 +1,9 @@
+"""
+    @file   server_config_loader.py
+    @brief
+        Loading all configurations for the server from all_server_config.ini.
+"""
+
 import os
 from pathlib import Path
 import configparser
