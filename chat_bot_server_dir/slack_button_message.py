@@ -7,7 +7,8 @@ from flask import Flask, request, make_response
 from slackeventsapi import SlackEventAdapter
 from slackbot.slackclient import SlackClient
 from chat_bot_server_dir.bot_server import message_processing
-from server_dir.slack_message_sender import send_git_diff_message, send_prediction_list_message,send_list_of_feature_button_message, send_list_of_command_message
+from server_dir.slack_message_sender import get_prediction_list_field, get_git_diff_code, send_list_of_feature_button_message, send_list_of_command_message
+
 
 def get_slack():
     bot_token = verification_token = signing_secret = ''
@@ -157,50 +158,70 @@ def message_actions():
         file_name = btmsg_json['actions'][0]['value']
         project_name = btmsg_json['callback_id']
 
+        git_diff_code = "```" + get_git_diff_code(user2_name, project_name, file_name) + "```"
+        print("send_git_diff_message", git_diff_code)
+
+        # slack.chat.post_message(channel=user1_name, text=git_diff_code, as_user=True)
+        # send_git_diff_message(user1_name, user2_name, project_name, file_name)
+
         slack.chat.update(
             channel=btmsg_json['channel']['id'],
             text=btmsg_json['original_message']['text'],
             ts=btmsg_json['message_ts'],
-            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
+            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'] + git_diff_code,
                           'color': "warning"}]
         )
 
-        send_git_diff_message(user1_name, user2_name, project_name, file_name)
-
-
     # Prediction button message
     elif request_type == "Prediction Button Message":
-        user1_name = btmsg_json['channel']['id']
+        user1_name = btmsg_json['user']['id']
         user2_name = btmsg_json['actions'][0]['name']
         project_name = btmsg_json['callback_id']
 
+        prediction_field = get_prediction_list_field(user1_name, user2_name, project_name)
+
+        # slack.chat.update(
+        #     channel=btmsg_json['channel']['id'],
+        #     text=btmsg_json['original_message']['text'],
+        #     ts=btmsg_json['message_ts'],
+        #     attachments=[
+        #         {
+        #             "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+        #             "fields": prediction_field,
+        #             "color": "good"
+        #         }
+        #     ]
+        # )
+
         slack.chat.update(
             channel=btmsg_json['channel']['id'],
             text=btmsg_json['original_message']['text'],
             ts=btmsg_json['message_ts'],
-            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
-                          'color': "#3AA3E3"}]
+            attachments=prediction_field
         )
-
-        send_prediction_list_message(user1_name, user2_name, project_name)
-
-
-    elif request_type == "Send list of feature button message" \
-            or request_type == "Send list of sample command button message":
-        slack_code = btmsg_json['channel']['id']
-        slack.chat.update(
-            channel=btmsg_json['channel']['id'],
-            text=btmsg_json['original_message']['text'],
-            ts=btmsg_json['message_ts'],
-            attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
-                          'color': "#3AA3E3"}]
-        )
-
-        if btmsg_json['actions'][0]['name'] == 'List of feature' :
-            send_list_of_feature_button_message(slack_code)
-        else :
-            send_list_of_command_message(slack_code)
-
+# <<<<<<< Updated upstream
+#
+#         send_prediction_list_message(user1_name, user2_name, project_name)
+#
+#
+#     elif request_type == "Send list of feature button message" \
+#             or request_type == "Send list of sample command button message":
+#         slack_code = btmsg_json['channel']['id']
+#         slack.chat.update(
+#             channel=btmsg_json['channel']['id'],
+#             text=btmsg_json['original_message']['text'],
+#             ts=btmsg_json['message_ts'],
+#             attachments=[{'text': btmsg_json['original_message']['attachments'][0]['text'],
+#                           'color': "#3AA3E3"}]
+#         )
+#
+#         if btmsg_json['actions'][0]['name'] == 'List of feature' :
+#             send_list_of_feature_button_message(slack_code)
+#         else :
+#             send_list_of_command_message(slack_code)
+#
+# =======
+# >>>>>>> Stashed changes
     # Send an HTTP 200 response with empty body so Slack knows we're done here
     return make_response("", 200)
 

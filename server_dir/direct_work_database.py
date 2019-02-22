@@ -786,11 +786,13 @@ class direct_work_database:
 
         user_related_row = self.get_user_related_row(git_log_name_only_list, user_working_file_set)
         num_user_related_row = len(user_related_row)
+        related_file_set_dict = self.get_related_file_set_dict(git_log_name_only_list, user_working_file_set)
         user_combination_row = self.make_combination(user_related_row, user_working_file_set)
         user_combination_row_set = set(user_combination_row)
 
         probability_dict = dict()
-        whole_predicted_file_set = set()
+        probability_per_file_dict = dict()
+        probability_per_file_dict['all'] = dict()
         # Using only for check
         both_user_working_file_dict = dict()
         both_user_combination_row_dict = dict()
@@ -807,6 +809,7 @@ class direct_work_database:
             num_other_user_related_row_dict[other_user] = len(other_user_related_row_dict[other_user])
             other_user_combination_row_dict[other_user] = self.make_combination(other_user_related_row_dict[other_user], other_user_working_file_dict[other_user])
             other_user_combination_row_set_dict[other_user] = set(other_user_combination_row_dict[other_user])
+            probability_per_file_dict[other_user] = dict()
             probability_dict[other_user] = self.calculate_probability(num_user_related_row,
                                                                       num_other_user_related_row_dict[other_user],
                                                                       user_combination_row,
@@ -815,15 +818,18 @@ class direct_work_database:
                                                                        other_user_combination_row_set_dict[
                                                                            other_user]) -
                                                                       both_user_combination_row_dict[other_user],
-                                                                      whole_predicted_file_set)
+                                                                      probability_per_file_dict,
+                                                                      other_user)
 
             print("Probability with {} : ".format(other_user), probability_dict[other_user])
-            
+
+        for key, value in probability_per_file_dict.items():
+            probability_per_file_dict[key] = sorted(value.items(), key=lambda x: x[1], reverse=True)[:5]
+        self.update_prediction_list(project_name, user_name, probability_per_file_dict, related_file_set_dict)
+
         send_prediction_message(project_name=project_name,
                                 user_name=user_name,
-                                probability_dict=probability_dict,
-                                whole_predicted_file_set=whole_predicted_file_set)
-        return
+                                probability_dict=probability_dict)
 
     def get_user_working_file(self, project_name, user_name):
         user_working_file = set()
@@ -903,6 +909,19 @@ class direct_work_database:
 
         return user_related_row_list
 
+    def get_related_file_set_dict(self, git_log_name_only_list, user_working_file_set):
+        related_file_set_dict = dict()
+        for temp_set in git_log_name_only_list:
+            if temp_set & user_working_file_set:
+                temp_list = list(temp_set)
+                common_set = temp_set & user_working_file_set
+                for temp in temp_list:
+                    if temp not in related_file_set_dict:
+                        related_file_set_dict[temp] = set()
+                    related_file_set_dict[temp] |= common_set
+
+        return related_file_set_dict
+
     def make_combination(self, row_list, working_file_set=set()):
         working_combination_list = []
         for i in range(len(working_file_set)):
@@ -921,7 +940,7 @@ class direct_work_database:
 
         return combination_list
 
-    def calculate_probability(self, num_user_related_row, num_other_user_related_row, user_combination_row, other_user_combination_row, common_combination_row, whole_predicted_file_set):
+    def calculate_probability(self, num_user_related_row, num_other_user_related_row, user_combination_row, other_user_combination_row, common_combination_row, probability_per_file_dict, other_user):
         probability = 0
 
         # Using only for check
@@ -934,12 +953,54 @@ class direct_work_database:
             if len(common_combination_temp) & 1:
                 probability += (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
                 if len(common_combination_temp) == 1:
-                    whole_predicted_file_set.add(common_combination_temp[0])
+                    temp_percentage = round(((num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)) * 100)
+                    if temp_percentage:
+                        probability_per_file_dict['all'][other_user + ":" + common_combination_temp[0]] = temp_percentage
+                        probability_per_file_dict[other_user][other_user + ":" + common_combination_temp[0]] = temp_percentage
             else:
                 probability -= (num_other_user_combination / num_other_user_related_row) * (num_user_combination / num_user_related_row)
 
         print(probability)
         return str(round(probability * 100)) + '%'
+
+    def update_prediction_list(self, project_name, user_name, probability_per_file_dict, related_file_set_dict):
+        try:
+            sql = "delete from prediction_list " \
+                  "where project_name = '%s' " \
+                  "and user_name = '%s'" % (project_name, user_name)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : delete_prediction_list")
+
+        try:
+            sql = "replace into prediction_list " \
+                  "(project_name, user_name, target, other_name, order_num, file_name, percentage, related_file_list) " \
+                  "values "
+
+            for other_user, file_list in probability_per_file_dict.items():
+                for i, temp in enumerate(file_list):
+                    related_file_list = "\n".join(list(related_file_set_dict[temp[0][temp[0].rfind(':') + 1:]]))
+                    if other_user == 'all':
+                        sql += "('%s', '%s', '%s', '%s', %d, '%s', %d, '%s'), " \
+                               % (project_name, user_name, 'all', temp[0][:temp[0].rfind(':')], i + 1, temp[0][temp[0].rfind(':') + 1:], temp[1], related_file_list)
+                    else:
+                        sql += "('%s', '%s', '%s', '%s', %d, '%s', %d, '%s'), " \
+                               % (project_name, user_name, other_user, other_user, i + 1, temp[0][temp[0].rfind(':') + 1:], temp[1], related_file_list)
+            sql = sql[:-2]
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+        except:
+            self.conn.rollback()
+            print("ERROR : update_prediction_list")
+
 
     # Close Database connection and cursor
     def close_db(self):

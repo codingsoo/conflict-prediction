@@ -1965,8 +1965,6 @@ class work_database:
         return slack_code_list
 
     def convert_git_id_to_slack_code_id(self, git_id):
-        slack_code = ""
-        slack_id = ""
         try:
             sql = "select slack_code, slack_id " \
                   "from user_table " \
@@ -1976,14 +1974,12 @@ class work_database:
             self.conn.commit()
 
             raw_tuple = self.cursor.fetchone()
-            slack_code = raw_tuple[0][0]
-            slack_id = raw_tuple[0][1]
 
         except:
             self.conn.rollback()
             print("ERROR : convert_slack_code_to_git_id")
 
-        return slack_code, slack_id
+        return raw_tuple[0], raw_tuple[1]
 
     def convert_slack_code_to_git_id(self, slack_code):
         # Read git_id
@@ -2099,6 +2095,26 @@ class work_database:
         except:
             self.conn.rollback()
             print("ERROR : update_last_commit_date")
+
+    def get_prediction_list(self, project_name, user1_git_id, user2_git_id):
+        prediction_list = []
+
+        try:
+            sql = "select order_num, other_name, file_name, percentage, related_file_list from prediction_list " \
+                  "where project_name = '%s' " \
+                  "and user_name = '%s' " \
+                  "and target = '%s'" % (project_name, user1_git_id, user2_git_id)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            prediction_list = list(self.cursor.fetchall())
+
+        except:
+            self.conn.rollback()
+            print("ERROR : get_prediction_list")
+
+        return prediction_list
 
     def close(self):
         self.cursor.close()

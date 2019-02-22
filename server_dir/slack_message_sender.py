@@ -341,7 +341,7 @@ def send_indirect_conflict_message(conflict_flag, conflict_project, conflict_fil
     return
 
 
-def send_prediction_message(project_name, user_name, probability_dict, whole_predicted_file_set):
+def send_prediction_message(project_name, user_name, probability_dict):
     user_slack_id_code = get_user_slack_id_and_code(user_name)
 
     w_db = work_database()
@@ -351,22 +351,21 @@ def send_prediction_message(project_name, user_name, probability_dict, whole_pre
         print("IGNORE MESSAGE BY PREDICTION")
         return
 
-    user_list = list(probability_dict.keys())
-    user_name_list = []
-    for i, user_temp in enumerate(user_list):
+    user_code_list = list(probability_dict.keys())
+    user_list = [0] * len(user_code_list)
+    for i, user_temp in enumerate(user_code_list):
         slack_code, slack_id = w_db.convert_git_id_to_slack_code_id(user_temp)
-        user_list[i] = "<@" + slack_code + ">"
-        user_name_list[i] = slack_id
+        user_code_list[i] = "<@" + slack_code + ">"
+        user_list[i] = [slack_id, slack_code]
 
     percentage_list = list(probability_dict.values())
-    file_list = list(whole_predicted_file_set)
+
     message = get_message('prediction_direct_conflict.txt')
-    message = message.format(userlist=user_list,
+    message = message.format(userlist=user_code_list,
                              percentagelist=percentage_list,
-                             filelist=file_list)
+                             filelist="")
 
-    send_prediction_button_message(user_slack_id_code[1], message, project_name, user_name_list)
-
+    send_prediction_button_message(user_slack_id_code[1], message, project_name, user_list)
 
 def send_remove_lock_channel(channel, lock_file_list):
     message = get_message('feat_send_all_user_auto_unlock.txt').format(file_name=", ".join(lock_file_list)) + "\n"
@@ -610,12 +609,12 @@ def send_conflict_button_message(slack_code, message, user2_name, project_name, 
 
 
 # Git diff message after click a button
-def send_git_diff_message(user1_name, user2_name, project_name, file_name):
-    slack = get_slack()
-    git_diff_code = "```" + get_git_diff_code(user2_name, project_name, file_name) + "```"
-    print("send_git_diff_message", git_diff_code)
-
-    slack.chat.post_message(channel=user1_name, text=git_diff_code, as_user=True)
+# def send_git_diff_message(user1_name, user2_name, project_name, file_name):
+#     slack = get_slack()
+#     git_diff_code = "```" + get_git_diff_code(user2_name, project_name, file_name) + "```"
+#     print("send_git_diff_message", git_diff_code)
+#
+#     slack.chat.post_message(channel=user1_name, text=git_diff_code, as_user=True)
 
 
 # Prediction button message
@@ -624,13 +623,13 @@ def send_prediction_button_message(slack_code, message, project_name, user_list)
     attachments_dict = dict()
 
     actions = []
-    actions.append({'name': 'All', 'text': 'All', 'type': "button", 'value': 'All', 'style': 'danger'})
-    for user_name in user_list:
+    actions.append({'name': 'all', 'text': 'ALL', 'type': "button", 'value': 'all', 'style': 'danger'})
+    for user_id_and_code in user_list:
         actions_dict = dict()
-        actions_dict['name'] = user_name
-        actions_dict['text'] = user_name
+        actions_dict['name'] = user_id_and_code[1]
+        actions_dict['text'] = user_id_and_code[0]
         actions_dict['type'] = "button"
-        actions_dict['value'] = user_name
+        actions_dict['value'] = user_id_and_code[1]
         actions.append(actions_dict)
 
     attachments_dict['title'] = ""
@@ -645,32 +644,155 @@ def send_prediction_button_message(slack_code, message, project_name, user_list)
 
 
 # Prediction list message after click a button
-def send_prediction_list_message(user1_name, user2_name, project_name):
-    slack = get_slack()
+def get_prediction_list_field(user1_code, user2_code, project_name):
+    u_db = user_database('parent')
+    user1_git_id = u_db.convert_slack_code_to_git_id(user1_code)
+    user2_git_id = u_db.convert_slack_code_to_git_id(user2_code)
+    u_db.close()
 
-    # prediction_list = ["80%  Sun            counting_triangle.py",
-    #                    "50%  Kathryn Choi   SquareMatrix.py",
-    #                    "17%  Kathryn Choi   conflict_test/ClassAofA.py",
-    #                    " 8%  Sun            conflict_test/ClassAofA.py"]
-    # 띄어쓰기 formatting 해주기!
+    w_db = work_database()
 
-    prediction_list = []
+    # prediction_list_field = []
 
     # Show all of prediction lists
-    if user2_name == "All":
-        prediction_list = ["80%  Sun            counting_triangle.py",
-                           "50%  Kathryn Choi   SquareMatrix.py",
-                           "17%  Kathryn Choi   conflict_test/ClassAofA.py",
-                           " 8%  Sun            conflict_test/ClassAofA.py"]
+    if user2_code == "all":
+        prediction_list = w_db.get_prediction_list(project_name, user1_git_id, 'all')
 
     # Show prediction list of user2
     else:
-        prediction_list = ["80%  Sun            counting_triangle.py",
-                           " 8%  Sun            conflict_test/ClassAofA.py"]
+        prediction_list = w_db.get_prediction_list(project_name, user1_git_id, user2_git_id)
 
-    message = ""
-    for idx, prediction in enumerate(prediction_list):
-        message += "%d. %s\n" % (idx + 1, prediction)
+    prediction_list.sort()
 
-    attachments = [{'title': user2_name, 'text': message, 'color': "#3AA3E3" }]
-    slack.chat.post_message(channel=user1_name, attachments=attachments, as_user=True)
+    sun_test_list = []
+
+    # {
+    #     "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+    #     "fields": prediction_field,
+    #     "color": "good"
+    # }
+
+    # Version 7
+    # prediction_list_field.append({"title": "Percentage", "short": True})
+    # prediction_list_field.append({"title": "User Name", "short": True})
+    # prediction_list_field.append({"title": "Related File", "short": True})
+    # prediction_list_field.append({"title": "Conflict File", "short": True})
+    # temp_dict = {
+    #     "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+    #     "fields": prediction_list_field,
+    #     "color": "good"
+    # }
+    # sun_test_list.append(temp_dict)
+    #
+    # for prediction_list_temp in prediction_list:
+    #     prediction_list_field = []
+    #     other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+    #     prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+    #     prediction_list_field.append({"value": other_name, "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+    #     temp_dict = {
+    #         "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+    #         "fields": prediction_list_field,
+    #         "color": "good"
+    #     }
+    #     sun_test_list.append(temp_dict)
+
+
+    # Version 8
+    for prediction_list_temp in prediction_list:
+        prediction_list_field = []
+        other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+        prediction_list_field.append({"title": "Percentage", "short": True})
+        prediction_list_field.append({"title": "User Name", "short": True})
+        prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+        prediction_list_field.append({"value": other_name, "short": True})
+        prediction_list_field.append({"title": "Current File", "short": True})
+        prediction_list_field.append({"title": "Conflict File", "short": True})
+        prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+        prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+        temp_dict = {
+            "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+            "fields": prediction_list_field,
+            "color": "good"
+        }
+        sun_test_list.append(temp_dict)
+
+    # Version 9
+    # check = True
+    # for prediction_list_temp in prediction_list:
+    #     prediction_list_field = []
+    #     other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+    #     if check:
+    #         prediction_list_field.append({"title": "Percentage", "short": True})
+    #         prediction_list_field.append({"title": "User Name", "short": True})
+    #     prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+    #     prediction_list_field.append({"value": other_name, "short": True})
+    #     if check:
+    #         prediction_list_field.append({"title": "Related File", "short": True})
+    #         prediction_list_field.append({"title": "Conflict File", "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+    #
+    #     check = False
+    #     temp_dict = {
+    #         "fallback": "ReferenceError - UI is not defined: https://honeybadger.io/path/to/event/",
+    #         "fields": prediction_list_field,
+    #         "color": "good"
+    #     }
+    #     sun_test_list.append(temp_dict)
+
+    # Version 1
+    # prediction_list_field.append({"title": "Percentage", "short": True})
+    # prediction_list_field.append({"title": "User Name", "short": True})
+    # prediction_list_field.append({"title": "Related File", "short": True})
+    # prediction_list_field.append({"title": "Conflict File", "short": True})
+    # prediction_list_field.append({"value": "---------------------------------------------------------------------------------------------------", "short": False})
+    #
+    # for prediction_list_temp in prediction_list:
+    #     other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+    #     prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+    #     prediction_list_field.append({"value": other_name, "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+    #     prediction_list_field.append({"value": "---------------------------------------------------------------------------------------------------", "short": False})
+
+    # Version 2
+    # for prediction_list_temp in prediction_list:
+    #     other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+    #     prediction_list_field.append({"title": "Percentage", "short": True})
+    #     prediction_list_field.append({"title": "User Name", "short": True})
+    #     prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+    #     prediction_list_field.append({"value": other_name, "short": True})
+    #     prediction_list_field.append({"title": "Related File", "short": True})
+    #     prediction_list_field.append({"title": "Conflict File", "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+    #     prediction_list_field.append({
+    #                                      "value": "---------------------------------------------------------------------------------------------------",
+    #                                      "short": False})
+
+    # Version 3
+    # check = True
+    # for prediction_list_temp in prediction_list:
+    #     other_name = w_db.convert_git_id_to_slack_id(prediction_list_temp[1])
+    #     if check:
+    #         prediction_list_field.append({"title": "Percentage", "short": True})
+    #         prediction_list_field.append({"title": "User Name", "short": True})
+    #     prediction_list_field.append({"value": str(prediction_list_temp[3]) + "%", "short": True})
+    #     prediction_list_field.append({"value": other_name, "short": True})
+    #     if check:
+    #         prediction_list_field.append({"title": "Related File", "short": True})
+    #         prediction_list_field.append({"title": "Conflict File", "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[4], "short": True})
+    #     prediction_list_field.append({"value": prediction_list_temp[2], "short": True})
+    #     prediction_list_field.append({
+    #                                      "value": "---------------------------------------------------------------------------------------------------",
+    #                                      "short": False})
+    #
+    #     check = False
+
+    w_db.close()
+
+    # return prediction_list_field
+    return sun_test_list

@@ -207,6 +207,20 @@ CREATE TABLE IF NOT EXISTS `last_commit_date` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
+-- 테이블 uci_chat_bot.git_log_name_only 구조 내보내기
+CREATE TABLE IF NOT EXISTS `prediction_list` (
+  `project_name` varchar(50) NOT NULL,
+  `user_name` varchar(50) NOT NULL,
+  `target` varchar(50) NOT NULL,
+  `other_name` varchar(50) NOT NULL,
+  `order_num` int(11) NOT NULL,
+  `file_name` varchar(50) NOT NULL,
+  `percentage` int(11) NOT NULL,
+  `related_file_list` text NOT NULL,
+  PRIMARY KEY (`project_name`, `user_name`, `target`, `order_num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

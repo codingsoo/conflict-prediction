@@ -177,6 +177,28 @@ class user_database:
 
         return raw
 
+    def convert_slack_code_to_slack_id(self, slack_code):
+        raw = ""
+
+        try:
+            sql = "select slack_id " \
+                  "from user_table " \
+                  "where slack_code = '%s'" % (slack_code)
+
+            print(sql)
+            self.cursor.execute(sql)
+            self.conn.commit()
+
+            raw_tuple = self.cursor.fetchall()
+            if raw_tuple:
+                raw = raw_tuple[0][0]
+
+        except:
+            self.conn.rollback()
+            print("ERROR : convert slack code to slack id")
+
+        return raw
+
     def convert_git_id_to_slack_code(self, git_id):
         raw = ""
 
