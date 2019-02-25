@@ -5,7 +5,6 @@ import uuid
 import dialogflow_v2 as dialogflow
 
 
-
 # bot's feature
 # 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
 # 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
@@ -132,7 +131,6 @@ def get_typo_error_cost(user_input, no_typo_error):
 
     for i in range(x_length-1):
         arr[i+1][0] = i+1
-
     for j in range(y_length-1):
         arr[0][j+1] = j+1
 
@@ -147,6 +145,7 @@ def get_typo_error_cost(user_input, no_typo_error):
 
 
 def extract_attention_word(owner_name, project_name, sentence, github_email, intent_type, msg_type):
+
     import re
     work_db = work_database()
     sentence = " " + sentence + " "
@@ -194,6 +193,34 @@ def extract_attention_word(owner_name, project_name, sentence, github_email, int
 
                 for file_name, fn_idx_list in file_name_dict.items():
                     if file_name in sentence or file_name.split(".")[0] in sentence:
+                        typo_error_check = 0
+
+                sentence_split = sentence.split()
+                user_file_name = " "
+                for i in range(len(sentence_split)):
+                    if ".py" in sentence_split[i]:
+                        user_file_name = sentence_split[i]
+                        break
+
+                if typo_error_check == 1:
+                    no_error_file_name = " "
+                    min_rate = 1000
+                    for file_name, fn_idx_list in file_name_dict.items():
+                        typo_rate = get_typo_error_cost(user_file_name, file_name)
+                        if(typo_rate < min_rate):
+                            min_rate = typo_rate
+                            no_error_file_name = file_name
+
+                    user_slack_code = work_db.convert_git_id_to_slack_code(github_email)
+                    send_typo_error_button_message(user_slack_code,user_file_name, no_error_file_name , sentence, intent_type)
+                    work_db.close()
+                    return ERROR, "typo_error_file", None, None
+
+            if(msg_type == "message"):
+                typo_error_check = 1
+
+                for file_name, fn_idx_list in file_name_dict.items():
+                    if file_name in sentence:
                         typo_error_check = 0
 
                 sentence_split = sentence.split()

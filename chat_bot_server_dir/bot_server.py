@@ -121,6 +121,7 @@ def message_processing(msg):
                 elif msg['type'] == 'interactive_message':
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, msg['intent_type'], msg['type'])
 
+
                 return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 
                 print("return message : " + str(return_message))
@@ -155,6 +156,7 @@ def message_processing(msg):
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, -1, msg['type'])
                 elif msg['type'] == 'interactive_message':
                     intent_type, return_param0, return_param1, return_param2 = extract_attention_word(owner_name, project_name, rand_text, user_git_id, msg['intent_type'], msg['type'])
+
 
                 return_message = sentence_processing_main(intent_type, user_slack_code, return_param0, return_param1, return_param2)
 

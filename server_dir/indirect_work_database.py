@@ -224,7 +224,7 @@ class indirect_work_database:
 
     def search_logic_dependency(self, project_name, calling_list, working_list, type):
         def_call_list = self.extract_def_call(project_name)
-        print("def_call_list : ", def_call_list)
+     #   print("def_call_list : ", def_call_list)
 
         all_raw_list = []
 

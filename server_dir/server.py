@@ -34,11 +34,11 @@ def user_search():
 def git_diff():
     print("##### START request git_diff logic ##### (", str(request.remote_addr), ")")
     content = request.get_json(silent=True)
-    print("content : " + str(content))
+   # print("content : " + str(content))
     converted_data = convert_data(content)
-    print("prev converted_data : " + str(converted_data))
+   # print("prev converted_data : " + str(converted_data))
     git_logic(converted_data)
-    print("next converted_data : " + str(converted_data))
+   # print("next converted_data : " + str(converted_data))
     print("##### END request git_diff logic ##### (", str(request.remote_addr), ")")
 
     return "git_diff"

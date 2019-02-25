@@ -443,8 +443,9 @@ class direct_work_database:
         print("#### update first best conflict list #####")
         print(best_conflict_list)
         for temp_best in best_conflict_list:
-            user_percentage, other_percentage = self.calculate_percentage(temp_best)
-
+          #  user_percentage, other_percentage = self.calculate_percentage(temp_best)
+            user_percentage=0
+            other_percentage=0
             self.insert_conflict_data(project_name=temp_best[1],
                                       file_name=temp_best[2],
                                       logic1_name=temp_best[3],
