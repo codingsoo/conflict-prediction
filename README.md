@@ -8,9 +8,9 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 
 #### Using conflict_test project
 
-   1. Clone [conflict_test](https://github.com/UCNLP/conflict_test.git) repository
+   1. Clone [conflict_test](https://github.com/codingsoo/conflict_test.git) repository
         ```
-        $ git clone https://github.com/UCNLP/conflict_test.git
+        $ git clone https://github.com/codingsoo/conflict_test.git
         ```
    2. Set IP and PORT in *conflict_test/client_setting.ini*
         ```
@@ -29,9 +29,9 @@ We aim to improve developer's collaboration environment. We develop a chatbot wh
 
 #### Using your own project
 
-   1. Download [client.py](https://github.com/UCNLP/conflict_test/blob/master/client.py) and [client_setting.ini](https://github.com/UCNLP/conflict_test/blob/master/client_settings.ini) in your own project
+   1. Download [client.py](https://github.com/codingsoo/conflict_test/blob/master/client.py) and [client_setting.ini](https://github.com/UCNLP/conflict_test/blob/master/client_settings.ini) in your own project
         ```
-        $ git clone https://github.com/UCNLP/conflict_test.git
+        $ git clone https://github.com/codingsoo/conflict_test.git
         ``` 
    2. Set IP and PORT in *conflict_test/client_setting.ini*
         ```
@@ -87,9 +87,9 @@ https://www.youtube.com/embed/FO2RW24wHFQ<br>
 
 ## Algorithm
 
-- NLP : You can see the algorithm in [chat_bot_server_dir folder](https://github.com/UCNLP/conflict-prediction/tree/py3_server/chat_bot_server_dir)
-- Conflict detection : You can see the algorithm in [server_dir folder](https://github.com/UCNLP/conflict-prediction/tree/py3_server/server_dir)
-- Conflict prediction : You can see the algorithm in [server_dir_folder](https://github.com/UCNLP/conflict-prediction/tree/py3_server/server_dir)
+- NLP : You can see the algorithm in [chat_bot_server_dir folder](https://github.com/codingsoo/conflict-prediction/tree/py3_server/chat_bot_server_dir)
+- Conflict detection : You can see the algorithm in [server_dir folder](https://github.com/codingsoo/conflict-prediction/tree/py3_server/server_dir)
+- Conflict prediction : You can see the algorithm in [server_dir_folder](https://github.com/codingsoo/conflict-prediction/tree/py3_server/server_dir)
 
 ## Future Work
 
