@@ -1,0 +1,5 @@
+You now hold the lock for *{filename}*.
+Success.
+I locked *{filename}* for you. Let me know when you want to unlock it.
+Alright, *{filename}* is now locked for you.
+Locked.

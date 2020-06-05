@@ -1,0 +1,10 @@
+During {} and {} are working on the same {} file, your workload is getting bigger. Be careful.
+{} and {} workload in the same {} file is getting more overlapped. It can be more serious.
+Hey, {} and {}, be careful about more serious situation. Your amount of overlapped work in {} file is getting bigger.
+{} and {} are working on a same {} file, and your overlapped workload is getting bigger. Be careful!
+I would like to let you know that {} and {} are working on {} file and it is getting worse because of growing overlapped.
+Hey, {} and {}! your work load in same {} file is getting bigger!
+Overlapped workload of {} and {} is getting bigger, so be cautious!
+Hey, {} and {}, what you guys doing? You guys workload in same {} file is getting bigger!
+{} and {}, be careful about conflict, because your workload in same {} file is getting bigger.
+Two developers {} and {} are working too much in the same file!

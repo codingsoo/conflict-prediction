@@ -1,0 +1,1 @@
+There is no direct conflict in *{filepath}*.

@@ -1,0 +1,5 @@
+<@{user2}> has a lock on this file. You should probably wait in making any changes.
+<@{user2}> has the lock.
+<@{user2}>. You may want to talk to them about it and what you plan to do with this file.
+<@{user2}>
+*{filename}* is locked by <@{user2}>; it is probably best not to make any changes right now.

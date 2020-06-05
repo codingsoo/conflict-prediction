@@ -1,0 +1,6 @@
+Hey you and {}! You guys are working the same {} to same {}. Be careful!
+You and {} were working on the same {}, but now you are working on the same {}. It's more dangerous than before!
+I would like to tell you about bigger severity, because you and {} were working on the same {}, but now they're working on the same {}.
+You and {} were working on the same {} before, but now you guys are working on the same {}. It's more hazardous than before!
+I think you and {} are making more serious situation. You were working on the same {}, but now you're working on the same {}.
+You and {} are working on the same {}, but now you are working on the same {}. It is getting worse, so be cautious about conflict!

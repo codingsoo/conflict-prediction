@@ -1,0 +1,80 @@
+
+# Bot's Feature
+# 1. ignore_file : It functions like gitignore. A user can customize his/her ignore files.
+# 2. lock_file : A user can lock his/her files. If other users try to modify the related file of the lock_file, chatbot gives them a warning.
+# 3. code_history : A user can ask who wrote certain code lines.
+# 4. ignore_alarm : A user can ignore direct and indirect conflicts.
+# 5. check_conflict : Before a user starts to work, the user can check if he/she generates conflict or not on the working file
+# 6. working_status : A user can ask about other user's working status
+# 7. channel_message : A user can let chatbot give a message to channel.
+# 8. user_message : A user can let chatbot give a message to other users.
+# 9. recommendation : A user can ask chatbot to recommend reaction to conflict.
+# 10. user_recognize : Chatbot knows when last time a user connected is, so bot can greet the user with time information. ex) It's been a while~
+# 11. greeting : Chatbot can greet users.
+# 12. complimentary_close : Chatbot can say good bye.
+# 13. detect_direct_conflict : Chatbot can detect direct conflict and severity.
+# 14. detect_indirect_conflict : Chatbot can detect indirect conflict and severity.
+
+
+# The Format of User's Feature Message
+# 3. code_history : The User
+# 7. channel_message : The user must mention a message and channel name to send. 
+		       The message should be between two quotations and the word 'channel' must be written after the channel name. 
+		       Ex) Send " I am working on class1" to code-conflict-chatbot channel.
+
+# 8. user_message : The user must mention a message and other user's name to send.
+		    The message should be between two quotations and the word '@' must be written before other user's name.
+		    Ex) You have to send a message to @Sun that " I will check and solve the conflict".
+
+-----------------------------------------------------------------------------------
+
+# sentence_list = [1. ignore_file
+                   2. lock_file
+                   3. code_history
+                   4. ignore_alarm
+                   5. check_conflict
+                   6. working_status
+                   7. channel_message
+                   8. user_message
+                   9. recommendation]
+
+
+# question_sentence_list = [Can you not notify me about hello.py?
+                            Can you lock hello.py?
+                            Can you tell me who wrote line 14 to line 18 at file1.py?
+                            Can you not notify me about indirect conflict?
+                            Do you think hello.py is gonna make a conflict?
+                            Can you tell me <@UCFNMU2ED>'s working status?
+                            Can you tell code-conflict-chatbot channel that “I am working on File1.py”?
+                            Can you chat to <@UCFNMU2ED> “I will check and solve the problem”?
+                            Can you recommend what I should do to fix the conflict in File.py? ]
+
+# command_sentence_list = [Do not notify me about File1.py again.
+                           Don't lock hello.py.
+                           Tell me who wrote line 70 to line 90 in file1.py.
+                           Do not alert me about indirect conflict.
+                           Check File1.py whether it will make a conflict or not.
+                           Tell me where <@UCFNMU2ED>'s working status.
+                           Tell code-conflict-chatbot channel that “I am working on File1.py”.
+                           Send a message to <@UCFNMU2ED> “I am working on class1”.
+                           Give me some recommendation about how to solve the conflict of File1.py.]
+
+# suggestion_sentence_list = [You should not give me notification about File1.py.
+                              You should lock File.py.
+                              You should let me know who wrote code line 1 to line 9 at file1.py.
+                              You should not alert me about direct conflict.
+                              You should check File1.py if this is gonna make a conflict.
+                              You should tell me <@UCFNMU2ED>'s working status.
+                              You should announce to code-conflict-chatbot channel that "Do not touch File1.py".
+                              You have to send a message to <@UCFNMU2ED> "I will check and solve the conflict".
+                              You would tell me how I can solve the conflict in File1.py.]
+
+# desire_sentence_list = [I want to ignore any alarm about File1.py.
+                          I want to lock File1.py.
+                          I want to know who wrote line 70 to line 90 in File1.py.
+                          I don't want to get alert about direct conflict.
+                          I want to know that this is gonna make a conflict in File1.py.
+                          I want to know <@UCFNMU2ED>'s working status.
+                          I want to send the message to code-conflict-chatbot channel that "Do not modify File1.py".
+                          I want to send a direct message to <@UCFNMU2ED> "Do not modify File1.py".
+                          I want to get recommendation how I can solve the conflict in File1.py.]

@@ -1,0 +1,5 @@
+Sent!
+Done.
+Message sent.
+I forwarded your message to <@{user2}>.
+Your message was delivered to <@{user2}>.

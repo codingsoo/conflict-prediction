@@ -1,0 +1,5 @@
+It’s ok to modify this file.
+You can go ahead and edit this file; no one else is working on it.
+You can edit this file, no problem.
+Currently there would be no conflict. I’ll let you know if someone else starts to work on it.
+Go ahead; all clear.

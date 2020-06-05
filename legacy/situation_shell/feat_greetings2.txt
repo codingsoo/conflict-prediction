@@ -1,0 +1,5 @@
+Hi, happy to have you back!
+It has been a while, but glad to see you {user}.
+Good day, it is nice to have you back.
+Welcome back {user}.
+Hello again.

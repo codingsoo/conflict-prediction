@@ -1,0 +1,5 @@
+<@{user2}> has thus far worked on the following files: *{working_status}* (Project, Logic, Line, Amount)
+The following files have been changed by <@{user2}>: *{working_status}* (Project, Logic, Line, Amount)
+*{working_status}* (Project, Logic, Line, Amount)
+Last time I checked, <@{user2}> was working on a few files: *{working_status}* (Project, Logic, Line, Amount)
+*{working_status}* have been modified by <@{user2}> (Project, Logic, Line, Amount).

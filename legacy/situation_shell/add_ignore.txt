@@ -1,0 +1,5 @@
+Ok.
+Ok, *{filename}* will be ignored from now on.
+Done. Let me know if you want to undo the ignore.
+Alright, I will no longer inform you of conflicts for *{filename}*.
+Sure. You will no longer see notifications of conflict for *{filename}*.

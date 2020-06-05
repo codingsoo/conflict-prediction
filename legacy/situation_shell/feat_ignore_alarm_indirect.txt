@@ -1,0 +1,5 @@
+Done!
+From now on I won’t notify you of indirect conflicts.
+Ok. From now on, I won’t notify you when your changes might affect the work of others on other files.
+Sure. Let me know if you want to undo the ignore.
+I disabled notifications for indirect conflicts.

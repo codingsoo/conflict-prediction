@@ -1,0 +1,5 @@
+<@{user2}> is editing *{function2}* in *{filename2}*. If you use *{function1}* in *{filename1}*, it may lead to an indirect conflict.
+I think it is wise if you postpone making changes involving *{function1}* in *{filename1}*, because <@{user2}> is modifying *{function2}*'s definition in *{filename2}* and that could lead to an indirect conflict.
+<@{user2}> is currently editing *{function2}* in *{filename2}* and an indirect conflict may occur if you use *{function1}* in *{filename1}*.
+If you use *{function1}* in *{filename1}* an indirect conflict is likely to arise, since <@{user2}> is currently editing the definition of *{function2}* in *{filename2}*.
+Your use of *{function1}* in *{filename1}* may lead to a problem since <@{user2}> is making changes to *{function2}* right now.

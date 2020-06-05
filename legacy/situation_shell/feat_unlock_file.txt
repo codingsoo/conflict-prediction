@@ -1,0 +1,5 @@
+Done!
+Unlocked.
+I successfully unlocked *{filename}* for you.
+Ok, unlocked the file.
+*{filename}* is now unlocked.

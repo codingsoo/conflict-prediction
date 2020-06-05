@@ -1,0 +1,2 @@
+<@{user2}> is now working on the same class (though not the same method).
+<@{user2}> is now working on the same class as you, but in different method.

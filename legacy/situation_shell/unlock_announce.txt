@@ -1,0 +1,5 @@
+Just wanted to let you know that *{filename}* was unlocked by <@{user2}> and is now available for you to lock.
+You can now lock *{filename}*, as it was just unlocked by <@{user2}>.
+*{filename}* was unlocked by <@{user2}>.
+<@{user2}> just unlocked *{filename}*.
+*{filename}* is now unlocked.

@@ -1,0 +1,5 @@
+I’d recommend you be careful editing *{filename1}*, since {user2} is editing *{filename2}* and an indirect conflict may arise.
+Changing this file may cause an indirect conflict with {user2}, since they are currently editing *{filename2}*.
+Best not to work on this file right now because of *{filename2}* editing by {user2}.
+You may want to wait until {user2} is done working on *{filename2}*.
+I’d recommend you talk with {user2} first, as their changes on *{filename2}* may conflict.

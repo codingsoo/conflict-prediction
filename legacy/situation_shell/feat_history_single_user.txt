@@ -1,0 +1,5 @@
+{user2} last changed these lines.
+GitHub reports that {user2} is the last person who edited *{filename}* from line {start_line} to line {end_line}.
+{user2}.
+All these lines of code were last changed by {user2}.
+{user2} is the last person who changed those lines in *{filename}*.

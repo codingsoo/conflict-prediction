@@ -1,0 +1,5 @@
+Your changes are of the same size as <@{user2}>’s ({user2_severity:.2f}%). You probably should talk with them on how to proceed.
+You may want to coordinate with <@{user2}>; you changed that file the same amount that <@{user2}> did ({user2_severity:.2f}%).
+<@{user2}>’s changed about as much as you did ({user2_severity:.2f}%). You may want to talk with them.
+I feel it would be best if you talk with <@{user2}> first, because both of you modified that file the same amount ({user2_severity:.2f}%).
+You and <@{user2}> both changed that file equally much. Best to chat before proceeding.

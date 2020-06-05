@@ -1,0 +1,5 @@
+There’s no conflict; all good.
+Don’t worry about it. There currently is no conflict for that file.
+No need to worry about *{filename}*, since there isn’t any conflict with anyone.
+*{filename}* doesn’t have any conflicts with anyone.
+All clear; I couldn’t find any conflicts.

@@ -1,0 +1,5 @@
+<@{user2}> placed a lock on that file for another {remaining_time} since they are working on it. I’ll let you know when they unlock it.
+*{filename}* is locked for another {remaining_time}. You can change the file, though, if you so wish, but <@{user2}> is currently working on it.
+That file is locked by <@{user2}> for {remaining_time}.
+<@{user2}> has locked that file for another {remaining_time}. It’s probably best if you don’t edit it until it’s unlocked. I will let you know when.
+Oops. *{filename}* is locked by user2 for another {remaining_time}. Check with them when they might be done.

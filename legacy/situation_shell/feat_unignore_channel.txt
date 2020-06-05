@@ -1,0 +1,10 @@
+{} will be notified of {} file from now on.
+{} will get any notification of {} file.
+{} will be notified of anything related to {} file from now on.
+{} can get any alarm of {} file from now on.
+{} doesn't ignore {} file to get alarm any time.
+{} want to get notified of any changes of {} file.
+{} want to get any information of changes in {} file.
+{} want to be informed of {} file.
+{} will be informed about any changes of {} file.
+{} doesn't ignore {} file from now on, so that file will be notified.

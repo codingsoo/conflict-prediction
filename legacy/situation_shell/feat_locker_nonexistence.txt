@@ -1,0 +1,5 @@
+This file is not locked by anyone.
+No lock.
+No lock on *{filename}*.
+No one has locked the file.
+You can safely lock this file if you want to.

@@ -1,0 +1,5 @@
+You are not ignoring any files at this time.
+You are receiving all notifications for all files.
+No files are currently being ignored in terms of notifications.
+There is no ignored file as of now.
+None.

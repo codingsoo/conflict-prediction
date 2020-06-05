@@ -1,0 +1,10 @@
+Okay, I'll announce it to {}.
+Sure, I'll let everyone know on {}.
+No problem, your message will announce on {}.
+Your request handled. I announced it to {}.
+Okay, now everyone can see your message at {}.
+Oh, I see. I will send message in {} channel.
+As you said, I sent message to {} channel.
+Okay. I will send this message in {} channel.
+Your announcement message in {} channel is completely sent.
+Sending announcement to {} channel is perfectly done!

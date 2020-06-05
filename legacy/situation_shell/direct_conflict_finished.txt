@@ -1,0 +1,5 @@
+<@{user1}>: the conflict for *{filename}* no longer exists.
+No more conflict for *{filename}* with <@{user2}>.
+Good news! Your conflict with <@{user2}> for *{filename}* has disappeared.
+The conflict for *{filename}* is no longer a concern.
+You can freely edit *{filename}* as you see fit since there is no conflict with <@{user2}> at this time.

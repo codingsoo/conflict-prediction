@@ -1,0 +1,5 @@
+Just wanted to let you know that your modifications to *{filename1}* may cause an indirect conflict with the changes being made by <@{user2}> on *{filename2}*.
+Changes by you and <@{user2}> may cause an indirect conflict since <@{user2}> is working on *{filename2}*.
+Just so you know, <@{user2}> is working on *{filename2}* and your edits on *{filename1}* may cause an indirect conflict.
+You may want to talk to <@{user2}>. Their changes to *{filename2}* may interfere with yours to *{filename1}*.
+<@{user2}> is working on *{filename2}*. Your changes to *{filename1}* may be incompatible. I suggest you talk to <@{user2}>.

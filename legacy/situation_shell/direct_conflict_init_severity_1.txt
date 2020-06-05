@@ -1,0 +1,2 @@
+This might not be ok, since <@{user2}> is working on the same class in that file.
+Note that, while you both are working on the same class, <@{user2}> is working on a different method.

@@ -1,0 +1,10 @@
+Your changes on *{filename}* may cause conflict as <@{user2}> is also working on that file.
+Just wanted to tell you that it’s best if you talk with <@{user2}> as both of you are working on the same file.
+*{filename}* is being modified by <@{user2}> right now. You may want to talk with <@{user2}> before proceeding more.
+<@{user2}> is currently working on *{filename}*. Please talk to <@{user2}> before editing the file.
+Heads up! <@{user2}> is editing *{filename}* and if you continue changing that file, conflicts may happen. Why don’t you talk with <@{user2}> first?
+<@{user2}> has started working on *{filename}*. You may want to talk to them.
+Heads up! <@{user2}> is modifying *{filename}* and causing conflicts.
+Just so you’re aware, <@{user2}> is editing *{filename}* and causing conflicts. Please talk to them.
+I think you should talk to <@{user2}>. They’ve started editing *{filename}* and that causes conflicts.
+<@{user1}>, <@{user2}> is editing *{filename}* which leads to having conflicts. Maybe you should talk with them.

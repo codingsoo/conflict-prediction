@@ -1,0 +1,2 @@
+This is potentially serious, because <@{user2}> is working on the same method as you.
+For now, <@{user2}> is working on the same method in that file.

@@ -1,0 +1,5 @@
+Alright, you will now receive notifications for direct conflicts again.
+Done, you’ll be notified from now on.
+I’ll notify you again when you start to edit the same file as someone else.
+Sure.
+Ok, done.

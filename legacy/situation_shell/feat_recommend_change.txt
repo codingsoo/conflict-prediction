@@ -1,0 +1,5 @@
+You changed {severity_gap:.2f}% more than <@{user2}>. It should be ok for you to keep editing, but let them know.
+You probably should inform <@{user2}> that your changes are {severity_gap:.2f}% larger than theirs, and talk with them on how to proceed.
+I feel it should be ok for you to continue working on this file, but you may want to coordinate with <@{user2}> anyways to see if they can hold off on completing their changes until you are done.
+I recommend you talk to <@{user2}>; you changed {severity_gap:.2f}% more than they did, so maybe you can ask them to pause their work for just a bit.
+<@{user2}>’s changes are smaller than yours ( {user1_severity:.2f}% vs {user2_severity:.2f}% ).

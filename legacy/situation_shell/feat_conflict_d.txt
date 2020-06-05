@@ -1,0 +1,5 @@
+It’s best if you don’t change that file, because {user2} already is editing it right now.
+{user2} is currently modifying this file. It’d be great if you don’t change it.
+You may want to wait until {user2} is done working on this file.
+I’d recommend you talk with {user2} first, as they are already working on *{filename}*.
+That file is currently being modified by {user2}.

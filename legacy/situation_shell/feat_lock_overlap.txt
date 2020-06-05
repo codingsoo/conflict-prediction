@@ -1,0 +1,5 @@
+<@{user2}> has locked that file for another {remaining_time}. I’ll let you know when it is unlocked.
+Sorry! It is best if you don’t modify *{filename}* as it’s locked by <@{user2}> for another {remaining_time}.
+Ugh, that file is locked by <@{user2}> for another {remaining_time}, you may lock it later.
+<@{user2}> has locked it already for another {remaining_time}. It’s best if you don’t edit it until it’s unlocked. I will let you know.
+Bummer! *{filename}* is locked by <@{user2}> for {remaining_time}. Please wait til it’s unlocked.l

@@ -1,0 +1,10 @@
+From now on, {} ignored {} file.
+{} doesn't want to get notified of {} file.
+From now on, {} will have no notification from {} file.
+{} would like to ignore {} file.
+{} will get no notification of {} file.
+{} cannot get any notification of {} file.
+{} doesn't want to get any alarm of {} file.
+{} will disregard the changes of {} file from now on.
+{} will pass over any information of {} file.
+{} doesn't want to know any information of {} file.

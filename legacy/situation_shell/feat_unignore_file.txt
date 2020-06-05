@@ -1,0 +1,6 @@
+Ok, I’ll notify you if you and other people modify this file simultaneously and are causing conflicts.
+Done!
+From now on you will again receive notification about the conflicts of *{filename}*.
+Success!
+Done! Let me know if you want to undo the ignore command.
+I enabled notifications for that file.

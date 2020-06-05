@@ -1,0 +1,16 @@
+.idea/
+chat_bot_server_virenv/
+token.json
+.DS_Store/
+venv/
+chat_bot_server_dir/bot_server_config.ini
+server_dir/server_config.ini
+__pycache__/
+INTERSPEECH-T-BRNN.pcl
+stanford-corenlp-full-2018-02-27/
+server_config.ini
+UCNLP/
+bot_server_config.ini
+all_server_config.ini
+**/.DS_Store
+server_dir/git_graph_draw/conflict_test/

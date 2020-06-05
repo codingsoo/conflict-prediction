@@ -1,0 +1,5 @@
+Just wanted to let you know that your modifications to *{function1}* may cause an indirect conflict, because <@{user2}> is calling that function from *{filename2}*.
+Changes by you and <@{user2}> may cause an indirect conflict since <@{user2}> is using *{function1}* in *{filename2}*.
+Just so you know, <@{user2}> is using *{function1}* in *{filename2}* and your edits on that function may cause an indirect conflict.
+You may want to talk to <@{user2}>. Your changes to *{function1}* may interfere with their code in *{filename2}*.
+<@{user2}> is using *{function1}* in *{filename2}*. Your changes to this function in *{filename1}* may cause an indirect conflict. I suggest you talk to <@{user2}>.

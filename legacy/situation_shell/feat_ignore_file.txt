@@ -1,0 +1,5 @@
+No problem!
+From now on I won’t notify you of any conflicts involving *{filename}*.
+Ok.
+Let me know if you want to undo the ignore.
+I disabled notifications for this file.

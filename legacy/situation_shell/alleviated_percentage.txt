@@ -1,0 +1,5 @@
+The conflict with <@{user2}> for *{filename}* is getting smaller. It is now {severity}%.
+The size of the conflict for *{filename}* with <@{user2}> has shrunken to {severity}%.
+Your conflict with <@{user2}> for *{filename}* is now lower: {severity}%.
+You and <@{user2}>’s current conflict for *{filename}* has become smaller, and is now only {severity}% instead of {old_severity}%.
+Nice job, the conflict for *{filename}* with <@{user2}> has been reduced by {severity_subtraction}%.

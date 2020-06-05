@@ -1,0 +1,1 @@
+<@{user}> locked *{file_name}* file for {lock_time} hour(s).

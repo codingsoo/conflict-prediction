@@ -1,0 +1,6 @@
+Will do.
+I will no longer notify you of direct conflicts.
+Done. From now on there won’t be any notification when you and someone else work on the same file.
+Ok. Let me know if you want to undo the ignore.
+I disabled notifications for direct conflicts.
+

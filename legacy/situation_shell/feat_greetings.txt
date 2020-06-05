@@ -1,0 +1,5 @@
+Welcome {user}.
+How are things?
+Good day, I hope you are well.
+Hello {user}.
+Hi {user}.

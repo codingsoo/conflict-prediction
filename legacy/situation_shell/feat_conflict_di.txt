@@ -1,0 +1,5 @@
+It will cause conflicts for {user2} editing the same file and {user3} modifying *{filename3}*.
+Yes, changing this file will create conflict directly for {user2} editing the same file and indirectly for {user3} modifying *{filename3}*.
+Be careful, editing that file will cause problem directly for {user2} editing *{filename2}* and indirectly for {user3} modifying *{filename3}*.
+{user2} is modifying this file and {user3} are working on *{filename3}*. So, it’s best if you don’t change it.
+Yes, there will be direct and indirect conflicts for {user3} modifying *{filename3}*.
